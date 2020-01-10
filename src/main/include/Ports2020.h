@@ -13,12 +13,12 @@ static const int LEFT_DRIVE_ENCODER_RED_PWM_PORT     = 7;
 static const int RIGHT_DRIVE_ENCODER_RED_PWM_PORT    = 9;
 
 //Drive
-static const int RIGHT_DRIVE_MASTER_ID               = 0;
-static const int RIGHT_DRIVE_SLAVE_A_ID              = 0;
-static const int RIGHT_DRIVE_SLAVE_B_ID              = 0;
-static const int LEFT_DRIVE_MASTER_ID                = 0;
-static const int LEFT_DRIVE_SLAVE_A_ID               = 0;
-static const int LEFT_DRIVE_SLAVE_B_ID               = 0;
+static const int RIGHT_DRIVE_MASTER_ID               = 1;
+static const int RIGHT_DRIVE_SLAVE_A_ID              = 2;
+static const int RIGHT_DRIVE_SLAVE_B_ID              = 3;
+static const int LEFT_DRIVE_MASTER_ID                = 4;
+static const int LEFT_DRIVE_SLAVE_A_ID               = 5;
+static const int LEFT_DRIVE_SLAVE_B_ID               = 6;
 
 //Superstructure Motors
 
@@ -34,9 +34,9 @@ static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 0;
 
 //Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;
-static const int RIGHT_JOY_USB_PORT                  = 0;
-static const int OPERATOR_JOY_USB_PORT               = 0;
-static const int OPERATOR_JOY_B_USB_PORT             = 0;
+static const int RIGHT_JOY_USB_PORT                  = 1;
+static const int OPERATOR_JOY_USB_PORT               = 2;
+static const int OPERATOR_JOY_B_USB_PORT             = 3;
 
 //Buttons
 static const int HIGH_GEAR_BUTTON_PORT               = 0;

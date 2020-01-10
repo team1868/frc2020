@@ -12,10 +12,10 @@
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance) : AutoCommand(),
-		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight")),
-		driveStraightPIDLayout_(robot_->GetModeTab().GetLayout("DriveStraight PID")),
-		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle")),
-		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance"))
+		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
+		driveStraightPIDLayout_(robot_->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
+		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle", "List Layout")),
+		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance", "List Layout"))
 		{
 	isAbsoluteAngle_ = false;
 
@@ -26,8 +26,8 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).GetEntry();
 	desiredAngleEntry_ = driveStraightLayout_.Add("Desired Angle", 0.0).GetEntry();
 	desiredTotalFeetEntry_ = driveStraightLayout_.Add("Desired Total Feet", 0.0).GetEntry();
-	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).GetEntry();
-	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).GetEntry();
+	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
 	aPIDOutputEntry_ = driveStraightLayout_.Add("Angle PID Output", 0.0).GetEntry();
 	dPIDOutputEntry_ = driveStraightLayout_.Add("Distance PID Output", 0.0).GetEntry();
     aPEntry_ = anglePIDLayout_.Add("P", 0.08).GetEntry();
@@ -43,10 +43,10 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance, double absoluteAngle) :
-		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight")),
-		driveStraightPIDLayout_(robot_->GetModeTab().GetLayout("DriveStraight PID")),
-		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle")),
-		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance"))
+		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
+		driveStraightPIDLayout_(robot_->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
+		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle", "List Layout")),
+		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance", "List Layout"))
 		{
 	isAbsoluteAngle_ = true;
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);

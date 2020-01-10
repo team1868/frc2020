@@ -20,6 +20,10 @@
 #include "auto/commands/PivotCommand.h"
 #include "auto/commands/WaitingCommand.h"
 
+//TODO remove this
+#include "auto/commands/PivotCommand.h"
+#include "auto/PIDsource/PIDInputSource.h"
+
 class MainProgram : public frc::TimedRobot {
  public:
   void RobotInit() override;
@@ -35,4 +39,7 @@ class MainProgram : public frc::TimedRobot {
   SuperstructureController *superstructureController_;
   DriveController *driveController_;
   ControlBoard *humanControl_;
+  
+  NavXPIDSource *tempNavXSource_;
+  PivotCommand *tempPivot_;
 };

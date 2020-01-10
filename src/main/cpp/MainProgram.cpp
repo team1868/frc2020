@@ -42,9 +42,19 @@ void MainProgram::RobotPeriodic() {
  * if-else structure below with additional strings. If using the SendableChooser
  * make sure to add them to the chooser code above as well.
  */
-void MainProgram::AutonomousInit() {}
+void MainProgram::AutonomousInit() {
+    robot_->ResetDriveEncoders();
+    robot_->ZeroNavXYaw();
+    tempNavXSource_ = new NavXPIDSource(robot_);
+    tempPivot_ = new PivotCommand(robot_, 90.0, true, tempNavXSource_);
+    tempPivot_->Init();
+}
 
-void MainProgram::AutonomousPeriodic() {}
+void MainProgram::AutonomousPeriodic() {
+    if(!tempPivot_->IsDone()){
+        tempPivot_->Update(0.0, 0.0);
+    }
+}
 
 void MainProgram::TeleopInit() {}
 

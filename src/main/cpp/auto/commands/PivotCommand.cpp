@@ -3,17 +3,17 @@
 
 // constructor
 PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource) :
-	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot")),
-	pivotPIDLayout_(robot_->GetModeTab().GetLayout("Pivot PID"))
+	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout")),
+	pivotPIDLayout_(robot->GetModeTab().GetLayout("Pivot PID", "List Layout"))
 	{
 
-	leftDriveEntry_ = pivotLayout_.Add("Pivot Left Drive", 0.0).GetEntry();
-	rightDriveEntry_ = pivotLayout_.Add("Pivot Right Drive", 0.0).GetEntry();
-	pivotErrorEntry_ = pivotLayout_.Add("Pivot Error", 0.0).GetEntry();
+	leftDriveEntry_ = pivotLayout_.Add("Left Drive Output", 0.0).GetEntry();
+	rightDriveEntry_ = pivotLayout_.Add("Right Drive Output", 0.0).GetEntry();
+	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
 
-	pEntry_ = pivotPIDLayout_.Add("P", 0.08).GetEntry();
+	pEntry_ = pivotPIDLayout_.Add("P", 0.031).GetEntry();
     iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    dEntry_ = pivotPIDLayout_.Add("D", 0.02).GetEntry();
+    dEntry_ = pivotPIDLayout_.Add("D", 0.017).GetEntry();
     
     navXSource_ = navXSource;
 
@@ -44,10 +44,11 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	// retrieve pid values from user
 	pFac_ = pEntry_.GetDouble(0.08);
-	iFac_ = pEntry_.GetDouble(0.0);
-	dFac_ = pEntry_.GetDouble(0.02);
+	iFac_ = iEntry_.GetDouble(0.0);
+	dFac_ = dEntry_.GetDouble(0.02);
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
+	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
 	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
@@ -59,8 +60,8 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 // constructor
 PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance) :
-	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot")),
-	pivotPIDLayout_(robot_->GetModeTab().GetLayout("Pivot PID"))
+	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout")),
+	pivotPIDLayout_(robot->GetModeTab().GetLayout("Pivot PID", "List Layout"))
 	{
 
 	leftDriveEntry_ = pivotLayout_.Add("Pivot Left Drive", 0.0).GetEntry();
@@ -100,8 +101,8 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	// retrieve pid values from user
 	pFac_ = pEntry_.GetDouble(0.08);
-	iFac_ = pEntry_.GetDouble(0.0);
-	dFac_ = pEntry_.GetDouble(0.02);
+	iFac_ = iEntry_.GetDouble(0.0);
+	dFac_ = dEntry_.GetDouble(0.02);
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);

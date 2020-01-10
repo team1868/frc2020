@@ -19,10 +19,10 @@
 #include "Ports2020.h"
 #define PI 3.141592
 
-static const double WHEEL_DIAMETER = 6.0 / 12.0; //ft
-static const double HIGH_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*0.0; //ft INCORRECT
-static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*0.0; //INCORRECT
-static const double ENCODER_TICKS = 2000.0; //TODO INCORRECT
+static const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
+static const double HIGH_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft INCORRECT
+static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50; //INCORRECT
+static const double ENCODER_TICKS = 256.0; //TODO INCORRECT
 static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX

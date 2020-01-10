@@ -35,11 +35,11 @@ RobotModel::RobotModel() :
     Wait(1.0); // NavX takes a second to calibrate
 
     //encoders
-    leftDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true);
+    leftDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true, frc::Encoder::EncodingType::k2X);
     leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS);
     leftDriveEncoder_->SetReverseDirection(false);
 
-    rightDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true);
+    rightDriveEncoder_ = new frc::Encoder(RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT, RIGHT_DRIVE_ENCODER_RED_PWM_PORT, false, frc::Encoder::EncodingType::k2X);
     rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS);
     rightDriveEncoder_->SetReverseDirection(false);
 

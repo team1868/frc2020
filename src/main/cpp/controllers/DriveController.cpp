@@ -8,7 +8,7 @@
 #include "controllers/DriveController.h"
 
 DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) :
-    driveLayout_(robot->GetDriverTab().GetLayout("Drive Modes").WithPosition(0, 1))
+    driveLayout_(robot->GetDriverTab().GetLayout("Drive Modes", "List Layout").WithPosition(0, 1))
     {
     robot_ = robot;
     humanControl_ = humanControl;
