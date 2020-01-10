@@ -11,7 +11,7 @@
 // class ButtonReader
 // constructs a joystick and sets the port of the button on the joystick, and reads the state of the button
 
-ButtonReader::ButtonReader(frc::Joystick* myJoystick, int myButtonNum) {
+ButtonReader::ButtonReader(frc::Joystick* myJoystick, int myButtonNum){
 	joystick = myJoystick;
 	buttonNum = myButtonNum;
 	currState = joystick->GetRawButton(buttonNum);

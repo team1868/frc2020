@@ -19,10 +19,11 @@ ControlBoard::ControlBoard() {
     operatorJoy_ = new frc::Joystick(OPERATOR_JOY_USB_PORT);
     operatorJoyB_ = new frc::Joystick(OPERATOR_JOY_B_USB_PORT);
 
-	buttons_ = std::vector<ButtonReader*>();
+	buttons_ = std::unordered_map<Buttons, ButtonReader*>();
 
-	//create a button example... ORDER MATTERS
-	//buttons_.push_back(new ButtonReader(leftJoy_, GEAR_SHIFT_BUTTON_PORT)); //kGearShift
+	//create buttons here after creating a option in the Buttons enum
+	//example
+	//buttons_[kYourButton] = new ButtonReader(JOY_PORT, BUTTON_PORT);
 	
     ReadControls();
 }
@@ -65,8 +66,8 @@ void ControlBoard::ReadControls(){
 }
 
 void ControlBoard::ReadAllButtons(){
-	for(int i = 0; i<buttons_.size(); i++){
-		buttons_[i]->ReadValue();
+	for(std::pair<Buttons, ButtonReader*> b : buttons_){
+		b.second->ReadValue();
 	}
 }
 

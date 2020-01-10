@@ -10,13 +10,13 @@
 #include "Ports2020.h"
 #include "ButtonReader.h"
 #include <frc/WPILib.h>
-#include <vector>
+#include <unordered_map>
 
 class ControlBoard {
  public:
   enum Joysticks{ kLeftJoy, kRightJoy };
 	enum Axes{ kX, kY, kZ, kLT};
-  enum Buttons{};
+  enum Buttons{kDeleteThis}; //TODO DELETE THIS
 
   ControlBoard();
   void ReadControls();
@@ -28,5 +28,5 @@ class ControlBoard {
   void ReadAllButtons();
   frc::Joystick *leftJoy_, *rightJoy_, *operatorJoy_, *operatorJoyB_;
   double leftJoyX_, leftJoyY_, rightJoyX_, rightJoyY_;
-  std::vector<ButtonReader*> buttons_;
+  std::unordered_map<Buttons, ButtonReader*> buttons_;
 };
