@@ -190,7 +190,8 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 //		double maxOutput = fmax(fabs(rightMotorOutput_), fabs(leftMotorOutput_));
 	}
 	// drive motors
-	robot_->SetDriveValues(leftMotorOutput_, rightMotorOutput_);
+	robot_->SetDriveValues(RobotModel::Wheels::kLeftWheels, leftMotorOutput_);
+	robot_->SetDriveValues(RobotModel::Wheels::kRightWheels, rightMotorOutput_);
 	//printf("times on target at %f \n\n", numTimesOnTarget_);
 }
 
