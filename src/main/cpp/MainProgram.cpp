@@ -16,6 +16,7 @@ void MainProgram::RobotInit() {
     humanControl_ = new ControlBoard();
     superstructureController_ = new SuperstructureController(robot_, humanControl_);
     driveController_ = new DriveController(robot_, humanControl_);
+    robot_->ResetDriveEncoders();
 }
 
 /**
@@ -29,6 +30,7 @@ void MainProgram::RobotInit() {
 void MainProgram::RobotPeriodic() {
     driveController_->RefreshShuffleboard();
     superstructureController_->RefreshShuffleboard();
+    robot_->RefreshShuffleboard();
 }
 
 /**
@@ -56,7 +58,9 @@ void MainProgram::AutonomousPeriodic() {
     }
 }
 
-void MainProgram::TeleopInit() {}
+void MainProgram::TeleopInit() {
+    robot_->ResetDriveEncoders();
+}
 
 void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();

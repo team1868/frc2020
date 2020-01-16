@@ -22,6 +22,9 @@ RobotModel::RobotModel() :
 
     leftDriveOutput_ = rightDriveOutput_ = 0.0;
 
+    lastLeftEncoderValue_ = lastRightEncoderValue_ = 0.0;
+    currLeftEncoderValue_ = currRightEncoderValue_ = 0.0;
+    
       // initializing timer
     timer_ = new frc::Timer();
     timer_->Start();
@@ -33,23 +36,17 @@ RobotModel::RobotModel() :
     navXSpeed_ = 200;
     navX_ = new AHRS(SPI::kMXP, navXSpeed_);
     Wait(1.0); // NavX takes a second to calibrate
-
-    //encoders
-    leftDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true, frc::Encoder::EncodingType::k2X);
-    leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS);
-    leftDriveEncoder_->SetReverseDirection(false);
-
-    rightDriveEncoder_ = new frc::Encoder(RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT, RIGHT_DRIVE_ENCODER_RED_PWM_PORT, false, frc::Encoder::EncodingType::k2X);
-    rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS);
-    rightDriveEncoder_->SetReverseDirection(false);
+    
 
     // initilize motor controllers
-    leftMaster_ = new WPI_TalonSRX(LEFT_DRIVE_MASTER_ID);
-    rightMaster_ = new WPI_TalonSRX(RIGHT_DRIVE_MASTER_ID);
-    leftSlaveA_ = new WPI_VictorSPX(LEFT_DRIVE_SLAVE_A_ID);
-    rightSlaveA_ = new WPI_VictorSPX(RIGHT_DRIVE_SLAVE_A_ID);
-    leftSlaveB_ = new WPI_VictorSPX(LEFT_DRIVE_SLAVE_B_ID);
-    rightSlaveB_ = new WPI_VictorSPX(RIGHT_DRIVE_SLAVE_B_ID);
+    leftMaster_ = new WPI_TalonFX(LEFT_DRIVE_MASTER_ID);
+    rightMaster_ = new WPI_TalonFX(RIGHT_DRIVE_MASTER_ID);
+    leftSlaveA_ = new WPI_VictorFX(LEFT_DRIVE_SLAVE_A_ID);
+    rightSlaveA_ = new WPI_VictorFX(RIGHT_DRIVE_SLAVE_A_ID);
+    // initialize encoders (talonfxsensorcollection)
+    leftDriveEncoder_ = &leftMaster_->GetSensorCollection();
+    rightDriveEncoder_ = &rightMaster_->GetSensorCollection(); 
+
 
     //TODO check for falcons
     // Setting talon control modes and slaves
@@ -57,20 +54,19 @@ RobotModel::RobotModel() :
     rightMaster_->Set(ControlMode::PercentOutput, 0.0);
     leftSlaveA_->Follow(*leftMaster_);
     rightSlaveA_->Follow(*rightMaster_);
-    leftSlaveB_->Follow(*leftMaster_);
-    rightSlaveB_->Follow(*rightMaster_);
 
     rightMaster_->SetInverted(false);
     rightSlaveA_->SetInverted(false);
-    rightSlaveB_->SetInverted(false);
-    leftMaster_->SetInverted(false);
     leftSlaveA_->SetInverted(false);
-    leftSlaveB_->SetInverted(false);
+    leftMaster_->SetInverted(false);
+
 
     //shuffleboard
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_VOLTAGE_BROWNOUT).GetEntry();
     maxCurrentEntry_ = GetModeTab().Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();
+    leftDriveEncoderEntry_ = GetFunctionalityTab().Add("Left Drive Encoder", 0.0).GetEntry();
+    rightDriveEncoderEntry_ = GetFunctionalityTab().Add("Right Drive Encoder", 0.0).GetEntry();
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
     lowGearTurnSFrictionEntry_ = GetModeTab().Add("LT total SF", LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER).GetEntry();
@@ -115,7 +111,7 @@ bool RobotModel::CollisionDetected() {
 	double currentJerkY = curr_world_linear_accel_y - last_world_linear_accel_y_;
 	last_world_linear_accel_y_ = curr_world_linear_accel_y;
 
-	if(leftDriveEncoder_->GetStopped() && rightDriveEncoder_->GetStopped()) {
+	if(GetLeftEncoderStopped() && GetRightEncoderStopped()) {
 		collisionDetected = true;
 		printf("From ENCODER\n");
 	}
@@ -127,32 +123,41 @@ double RobotModel::GetTime(){
 }
 
 double RobotModel::GetLeftEncoderValue(){
-    return leftDriveEncoder_->Get();
+    return -leftDriveEncoder_->GetIntegratedSensorPosition();
 }
 
 double RobotModel::GetRightEncoderValue(){
-    return rightDriveEncoder_->Get();
+    return rightDriveEncoder_->GetIntegratedSensorPosition();
 }
 
+//return feet
 double RobotModel::GetLeftDistance() {
-	return leftDriveEncoder_->Get()*(LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS;
+    return GetLeftEncoderValue()/ENCODER_TICKS_FOOT;
 }
 
+//return feet
 double RobotModel::GetRightDistance() {
-	return rightDriveEncoder_->Get()*(LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS;
+	return GetRightEncoderValue()/ENCODER_TICKS_FOOT;
 }
 
 void RobotModel::ResetDriveEncoders() {
-	leftDriveEncoder_->Reset();
-	rightDriveEncoder_->Reset();
+	leftDriveEncoder_->SetIntegratedSensorPosition(0.0);
+    rightDriveEncoder_->SetIntegratedSensorPosition(0.0);
+}
+
+
+bool RobotModel::GetRightEncoderStopped() {
+    if (currRightEncoderValue_ == lastRightEncoderValue_){
+        return true;
+    }
+    return false;
 }
 
 bool RobotModel::GetLeftEncoderStopped() {
-	return leftDriveEncoder_->GetStopped();
-}
-
-bool RobotModel::GetRightEncoderStopped() {
-	return rightDriveEncoder_->GetStopped();
+    if (currLeftEncoderValue_ == lastLeftEncoderValue_){
+        return true;
+    }
+    return false;
 }
 
 double RobotModel::GetNavXYaw() {
@@ -202,4 +207,14 @@ void RobotModel::CreateNavX(){
 
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
+}
+
+void RobotModel::RefreshShuffleboard(){
+    lastLeftEncoderValue_ = currLeftEncoderValue_;
+    lastRightEncoderValue_ = currRightEncoderValue_;
+    currLeftEncoderValue_ = GetLeftEncoderValue();
+    currRightEncoderValue_ = GetRightEncoderValue();
+    std::cout << "left:" << currLeftEncoderValue_ << " right:" << currRightEncoderValue_ << std::endl;
+    leftDriveEncoderEntry_.SetDouble(currLeftEncoderValue_); 
+    rightDriveEncoderEntry_.SetDouble(currRightEncoderValue_);
 }

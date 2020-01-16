@@ -13,12 +13,10 @@ static const int LEFT_DRIVE_ENCODER_RED_PWM_PORT     = 7;
 static const int RIGHT_DRIVE_ENCODER_RED_PWM_PORT    = 9;
 
 //Drive
-static const int RIGHT_DRIVE_MASTER_ID               = 1;
-static const int RIGHT_DRIVE_SLAVE_A_ID              = 2;
-static const int RIGHT_DRIVE_SLAVE_B_ID              = 3;
-static const int LEFT_DRIVE_MASTER_ID                = 4;
-static const int LEFT_DRIVE_SLAVE_A_ID               = 5;
-static const int LEFT_DRIVE_SLAVE_B_ID               = 6;
+static const int RIGHT_DRIVE_MASTER_ID               = 0;
+static const int RIGHT_DRIVE_SLAVE_A_ID              = 1;
+static const int LEFT_DRIVE_MASTER_ID                = 2;
+static const int LEFT_DRIVE_SLAVE_A_ID               = 3;
 
 //Superstructure Motors
 
