@@ -41,8 +41,8 @@ RobotModel::RobotModel() :
     // initilize motor controllers
     leftMaster_ = new WPI_TalonFX(LEFT_DRIVE_MASTER_ID);
     rightMaster_ = new WPI_TalonFX(RIGHT_DRIVE_MASTER_ID);
-    leftSlaveA_ = new WPI_VictorFX(LEFT_DRIVE_SLAVE_A_ID);
-    rightSlaveA_ = new WPI_VictorFX(RIGHT_DRIVE_SLAVE_A_ID);
+    leftSlaveA_ = new WPI_TalonFX(LEFT_DRIVE_SLAVE_A_ID);
+    rightSlaveA_ = new WPI_TalonFX(RIGHT_DRIVE_SLAVE_A_ID);
     // initialize encoders (talonfxsensorcollection)
     leftDriveEncoder_ = &leftMaster_->GetSensorCollection();
     rightDriveEncoder_ = &rightMaster_->GetSensorCollection(); 
