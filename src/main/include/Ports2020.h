@@ -24,11 +24,11 @@ static const int LEFT_DRIVE_SLAVE_A_ID               = 3;
 static const int PNEUMATICS_CONTROL_MODULE_ID        = 1;
 static const int GEAR_SHIFT_SOLENOID_PORT            = 0;
 
-//PDP Channels
-static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 0;
-static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 0;
-static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 0;
-static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 0;
+//PDP Channels 
+static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 1; // drive channels are all wrong
+static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 2;
+static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 14;
+static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 15;
 
 //Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;

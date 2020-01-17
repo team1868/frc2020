@@ -73,6 +73,12 @@ RobotModel::RobotModel() :
     highGearSFrictionEntry_ = GetModeTab().Add("H SF", HIGH_GEAR_STATIC_FRICTION_POWER).GetEntry();
     highGearTurnSFrictionEntry_ = GetModeTab().Add("HT total SF", HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER).GetEntry();
 
+    // power distribution panel
+    ratioPower_ = 1.0;
+    leftDriveACurrent_ = 0.0;
+    leftDriveBCurrent_ = 0.0;
+    rightDriveACurrent_ = 0.0;
+    rightDriveBCurrent_ = 0.0;
 }
 
 void RobotModel::SetDriveValues(double left, double right){
@@ -160,6 +166,42 @@ bool RobotModel::GetLeftEncoderStopped() {
     return false;
 }
 
+void RobotModel::UpdateCurrent(int channel) {
+    leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
+	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
+	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
+	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+}
+
+double RobotModel::GetCurrent(int channel) {
+    UpdateCurrent(channel);
+	switch(channel) {
+	case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
+		return rightDriveACurrent_;
+	case RIGHT_DRIVE_MOTOR_B_PDP_CHAN:
+		return rightDriveBCurrent_;
+	case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
+		return leftDriveACurrent_;
+	case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
+		return leftDriveBCurrent_;
+	default:
+    	printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");
+		return -1;
+    }
+}
+
+void RobotModel::ModifyCurrent(int channel){
+
+}
+
+double RobotModel::GetTotalPower() {
+	return pdp_->GetTotalPower();
+}
+
+double RobotModel::GetTotalEnergy() {
+	return pdp_->GetTotalEnergy();
+}
+
 double RobotModel::GetNavXYaw() {
 	return navX_->GetYaw();
 }
@@ -207,6 +249,14 @@ void RobotModel::CreateNavX(){
 
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
+}
+
+double RobotModel::GetCurrentVoltage() {
+    return pdp_-> GetVoltage();
+}
+
+double RobotModel::GetTotalCurrent(){
+    return pdp_->GetTotalCurrent();
 }
 
 void RobotModel::RefreshShuffleboard(){

@@ -48,38 +48,58 @@ class RobotModel {
     frc::ShuffleboardTab& GetAutoOffsetTab();
     void SetDriveValues(double left, double right);
     void SetDriveValues(RobotModel::Wheels wheels, double value);
+
     bool CollisionDetected();
     double GetTime();
+    
     double GetLeftEncoderValue();
     double GetRightEncoderValue();
+    
     void ResetDriveEncoders();
     void RefreshShuffleboard();
+    
     void ZeroNavXYaw();
     double GetNavXYaw();
     double GetNavXPitch();
     double GetNavXRoll();
+    void CreateNavX();
+    NavXPIDSource* GetNavXSource();
+    
     double GetRightDistance();
     double GetLeftDistance();
     bool GetLeftEncoderStopped();
     bool GetRightEncoderStopped();
     std::string GetTestSequence();
-    void CreateNavX();
-    NavXPIDSource* GetNavXSource();
+    
+    double GetCurrentVoltage();
+    double GetTotalCurrent();
+    void UpdateCurrent(int channel);
+    double GetCurrent(int channel);
+    void ModifyCurrent(int channel);
+    double GetTotalPower();
+    double GetTotalEnergy();
     ~RobotModel();
+
   private:
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
     AHRS *navX_;
     TalonFXSensorCollection *leftDriveEncoder_, *rightDriveEncoder_;
+
     double navXSpeed_;
     double leftDriveOutput_, rightDriveOutput_;
     double lastLeftEncoderValue_, lastRightEncoderValue_;
     double currLeftEncoderValue_, currRightEncoderValue_;
     float last_world_linear_accel_x_;
     float last_world_linear_accel_y_;
+
+    double ratioPower_;
+    double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
+    
     NavXPIDSource* navXSource_;
     std::string testSequence_;
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
+
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_;
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
