@@ -18,6 +18,7 @@ void TestMode::CreateQueue(AutoMode::AutoPositions pos) {
 
 void TestMode::Init() {
 	printf("Initializing Test mode\n");
+    printf("is current command a null??? %d\n", currentCommand_==nullptr);
     //currAngle_ = robot_->GetNavXYaw();
 	currentCommand_->Init();
 	printf("Finished initializing\n");

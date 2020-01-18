@@ -70,3 +70,21 @@ private:
 	 */
 	double averageTalonDistance_;
 };
+
+class VelocityPIDSource : public frc::PIDSource {
+public:
+	
+	VelocityPIDSource(RobotModel *robot);
+	
+	void UpdateVelocity();
+	double PIDGet();
+	/**
+	 * Destructor
+	 */
+	virtual ~VelocityPIDSource();
+private:
+	RobotModel *robot_;
+	double lastTime_, currTime_;
+	double lastAvgPosition_, currAvgPosition_;
+	double avgVelocity_;
+};

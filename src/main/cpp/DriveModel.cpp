@@ -67,6 +67,8 @@ RobotModel::RobotModel() :
     leftSlaveA_->SetInverted(false);
     leftSlaveB_->SetInverted(false);
 
+    testSequence_ = "";
+
     //shuffleboard
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_VOLTAGE_BROWNOUT).GetEntry();
@@ -139,7 +141,7 @@ double RobotModel::GetLeftDistance() {
 }
 
 double RobotModel::GetRightDistance() {
-	return rightDriveEncoder_->Get()*(LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS;
+	return -rightDriveEncoder_->Get()*(LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS;
 }
 
 void RobotModel::ResetDriveEncoders() {
@@ -194,6 +196,10 @@ frc::ShuffleboardTab& RobotModel::GetAutoOffsetTab(){
 
 std::string RobotModel::GetTestSequence() {
 	return testSequence_;
+}
+
+void RobotModel::SetTestSequence(std::string testSequence) {
+	testSequence_ = testSequence;
 }
 
 void RobotModel::CreateNavX(){

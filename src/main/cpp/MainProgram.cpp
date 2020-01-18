@@ -45,20 +45,56 @@ void MainProgram::RobotPeriodic() {
 void MainProgram::AutonomousInit() {
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
-    tempNavXSource_ = new NavXPIDSource(robot_);
-    tempPivot_ = new PivotCommand(robot_, 90.0, true, tempNavXSource_);
-    tempPivot_->Init();
+    robot_->CreateNavX();
+
+    //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
+
+    // testSequence_ = new TestMode(robot_, humanControl_);
+    // testSequence_->QueueFromString(robot_->GetTestSequence());
+
+    // printf("before init\n");
+    // testSequence_->Init();
+
+    // printf("done with init, moving to periodic\n");
+
+
+    thingS_ = new VelocityPIDSource(robot_);
+    thingO_ = new VelocityPIDOutput();
+    thingAO_ = new AnglePIDOutput();
+    thing_ = new MotionProfileTestCommand(robot_, thingS_, robot_->GetNavXSource(), thingO_, thingAO_);
+    thing_->Init();
+
+    currTime_ = robot_->GetTime();
+    lastTime_ = currTime_;
+
+    // tempNavXSource_ = new NavXPIDSource(robot_);
+    // tempPivot_ = new PivotCommand(robot_, 90.0, true, tempNavXSource_);
+    // tempPivot_->Init();
 }
 
 void MainProgram::AutonomousPeriodic() {
-    if(!tempPivot_->IsDone()){
-        tempPivot_->Update(0.0, 0.0);
+    // if(!tempPivot_->IsDone()){
+    //     tempPivot_->Update(0.0, 0.0);
+    // }
+    lastTime_ = currTime_;
+    currTime_ = robot_->GetTime();
+
+    //printf("AM I NULL????? %d\n", testSequence_==nullptr);
+
+    if(!thing_->IsDone()){
+        thing_->Update(currTime_, currTime_-lastTime_);
     }
+
+    // if(!testSequence_->IsDone()){
+    //     testSequence_->Update(currTime_, currTime_-lastTime_);
+    // }
 }
 
 void MainProgram::TeleopInit() {}
 
 void MainProgram::TeleopPeriodic() {
+
+    printf("left distance is %f and right distance is %f\n", robot_->GetLeftDistance(), robot_->GetRightDistance());
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();

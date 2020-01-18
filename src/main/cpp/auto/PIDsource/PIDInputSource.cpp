@@ -83,3 +83,30 @@ double TalonEncoderPIDSource::PIDGet() {
 TalonEncoderPIDSource::~TalonEncoderPIDSource() {
 
 }
+
+VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
+	robot_ = robot;
+	lastTime_ = robot_->GetTime();
+	currTime_ = lastTime_;
+	lastAvgPosition_ = 0.0;
+	currAvgPosition_ = 0.0;
+	avgVelocity_ = 0.0;
+}
+	
+void VelocityPIDSource::UpdateVelocity(){
+	lastTime_ = currTime_;
+	currTime_ = robot_->GetTime();
+
+	lastAvgPosition_ = currAvgPosition_;
+	currAvgPosition_ = (robot_->GetLeftDistance()+robot_->GetRightDistance())/2.0;
+
+	avgVelocity_ = (currAvgPosition_-lastAvgPosition_)/(currTime_-lastTime_);
+}
+
+double VelocityPIDSource::PIDGet(){
+	return avgVelocity_;
+}
+
+VelocityPIDSource::~VelocityPIDSource(){
+
+}

@@ -13,7 +13,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance) : AutoCommand(),
 		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
-		driveStraightPIDLayout_(robot_->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
+		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
 		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle", "List Layout")),
 		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance", "List Layout"))
 		{
@@ -44,7 +44,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance, double absoluteAngle) :
 		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
-		driveStraightPIDLayout_(robot_->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
+		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
 		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle", "List Layout")),
 		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance", "List Layout"))
 		{

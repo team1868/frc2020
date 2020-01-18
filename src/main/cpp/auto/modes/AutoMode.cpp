@@ -73,6 +73,8 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 		AutoCommand* tempCommand = NULL;
 		AutoCommand* commandA = NULL;
 
+		printf("current loading command is %c\n", command);
+
 		switch(command) {
 		case '[':
 			char charA;
@@ -154,6 +156,8 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			break;
 		}
 
+		printf("Loaded a command\n");
+
 		return tempCommand;
 }
 
@@ -170,6 +174,7 @@ bool AutoMode::IsFailed(char command) {
 }
 
 void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
+	printf("I AM IN UPDATE RN \n");
     if (currentCommand_ != NULL) {
         //			printf("Update in automode running\n");
 		// if (currentCommand_->Abort()) {

@@ -60,9 +60,9 @@ void ControlBoard::ReadControls(){
     ReadAllButtons();
 
     leftJoyX_ = leftJoy_->GetX();
-	leftJoyY_ = leftJoy_->GetY();
+	leftJoyY_ = -leftJoy_->GetY();
     rightJoyX_ = rightJoy_->GetX();
-	rightJoyY_ = rightJoy_->GetY();
+	rightJoyY_ = -rightJoy_->GetY();
 }
 
 void ControlBoard::ReadAllButtons(){

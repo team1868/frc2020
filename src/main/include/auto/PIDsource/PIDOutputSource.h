@@ -94,3 +94,30 @@ private:
 	RobotModel *robot_;
 	double output_;
 };
+
+class VelocityPIDOutput : public frc::PIDOutput {
+
+public:
+
+	VelocityPIDOutput();
+
+	/**
+	 * PIDWrite a function that initializes output_ and sets the drive values
+	 */
+	void PIDWrite(double output);
+
+	double GetPIDOutput();
+
+	/**
+	 * PivotPIDTalonOutput is a destructor
+	 */
+	virtual ~VelocityPIDOutput();
+
+	/**
+	 * @return output
+	 */
+	double GetOutput();
+
+private:
+	double pidOutput_;
+};

@@ -19,6 +19,8 @@
 #include "auto/commands/DriveStraightCommand.h"
 #include "auto/commands/PivotCommand.h"
 #include "auto/commands/WaitingCommand.h"
+#include "auto/modes/TestMode.h"
+#include "auto/commands/profiling/MotionProfileTestCommand.h"
 
 //TODO remove this
 #include "auto/commands/PivotCommand.h"
@@ -39,6 +41,14 @@ class MainProgram : public frc::TimedRobot {
   SuperstructureController *superstructureController_;
   DriveController *driveController_;
   ControlBoard *humanControl_;
+
+  MotionProfileTestCommand *thing_;
+  VelocityPIDSource *thingS_;
+  VelocityPIDOutput *thingO_;
+  AnglePIDOutput *thingAO_;
+
+  TestMode *testSequence_;
+  double currTime_, lastTime_;
   
   NavXPIDSource *tempNavXSource_;
   PivotCommand *tempPivot_;

@@ -41,6 +41,22 @@ DistancePIDOutput::~DistancePIDOutput() {
 
 }
 
+VelocityPIDOutput::VelocityPIDOutput() {
+	pidOutput_ = 0.0;
+}
+
+void VelocityPIDOutput::PIDWrite(double output) {
+	pidOutput_ = output;
+}
+
+double VelocityPIDOutput::GetPIDOutput() {
+	return pidOutput_;
+}
+
+VelocityPIDOutput::~VelocityPIDOutput() {
+
+}
+
 
 PivotPIDTalonOutput::PivotPIDTalonOutput(RobotModel *robot){
 		robot_ = robot;

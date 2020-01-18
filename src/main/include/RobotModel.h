@@ -61,6 +61,7 @@ class RobotModel {
     bool GetLeftEncoderStopped();
     bool GetRightEncoderStopped();
     std::string GetTestSequence();
+    void SetTestSequence(std::string testSequnce);
     void CreateNavX();
     NavXPIDSource* GetNavXSource();
     ~RobotModel();
