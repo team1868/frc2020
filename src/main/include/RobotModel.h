@@ -22,7 +22,8 @@
 static const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
 static const double HIGH_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft INCORRECT
 static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50; //INCORRECT
-static const double ENCODER_TICKS = 256.0; //TODO INCORRECT
+//static const double ENCODER_TICKS = 2048.0; //units per rotation
+static const double ENCODER_TICKS_FOOT = 16424.3;
 static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX
@@ -47,15 +48,23 @@ class RobotModel {
     frc::ShuffleboardTab& GetAutoOffsetTab();
     void SetDriveValues(double left, double right);
     void SetDriveValues(RobotModel::Wheels wheels, double value);
+
     bool CollisionDetected();
     double GetTime();
+    
     double GetLeftEncoderValue();
     double GetRightEncoderValue();
+    
     void ResetDriveEncoders();
+    void RefreshShuffleboard();
+    
     void ZeroNavXYaw();
     double GetNavXYaw();
     double GetNavXPitch();
     double GetNavXRoll();
+    void CreateNavX();
+    NavXPIDSource* GetNavXSource();
+    
     double GetRightDistance();
     double GetLeftDistance();
     bool GetLeftEncoderStopped();
@@ -64,21 +73,36 @@ class RobotModel {
     void SetTestSequence(std::string testSequnce);
     void CreateNavX();
     NavXPIDSource* GetNavXSource();
+    double GetCurrentVoltage();
+    double GetTotalCurrent();
+    void UpdateCurrent(int channel);
+    double GetCurrent(int channel);
+    void ModifyCurrent(int channel);
+    double GetTotalPower();
+    double GetTotalEnergy();
     ~RobotModel();
+
   private:
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
     AHRS *navX_;
-    frc::Encoder *leftDriveEncoder_, *rightDriveEncoder_;
+    TalonFXSensorCollection *leftDriveEncoder_, *rightDriveEncoder_;
+
     double navXSpeed_;
     double leftDriveOutput_, rightDriveOutput_;
+    double lastLeftEncoderValue_, lastRightEncoderValue_;
+    double currLeftEncoderValue_, currRightEncoderValue_;
     float last_world_linear_accel_x_;
     float last_world_linear_accel_y_;
+
+    double ratioPower_;
+    double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
+    
     NavXPIDSource* navXSource_;
     std::string testSequence_;
-    WPI_TalonSRX *leftMaster_, *rightMaster_;
-    WPI_VictorSPX *leftSlaveA_, *leftSlaveB_, *leftSlaveC_, *rightSlaveA_, *rightSlaveB_, *rightSlaveC_;
+    WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
+
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
-    nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_;
+    nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_;
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
 };

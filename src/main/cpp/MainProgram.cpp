@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -16,6 +16,7 @@ void MainProgram::RobotInit() {
     humanControl_ = new ControlBoard();
     superstructureController_ = new SuperstructureController(robot_, humanControl_);
     driveController_ = new DriveController(robot_, humanControl_);
+    robot_->ResetDriveEncoders();
 }
 
 /**
@@ -29,6 +30,7 @@ void MainProgram::RobotInit() {
 void MainProgram::RobotPeriodic() {
     driveController_->RefreshShuffleboard();
     superstructureController_->RefreshShuffleboard();
+    robot_->RefreshShuffleboard();
 }
 
 /**
@@ -90,7 +92,9 @@ void MainProgram::AutonomousPeriodic() {
     // }
 }
 
-void MainProgram::TeleopInit() {}
+void MainProgram::TeleopInit() {
+    robot_->ResetDriveEncoders();
+}
 
 void MainProgram::TeleopPeriodic() {
 
