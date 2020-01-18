@@ -42,7 +42,7 @@ class MainProgram : public frc::TimedRobot {
   DriveController *driveController_;
   ControlBoard *humanControl_;
 
-  MotionProfileTestCommand *thing_;
+  //MotionProfileTestCommand *thing_;
   VelocityPIDSource *thingS_;
   VelocityPIDOutput *thingO_;
   AnglePIDOutput *thingAO_;

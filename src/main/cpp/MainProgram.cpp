@@ -60,11 +60,11 @@ void MainProgram::AutonomousInit() {
     // printf("done with init, moving to periodic\n");
 
 
-    thingS_ = new VelocityPIDSource(robot_);
-    thingO_ = new VelocityPIDOutput();
-    thingAO_ = new AnglePIDOutput();
-    thing_ = new MotionProfileTestCommand(robot_, thingS_, robot_->GetNavXSource(), thingO_, thingAO_);
-    thing_->Init();
+    // thingS_ = new VelocityPIDSource(robot_);
+    // thingO_ = new VelocityPIDOutput();
+    // thingAO_ = new AnglePIDOutput();
+    // thing_ = new MotionProfileTestCommand(robot_, thingS_, robot_->GetNavXSource(), thingO_, thingAO_);
+    // thing_->Init();
 
     currTime_ = robot_->GetTime();
     lastTime_ = currTime_;
@@ -78,14 +78,14 @@ void MainProgram::AutonomousPeriodic() {
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
     // }
-    lastTime_ = currTime_;
-    currTime_ = robot_->GetTime();
+    // lastTime_ = currTime_;
+    // currTime_ = robot_->GetTime();
 
-    //printf("AM I NULL????? %d\n", testSequence_==nullptr);
+    // //printf("AM I NULL????? %d\n", testSequence_==nullptr);
 
-    if(!thing_->IsDone()){
-        thing_->Update(currTime_, currTime_-lastTime_);
-    }
+    // if(!thing_->IsDone()){
+    //     thing_->Update(currTime_, currTime_-lastTime_);
+    // }
 
     // if(!testSequence_->IsDone()){
     //     testSequence_->Update(currTime_, currTime_-lastTime_);
