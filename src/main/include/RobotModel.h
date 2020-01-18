@@ -62,8 +62,8 @@ class RobotModel {
     double GetNavXYaw();
     double GetNavXPitch();
     double GetNavXRoll();
-    //void CreateNavX();
-    //NavXPIDSource* GetNavXSource();
+    void CreateNavX();
+    NavXPIDSource* GetNavXSource();
     
     double GetRightDistance();
     double GetLeftDistance();

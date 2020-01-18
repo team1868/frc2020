@@ -151,7 +151,6 @@ double RobotModel::GetRightDistance() {
 void RobotModel::ResetDriveEncoders() {
 	leftDriveEncoder_->SetIntegratedSensorPosition(0.0);
     rightDriveEncoder_->SetIntegratedSensorPosition(0.0);
-    std::cout<< "resetting" << std::endl;
 }
 
 
@@ -271,7 +270,6 @@ void RobotModel::RefreshShuffleboard(){
     lastRightEncoderValue_ = currRightEncoderValue_;
     currLeftEncoderValue_ = GetLeftEncoderValue();
     currRightEncoderValue_ = GetRightEncoderValue();
-    std::cout << "left:" << currLeftEncoderValue_ << " right:" << currRightEncoderValue_ << std::endl;
     leftDriveEncoderEntry_.SetDouble(currLeftEncoderValue_); 
     rightDriveEncoderEntry_.SetDouble(currRightEncoderValue_);
 }
