@@ -4,7 +4,7 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
+/*
 #pragma once
 
 #include "auto/PIDSource/PIDInputSource.h"
@@ -44,3 +44,4 @@ class MotionProfileTestCommand : AutoCommand{
   int pathIndex_;
   bool isDone_;
 };
+*/

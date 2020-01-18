@@ -4,7 +4,7 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
+/*
 #include "auto/commands/profiling/MotionProfileTest2Command.h"
 
 //USING METERS
@@ -117,3 +117,4 @@ void MotionProfileTestCommand::CalcNext(){
 MotionProfileTestCommand::~MotionProfileTestCommand() {
 
 }
+*/

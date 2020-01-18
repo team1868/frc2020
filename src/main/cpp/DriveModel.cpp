@@ -145,16 +145,13 @@ double RobotModel::GetLeftDistance() {
 
 //return feet
 double RobotModel::GetRightDistance() {
-<<<<<<< HEAD
-	return -rightDriveEncoder_->Get()*(LOW_GEAR_ROTATION_DISTANCE) / ENCODER_TICKS;
-=======
 	return GetRightEncoderValue()/ENCODER_TICKS_FOOT;
->>>>>>> 27156cfdfd7f61d2b676ca2396eb4351f20bc6ef
 }
 
 void RobotModel::ResetDriveEncoders() {
 	leftDriveEncoder_->SetIntegratedSensorPosition(0.0);
     rightDriveEncoder_->SetIntegratedSensorPosition(0.0);
+    std::cout<< "resetting" << std::endl;
 }
 
 

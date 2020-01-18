@@ -70,9 +70,7 @@ class RobotModel {
     bool GetLeftEncoderStopped();
     bool GetRightEncoderStopped();
     std::string GetTestSequence();
-    void SetTestSequence(std::string testSequnce);
-    void CreateNavX();
-    NavXPIDSource* GetNavXSource();
+    void SetTestSequence(std::string testSequence);
     double GetCurrentVoltage();
     double GetTotalCurrent();
     void UpdateCurrent(int channel);

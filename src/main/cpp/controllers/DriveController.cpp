@@ -13,7 +13,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
     robot_ = robot;
     humanControl_ = humanControl;
     
-    arcadeMode_ = true;
+    arcadeMode_ = true; 
 
     thrustSensitivity_ = 0.0;
     rotateSensitivity_ = 0.0;
@@ -31,10 +31,13 @@ void DriveController::Update(){
     double leftJoyY = humanControl_->GetJoystickValue(ControlBoard::Joysticks::kLeftJoy, ControlBoard::Axes::kY);
     double rightJoyY = humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kY);
     
+    //std::cout << "drive: " << leftJoyY << " turn: " << rightJoyX << std::endl;
+
+
     if(arcadeMode_){
-        ArcadeDrive(leftJoyY, rightJoyX, thrustSensitivity_, rotateSensitivity_); //TODO add shuffleboard option
+        ArcadeDrive(-leftJoyY, rightJoyX, thrustSensitivity_, rotateSensitivity_); //TODO add shuffleboard option
     } else {
-        TankDrive(leftJoyY, rightJoyY);
+        TankDrive(-leftJoyY, -rightJoyY);
     }
 }
 
@@ -49,7 +52,6 @@ void DriveController::TankDrive(double left, double right){
     left = GetCubicAdjustment(left, thrustSensitivity_);
     right = GetDeadbandAdjustment(right);
     right = GetCubicAdjustment(right, rotateSensitivity_);
-    
     MaxSpeedAdjustment(left, right);
 
     robot_->SetDriveValues(left, right);
@@ -62,7 +64,7 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
     rotate = GetCubicAdjustment(rotate, rotateSensitivity_);
 
     double leftOutput, rightOutput;
-    if(thrust >= 0.0){
+    if(thrust > 0.0){
         leftOutput = thrust + rotate;		
 		rightOutput = thrust- rotate;
 	} else {
@@ -70,7 +72,11 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
 		rightOutput = thrust + rotate;
     }
 
+    //std::cout << "beforeLeft: " << leftOutput << " beforeRight: " << rightOutput << std::endl;
+
     MaxSpeedAdjustment(leftOutput, rightOutput);
+    
+    //std::cout << "afterLeft: " << leftOutput << " afterRight: " << rightOutput << std::endl;
 
     robot_->SetDriveValues(leftOutput, rightOutput);
 }
