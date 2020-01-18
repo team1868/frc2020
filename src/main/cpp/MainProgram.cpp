@@ -68,6 +68,23 @@ void MainProgram::AutonomousInit() {
 
     // printf("done with init, moving to periodic\n");
 
+    //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
+
+    // testSequence_ = new TestMode(robot_, humanControl_);
+    // testSequence_->QueueFromString(robot_->GetTestSequence());
+
+    // printf("before init\n");
+    // testSequence_->Init();
+
+    // printf("done with init, moving to periodic\n");
+
+
+    // thingS_ = new VelocityPIDSource(robot_);
+    // thingO_ = new VelocityPIDOutput();
+    // thingAO_ = new AnglePIDOutput();
+    // thing_ = new MotionProfileTestCommand(robot_, thingS_, robot_->GetNavXSource(), thingO_, thingAO_);
+    // thing_->Init();
+
     currTime_ = robot_->GetTime();
     lastTime_ = currTime_;
 

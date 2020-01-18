@@ -13,7 +13,6 @@ RobotModel::RobotModel() :
     functionalityTab_(frc::Shuffleboard::GetTab("Functionality")),
     pidTab_(frc::Shuffleboard::GetTab("PID Values")),
     autoOffsetTab_(frc::Shuffleboard::GetTab("Auto Offset Values"))
-
     {
     
     frc::Shuffleboard::SelectTab("Driveteam Display");
@@ -227,7 +226,6 @@ double RobotModel::CheckMotorCurrentOver(int channel, double power){
 }
 
 void RobotModel::UpdateCurrent(int channel) {
-
     leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
