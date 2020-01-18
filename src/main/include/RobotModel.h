@@ -28,8 +28,11 @@ static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX
 static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
+//ratios work in 5 or 10% increments (accumulative) maybe? idk - medha
+static const double MIN_RATIO_ALL_CURRENT = 0.2;//0.7; //TODO add to shuffleboard
+static const double MIN_RATIO_SUPERSTRUCTURE_CURRENT = 0.5; //TODO add to shuffleboard
 static const double MIN_RATIO_DRIVE_CURRENT = 0.7;
-static const double MIN_VOLTAGE_BROWNOUT = 7.5;
+static const double MIN_BROWNOUT_VOLTAGE = 7.5;
 static const double MAX_DRIVE_CURRENT_PERCENT = 1.0; //per motor, most teams are 40-50 Amps //TODO unused??
 
 static double LOW_GEAR_STATIC_FRICTION_POWER = 0.0;
@@ -57,6 +60,8 @@ class RobotModel {
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();
+
+     void StartCompressor();
     
     void ZeroNavXYaw();
     double GetNavXYaw();
@@ -71,18 +76,26 @@ class RobotModel {
     bool GetRightEncoderStopped();
     std::string GetTestSequence();
     void SetTestSequence(std::string testSequence);
+
     double GetCurrentVoltage();
     double GetTotalCurrent();
     void UpdateCurrent(int channel);
     double GetCurrent(int channel);
-    void ModifyCurrent(int channel);
+    double ModifyCurrent(int channel, double value);
+    double CheckMotorCurrentOver(int channel, double power);
+
     double GetTotalPower();
     double GetTotalEnergy();
+    double GetCompressorCurrent();
+    double GetRIOCurrent();
+    double GetVoltage();
+
     ~RobotModel();
 
   private:
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
+    frc::Compressor *compressor_;
     AHRS *navX_;
     TalonFXSensorCollection *leftDriveEncoder_, *rightDriveEncoder_;
 
@@ -93,8 +106,10 @@ class RobotModel {
     float last_world_linear_accel_x_;
     float last_world_linear_accel_y_;
 
-    double ratioPower_;
+    double ratioAll_, ratioDrive_, ratioSuperstructure_;
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
+    double compressorCurrent_, roboRIOCurrent_;
+    bool compressorOff_, lastOver_;
     
     NavXPIDSource* navXSource_;
     std::string testSequence_;
@@ -103,4 +118,5 @@ class RobotModel {
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_;
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
+    nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
 };

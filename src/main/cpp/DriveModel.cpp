@@ -29,27 +29,41 @@ RobotModel::RobotModel() :
     timer_ = new frc::Timer();
     timer_->Start();
 
-    // initializing pdp
-    pdp_ = new frc::PowerDistributionPanel();
-
     // Initializing NavX
     navXSpeed_ = 200;
     navX_ = new AHRS(SPI::kMXP, navXSpeed_);
     Wait(1.0); // NavX takes a second to calibrate
-    
 
-    // initilize motor controllers
+    // initializing pdp
+    pdp_ = new frc::PowerDistributionPanel();
+
+    // power distribution panel
+    ratioAll_ = 1.0;
+    ratioDrive_ = 1.0;
+    ratioSuperstructure_ = 1.0;
+    lastOver_ = false;
+    compressorOff_ = false;
+
+    leftDriveACurrent_ = 0.0;
+    leftDriveBCurrent_ = 0.0;
+    rightDriveACurrent_ = 0.0;
+    rightDriveBCurrent_ = 0.0;
+
+    // initializing pnuematics
+    compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
+
+    // initilizing motor controllers
     leftMaster_ = new WPI_TalonFX(LEFT_DRIVE_MASTER_ID);
     rightMaster_ = new WPI_TalonFX(RIGHT_DRIVE_MASTER_ID);
     leftSlaveA_ = new WPI_TalonFX(LEFT_DRIVE_SLAVE_A_ID);
     rightSlaveA_ = new WPI_TalonFX(RIGHT_DRIVE_SLAVE_A_ID);
-    // initialize encoders (talonfxsensorcollection)
+    // initializing encoders (talonfxsensorcollection)
     leftDriveEncoder_ = &leftMaster_->GetSensorCollection();
     rightDriveEncoder_ = &rightMaster_->GetSensorCollection(); 
 
 
     //TODO check for falcons
-    // Setting talon control modes and slaves
+    // setting talon control modes and slaves
     leftMaster_->Set(ControlMode::PercentOutput, 0.0);
     rightMaster_->Set(ControlMode::PercentOutput, 0.0);
     leftSlaveA_->Follow(*leftMaster_);
@@ -63,9 +77,9 @@ RobotModel::RobotModel() :
 
     testSequence_ = "";
 
-    //shuffleboard
+    // shuffleboard
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
-    minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_VOLTAGE_BROWNOUT).GetEntry();
+    minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_BROWNOUT_VOLTAGE).GetEntry();
     maxCurrentEntry_ = GetModeTab().Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();
     leftDriveEncoderEntry_ = GetFunctionalityTab().Add("Left Drive Encoder", 0.0).GetEntry();
     rightDriveEncoderEntry_ = GetFunctionalityTab().Add("Right Drive Encoder", 0.0).GetEntry();
@@ -75,12 +89,9 @@ RobotModel::RobotModel() :
     highGearSFrictionEntry_ = GetModeTab().Add("H SF", HIGH_GEAR_STATIC_FRICTION_POWER).GetEntry();
     highGearTurnSFrictionEntry_ = GetModeTab().Add("HT total SF", HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER).GetEntry();
 
-    // power distribution panel
-    ratioPower_ = 1.0;
-    leftDriveACurrent_ = 0.0;
-    leftDriveBCurrent_ = 0.0;
-    rightDriveACurrent_ = 0.0;
-    rightDriveBCurrent_ = 0.0;
+    ratioAllEntry_ = GetFunctionalityTab().Add("Ratio All", ratioAll_).GetEntry();
+    ratioDriveEntry_ = GetFunctionalityTab().Add("Ratio Drive", ratioDrive_).GetEntry();
+    ratioSuperstructureEntry_ = GetFunctionalityTab().Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
 }
 
 void RobotModel::SetDriveValues(double left, double right){
@@ -168,11 +179,108 @@ bool RobotModel::GetLeftEncoderStopped() {
     return false;
 }
 
+void RobotModel::StartCompressor() {
+	compressor_->Start();
+}
+
+double RobotModel::GetCurrentVoltage() {
+    return pdp_-> GetVoltage();
+}
+
+double RobotModel::GetTotalCurrent(){
+    return pdp_->GetTotalCurrent();
+}
+
+double RobotModel::GetVoltage() {
+	return pdp_->GetVoltage();
+}
+
+double RobotModel::GetCompressorCurrent() {
+	return compressorCurrent_;
+}
+
+double RobotModel::GetRIOCurrent() {
+	return roboRIOCurrent_;
+}
+
+double RobotModel::GetTotalPower() {
+	return pdp_->GetTotalPower();
+}
+
+double RobotModel::GetTotalEnergy() {
+	return pdp_->GetTotalEnergy();
+}
+
+double RobotModel::GetNavXYaw() {
+	return navX_->GetYaw();
+}
+
+double RobotModel::CheckMotorCurrentOver(int channel, double power){
+    double motorCurrent = GetCurrent(channel);
+	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over, TODO change for super
+		power = power*MAX_DRIVE_MOTOR_CURRENT / motorCurrent; //ratio down by percent over
+	}
+	return power;
+}
+
 void RobotModel::UpdateCurrent(int channel) {
     leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+    compressorCurrent_ = compressor_->GetCompressorCurrent();
+    roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
+
+    // TODO fix and check logic
+	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE)) && !lastOver_){
+		printf("\nSTOPPING\n\n");
+		compressorOff_ = true;
+		if(ratioAll_-0.05 > MIN_RATIO_ALL_CURRENT){
+			ratioAll_ -= 0.05;
+		} else if (ratioSuperstructure_-0.05 > MIN_RATIO_SUPERSTRUCTURE_CURRENT){
+			ratioSuperstructure_ -= 0.05;
+		} else if (ratioDrive_-0.05 > MIN_RATIO_DRIVE_CURRENT){
+			ratioDrive_ -= 0.05;
+		}
+		lastOver_ = true;
+	} else if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE) && lastOver_)){
+		// know compressor is off, because lastOver_ is true
+		// TODO WARNING THIS MIN IS NOT A MIN
+		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ //sketch, sketch, check this
+			ratioAll_ *= ratioAll_;//-= 0.1;
+		} else if (ratioSuperstructure_ > MIN_RATIO_SUPERSTRUCTURE_CURRENT){
+			ratioSuperstructure_ *= ratioSuperstructure_; //-= 0.1;
+		} else if (ratioDrive_ > MIN_RATIO_DRIVE_CURRENT){
+			ratioDrive_ *= ratioDrive_;//-= 0.1;
+		}
+		lastOver_ = true;
+	} else { 
+		if(compressorOff_){
+			StartCompressor();
+			compressorOff_ = false;
+		}
+		if(ratioDrive_+0.001 < 1.0){
+			ratioDrive_ *= 1.01;
+		} else if (ratioDrive_ < 1.0){
+			ratioDrive_ = 1.0;
+		} else if(ratioSuperstructure_+0.001 < 1.0){
+			ratioSuperstructure_ *= 1.01;
+		} else if(ratioSuperstructure_ < 1.0){
+			ratioSuperstructure_ = 1.0;
+		} else if(ratioAll_+0.001 < 1.0){
+			ratioAll_ *= 1.01;
+		} else if(ratioAll_ < 1.0){
+			ratioAll_ /= 1.01;
+		} // else don't make it greater than one!
+		lastOver_ = false;
+	}
+
+
+	ratioAllEntry_.SetDouble(ratioAll_);
+	ratioDriveEntry_.SetDouble(ratioDrive_);
+	ratioSuperstructureEntry_.SetDouble(ratioSuperstructure_);
+
+	//printf("current updated\n");
 }
 
 double RobotModel::GetCurrent(int channel) {
@@ -192,20 +300,47 @@ double RobotModel::GetCurrent(int channel) {
     }
 }
 
-void RobotModel::ModifyCurrent(int channel){
+double RobotModel::ModifyCurrent(int channel, double value){
 
-}
+    double power = value*ratioAll_;
+	double individualPowerRatio = power;
+	double tempPowerRatio;
 
-double RobotModel::GetTotalPower() {
-	return pdp_->GetTotalPower();
-}
-
-double RobotModel::GetTotalEnergy() {
-	return pdp_->GetTotalEnergy();
-}
-
-double RobotModel::GetNavXYaw() {
-	return navX_->GetYaw();
+	switch(channel){ // TODO check these constants what want to use? TODO CHANGE CHANGE DANG IT
+		case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
+		case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
+			power *= ratioDrive_;
+			tempPowerRatio = CheckMotorCurrentOver(RIGHT_DRIVE_MOTOR_A_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(RIGHT_DRIVE_MOTOR_B_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(LEFT_DRIVE_MOTOR_A_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(LEFT_DRIVE_MOTOR_B_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			power = individualPowerRatio;
+			break;
+		/*case CARGO_INTAKE_MOTOR_PDP_CHAN:
+			power *= ratioSuperstructure_;
+			power = CheckMotorCurrentOver(CARGO_INTAKE_MOTOR_PDP_CHAN, power);
+			break;
+		case CARGO_FLYWHEEL_MOTOR_PDP_CHAN: //unused, dont want to slow flywheel of wont shoot
+			power *= ratioSuperstructure_;
+			power = CheckMotorCurrentOver(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, power);
+			break;*/
+		default:
+			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
+	}
+	// printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
+	return power;
 }
 
 void RobotModel::ZeroNavXYaw() {
@@ -255,14 +390,6 @@ void RobotModel::CreateNavX(){
 
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
-}
-
-double RobotModel::GetCurrentVoltage() {
-    return pdp_-> GetVoltage();
-}
-
-double RobotModel::GetTotalCurrent(){
-    return pdp_->GetTotalCurrent();
 }
 
 void RobotModel::RefreshShuffleboard(){
