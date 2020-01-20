@@ -76,14 +76,11 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
 		rightOutput = thrust + rotate*(1+rotationValueAdjustment);
     }
 
-    //std::cout << "beforeLeft: " << leftOutput << " beforeRight: " << rightOutput << std::endl;
-
     MaxSpeedAdjustment(leftOutput, rightOutput);
+    FrictionAdjustment(leftOutput, rightOutput, true);
     
-    //std::cout << "afterLeft: " << leftOutput << " afterRight: " << rightOutput << std::endl;
-
     robot_->SetDriveValues(leftOutput, rightOutput);
-    printf("Left Output: %f, Right Output: %f", leftOutput, rightOutput);
+    //printf("Left Output: %f, Right Output: %f", leftOutput, rightOutput);
 }
 
 double DriveController::GetCubicAdjustment(double value, double adjustmentConstant){
@@ -98,10 +95,20 @@ double DriveController::GetRotateVelocityAdjustment(double value){
 }
 
 double DriveController::GetDeadbandAdjustment(double value){
-    if(fabs(value) < DEADBAND_MAX){
+    if(fabs(value)<DEADBAND_MAX){
         return 0.0;
     }
-    return value;
+    else if (abs(value) > 0.0){ //REMAPPED JOYSTICK RANGE FOR ROBOT POWER FROM 0.0-1.0
+        return (10.0/9)*value - (1.0/9);
+    }
+    else{
+        return (10.0/9)*value + (1.0/9);
+    }
+
+    // if(fabs(value) < DEADBAND_MAX){
+    //     return 0.0;
+    // }
+    // return value;
 }
 
 void DriveController::MaxSpeedAdjustment(double &leftvalue, double &rightvalue){
@@ -118,6 +125,47 @@ void DriveController::MaxSpeedAdjustment(double &leftvalue, double &rightvalue){
     } else if(rightvalue<-1.0){
         leftvalue /= -rightvalue;
         rightvalue = -1.0;
+    }
+}
+
+void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, bool testMode){
+    //std::cout<< "leftOutput: " << leftDrive << "rightOutput: " << rightDrive << std::endl;
+    std::cout<< "left stop: " << robot_->GetLeftEncoderStopped() << " right stop: " << robot_->GetRightEncoderStopped() << std::endl;
+    //std::cout<< "left velocity: " << robot_->GetLeftVelocity() << std::endl;
+    if (leftDrive != 0.0 && robot_->GetLeftEncoderStopped()) {
+        if (leftDrive > 0.0) {
+            std::cout << "left drive pos, encoder stopped" << std::endl;
+            if (!testMode) {
+                leftDrive = STATIC_FRICTION_DRIVE;
+            }    
+        }
+        else {
+            std::cout << "left drive neg, encoder stopped" << std::endl;
+            if (!testMode){
+                leftDrive = -STATIC_FRICTION_DRIVE;
+            }
+        }
+    }
+    else{
+        std::cout << "no left friction adjust needed" << std::endl;
+        std::cout << "left output:" << leftDrive << " left velocity:" << robot_->GetLeftVelocity();
+    }
+    if (rightDrive != 0.0 && robot_->GetRightEncoderStopped()) {
+        if (rightDrive > 0.0) {
+            std::cout << "right drive pos, encoder stopped" << std::endl;
+            if (!testMode){
+                rightDrive = STATIC_FRICTION_DRIVE;
+            }
+        }
+        else {
+            std::cout << "right drive neg, encoder stopped" << std::endl;
+            if (!testMode){
+                rightDrive = -STATIC_FRICTION_DRIVE;
+            }
+        }
+    }
+    else{
+        std::cout << "no right friction adjust needed" << std::endl;
     }
 }
 
