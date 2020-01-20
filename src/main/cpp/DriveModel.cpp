@@ -89,6 +89,7 @@ RobotModel::RobotModel() :
 	leftVelocityEntry_ = GetFunctionalityTab().Add("Left Velocity", 0.0).GetEntry();
     rightVelocityEntry_ = GetFunctionalityTab().Add("Right Velocity", 0.0).GetEntry();
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
+	voltageEntry_ = GetModeTab().Add("Battery Voltage", 12.5).GetEntry();
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
     lowGearTurnSFrictionEntry_ = GetModeTab().Add("LT total SF", LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER).GetEntry();
@@ -106,8 +107,8 @@ void RobotModel::SetDriveValues(double left, double right){
 }
 
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
-    //value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); // TODO
-	//value = -value;
+    // value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); // TODO
+	// value = -value;
     switch (wheel) {
         case (kLeftWheels): // set left
             leftMaster_->Set(-value);
@@ -431,4 +432,5 @@ void RobotModel::RefreshShuffleboard(){
 	leftVelocityEntry_.SetDouble(currLeftVelocity_);
     rightVelocityEntry_.SetDouble(currRightVelocity_);
 	navXYawEntry_.SetDouble(GetNavXYaw());
+	voltageEntry_.SetDouble(GetCurrentVoltage());
 }
