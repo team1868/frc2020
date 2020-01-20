@@ -18,6 +18,9 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
     thrustSensitivity_ = 0.0;
     rotateSensitivity_ = 0.0;
 
+    rightJoystickXLastValue_ = 0.0;
+    rightJoystickXCurrValue_ = 0.0;
+
     arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
     thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.0).GetEntry();
     rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.0).GetEntry();
@@ -62,14 +65,15 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
     thrust = GetCubicAdjustment(thrust, thrustSensitivity_);
     rotate = GetDeadbandAdjustment(rotate);
     rotate = GetCubicAdjustment(rotate, rotateSensitivity_);
+    double rotationValueAdjustment = GetRotateVelocityAdjustment(rotate);
 
     double leftOutput, rightOutput;
     if(thrust > 0.0){
         leftOutput = thrust + rotate;		
-		rightOutput = thrust- rotate;
+		rightOutput = thrust - rotate*(1+rotationValueAdjustment);
 	} else {
 		leftOutput = thrust - rotate;
-		rightOutput = thrust + rotate;
+		rightOutput = thrust + rotate*(1+rotationValueAdjustment);
     }
 
     //std::cout << "beforeLeft: " << leftOutput << " beforeRight: " << rightOutput << std::endl;
@@ -86,6 +90,13 @@ double DriveController::GetCubicAdjustment(double value, double adjustmentConsta
     return adjustmentConstant * std::pow(value, 3.0) + (1.0 - adjustmentConstant) * value;
 }
 
+double DriveController::GetRotateVelocityAdjustment(double value){
+    rightJoystickXLastValue_ = rightJoystickXCurrValue_;
+    rightJoystickXCurrValue_ = value;
+    double time = 60/50;
+    return abs(rightJoystickXCurrValue_-rightJoystickXLastValue_)/time;
+}
+
 double DriveController::GetDeadbandAdjustment(double value){
     if(fabs(value) < DEADBAND_MAX){
         return 0.0;
@@ -93,20 +104,20 @@ double DriveController::GetDeadbandAdjustment(double value){
     return value;
 }
 
-void DriveController::MaxSpeedAdjustment(double &value1, double &value2){
-    if(value1>1.0){
-        value2 /= value1;
-        value1 = 1.0;
-    } else if(value1<-1.0){
-        value2 /= -value1;
-        value1 = -1.0;
+void DriveController::MaxSpeedAdjustment(double &leftvalue, double &rightvalue){
+    if(leftvalue>1.0){
+        rightvalue /= leftvalue;
+        leftvalue = 1.0;
+    } else if(leftvalue<-1.0){
+        rightvalue /= -leftvalue;
+        leftvalue = -1.0;
     }
-    if(value2>1.0){
-        value1 /= value2;
-        value2 = 1.0;
-    } else if(value2<-1.0){
-        value1 /= -value2;
-        value2 = -1.0;
+    if(rightvalue>1.0){
+        leftvalue /= rightvalue;
+        rightvalue = 1.0;
+    } else if(rightvalue<-1.0){
+        leftvalue /= -rightvalue;
+        rightvalue = -1.0;
     }
 }
 

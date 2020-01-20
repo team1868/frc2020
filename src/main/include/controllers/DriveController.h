@@ -24,7 +24,8 @@ class DriveController {
     // adjusts sensitivity for turn
   	double GetCubicAdjustment(double value, double adjustmentConstant);
     double GetDeadbandAdjustment(double value);
-    void MaxSpeedAdjustment(double &value1, double &value2);
+    double GetRotateVelocityAdjustment(double value);
+    void MaxSpeedAdjustment(double &leftvalue, double &rightvalue);
 
     ~DriveController();
     
@@ -37,4 +38,5 @@ class DriveController {
     nt::NetworkTableEntry arcadeEntry_, thrustSensitivityEntry_, rotateSensitivityEntry_;
     
     double thrustSensitivity_, rotateSensitivity_;
+    double rightJoystickXLastValue_, rightJoystickXCurrValue_;
 };
