@@ -11,6 +11,7 @@
 #include "ControlBoard.h"
 
 static const double DEADBAND_MAX = 0.1;
+static const double STATIC_FRICTION_DRIVE = 0.0; //NEED TO CALIBRATE
 
 class DriveController {
   public:
@@ -25,6 +26,7 @@ class DriveController {
   	double GetCubicAdjustment(double value, double adjustmentConstant);
     double GetDeadbandAdjustment(double value);
     void MaxSpeedAdjustment(double &value1, double &value2);
+    void FrictionAdjustment(double &leftDrive, double &rightDrive, bool testMode);
 
     ~DriveController();
     

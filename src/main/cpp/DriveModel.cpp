@@ -19,9 +19,12 @@ RobotModel::RobotModel() :
 
     last_world_linear_accel_x_ = 0.0f;
     last_world_linear_accel_y_ = 0.0f;
+	
 
     leftDriveOutput_ = rightDriveOutput_ = 0.0;
-
+	counter = 0;
+	currLeftVelocity_ , currRightVelocity_ = 0.0;
+	lastLeftVelocity_, lastRightVelocity_ = 0.0;
     lastLeftEncoderValue_ = lastRightEncoderValue_ = 0.0;
     currLeftEncoderValue_ = currRightEncoderValue_ = 0.0;
     
@@ -83,6 +86,8 @@ RobotModel::RobotModel() :
     maxCurrentEntry_ = GetModeTab().Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();
     leftDriveEncoderEntry_ = GetFunctionalityTab().Add("Left Drive Encoder", 0.0).GetEntry();
     rightDriveEncoderEntry_ = GetFunctionalityTab().Add("Right Drive Encoder", 0.0).GetEntry();
+	leftVelocityEntry_ = GetFunctionalityTab().Add("Left Velocity", 0.0).GetEntry();
+    rightVelocityEntry_ = GetFunctionalityTab().Add("Right Velocity", 0.0).GetEntry();
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
@@ -161,24 +166,33 @@ double RobotModel::GetRightDistance() {
 	return GetRightEncoderValue()/ENCODER_TICKS_FOOT;
 }
 
+double RobotModel::GetLeftVelocity() {
+    return -10*leftDriveEncoder_-> GetIntegratedSensorVelocity();   //TICkS PER SEC
+}
+
+double RobotModel::GetRightVelocity() {
+    return 10*rightDriveEncoder_-> GetIntegratedSensorVelocity();   //TICkS PER SEC
+}
+
 void RobotModel::ResetDriveEncoders() {
 	leftDriveEncoder_->SetIntegratedSensorPosition(0.0);
     rightDriveEncoder_->SetIntegratedSensorPosition(0.0);
 }
 
-
-bool RobotModel::GetRightEncoderStopped() {
-    if (currRightEncoderValue_ == lastRightEncoderValue_){
-        return true;
-    }
-    return false;
+bool RobotModel::GetLeftEncoderStopped() {
+	if (currLeftVelocity_ < STOP_VELOCITY_THRESHOLD && currLeftVelocity_ > -STOP_VELOCITY_THRESHOLD 
+	&& lastLeftVelocity_ < STOP_VELOCITY_THRESHOLD && lastLeftVelocity_ > -STOP_VELOCITY_THRESHOLD) {
+		return true;
+	}
+	return false;
 }
 
-bool RobotModel::GetLeftEncoderStopped() {
-    if (currLeftEncoderValue_ == lastLeftEncoderValue_){
-        return true;
-    }
-    return false;
+bool RobotModel::GetRightEncoderStopped() {
+	if (currRightVelocity_ < STOP_VELOCITY_THRESHOLD && currRightVelocity_ > -STOP_VELOCITY_THRESHOLD 
+	&& lastRightVelocity_ < STOP_VELOCITY_THRESHOLD && lastRightVelocity_ > -STOP_VELOCITY_THRESHOLD) {
+		return true;
+	}
+	return false;
 }
 
 void RobotModel::StartCompressor() {
@@ -400,7 +414,15 @@ void RobotModel::RefreshShuffleboard(){
     lastRightEncoderValue_ = currRightEncoderValue_;
     currLeftEncoderValue_ = GetLeftEncoderValue();
     currRightEncoderValue_ = GetRightEncoderValue();
+
+	lastLeftVelocity_ = currLeftVelocity_;
+	lastRightVelocity_ = currRightVelocity_;
+	currLeftVelocity_ = GetLeftVelocity();
+	currRightVelocity_ = GetRightVelocity();
+
     leftDriveEncoderEntry_.SetDouble(currLeftEncoderValue_); 
     rightDriveEncoderEntry_.SetDouble(currRightEncoderValue_);
+	leftVelocityEntry_.SetDouble(currLeftVelocity_);
+    rightVelocityEntry_.SetDouble(currRightVelocity_);
 	navXYawEntry_.SetDouble(GetNavXYaw());
 }
