@@ -11,7 +11,7 @@
 #include "ControlBoard.h"
 
 static const double DEADBAND_MAX = 0.1;
-static const double STATIC_FRICTION_DRIVE = 0.0; //NEED TO CALIBRATE
+static const double STATIC_FRICTION_DRIVE = 0.06; //NEED TO CALIBRATE //this is nova with 4 dumbbells
 
 class DriveController {
   public:
@@ -41,4 +41,5 @@ class DriveController {
     
     double thrustSensitivity_, rotateSensitivity_;
     double rightJoystickXLastValue_, rightJoystickXCurrValue_;
+    double minForwardThrust_, minBackwardThrust_;
 };

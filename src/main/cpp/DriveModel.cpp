@@ -184,6 +184,9 @@ bool RobotModel::GetLeftEncoderStopped() {
 	&& lastLeftVelocity_ < STOP_VELOCITY_THRESHOLD && lastLeftVelocity_ > -STOP_VELOCITY_THRESHOLD) {
 		return true;
 	}
+	// if (GetLeftVelocity() < STOP_VELOCITY_THRESHOLD && GetLeftVelocity() > -STOP_VELOCITY_THRESHOLD){
+	// 	return true;
+	// }
 	return false;
 }
 
@@ -192,6 +195,9 @@ bool RobotModel::GetRightEncoderStopped() {
 	&& lastRightVelocity_ < STOP_VELOCITY_THRESHOLD && lastRightVelocity_ > -STOP_VELOCITY_THRESHOLD) {
 		return true;
 	}
+	// if (GetRightVelocity() < STOP_VELOCITY_THRESHOLD && GetRightVelocity() > -STOP_VELOCITY_THRESHOLD){
+	// 	return true;
+	// }
 	return false;
 }
 

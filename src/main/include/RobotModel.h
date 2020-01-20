@@ -25,7 +25,7 @@ static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50; //INCO
 //static const double ENCODER_TICKS = 2048.0; //units per rotation
 static const double ENCODER_TICKS_FOOT = 16424.3;
 static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
-static const double STOP_VELOCITY_THRESHOLD = 164.0; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
+static const double STOP_VELOCITY_THRESHOLD = 50.0; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX
 static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
