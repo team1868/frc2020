@@ -120,4 +120,5 @@ class RobotModel {
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_;
+    nt::NetworkTableEntry voltageEntry_;
 };
