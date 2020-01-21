@@ -12,7 +12,10 @@ RobotModel::RobotModel() :
     modeTab_(frc::Shuffleboard::GetTab("Programmer Control")),
     functionalityTab_(frc::Shuffleboard::GetTab("Functionality")),
     pidTab_(frc::Shuffleboard::GetTab("PID Values")),
-    autoOffsetTab_(frc::Shuffleboard::GetTab("Auto Offset Values"))
+    autoOffsetTab_(frc::Shuffleboard::GetTab("Auto Offset Values")),
+	anglePIDLayout_(GetPIDTab().GetLayout("Angle", "List Layout")),
+	distancePIDLayout_(GetPIDTab().GetLayout("Distance", "List Layout")),
+	pivotPIDLayout_(GetPIDTab().GetLayout("Pivot", "List Layout"))
     {
     
     frc::Shuffleboard::SelectTab("Driveteam Display");

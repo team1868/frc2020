@@ -103,6 +103,9 @@ private:
 	int numTimesOnTarget_;
 	double lastDOutput_;
 	double lastDistance_;
+  
+  void UpdateAnglePIDController();
+  void UpdateDrivePIDController();
 
 	int numTimesStopped_;
 

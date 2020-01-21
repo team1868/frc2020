@@ -122,6 +122,18 @@ void DriveStraightCommand::Init() {
 			distancePID_->GetError(), anglePID_->GetError());
 }
 
+void DriveStraightCommand::UpdateAnglePIDController() {
+	anglePID_->SetP(robot_->GetDriveStraightAngleP());
+    anglePID_->SetI(robot_->GetDriveStraightAngleI());
+    anglePID_->SetD(robot_->GetDriveStraightAngleD());
+}
+
+void DriveStraightCommand::UpdateDrivePIDController() {
+	distancePID_->SetP(robot_->GetDriveStraightDriveP());
+	distancePID_->SetI(robot_->GetDriveStraightDriveI());
+	distancePID_->SetD(robot_->GetDriveStraightDriveD());
+}
+
 // update current values
 void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) { 
 	// update shuffleboard values

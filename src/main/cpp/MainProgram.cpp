@@ -21,8 +21,8 @@ void MainProgram::RobotInit() {
     robot_->ResetDriveEncoders();
     printf("I am alive.");
     
-    autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();
-    sequence_ = autoSequenceEntry_.GetString("t 0");
+    autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 90").GetEntry();
+    sequence_ = autoSequenceEntry_.GetString("t 90");
 }
 
 /**

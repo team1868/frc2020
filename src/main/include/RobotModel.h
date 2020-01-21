@@ -93,6 +93,24 @@ class RobotModel {
     double GetRIOCurrent();
     double GetVoltage();
 
+    // PID Stuff (yay)
+    void CreateDriveStraightPID(); 
+    void CreatePivotPID();
+
+    double GetDriveStraightAngleP();
+    double GetDriveStraightAngleI();
+    double GetDriveStraightAngleD();
+
+    double GetDriveStraightDriveP();
+    double GetDriveStraightDriveI();
+    double GetDriveStraightDriveD();
+
+    double GetPivotP();
+    double GetPivotI();
+    double GetPivotD();
+
+    void DriveStraightPIDUpdate();
+
     ~RobotModel();
 
   private:
@@ -126,6 +144,8 @@ class RobotModel {
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
-    nt::NetworkTableEntry navXYawEntry_;
-    nt::NetworkTableEntry voltageEntry_;
+    nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
+
+    frc::ShuffleboardLayout &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_;
+    nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
 };

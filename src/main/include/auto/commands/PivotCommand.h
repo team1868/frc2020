@@ -80,6 +80,8 @@ private:
 	double maxOutput_;
 	double tolerance_;
 
+	void UpdatePivotPIDController();
+
 	/**
 	 * Minimum output to correct for, less would be considered done
 	 */

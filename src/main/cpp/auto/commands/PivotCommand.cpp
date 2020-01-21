@@ -173,6 +173,12 @@ void PivotCommand::Reset() {
 	printf("DONE FROM RESET \n");
 }
 
+void PivotCommand::UpdatePivotPIDController() {
+	pivotPID_->SetP(robot_->GetPivotP());
+	pivotPID_->SetI(robot_->GetPivotI());
+	pivotPID_->SetD(robot_->GetPivotD());
+}
+
 // update time variables
 void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible source of error TODO reset encoders
 	printf("Updating pivotcommand \n");
