@@ -12,30 +12,33 @@ static const int RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT = 8;
 static const int LEFT_DRIVE_ENCODER_RED_PWM_PORT     = 7;
 static const int RIGHT_DRIVE_ENCODER_RED_PWM_PORT    = 9;
 
-//Drive
+// Drive Motors
 static const int RIGHT_DRIVE_MASTER_ID               = 0;
 static const int RIGHT_DRIVE_SLAVE_A_ID              = 1;
 static const int LEFT_DRIVE_MASTER_ID                = 2;
 static const int LEFT_DRIVE_SLAVE_A_ID               = 3;
 
-//Superstructure Motors
+// Superstructure Motors
+static const int FLYWHEEL_MOTOR_ONE_ID               = 4; // fix
+static const int FLYWHEEL_MOTOR_TWO_ID               = 5; // fix
 
-//Pneumatics
+// Pneumatics
 static const int PNEUMATICS_CONTROL_MODULE_ID        = 1;
 static const int GEAR_SHIFT_SOLENOID_PORT            = 0;
 
-//PDP Channels 
+// PDP Channels 
 static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 1; // drive channels are all wrong
 static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 2;
 static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 14;
 static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 15;
 
-//Joysticks
+// Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;
 static const int RIGHT_JOY_USB_PORT                  = 1;
 static const int OPERATOR_JOY_USB_PORT               = 2;
 static const int OPERATOR_JOY_B_USB_PORT             = 3;
 
-//Buttons
+// Buttons
 static const int HIGH_GEAR_BUTTON_PORT               = 0;
 static const int LOW_GEAR_BUTTON_PORT                = 0;
+static const int FLYWHEEL_BUTTON_PORT                = 1; // fix

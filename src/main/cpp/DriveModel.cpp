@@ -80,10 +80,19 @@ RobotModel::RobotModel() :
     leftSlaveA_->SetInverted(false);
     leftMaster_->SetInverted(false);
 
+	// superstructure robot model
+	flywheelMotor1_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
+	flywheelMotor2_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
+	
+	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :)
+    flywheelMotor1_->SetInverted(false);
+    flywheelMotor2_->SetInverted(true);
 
+	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+
+	// shuffleboard
     testSequence_ = "";
 
-    // shuffleboard
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_BROWNOUT_VOLTAGE).GetEntry();
     maxCurrentEntry_ = GetModeTab().Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();

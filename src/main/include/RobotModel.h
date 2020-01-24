@@ -10,6 +10,7 @@
 #include <AHRS.h>
 #include <ctre/Phoenix.h>
 #include <rev/CANSparkMax.h>
+#include <frc/DriverStation.h>
 #include <networktables/NetworkTableEntry.h>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h>
@@ -41,6 +42,10 @@ static double HIGH_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER =  0.0;
 static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
 
+// superstructure
+static const int SPARK_ENCODER_TICKS = 42;
+static const double FLYWHEEL_DIAMETER = 8.0; // inches
+
 class RobotModel {
   public:
     enum Wheels {kLeftWheels, kRightWheels, kAllWheels};
@@ -50,6 +55,8 @@ class RobotModel {
     frc::ShuffleboardTab& GetFunctionalityTab();
     frc::ShuffleboardTab& GetPIDTab();
     frc::ShuffleboardTab& GetAutoOffsetTab();
+    
+    // drive robot model
     void SetDriveValues(double left, double right);
     void SetDriveValues(RobotModel::Wheels wheels, double value);
 
@@ -62,7 +69,7 @@ class RobotModel {
     void ResetDriveEncoders();
     void RefreshShuffleboard();
 
-     void StartCompressor();
+    void StartCompressor();
     
     void ZeroNavXYaw();
     double GetNavXYaw();
@@ -109,16 +116,27 @@ class RobotModel {
     double GetPivotI();
     double GetPivotD();
 
-    void DriveStraightPIDUpdate();
+    // superstructure robot model
+    rev::CANSparkMax* GetFlywheelMotor1();
+    rev::CANSparkMax* GetFlywheelMotor2();
+    void SetFlywheelOutput(double power);
+
+    void GetControlPanelColor();
 
     ~RobotModel();
 
   private:
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
+    std::string controlPanelGameData_;
     frc::Compressor *compressor_;
     AHRS *navX_;
     TalonFXSensorCollection *leftDriveEncoder_, *rightDriveEncoder_;
+
+    NavXPIDSource* navXSource_;
+    std::string testSequence_;
+    WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
+    rev::CANSparkMax *flywheelMotor1_, *flywheelMotor2_;
 
     double navXSpeed_;
     int counter;
@@ -135,10 +153,6 @@ class RobotModel {
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
-    
-    NavXPIDSource* navXSource_;
-    std::string testSequence_;
-    WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
