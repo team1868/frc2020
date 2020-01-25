@@ -14,7 +14,7 @@ void RobotModel::SetFlywheelOutput(double power){
 
 void RobotModel::SetClimberOutput(double power){
     climberMotor1_ -> Set(power);
-    if (climberEncoder1_->GetPosition() >= SPARK_ENCODER_TICKS) {
+    if (climberEncoder1_->  GetPosition() >= SPARK_ENCODER_TICKS) {
         climberMotor2_ -> Set(-power);
     }
 }
