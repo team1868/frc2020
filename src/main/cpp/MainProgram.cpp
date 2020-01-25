@@ -19,6 +19,7 @@ void MainProgram::RobotInit() {
     superstructureController_ = new SuperstructureController(robot_, humanControl_);
     driveController_ = new DriveController(robot_, humanControl_);
     robot_->ResetDriveEncoders();
+    robot_->CreateDriveStraightPID();
     printf("I am alive.");
     
     autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();
