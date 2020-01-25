@@ -13,9 +13,13 @@ RobotModel::RobotModel() :
     functionalityTab_(frc::Shuffleboard::GetTab("Functionality")),
     pidTab_(frc::Shuffleboard::GetTab("PID Values")),
     autoOffsetTab_(frc::Shuffleboard::GetTab("Auto Offset Values")),
-	anglePIDLayout_(GetPIDTab().GetLayout("Angle", "List Layout")),
-	distancePIDLayout_(GetPIDTab().GetLayout("Distance", "List Layout")),
-	pivotPIDLayout_(GetPIDTab().GetLayout("Pivot", "List Layout"))
+	driveStraightPIDLayout_(GetPIDTab().GetLayout("DriveStraight PID", "List Layout")),
+	anglePIDLayout_(driveStraightPIDLayout_.GetLayout("Angle", "List Layout")),
+	distancePIDLayout_(driveStraightPIDLayout_.GetLayout("Distance", "List Layout")),
+	pivotPIDLayout_(GetPIDTab().GetLayout("Pivot", "List Layout")), 
+	curvePIDLayout_(GetPIDTab().GetLayout("Curve PID", "List Layout")),
+	curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
+	curveDistancePIDLayout_(curvePIDLayout_.GetLayout("Curve Distance", "List Layout"))
     {
     
     frc::Shuffleboard::SelectTab("Driveteam Display");
@@ -34,7 +38,6 @@ RobotModel::RobotModel() :
       // initializing timer
     timer_ = new frc::Timer();
     timer_->Start();
-
     // Initializing NavX
     navXSpeed_ = 200;
     navX_ = new AHRS(SPI::kMXP, navXSpeed_);
@@ -451,3 +454,46 @@ void RobotModel::RefreshShuffleboard(){
 	navXYawEntry_.SetDouble(GetNavXYaw());
 	voltageEntry_.SetDouble(GetCurrentVoltage());
 }
+
+RobotModel::~RobotModel(){
+	//drive straight
+	aPEntry_.Delete();
+    aIEntry_.Delete(); 
+    aDEntry_.Delete();
+    dPEntry_.Delete();
+    dIEntry_.Delete(); 
+    dDEntry_.Delete(); 
+
+	//pivot
+	pEntry_.Delete(); 
+	iEntry_.Delete(); 
+	dEntry_.Delete(); 
+
+	//curve
+	dPFacNet_.Delete();
+  	dIFacNet_.Delete();
+  	dDFacNet_.Delete();
+ 	tPFacNet_.Delete();
+  	tIFacNet_.Delete();
+  	tDFacNet_.Delete();
+
+	//drive stuff
+	leftDriveEncoderEntry_.Delete();
+	rightDriveEncoderEntry_.Delete();
+	leftVelocityEntry_.Delete();
+	rightVelocityEntry_.Delete();
+
+	navXYawEntry_.Delete();
+	voltageEntry_.Delete();
+
+	maxOutputEntry_.Delete();
+	minVoltEntry_.Delete();
+	maxCurrentEntry_.Delete();
+    lowGearSFrictionEntry_.Delete();
+	lowGearTurnSFrictionEntry_.Delete();
+	highGearSFrictionEntry_.Delete();
+	highGearTurnSFrictionEntry_.Delete();
+    ratioAllEntry_.Delete();
+	ratioDriveEntry_.Delete();
+	ratioSuperstructureEntry_.Delete();
+};
