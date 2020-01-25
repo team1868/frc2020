@@ -33,9 +33,9 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
     aPEntry_ = anglePIDLayout_.Add("P", 0.08).GetEntry();
     aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
     aDEntry_ = anglePIDLayout_.Add("D", 0.02).GetEntry();
-    dPEntry_ = distancePIDLayout_.Add("P", 0.8).GetEntry();
+    dPEntry_ = distancePIDLayout_.Add("P", 0.25).GetEntry(); // drive is edited, angle isn't
     dIEntry_ = distancePIDLayout_.Add("I", 0.0).GetEntry();
-    dDEntry_ = distancePIDLayout_.Add("D", 0.2).GetEntry();
+    dDEntry_ = distancePIDLayout_.Add("D", 0.15).GetEntry();
 	
 }
 
