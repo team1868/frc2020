@@ -10,8 +10,7 @@
 
 // constructor
 PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource) :
-	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout")),
-	pivotPIDLayout_(robot->GetModeTab().GetLayout("Pivot PID", "List Layout"))
+	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout"))
 	{
 
 	leftDriveEntry_ = pivotLayout_.Add("Left Drive Output", 0.0).GetEntry();
@@ -46,9 +45,9 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	pivotTimeoutSec_ = 5.0;//0.0; //note edited from last year
 
 	// retrieve pid values from user //moved to shuffleboard model
-	// pFac_ = pEntry_.GetDouble(0.08);
-	// iFac_ = iEntry_.GetDouble(0.0);
-	// dFac_ = dEntry_.GetDouble(0.02);
+	pFac_ = robot_->GetPivotP();
+	iFac_ = robot_->GetPivotI();
+	dFac_ = robot_->GetPivotD();
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
@@ -63,18 +62,12 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 // constructor
 PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance) :
-	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout")),
-	pivotPIDLayout_(robot->GetModeTab().GetLayout("Pivot PID", "List Layout"))
+	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout"))
 	{
 
 	leftDriveEntry_ = pivotLayout_.Add("Pivot Left Drive", 0.0).GetEntry();
 	rightDriveEntry_ = pivotLayout_.Add("Pivot Right Drive", 0.0).GetEntry();
 	pivotErrorEntry_ = pivotLayout_.Add("Pivot Error", 0.0).GetEntry();
-
-	//moved to shuffleboard model
-	// pEntry_ = pivotPIDLayout_.Add("P", 0.03225).GetEntry(); // 0.03225 for nova
-    // iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    // dEntry_ = pivotPIDLayout_.Add("D", 0.0173).GetEntry(); // 0.0173 for nova
 
 	navXSource_ = navXSource;
 
@@ -103,10 +96,9 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	pivotCommandStartTime_ = robot_->GetTime();
 	pivotTimeoutSec_ = 5.0;//0.0; //note edited from last year
 
-	// retrieve pid values from user //moved to shuffleboard model
-	// pFac_ = pEntry_.GetDouble(0.08);
-	// iFac_ = iEntry_.GetDouble(0.0);
-	// dFac_ = dEntry_.GetDouble(0.02);
+	pFac_ = robot_->GetPivotP();
+	iFac_ = robot_->GetPivotI();
+	dFac_ = robot_->GetPivotD();
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
@@ -118,10 +110,18 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 }
 
+void PivotCommand::GetPIDValues() {
+	pFac_ = robot_-> GetPivotP();
+	iFac_ = robot_-> GetPivotI();
+	dFac_ = robot_-> GetPivotD();
+}
+
+
 void PivotCommand::Init() {
 	//Profiler profiler(robot_, "Pivot Init");
 	// Setting PID values (in case they changed)
 	//TODO INI GetIniValues();
+	GetPIDValues();
 	pivotPID_->SetPID(pFac_, iFac_, dFac_);
 
 	// initliaze NavX angle
@@ -168,12 +168,6 @@ void PivotCommand::Reset() {
 	isDone_ = true;
 
 	printf("DONE FROM RESET \n");
-}
-
-void PivotCommand::UpdatePivotPIDController() {
-	pivotPID_->SetP(robot_->GetPivotP());
-	pivotPID_->SetI(robot_->GetPivotI());
-	pivotPID_->SetD(robot_->GetPivotD());
 }
 
 // update time variables
@@ -232,5 +226,9 @@ bool PivotCommand::IsDone() {
 // deinitialize
 PivotCommand::~PivotCommand() {
 	Reset();
+	leftDriveEntry_.Delete();
+	rightDriveEntry_.Delete();
+	pivotErrorEntry_.Delete();
+	delete talonOutput_;
 //	printf("IS DONE FROM DECONSTRUCTOR\n");
 }

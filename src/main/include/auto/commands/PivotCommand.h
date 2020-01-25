@@ -59,8 +59,8 @@ public:
 	/**
 	 * gets PID values from ini file, sets to 0 if not present
 	 */
-	void GetIniValues();
-	void UpdatePivotPIDController();
+	void GetPIDValues();
+
 
 private:
 	//double output;
@@ -92,7 +92,6 @@ private:
 
 	double pivotTimeoutSec_, actualTimeoutSec_;
 
-  	frc::ShuffleboardLayout &pivotLayout_, &pivotPIDLayout_;
+  	frc::ShuffleboardLayout &pivotLayout_;
 	nt::NetworkTableEntry leftDriveEntry_, rightDriveEntry_, pivotErrorEntry_;
-  	nt::NetworkTableEntry pEntry_, iEntry_, dEntry_;
 };

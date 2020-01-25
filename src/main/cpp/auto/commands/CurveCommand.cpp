@@ -75,7 +75,7 @@ void CurveCommand::Init(){
   //robot_->SetHighGear(); //TODO tune/fix
   robot_->ResetDriveEncoders(); //TODODODODODODOD FIXXXXXXXXXXXXXXXXXXXXXX
 
-  LoadPIDValues();
+  GetPIDValues();
 
   //navXPIDSource_ = new NavXPIDSource(robot_);
   //talonEncoderPIDSource_ = new TalonEncoderPIDSource(robot_);
@@ -108,17 +108,6 @@ void CurveCommand::Init(){
 
 }
 
-void CurveCommand::UpdateCurveDistancePIDController(){
-  dPID_->SetP(robot_->GetCurveDistanceP());
-  dPID_->SetI(robot_->GetCurveDistanceI());
-  dPID_->SetD(robot_->GetCurveDistanceD());
-}
-
- void CurveCommand::UpdateCurveTurnPIDController() {
-   tPID_->SetP(robot_->GetCurveTurnP());
-   tPID_->SetI(robot_->GetCurveTurnI());
-   tPID_->SetD(robot_->GetCurveTurnD());
- }
 
 void CurveCommand::Reset(){
   robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
@@ -246,15 +235,14 @@ double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
   }
 }
 
-void CurveCommand::LoadPIDValues(){
-  //TODO add to shuffleboard
-  dPFac_ = dPFacNet_.GetDouble(0.8);
-  dIFac_ = dIFacNet_.GetDouble(0.0);
-  dDFac_ = dDFacNet_.GetDouble(0.0);
+void CurveCommand::GetPIDValues(){
+  dPFac_ = robot_-> GetCurveDistanceP();
+  dIFac_ = robot_-> GetCurveDistanceI();
+  dDFac_ = robot_-> GetCurveDistanceD();
 
-  tPFac_ = tPFacNet_.GetDouble(0.07);
-  tIFac_ = tIFacNet_.GetDouble(0.0);
-  tDFac_ = tDFacNet_.GetDouble(0.0);
+  tPFac_ = robot_-> GetCurveTurnP();
+  tIFac_ = robot_-> GetCurveTurnI();
+  tDFac_ = robot_-> GetCurveTurnD();
 }
 
 bool CurveCommand::IsDone(){
@@ -275,13 +263,5 @@ CurveCommand::~CurveCommand(){
   rOutputNet_.Delete();
   dErrorNet_.Delete();
   tErrorNet_.Delete();
-
-  dPFacNet_.Delete();
-  dIFacNet_.Delete();
-  dDFacNet_.Delete();
-
-  tPFacNet_.Delete();
-  tIFacNet_.Delete();
-  tDFacNet_.Delete();
 
 }

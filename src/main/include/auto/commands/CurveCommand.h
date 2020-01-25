@@ -23,14 +23,12 @@ class CurveCommand : public AutoCommand {
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();
   void Reset();
-  void UpdateCurveDistancePIDController();
-  void UpdateCurveTurnPIDController();
 
   ~CurveCommand();
 
  private:
   double CalcCurDesiredAngle(double curPivDistance);
-  void LoadPIDValues();
+  void GetPIDValues();
 
 
   NavXPIDSource *navXPIDSource_;
@@ -54,5 +52,5 @@ class CurveCommand : public AutoCommand {
   bool isDone_;
 
   nt::NetworkTableEntry dOutputNet_, tOutputNet_, lOutputNet_, rOutputNet_,
-    dErrorNet_, tErrorNet_, dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_, tDFacNet_, pidSourceNet_;
+    dErrorNet_, tErrorNet_, pidSourceNet_;
 };

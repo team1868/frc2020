@@ -14,8 +14,25 @@ class SuperstructureController {
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
   void Update();
   void RefreshShuffleboard();
+  void FlywheelPIDControllerUpdate();
+  void Reset();
+
+  enum SuperstructureState {
+		kInit, kIdle
+	};
+
   ~SuperstructureController();
+
  private:
   RobotModel *robot_;
   ControlBoard *humanControl_;
+  rev::CANPIDController *flywheelPIDController_;
+  rev::CANEncoder *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
+
+  uint32_t currState_;
+	uint32_t nextState_;
+
+  double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+
+  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
 };

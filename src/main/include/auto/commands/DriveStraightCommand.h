@@ -73,10 +73,8 @@ class DriveStraightCommand : public AutoCommand {
     /**
      * Gets PID values from the ini file
      */
-    void GetIniValues();
+    void GetPIDValues();
 
-    void UpdateAnglePIDController();
-    void UpdateDrivePIDController();
 
 private:
 	void Initializations(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
@@ -111,9 +109,9 @@ private:
 
 	int numTimesStopped_;
 
-  frc::ShuffleboardLayout &driveStraightLayout_, &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_;
+  frc::ShuffleboardLayout &driveStraightLayout_, &driveStraightPIDLayout_;
 	nt::NetworkTableEntry leftStraightEntry_, rightStraightEntry_, angleErrorEntry_, angleErrorGraphEntry_, desiredAngleEntry_,
-		encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_, aPEntry_,
-    aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_;
+		encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_;
+    
 
 };

@@ -13,9 +13,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance) : AutoCommand(),
 		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
-		driveStraightPIDLayout_(robot->GetPIDTab().GetLayout("DriveStraight PID", "List Layout")),
-		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle", "List Layout")),
-		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance", "List Layout"))
+		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout"))
 		{
 	isAbsoluteAngle_ = false;
 
@@ -30,7 +28,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
 	aPIDOutputEntry_ = driveStraightLayout_.Add("Angle PID Output", 0.0).GetEntry();
 	dPIDOutputEntry_ = driveStraightLayout_.Add("Distance PID Output", 0.0).GetEntry();
- 
+	
 	
 }
 
@@ -39,9 +37,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance, double absoluteAngle) :
 		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
-		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
-		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle", "List Layout")),
-		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance", "List Layout"))
+		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout"))
 		{
 	isAbsoluteAngle_ = true;
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
@@ -64,7 +60,7 @@ void DriveStraightCommand::Init() {
 	anglePID_ = new PIDController(rPFac_, rIFac_, rDFac_, navXSource_, anglePIDOutput_);
 	distancePID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderSource_, distancePIDOutput_);
 
-	GetIniValues();
+	GetPIDValues();
 	// absolute angle
 	if (!isAbsoluteAngle_) {
 		desiredAngle_ = navXSource_->PIDGet();
@@ -117,17 +113,7 @@ void DriveStraightCommand::Init() {
 			distancePID_->GetError(), anglePID_->GetError());
 }
 
-void DriveStraightCommand::UpdateAnglePIDController() {
-	anglePID_->SetP(robot_->GetDriveStraightAngleP());
-    anglePID_->SetI(robot_->GetDriveStraightAngleI());
-    anglePID_->SetD(robot_->GetDriveStraightAngleD());
-}
 
-void DriveStraightCommand::UpdateDrivePIDController() {
-	distancePID_->SetP(robot_->GetDriveStraightDistanceP());
-	distancePID_->SetI(robot_->GetDriveStraightDistanceI());
-	distancePID_->SetD(robot_->GetDriveStraightDistanceD());
-}
 
 // update current values
 void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) { 
@@ -209,7 +195,7 @@ bool DriveStraightCommand::IsDone() {
 
 // reset robot to standby
 void DriveStraightCommand::Reset() {
-	// turn off mototrs
+	// turn off motors
 	robot_->SetDriveValues(0.0, 0.0);
 
 	// destroy angle PID
@@ -237,15 +223,15 @@ void DriveStraightCommand::Reset() {
 }
  
 //Get pid values from shuffleboard
-void DriveStraightCommand::GetIniValues() { // Ini values are refreshed at the start of auto
+void DriveStraightCommand::GetPIDValues() { // Ini values are refreshed at the start of auto
 
-	dPFac_ = 0.8;
-	dIFac_ = 0.0;
-	dDFac_ = 0.2;
+	dPFac_ = robot_-> GetDriveStraightDistanceP();
+	dIFac_ = robot_-> GetDriveStraightDistanceI();
+	dDFac_ = robot_-> GetDriveStraightDistanceD();
 
-	rPFac_ = 0.08;
-	rIFac_ = 0.0;
-	rDFac_ = 0.02;
+	rPFac_ = robot_-> GetDriveStraightAngleP();
+	rIFac_ = robot_-> GetDriveStraightAngleI();
+	rDFac_ = robot_-> GetDriveStraightAngleD();
 
 	printf("DRIVESTRAIGHT COMMAND DRIVE p: %f, i: %f, d: %f\n", dPFac_, dIFac_, dDFac_);
 	printf("DRIVESTRAIGHT COMMAND ANGLE p: %f, i: %f, d: %f\n", rPFac_, rIFac_, rDFac_);
@@ -277,7 +263,7 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	diffDriveTime_ = robot_->GetTime() - initialDriveTime_;
 
 	// Setting up the PID controllers to NULL
-	GetIniValues();
+	GetPIDValues();
 	anglePID_ = NULL;
 	distancePID_ = NULL;
 
@@ -298,10 +284,13 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 
 DriveStraightCommand::~DriveStraightCommand() {
 	//leftStraightEntry_->Remove();
+	/*
 	anglePID_->Disable();
 	distancePID_->Disable();
 	anglePID_->~PIDController();
 	distancePID_->~PIDController();
+	*/
+	Reset();
 
 	leftStraightEntry_.Delete();
 	rightStraightEntry_.Delete();

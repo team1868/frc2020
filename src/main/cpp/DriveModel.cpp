@@ -83,10 +83,19 @@ RobotModel::RobotModel() :
     leftSlaveA_->SetInverted(false);
     leftMaster_->SetInverted(false);
 
+	// superstructure robot model
+	flywheelMotor1_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
+	flywheelMotor2_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
+	
+	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :)
+    flywheelMotor1_->SetInverted(false);
+    flywheelMotor2_->SetInverted(true);
 
+	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+
+	// shuffleboard
     testSequence_ = "";
 
-    // shuffleboard
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_BROWNOUT_VOLTAGE).GetEntry();
     maxCurrentEntry_ = GetModeTab().Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();
@@ -440,3 +449,46 @@ void RobotModel::RefreshShuffleboard(){
 	navXYawEntry_.SetDouble(GetNavXYaw());
 	voltageEntry_.SetDouble(GetCurrentVoltage());
 }
+
+RobotModel::~RobotModel(){
+	//drive straight
+	aPEntry_.Delete();
+    aIEntry_.Delete(); 
+    aDEntry_.Delete();
+    dPEntry_.Delete();
+    dIEntry_.Delete(); 
+    dDEntry_.Delete(); 
+
+	//pivot
+	pEntry_.Delete(); 
+	iEntry_.Delete(); 
+	dEntry_.Delete(); 
+
+	//curve
+	dPFacNet_.Delete();
+  	dIFacNet_.Delete();
+  	dDFacNet_.Delete();
+ 	tPFacNet_.Delete();
+  	tIFacNet_.Delete();
+  	tDFacNet_.Delete();
+
+	//drive stuff
+	leftDriveEncoderEntry_.Delete();
+	rightDriveEncoderEntry_.Delete();
+	leftVelocityEntry_.Delete();
+	rightVelocityEntry_.Delete();
+
+	navXYawEntry_.Delete();
+	voltageEntry_.Delete();
+
+	maxOutputEntry_.Delete();
+	minVoltEntry_.Delete();
+	maxCurrentEntry_.Delete();
+    lowGearSFrictionEntry_.Delete();
+	lowGearTurnSFrictionEntry_.Delete();
+	highGearSFrictionEntry_.Delete();
+	highGearTurnSFrictionEntry_.Delete();
+    ratioAllEntry_.Delete();
+	ratioDriveEntry_.Delete();
+	ratioSuperstructureEntry_.Delete();
+};

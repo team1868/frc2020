@@ -20,6 +20,7 @@ void MainProgram::RobotInit() {
     driveController_ = new DriveController(robot_, humanControl_);
     robot_->CreatePID();
     robot_->ResetDriveEncoders();
+    robot_->CreatePID();
     printf("I am alive.");
     
     autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();
