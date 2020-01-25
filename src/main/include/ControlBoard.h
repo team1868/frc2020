@@ -16,7 +16,7 @@ class ControlBoard {
  public:
   enum Joysticks{ kLeftJoy, kRightJoy };
 	enum Axes{ kX, kY, kZ, kLT};
-  enum Buttons{kDeleteThis}; //TODO DELETE THIS
+  enum Buttons{kHighGearShift, kLowGearShift, kFlywheelButton, kClimberButton};
 
   ControlBoard();
   void ReadControls();

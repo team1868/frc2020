@@ -26,7 +26,8 @@ static const int CLIMB_MOTOR_TWO_ID                  = 7; // fix
 
 // Pneumatics
 static const int PNEUMATICS_CONTROL_MODULE_ID        = 1;
-static const int GEAR_SHIFT_SOLENOID_PORT            = 0;
+static const int GEAR_SHIFT_FORWARDS_SOLENOID_PORT   = 0; // fix
+static const int GEAR_SHIFT_REVERSE_SOLENOID_PORT    = 2; // fix
 
 // PDP Channels 
 static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 1; // drive channels are all wrong
@@ -42,6 +43,6 @@ static const int OPERATOR_JOY_B_USB_PORT             = 3;
 
 // Buttons
 static const int HIGH_GEAR_BUTTON_PORT               = 0;
-static const int LOW_GEAR_BUTTON_PORT                = 0;
+static const int LOW_GEAR_BUTTON_PORT                = 3;
 static const int FLYWHEEL_BUTTON_PORT                = 1; // fix
 static const int CLIMBER_BUTTON_PORT                 = 2; // fix

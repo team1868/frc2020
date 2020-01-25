@@ -100,6 +100,9 @@ class RobotModel {
     double GetRIOCurrent();
     double GetVoltage();
 
+    void SetHighGear();
+    void SetLowGear();
+
     // PID Stuff (yay)
     void CreatePID(); 
 
@@ -136,6 +139,7 @@ class RobotModel {
     frc::PowerDistributionPanel *pdp_;
     std::string controlPanelGameData_;
     frc::Compressor *compressor_;
+    frc::DoubleSolenoid *gearSolenoid_;
     AHRS *navX_;
     TalonFXSensorCollection *leftDriveEncoder_, *rightDriveEncoder_;
 

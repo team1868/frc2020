@@ -41,7 +41,12 @@ void SuperstructureController::Update(){
 
     switch(currState_) {
         case kInit:
+            break;
         case kIdle:
+            if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
+                robot_ -> SetHighGear();
+            }
+
             if(humanControl_ -> GetFlywheelDesired()){
                 printf("flywheel button being pressed\n");
                 cout<<"flywheel power "<<flywheelPower_<<endl;
@@ -49,6 +54,7 @@ void SuperstructureController::Update(){
             } else {
                 robot_ -> SetFlywheelOutput(0.0);
             }  
+            
             if(humanControl_ -> GetClimberDesired()){
                 printf("climber button being pressed\n");
                 cout<<"climber power "<<climberPower_<<endl;

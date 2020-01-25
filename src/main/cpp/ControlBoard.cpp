@@ -21,6 +21,8 @@ ControlBoard::ControlBoard() {
 
 	buttons_ = std::unordered_map<Buttons, ButtonReader*>();
 
+	buttons_[kHighGearShift] = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
+	buttons_[kLowGearShift] = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	flywheelDesired_ = false;
 	climberDesired_ = false;
 	flywheelButton_ = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);

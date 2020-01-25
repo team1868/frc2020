@@ -61,6 +61,9 @@ RobotModel::RobotModel() :
     // initializing pnuematics
     compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
 
+	// initializing double solenoid for gear
+	gearSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARDS_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
+
     // initilizing motor controllers
     leftMaster_ = new WPI_TalonFX(LEFT_DRIVE_MASTER_ID);
     rightMaster_ = new WPI_TalonFX(RIGHT_DRIVE_MASTER_ID);
@@ -385,6 +388,14 @@ double RobotModel::ModifyCurrent(int channel, double value){
 	}
 	// printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
 	return power;
+}
+
+void RobotModel::SetHighGear(){
+	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
+}
+
+void RobotModel::SetLowGear(){
+	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
 }
 
 void RobotModel::ZeroNavXYaw() {
