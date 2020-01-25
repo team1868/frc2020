@@ -6,10 +6,15 @@
 /*----------------------------------------------------------------------------*/
 
 #include "controllers/SuperstructureController.h"
+using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) {
     robot_ = robot;
     humanControl_ = humanControl;
+
+    climberPower_ = 0.5; // fix
+    desiredRPM_ = 2000;
+    flywheelPower_ = CalculateFlywheelPowerDesired();
 
     currState_ = kInit;
 	nextState_ = kIdle;
@@ -37,6 +42,22 @@ void SuperstructureController::Update(){
     switch(currState_) {
         case kInit:
         case kIdle:
+            if(humanControl_ -> GetFlywheelDesired()){
+                printf("flywheel button being pressed\n");
+                cout<<"flywheel power "<<flywheelPower_<<endl;
+                robot_ -> SetFlywheelOutput(flywheelPower_);
+            } else {
+                robot_ -> SetFlywheelOutput(0.0);
+            }  
+            if(humanControl_ -> GetClimberDesired()){
+                printf("climber button being pressed\n");
+                cout<<"climber power "<<climberPower_<<endl;
+                robot_ -> SetClimberOutput(climberPower_);
+            } else {
+                robot_ -> SetClimberOutput(0.0);
+            }  
+
+
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
@@ -50,6 +71,10 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
     flywheelPIDController_->SetD(flywheelDFac_);
     flywheelPIDController_->SetFF(flywheelFFFac_);
     
+}
+
+double SuperstructureController::CalculateFlywheelPowerDesired() {
+    return 0.5; // fix
 }
 
 void SuperstructureController::RefreshShuffleboard(){

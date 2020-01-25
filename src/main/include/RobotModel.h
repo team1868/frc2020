@@ -120,6 +120,7 @@ class RobotModel {
     rev::CANSparkMax* GetFlywheelMotor1();
     rev::CANSparkMax* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
+    void SetClimberOutput(double power);
 
     void GetControlPanelColor();
 
@@ -136,7 +137,10 @@ class RobotModel {
     NavXPIDSource* navXSource_;
     std::string testSequence_;
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
+    
     rev::CANSparkMax *flywheelMotor1_, *flywheelMotor2_;
+    rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
+    rev::CANEncoder *climberEncoder1_;
 
     double navXSpeed_;
     int counter;

@@ -21,6 +21,10 @@ ControlBoard::ControlBoard() {
 
 	buttons_ = std::unordered_map<Buttons, ButtonReader*>();
 
+	flywheelDesired_ = false;
+	climberDesired_ = false;
+	flywheelButton_ = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);
+	climberButton_ = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
 	//create buttons here after creating a option in the Buttons enum
 	//example
 	//buttons_[kYourButton] = new ButtonReader(JOY_PORT, BUTTON_PORT);
@@ -63,6 +67,16 @@ void ControlBoard::ReadControls(){
 	leftJoyY_ = -leftJoy_->GetY();
     rightJoyX_ = rightJoy_->GetX();
 	rightJoyY_ = -rightJoy_->GetY();
+	flywheelDesired_ = flywheelButton_ -> IsDown();
+	climberDesired_ = climberButton_ -> IsDown();
+}
+
+bool ControlBoard::GetFlywheelDesired() {
+	return flywheelDesired_;
+}
+
+bool ControlBoard::GetClimberDesired() {
+	return climberDesired_;
 }
 
 void ControlBoard::ReadAllButtons(){

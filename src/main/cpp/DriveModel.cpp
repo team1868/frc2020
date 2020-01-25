@@ -83,10 +83,15 @@ RobotModel::RobotModel() :
 	// superstructure robot model
 	flywheelMotor1_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
 	flywheelMotor2_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
-	
+
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :)
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
+
+	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
+	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
+
+	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 

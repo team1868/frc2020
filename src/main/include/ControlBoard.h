@@ -22,11 +22,16 @@ class ControlBoard {
   void ReadControls();
   double GetJoystickValue(Joysticks j, Axes a);
   bool GetDesired(Buttons button);
+  bool GetFlywheelDesired();
+  bool GetClimberDesired();
+  
   ~ControlBoard();
- private:
 
+ private:
   void ReadAllButtons();
   frc::Joystick *leftJoy_, *rightJoy_, *operatorJoy_, *operatorJoyB_;
+  ButtonReader *flywheelButton_, *climberButton_;
   double leftJoyX_, leftJoyY_, rightJoyX_, rightJoyY_;
+  bool flywheelDesired_, climberDesired_;
   std::unordered_map<Buttons, ButtonReader*> buttons_;
 };

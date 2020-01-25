@@ -15,6 +15,7 @@ class SuperstructureController {
   void Update();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
+  double CalculateFlywheelPowerDesired();
   void Reset();
 
   enum SuperstructureState {
@@ -32,6 +33,8 @@ class SuperstructureController {
   uint32_t currState_;
 	uint32_t nextState_;
 
+  double flywheelPower_, desiredRPM_; 
+  double climberPower_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
 
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
