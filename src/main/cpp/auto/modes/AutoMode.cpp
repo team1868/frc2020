@@ -116,7 +116,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = NULL;
 			} else {
 				printf("Distance: %f\n", distance);
-				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, currAngle_);
+				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance);
 			}
 			break;
 		case 'c':	// curve command

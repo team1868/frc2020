@@ -75,6 +75,9 @@ class DriveStraightCommand : public AutoCommand {
      */
     void GetIniValues();
 
+    void UpdateAnglePIDController();
+    void UpdateDrivePIDController();
+
 private:
 	void Initializations(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 			AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
@@ -104,8 +107,7 @@ private:
 	double lastDOutput_;
 	double lastDistance_;
   
-  void UpdateAnglePIDController();
-  void UpdateDrivePIDController();
+  
 
 	int numTimesStopped_;
 

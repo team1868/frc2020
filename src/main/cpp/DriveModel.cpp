@@ -13,9 +13,13 @@ RobotModel::RobotModel() :
     functionalityTab_(frc::Shuffleboard::GetTab("Functionality")),
     pidTab_(frc::Shuffleboard::GetTab("PID Values")),
     autoOffsetTab_(frc::Shuffleboard::GetTab("Auto Offset Values")),
-	anglePIDLayout_(GetPIDTab().GetLayout("Angle", "List Layout")),
-	distancePIDLayout_(GetPIDTab().GetLayout("Distance", "List Layout")),
-	pivotPIDLayout_(GetPIDTab().GetLayout("Pivot", "List Layout"))
+	driveStraightPIDLayout_(GetPIDTab().GetLayout("DriveStraight PID", "List Layout")),
+	anglePIDLayout_(driveStraightPIDLayout_.GetLayout("Angle", "List Layout")),
+	distancePIDLayout_(driveStraightPIDLayout_.GetLayout("Distance", "List Layout")),
+	pivotPIDLayout_(GetPIDTab().GetLayout("Pivot", "List Layout")), 
+	curvePIDLayout_(GetPIDTab().GetLayout("Curve PID", "List Layout")),
+	curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
+	curveDistancePIDLayout_(curvePIDLayout_.GetLayout("Curve Distance", "List Layout"))
     {
     
     frc::Shuffleboard::SelectTab("Driveteam Display");
@@ -34,7 +38,6 @@ RobotModel::RobotModel() :
       // initializing timer
     timer_ = new frc::Timer();
     timer_->Start();
-
     // Initializing NavX
     navXSpeed_ = 200;
     navX_ = new AHRS(SPI::kMXP, navXSpeed_);

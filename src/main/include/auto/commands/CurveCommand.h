@@ -23,6 +23,8 @@ class CurveCommand : public AutoCommand {
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();
   void Reset();
+  void UpdateCurveDistancePIDController();
+  void UpdateCurveTurnPIDController();
 
   ~CurveCommand();
 

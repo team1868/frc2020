@@ -23,15 +23,6 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
 
-  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dP", 0.8).GetEntry();
-  dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dI", 0.0).GetEntry();
-  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dD", 0.2).GetEntry();
-
-  tPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tP", 0.07).GetEntry();
-  tIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tI", 0.0).GetEntry();
-  tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tD", 0.0).GetEntry();
-
-  
   dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
   tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
   lOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve lO", 0.0).GetEntry();
@@ -56,15 +47,7 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
 
-  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dP", 0.8).GetEntry();
-  dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dI", 0.0).GetEntry();
-  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dD", 0.2).GetEntry();
 
-  tPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tP", 0.07).GetEntry();
-  tIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tI", 0.0).GetEntry();
-  tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tD", 0.0).GetEntry();
-
-  
   dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
   tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
   lOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve lO", 0.0).GetEntry();
@@ -124,6 +107,18 @@ void CurveCommand::Init(){
   tPID_->Enable();
 
 }
+
+void CurveCommand::UpdateCurveDistancePIDController(){
+  dPID_->SetP(robot_->GetCurveDistanceP());
+  dPID_->SetI(robot_->GetCurveDistanceI());
+  dPID_->SetD(robot_->GetCurveDistanceD());
+}
+
+ void CurveCommand::UpdateCurveTurnPIDController() {
+   tPID_->SetP(robot_->GetCurveTurnP());
+   tPID_->SetI(robot_->GetCurveTurnI());
+   tPID_->SetD(robot_->GetCurveTurnD());
+ }
 
 void CurveCommand::Reset(){
   robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);

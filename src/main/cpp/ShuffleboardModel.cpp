@@ -7,23 +7,27 @@
 
 #include "RobotModel.h"
 
-void RobotModel::CreateDriveStraightPID(){
-
-    //anglePIDLayout_(GetPIDTab().GetLayout("Angle", "List Layout"));
-	//distancePIDLayout_(GetPIDTab().GetLayout("Distance", "List Layout"));
-
+void RobotModel::CreatePID(){
     aPEntry_ = anglePIDLayout_.Add("P", 0.08).GetEntry();
     aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
     aDEntry_ = anglePIDLayout_.Add("D", 0.02).GetEntry();
     dPEntry_ = distancePIDLayout_.Add("P", 0.8).GetEntry();
     dIEntry_ = distancePIDLayout_.Add("I", 0.0).GetEntry();
     dDEntry_ = distancePIDLayout_.Add("D", 0.2).GetEntry();
-}
 
-void RobotModel::CreatePivotPID() {
-    pEntry_ = pivotPIDLayout_.Add("P", 0.031).GetEntry();
+    // pEntry_ = pivotPIDLayout_.Add("P", 0.031).GetEntry();
+    // iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
+    // dEntry_ = pivotPIDLayout_.Add("D", 0.017).GetEntry();
+    pEntry_ = pivotPIDLayout_.Add("P", 0.03225).GetEntry(); // 0.03225 for nova
     iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    dEntry_ = pivotPIDLayout_.Add("D", 0.017).GetEntry();
+    dEntry_ = pivotPIDLayout_.Add("D", 0.0173).GetEntry(); // 0.0173 for nova
+
+    dPFacNet_ =  curveDistancePIDLayout_.Add("Curve dP", 0.8).GetEntry();
+    dIFacNet_ =  curveDistancePIDLayout_.Add("Curve dI", 0.0).GetEntry();
+    dDFacNet_ =  curveDistancePIDLayout_.Add("Curve dD", 0.2).GetEntry();
+    tPFacNet_ =  curveTurnPIDLayout_.Add("Curve tP", 0.07).GetEntry();
+    tIFacNet_ =  curveTurnPIDLayout_.Add("Curve tI", 0.0).GetEntry();
+    tDFacNet_ =  curveTurnPIDLayout_.Add("Curve tD", 0.0).GetEntry();
 }
 
 double RobotModel::GetDriveStraightAngleP() {
@@ -38,15 +42,15 @@ double RobotModel::GetDriveStraightAngleD() {
     return aDEntry_.GetDouble(0.0);
 }
 
-double RobotModel::GetDriveStraightDriveP() {
+double RobotModel::GetDriveStraightDistanceP() {
     return dPEntry_.GetDouble(0.0);
 }
 
-double RobotModel::GetDriveStraightDriveI() {
+double RobotModel::GetDriveStraightDistanceI() {
     return dIEntry_.GetDouble(0.0);
 }
 
-double RobotModel::GetDriveStraightDriveD() {
+double RobotModel::GetDriveStraightDistanceD() {
     return dDEntry_.GetDouble(0.0);
 }
 
@@ -61,4 +65,25 @@ double RobotModel::GetPivotI() {
 double RobotModel::GetPivotD() {
     return dEntry_.GetDouble(0.0);
 }
+
+double RobotModel::GetCurveDistanceP(){
+    return dPFacNet_.GetDouble(0.0);
+}
+double RobotModel::GetCurveDistanceI(){
+    return dIFacNet_.GetDouble(0.0);
+}
+double RobotModel::GetCurveDistanceD(){
+    return dPFacNet_.GetDouble(0.0);
+}
+double RobotModel::GetCurveTurnP(){
+    return tPFacNet_.GetDouble(0.0);
+}
+double RobotModel::GetCurveTurnI(){
+    return tIFacNet_.GetDouble(0.0);
+}
+double RobotModel::GetCurveTurnD(){
+    return tDFacNet_.GetDouble(0.0);
+}
+
+
 

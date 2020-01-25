@@ -18,10 +18,6 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	rightDriveEntry_ = pivotLayout_.Add("Right Drive Output", 0.0).GetEntry();
 	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
 
-	pEntry_ = pivotPIDLayout_.Add("P", 0.031).GetEntry();
-    iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    dEntry_ = pivotPIDLayout_.Add("D", 0.017).GetEntry();
-    
     navXSource_ = navXSource;
 
 	initYaw_ = navXSource_->PIDGet();
@@ -49,10 +45,10 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	pivotCommandStartTime_ = robot_->GetTime();
 	pivotTimeoutSec_ = 5.0;//0.0; //note edited from last year
 
-	// retrieve pid values from user
-	pFac_ = pEntry_.GetDouble(0.08);
-	iFac_ = iEntry_.GetDouble(0.0);
-	dFac_ = dEntry_.GetDouble(0.02);
+	// retrieve pid values from user //moved to shuffleboard model
+	// pFac_ = pEntry_.GetDouble(0.08);
+	// iFac_ = iEntry_.GetDouble(0.0);
+	// dFac_ = dEntry_.GetDouble(0.02);
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
@@ -75,9 +71,10 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	rightDriveEntry_ = pivotLayout_.Add("Pivot Right Drive", 0.0).GetEntry();
 	pivotErrorEntry_ = pivotLayout_.Add("Pivot Error", 0.0).GetEntry();
 
-	pEntry_ = pivotPIDLayout_.Add("P", 0.03225).GetEntry(); // 0.03225 for nova
-    iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    dEntry_ = pivotPIDLayout_.Add("D", 0.0173).GetEntry(); // 0.0173 for nova
+	//moved to shuffleboard model
+	// pEntry_ = pivotPIDLayout_.Add("P", 0.03225).GetEntry(); // 0.03225 for nova
+    // iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
+    // dEntry_ = pivotPIDLayout_.Add("D", 0.0173).GetEntry(); // 0.0173 for nova
 
 	navXSource_ = navXSource;
 
@@ -106,10 +103,10 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	pivotCommandStartTime_ = robot_->GetTime();
 	pivotTimeoutSec_ = 5.0;//0.0; //note edited from last year
 
-	// retrieve pid values from user
-	pFac_ = pEntry_.GetDouble(0.08);
-	iFac_ = iEntry_.GetDouble(0.0);
-	dFac_ = dEntry_.GetDouble(0.02);
+	// retrieve pid values from user //moved to shuffleboard model
+	// pFac_ = pEntry_.GetDouble(0.08);
+	// iFac_ = iEntry_.GetDouble(0.0);
+	// dFac_ = dEntry_.GetDouble(0.02);
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);

@@ -60,6 +60,7 @@ public:
 	 * gets PID values from ini file, sets to 0 if not present
 	 */
 	void GetIniValues();
+	void UpdatePivotPIDController();
 
 private:
 	//double output;
@@ -80,7 +81,7 @@ private:
 	double maxOutput_;
 	double tolerance_;
 
-	void UpdatePivotPIDController();
+	
 
 	/**
 	 * Minimum output to correct for, less would be considered done

@@ -13,7 +13,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance) : AutoCommand(),
 		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
-		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout")),
+		driveStraightPIDLayout_(robot->GetPIDTab().GetLayout("DriveStraight PID", "List Layout")),
 		anglePIDLayout_(driveStraightLayout_.GetLayout("Angle", "List Layout")),
 		distancePIDLayout_(driveStraightLayout_.GetLayout("Distance", "List Layout"))
 		{
@@ -30,12 +30,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
 	aPIDOutputEntry_ = driveStraightLayout_.Add("Angle PID Output", 0.0).GetEntry();
 	dPIDOutputEntry_ = driveStraightLayout_.Add("Distance PID Output", 0.0).GetEntry();
-    aPEntry_ = anglePIDLayout_.Add("P", 0.08).GetEntry();
-    aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
-    aDEntry_ = anglePIDLayout_.Add("D", 0.02).GetEntry();
-    dPEntry_ = distancePIDLayout_.Add("P", 0.8).GetEntry();
-    dIEntry_ = distancePIDLayout_.Add("I", 0.0).GetEntry();
-    dDEntry_ = distancePIDLayout_.Add("D", 0.2).GetEntry();
+ 
 	
 }
 
@@ -129,9 +124,9 @@ void DriveStraightCommand::UpdateAnglePIDController() {
 }
 
 void DriveStraightCommand::UpdateDrivePIDController() {
-	distancePID_->SetP(robot_->GetDriveStraightDriveP());
-	distancePID_->SetI(robot_->GetDriveStraightDriveI());
-	distancePID_->SetD(robot_->GetDriveStraightDriveD());
+	distancePID_->SetP(robot_->GetDriveStraightDistanceP());
+	distancePID_->SetI(robot_->GetDriveStraightDistanceI());
+	distancePID_->SetD(robot_->GetDriveStraightDistanceD());
 }
 
 // update current values

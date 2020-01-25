@@ -94,20 +94,26 @@ class RobotModel {
     double GetVoltage();
 
     // PID Stuff (yay)
-    void CreateDriveStraightPID(); 
-    void CreatePivotPID();
+    void CreatePID(); 
 
     double GetDriveStraightAngleP();
     double GetDriveStraightAngleI();
     double GetDriveStraightAngleD();
 
-    double GetDriveStraightDriveP();
-    double GetDriveStraightDriveI();
-    double GetDriveStraightDriveD();
+    double GetDriveStraightDistanceP();
+    double GetDriveStraightDistanceI();
+    double GetDriveStraightDistanceD();
 
     double GetPivotP();
     double GetPivotI();
     double GetPivotD();
+
+    double GetCurveDistanceP();
+    double GetCurveDistanceI();
+    double GetCurveDistanceD();
+    double GetCurveTurnP();
+    double GetCurveTurnI();
+    double GetCurveTurnD();
 
     void DriveStraightPIDUpdate();
 
@@ -146,6 +152,8 @@ class RobotModel {
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
 
-    frc::ShuffleboardLayout &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_;
+    frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
+    nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_,tDFacNet_;
+
 };

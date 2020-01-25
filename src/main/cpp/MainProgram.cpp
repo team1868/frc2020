@@ -18,6 +18,7 @@ void MainProgram::RobotInit() {
     humanControl_ = new ControlBoard();
     superstructureController_ = new SuperstructureController(robot_, humanControl_);
     driveController_ = new DriveController(robot_, humanControl_);
+    robot_->CreatePID();
     robot_->ResetDriveEncoders();
     printf("I am alive.");
     
