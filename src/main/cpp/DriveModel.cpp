@@ -63,6 +63,9 @@ RobotModel::RobotModel() :
 
 	// initializing double solenoid for gear
 	gearSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARDS_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
+	
+	// initializing solenoid for led light
+	lightSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, LIGHT_SOLENOID_PORT);
 
     // initilizing motor controllers
     leftMaster_ = new WPI_TalonFX(LEFT_DRIVE_MASTER_ID);

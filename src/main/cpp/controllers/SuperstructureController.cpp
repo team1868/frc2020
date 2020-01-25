@@ -47,6 +47,10 @@ void SuperstructureController::Update(){
                 robot_ -> SetHighGear();
             }
 
+            if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
+                robot_ -> SetLight();
+            }
+
             if(humanControl_ -> GetFlywheelDesired()){
                 printf("flywheel button being pressed\n");
                 cout<<"flywheel power "<<flywheelPower_<<endl;
