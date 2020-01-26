@@ -199,11 +199,11 @@ double RobotModel::GetRightDistance() {
 }
 
 double RobotModel::GetLeftVelocity() {
-    return -10*leftDriveEncoder_-> GetIntegratedSensorVelocity();   //TICkS PER SEC
+    return -10*leftDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
 }
 
 double RobotModel::GetRightVelocity() {
-    return 10*rightDriveEncoder_-> GetIntegratedSensorVelocity();   //TICkS PER SEC
+    return 10*rightDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
 }
 
 void RobotModel::ResetDriveEncoders() {

@@ -124,15 +124,8 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+
     robot_->GetColorFromSensor();
-=======
-
-
->>>>>>> 8dfff5be67f6677eedf030e9c39d2a736e1bfc82
->>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
 }
 
 void MainProgram::TestPeriodic() {}

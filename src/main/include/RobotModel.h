@@ -25,7 +25,7 @@ static const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
 static const double HIGH_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft INCORRECT
 static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50; //INCORRECT
 //static const double ENCODER_TICKS = 2048.0; //units per rotation
-static const double ENCODER_TICKS_FOOT = 16424.3;
+static const double ENCODER_TICKS_FOOT = 16424.3; //might need to recheck
 static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
 static const double STOP_VELOCITY_THRESHOLD = 50.0; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
 
@@ -132,15 +132,7 @@ class RobotModel {
     rev::CANSparkMax* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
     void SetClimberOutput(double power);
-<<<<<<< HEAD
     void SetLight(bool setLight);
-=======
-<<<<<<< HEAD
-=======
-    void SetLight();
->>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
-
->>>>>>> 8dfff5be67f6677eedf030e9c39d2a736e1bfc82
     void GetControlPanelColor();
     void GetColorFromSensor(); // delete or move later
 
