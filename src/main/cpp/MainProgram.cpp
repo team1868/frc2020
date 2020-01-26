@@ -116,7 +116,6 @@ void MainProgram::AutonomousPeriodic() {
 void MainProgram::TeleopInit() {
     robot_->ResetDriveEncoders();
     connectZMQ();
-
 }
 
 void MainProgram::TeleopPeriodic() {
@@ -125,8 +124,6 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();
-
-
 }
 
 void MainProgram::TestPeriodic() {}
@@ -144,7 +141,8 @@ void MainProgram::connectZMQ() {
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000);
 		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "MESSAGE", 0);
-		printf("done with try\n");
+		printf("done with try");
+        cout << endl;
     } catch(const zmq::error_t &exc) {
 		printf("TRY CATCH FAILED IN ALIGNWITHTAPECOMMAND INIT\n");
 		std::cerr << exc.what();

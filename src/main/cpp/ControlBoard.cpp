@@ -23,6 +23,8 @@ ControlBoard::ControlBoard() {
 
 	buttons_[kHighGearShift] = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
 	buttons_[kLowGearShift] = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
+	buttons_[kAlignButton] = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
+
 	flywheelDesired_ = false;
 	climberDesired_ = false;
 	flywheelButton_ = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);
@@ -72,7 +74,6 @@ void ControlBoard::ReadControls(){
 	rightJoyY_ = -rightJoy_->GetY();
 	flywheelDesired_ = flywheelButton_ -> IsDown();
 	climberDesired_ = climberButton_ -> IsDown();
-	
 }
 
 bool ControlBoard::GetFlywheelDesired() {
@@ -82,6 +83,7 @@ bool ControlBoard::GetFlywheelDesired() {
 bool ControlBoard::GetClimberDesired() {
 	return climberDesired_;
 }
+
 
 void ControlBoard::ReadAllButtons(){
 	for(std::pair<Buttons, ButtonReader*> b : buttons_){

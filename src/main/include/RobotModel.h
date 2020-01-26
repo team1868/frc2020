@@ -130,7 +130,7 @@ class RobotModel {
     rev::CANSparkMax* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
     void SetClimberOutput(double power);
-    void SetLight();
+    void SetLight(bool setLight);
 
     void GetControlPanelColor();
 

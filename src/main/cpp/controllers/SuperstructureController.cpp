@@ -37,6 +37,7 @@ void SuperstructureController::Reset() { // might not need this
 }
 
 void SuperstructureController::Update(){
+
     RefreshShuffleboard();
 
     switch(currState_) {
@@ -46,9 +47,11 @@ void SuperstructureController::Update(){
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
-
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
-                robot_ -> SetLight();
+                cout << "in light" << endl;
+                robot_ -> SetLight(true);
+            } else {
+                robot_ -> SetLight(false);
             }
 
             if(humanControl_ -> GetFlywheelDesired()){
@@ -67,7 +70,7 @@ void SuperstructureController::Update(){
                 robot_ -> SetClimberOutput(0.0);
             }  
 
-
+            cout << "end update" << endl;
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");

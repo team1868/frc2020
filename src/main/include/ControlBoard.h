@@ -24,7 +24,8 @@ class ControlBoard {
   bool GetDesired(Buttons button);
   bool GetFlywheelDesired();
   bool GetClimberDesired();
-  
+
+
   ~ControlBoard();
 
  private:

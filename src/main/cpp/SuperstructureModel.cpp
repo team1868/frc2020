@@ -19,8 +19,8 @@ void RobotModel::SetClimberOutput(double power){
     }
 }
 
-void RobotModel::SetLight(){
-	lightSolenoid_ -> Set(true);
+void RobotModel::SetLight(bool setLight){
+	lightSolenoid_ -> Set(setLight);
 }
 
 
