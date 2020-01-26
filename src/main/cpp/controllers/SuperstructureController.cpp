@@ -19,9 +19,11 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     currState_ = kInit;
 	nextState_ = kIdle;
 
+    
     flywheelPIDController_ = new rev::CANPIDController(*robot_->GetFlywheelMotor1());
     flywheelEncoder1_ = new rev::CANEncoder(*robot_->GetFlywheelMotor1(), rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
-
+    
+    
     // shuffleboard
     flywheelVelocityEntry_ = frc::Shuffleboard::GetTab("Public_Display").Add("flywheel velocity", 0.0).GetEntry();
     
@@ -47,6 +49,13 @@ void SuperstructureController::Update(){
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+            
+=======
+
+>>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
                 cout << "in light" << endl;
                 robot_ -> SetLight(true);
@@ -54,6 +63,7 @@ void SuperstructureController::Update(){
                 robot_ -> SetLight(false);
             }
 
+>>>>>>> 8dfff5be67f6677eedf030e9c39d2a736e1bfc82
             if(humanControl_ -> GetFlywheelDesired()){
                 printf("flywheel button being pressed\n");
                 cout<<"flywheel power "<<flywheelPower_<<endl;
@@ -61,7 +71,7 @@ void SuperstructureController::Update(){
             } else {
                 robot_ -> SetFlywheelOutput(0.0);
             }  
-            
+
             if(humanControl_ -> GetClimberDesired()){
                 printf("climber button being pressed\n");
                 cout<<"climber power "<<climberPower_<<endl;
@@ -69,14 +79,20 @@ void SuperstructureController::Update(){
             } else {
                 robot_ -> SetClimberOutput(0.0);
             }  
+<<<<<<< HEAD
 
             cout << "end update" << endl;
+=======
+            
+
+>>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
     }
     currState_ = nextState_;
 }
+
 
 void SuperstructureController::FlywheelPIDControllerUpdate() {
     flywheelPIDController_->SetP(flywheelPFac_);
@@ -85,6 +101,7 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
     flywheelPIDController_->SetFF(flywheelFFFac_);
     
 }
+
 
 double SuperstructureController::CalculateFlywheelPowerDesired() {
     return 0.5; // fix

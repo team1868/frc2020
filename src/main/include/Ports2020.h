@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
+#include <frc/WPILib.h>
 
 static const int LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT  = 6;
 static const int RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT = 8;
@@ -30,6 +31,7 @@ static const int GEAR_SHIFT_FORWARDS_SOLENOID_PORT   = 0; // fix
 static const int GEAR_SHIFT_REVERSE_SOLENOID_PORT    = 2; // fix
 static const int LIGHT_SOLENOID_PORT                 = 4; // fix, should control LED light on tape detect camera
 
+
 // PDP Channels 
 static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 1; // drive channels are all wrong
 static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 2;
@@ -43,8 +45,14 @@ static const int OPERATOR_JOY_USB_PORT               = 2;
 static const int OPERATOR_JOY_B_USB_PORT             = 3;
 
 // Buttons
+<<<<<<< HEAD
 static const int HIGH_GEAR_BUTTON_PORT               = 2;
 static const int LOW_GEAR_BUTTON_PORT                = 1;
+=======
+static const int HIGH_GEAR_BUTTON_PORT               = 1;
+static const int LOW_GEAR_BUTTON_PORT                = 2;
+
+>>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
 static const int FLYWHEEL_BUTTON_PORT                = 1; // fix
 static const int CLIMBER_BUTTON_PORT                 = 2; // fix
 static const int ALIGN_TAPE_BUTTON_PORT              = 3; // fix

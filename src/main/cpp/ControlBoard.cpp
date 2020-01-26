@@ -32,7 +32,7 @@ ControlBoard::ControlBoard() {
 	alignButton_ = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	//create buttons here after creating a option in the Buttons enum
 	//example
-	//buttons_[kYourButton] = new ButtonReader(JOY_PORT, BUTTON_PORT);
+	//buttons_[kYourButton] = new ButtonReader(joystickname, BUTTON_PORT);
 	
     ReadControls();
 }

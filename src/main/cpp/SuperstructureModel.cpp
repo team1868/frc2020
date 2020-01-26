@@ -6,6 +6,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "RobotModel.h"
+using namespace std;
+
 
 void RobotModel::SetFlywheelOutput(double power){
     flywheelMotor1_ -> Set(power);
@@ -32,11 +34,19 @@ rev::CANSparkMax* RobotModel::GetFlywheelMotor2() {
     return flywheelMotor2_;
 }
 
+
+void RobotModel::GetColorFromSensor() {
+    detectedColor_ = colorSensor_->GetColor();
+    cout<<"red "<<detectedColor_.red<<endl;
+    cout<<"green "<<detectedColor_.green<<endl;
+    cout<<"blue "<<detectedColor_.blue<<endl;
+}
+
 void RobotModel::GetControlPanelColor() {
-    // blue: cyan 100
-    // green: cyan 100 yellow 100
-    // red: magenta 100 yellow 100
-    // yellow: yellow 100
+    // blue: cyan 100 (255, 0, 255)
+    // green: cyan 100 yellow 100 (0, 255, 0)
+    // red: magenta 100 yellow 100 (255, 0 , 0)
+    // yellow: yellow 100 (255, 255, 0)
 
     if(controlPanelGameData_.length() > 0)
     {

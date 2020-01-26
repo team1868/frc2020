@@ -10,6 +10,7 @@
 #include <AHRS.h>
 #include <ctre/Phoenix.h>
 #include <rev/CANSparkMax.h>
+#include <rev/ColorSensorV3.h>
 #include <frc/DriverStation.h>
 #include <networktables/NetworkTableEntry.h>
 #include <frc/shuffleboard/Shuffleboard.h>
@@ -45,6 +46,7 @@ static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
 // superstructure
 static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
+static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
 
 class RobotModel {
   public:
@@ -130,9 +132,17 @@ class RobotModel {
     rev::CANSparkMax* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
     void SetClimberOutput(double power);
+<<<<<<< HEAD
     void SetLight(bool setLight);
+=======
+<<<<<<< HEAD
+=======
+    void SetLight();
+>>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
 
+>>>>>>> 8dfff5be67f6677eedf030e9c39d2a736e1bfc82
     void GetControlPanelColor();
+    void GetColorFromSensor(); // delete or move later
 
     ~RobotModel();
 
@@ -154,6 +164,8 @@ class RobotModel {
     rev::CANSparkMax *flywheelMotor1_, *flywheelMotor2_;
     rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
     rev::CANEncoder *climberEncoder1_;
+    rev::ColorSensorV3 *colorSensor_;
+    frc::Color detectedColor_;
 
     double navXSpeed_;
     int counter;
