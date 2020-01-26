@@ -104,6 +104,7 @@ class RobotModel {
 
     void SetHighGear();
     void SetLowGear();
+    
 
     // PID Stuff (yay)
     void CreatePID(); 
@@ -131,6 +132,11 @@ class RobotModel {
     rev::CANSparkMax* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
     void SetClimberOutput(double power);
+<<<<<<< HEAD
+=======
+    void SetLight();
+
+>>>>>>> 8dfff5be67f6677eedf030e9c39d2a736e1bfc82
     void GetControlPanelColor();
     void GetColorFromSensor(); // delete or move later
 
@@ -142,6 +148,8 @@ class RobotModel {
     std::string controlPanelGameData_;
     frc::Compressor *compressor_;
     frc::DoubleSolenoid *gearSolenoid_;
+    frc::Solenoid *lightSolenoid_;
+
     AHRS *navX_;
     TalonFXSensorCollection *leftDriveEncoder_, *rightDriveEncoder_;
 

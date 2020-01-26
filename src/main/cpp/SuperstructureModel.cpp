@@ -21,6 +21,11 @@ void RobotModel::SetClimberOutput(double power){
     }
 }
 
+void RobotModel::SetLight(){
+	lightSolenoid_ -> Set(true);
+}
+
+
 rev::CANSparkMax* RobotModel::GetFlywheelMotor1() {
     return flywheelMotor1_;
 }

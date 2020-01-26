@@ -115,6 +115,8 @@ void MainProgram::AutonomousPeriodic() {
 
 void MainProgram::TeleopInit() {
     robot_->ResetDriveEncoders();
+    connectZMQ();
+
 }
 
 void MainProgram::TeleopPeriodic() {
@@ -123,10 +125,89 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();
+<<<<<<< HEAD
     robot_->GetColorFromSensor();
+=======
+
+
+>>>>>>> 8dfff5be67f6677eedf030e9c39d2a736e1bfc82
 }
 
 void MainProgram::TestPeriodic() {}
+
+void MainProgram::connectZMQ() {
+    zmq::context_t * context_ = new zmq::context_t(1);
+
+    try {
+		printf("in try connect to jetson\n");
+        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
+        //change to dynamic jetson address
+        subscriber_->connect("tcp://10.18.68.12:5808");
+		printf("jetson connected to socket\n");
+        int confl = 1;
+		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
+		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000);
+		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "MESSAGE", 0);
+		printf("done with try\n");
+    } catch(const zmq::error_t &exc) {
+		printf("TRY CATCH FAILED IN ALIGNWITHTAPECOMMAND INIT\n");
+		std::cerr << exc.what();
+	}
+}
+
+string MainProgram::readZMQ() {
+    printf("starting read from jetson\n");
+	string contents = s_recv(*subscriber_);
+	printf("contents from jetson: %s\n", contents.c_str());
+    return contents;
+}
+
+void MainProgram::readAngle(string contents) {
+    
+    stringstream ss(contents); //split string contents into a vector
+	vector<string> result;
+    bool abort_;
+    double desiredDeltaAngle_;
+	double desiredDistance_;
+
+	while(ss.good()) {
+		string substr;
+		getline( ss, substr, ' ' );
+		if (substr == "") {
+			continue;
+		}
+		result.push_back( substr );
+	}
+	
+	if(!contents.empty() && result.size() > 1) {
+        desiredDeltaAngle_ = stod(result.at(0));
+		desiredDistance_ = stod(result.at(1));
+	} else {
+		abort_ = true;
+		printf("contents empty in alignwithtape\n");
+	}
+
+	if(result.size() > 1) {
+		desiredDeltaAngle_ = stod(result.at(0));
+		desiredDistance_ = stod(result.at(1))-1.5;//1.6;
+	} else {
+		abort_ = true;
+		desiredDeltaAngle_ = 0.0;
+		desiredDistance_ = 0.0;
+	}
+	printf("desired delta angle at %f in AlignWithTapeCommand\n", desiredDeltaAngle_);
+    printf("desired delta distance at %f in AlignWithTapeCommand\n", desiredDistance_);
+		
+	/*} catch (const std::exception &exc) {
+		printf("TRY CATCH FAILED IN READFROMJETSON\n");
+		std::cout << exc.what() << std::endl;
+		desiredDeltaAngle_ = 0.0;
+		// desiredDistance_ = 0.0;
+	}*/
+
+    printf("end of read angle\n");
+
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<MainProgram>(); }

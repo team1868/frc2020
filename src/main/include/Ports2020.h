@@ -29,6 +29,8 @@ static const int CLIMB_MOTOR_TWO_ID                  = 7; // fix
 static const int PNEUMATICS_CONTROL_MODULE_ID        = 1;
 static const int GEAR_SHIFT_FORWARDS_SOLENOID_PORT   = 0; // fix
 static const int GEAR_SHIFT_REVERSE_SOLENOID_PORT    = 2; // fix
+static const int ALIGN_TAPE_BUTTON_PORT              = 3; // fix
+static const int LIGHT_SOLENOID_PORT                 = 4; // fix, should control LED light on tape detect camera
 
 
 // PDP Channels 

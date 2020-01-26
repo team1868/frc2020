@@ -11,6 +11,7 @@
 
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <zhelpers.hpp>
 
 #include "RobotModel.h"
 #include "ControlBoard.h"
@@ -35,12 +36,18 @@ class MainProgram : public frc::TimedRobot {
   void TeleopInit() override;
   void TeleopPeriodic() override;
   void TestPeriodic() override;
+  void connectZMQ();
+  string readZMQ();
+  void readAngle(string contents);
 
  private:
   RobotModel *robot_;
   SuperstructureController *superstructureController_;
   DriveController *driveController_;
   ControlBoard *humanControl_;
+
+  //zmq
+  zmq::socket_t *subscriber_;
 
   //MotionProfileTestCommand *thing_;
   VelocityPIDSource *thingS_;
