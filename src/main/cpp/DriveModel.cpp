@@ -87,6 +87,7 @@ RobotModel::RobotModel() :
     leftMaster_->SetInverted(false);
 
 	// superstructure robot model
+	
 	flywheelMotor1_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
 	flywheelMotor2_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
 
@@ -98,6 +99,10 @@ RobotModel::RobotModel() :
 	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
 
 	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
+	
+
+	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
+	
 
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 

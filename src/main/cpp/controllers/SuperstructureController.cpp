@@ -19,9 +19,11 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     currState_ = kInit;
 	nextState_ = kIdle;
 
+    
     flywheelPIDController_ = new rev::CANPIDController(*robot_->GetFlywheelMotor1());
     flywheelEncoder1_ = new rev::CANEncoder(*robot_->GetFlywheelMotor1(), rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
-
+    
+    
     // shuffleboard
     flywheelVelocityEntry_ = frc::Shuffleboard::GetTab("Public_Display").Add("flywheel velocity", 0.0).GetEntry();
     
@@ -46,7 +48,7 @@ void SuperstructureController::Update(){
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
-
+            
             if(humanControl_ -> GetFlywheelDesired()){
                 printf("flywheel button being pressed\n");
                 cout<<"flywheel power "<<flywheelPower_<<endl;
@@ -54,7 +56,7 @@ void SuperstructureController::Update(){
             } else {
                 robot_ -> SetFlywheelOutput(0.0);
             }  
-            
+
             if(humanControl_ -> GetClimberDesired()){
                 printf("climber button being pressed\n");
                 cout<<"climber power "<<climberPower_<<endl;
@@ -62,7 +64,7 @@ void SuperstructureController::Update(){
             } else {
                 robot_ -> SetClimberOutput(0.0);
             }  
-
+            
 
             break;
         default:
@@ -71,6 +73,7 @@ void SuperstructureController::Update(){
     currState_ = nextState_;
 }
 
+
 void SuperstructureController::FlywheelPIDControllerUpdate() {
     flywheelPIDController_->SetP(flywheelPFac_);
     flywheelPIDController_->SetI(flywheelIFac_);
@@ -78,6 +81,7 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
     flywheelPIDController_->SetFF(flywheelFFFac_);
     
 }
+
 
 double SuperstructureController::CalculateFlywheelPowerDesired() {
     return 0.5; // fix
