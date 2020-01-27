@@ -48,6 +48,13 @@ static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
 static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
 
+//color sensor
+  static constexpr frc::Color BLUE = frc::Color(0.143, 0.427, 0.429); //0.127, 0.430, 0.442
+  static constexpr frc::Color GREEN = frc::Color(0.197, 0.561, 0.240); //0.177, 0.574, 0.249
+  static constexpr frc::Color RED = frc::Color(0.561, 0.232, 0.114); //0.478, 0.369, 0.153
+  static constexpr frc::Color YELLOW = frc::Color(0.361, 0.524, 0.113); //0.322, 0.880, 0.128
+
+
 class RobotModel {
   public:
     enum Wheels {kLeftWheels, kRightWheels, kAllWheels};
@@ -184,5 +191,6 @@ class RobotModel {
     frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
     nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_,tDFacNet_;
+    nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
 
 };

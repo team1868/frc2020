@@ -73,7 +73,7 @@ void CurveCommand::Init(){
 
   //robot_->SetTalonCoastMode();
   //robot_->SetHighGear(); //TODO tune/fix
-  robot_->ResetDriveEncoders(); //TODODODODODODOD FIXXXXXXXXXXXXXXXXXXXXXX
+  robot_->ResetDriveEncoders(); 
 
   GetPIDValues();
 

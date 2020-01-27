@@ -39,6 +39,7 @@ void MainProgram::RobotPeriodic() {
     driveController_->RefreshShuffleboard();
     superstructureController_->RefreshShuffleboard();
     robot_->RefreshShuffleboard();
+    robot_->GetColorFromSensor();
 }
 
 /**

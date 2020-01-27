@@ -49,7 +49,7 @@ void SuperstructureController::Update(){
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
-<
+
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
                 cout << "in light" << endl;
                 robot_ -> SetLight(true);
