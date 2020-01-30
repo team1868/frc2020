@@ -130,6 +130,9 @@ RobotModel::RobotModel() :
     ratioAllEntry_ = GetFunctionalityTab().Add("Ratio All", ratioAll_).GetEntry();
     ratioDriveEntry_ = GetFunctionalityTab().Add("Ratio Drive", ratioDrive_).GetEntry();
     ratioSuperstructureEntry_ = GetFunctionalityTab().Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
+	rColorEntry_ = GetFunctionalityTab().Add("red", 0.0).GetEntry();
+	gColorEntry_ = GetFunctionalityTab().Add("green", 0.0).GetEntry();
+	bColorEntry_ = GetFunctionalityTab().Add("blue", 0.0).GetEntry();
 }
 
 void RobotModel::SetDriveValues(double left, double right){
@@ -199,11 +202,11 @@ double RobotModel::GetRightDistance() {
 }
 
 double RobotModel::GetLeftVelocity() {
-    return -10*leftDriveEncoder_-> GetIntegratedSensorVelocity();   //TICkS PER SEC
+    return -10*leftDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
 }
 
 double RobotModel::GetRightVelocity() {
-    return 10*rightDriveEncoder_-> GetIntegratedSensorVelocity();   //TICkS PER SEC
+    return 10*rightDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
 }
 
 void RobotModel::ResetDriveEncoders() {
@@ -472,6 +475,10 @@ void RobotModel::RefreshShuffleboard(){
     rightVelocityEntry_.SetDouble(currRightVelocity_);
 	navXYawEntry_.SetDouble(GetNavXYaw());
 	voltageEntry_.SetDouble(GetCurrentVoltage());
+
+	rColorEntry_.SetDouble(detectedColor_.red);
+	gColorEntry_.SetDouble(detectedColor_.green);
+	bColorEntry_.SetDouble(detectedColor_.blue);
 }
 
 RobotModel::~RobotModel(){

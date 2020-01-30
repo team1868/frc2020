@@ -49,7 +49,6 @@ void SuperstructureController::Update(){
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
-            
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
                 cout << "in light" << endl;
                 robot_ -> SetLight(true);
@@ -75,6 +74,7 @@ void SuperstructureController::Update(){
 
             cout << "end update" << endl;
             break;
+            
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
     }
