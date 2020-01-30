@@ -67,6 +67,9 @@ void MainProgram::AutonomousInit() {
     testSequence_->QueueFromString(robot_->GetTestSequence());
 
     printf("before init\n");
+    
+    robot_ -> SetLight(true); //keep camera led light on during auto
+
     testSequence_->Init();
 
     // printf("done with init, moving to periodic\n");
@@ -114,8 +117,13 @@ void MainProgram::AutonomousPeriodic() {
     }
 }
 
+void MainProgram::DisabledInit() {
+    robot_ -> SetLight(false); //turn camera led light off end of auto
+}
+
 void MainProgram::TeleopInit() {
     robot_->ResetDriveEncoders();
+
     connectZMQ();
 }
 
@@ -128,12 +136,12 @@ void MainProgram::TeleopPeriodic() {
     robot_->GetColorFromSensor();
 
 }
-
+/*
 void MainProgram::DisabledPeriodic() {
     humanControl_->ReadControls();
     superstructureController_->DisabledUpdate();
 
-}
+}*/
 
 void MainProgram::TestPeriodic() {}
 

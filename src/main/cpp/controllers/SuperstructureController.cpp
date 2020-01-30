@@ -46,6 +46,8 @@ void SuperstructureController::Update(){
         case kInit:
             break;
         case kIdle:
+            cout << "idle" << endl;
+
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
@@ -81,15 +83,16 @@ void SuperstructureController::Update(){
     currState_ = nextState_;
 }
 
+/*
 void SuperstructureController::DisabledUpdate() {
     if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
-                cout << "in light" << endl;
-                robot_ -> SetLight(true);
+        cout << "in light disabled" << endl;
+        robot_ -> SetLight(true);
     } else {
-                robot_ -> SetLight(false);
+        robot_ -> SetLight(false);
     }
 }
-
+*/
 
 
 void SuperstructureController::FlywheelPIDControllerUpdate() {

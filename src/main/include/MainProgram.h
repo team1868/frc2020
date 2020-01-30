@@ -33,9 +33,10 @@ class MainProgram : public frc::TimedRobot {
   void RobotPeriodic() override;
   void AutonomousInit() override;
   void AutonomousPeriodic() override;
+  void DisabledInit() override;
   void TeleopInit() override;
   void TeleopPeriodic() override;
-  void DisabledPeriodic() override;
+  //void DisabledPeriodic() override;
   void TestPeriodic() override;
   void connectZMQ();
   string readZMQ();
