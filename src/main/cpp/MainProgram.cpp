@@ -67,8 +67,8 @@ void MainProgram::AutonomousInit() {
     testSequence_->QueueFromString(robot_->GetTestSequence());
 
     printf("before init\n");
-    
-    robot_ -> SetLight(true); //keep camera led light on during auto
+
+    //robot_->SetLight(true); //turn on light for auto
 
     testSequence_->Init();
 
