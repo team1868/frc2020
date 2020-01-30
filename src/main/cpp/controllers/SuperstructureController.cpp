@@ -81,6 +81,16 @@ void SuperstructureController::Update(){
     currState_ = nextState_;
 }
 
+void SuperstructureController::DisabledUpdate() {
+    if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
+                cout << "in light" << endl;
+                robot_ -> SetLight(true);
+    } else {
+                robot_ -> SetLight(false);
+    }
+}
+
+
 
 void SuperstructureController::FlywheelPIDControllerUpdate() {
     flywheelPIDController_->SetP(flywheelPFac_);

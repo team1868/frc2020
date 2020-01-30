@@ -129,6 +129,12 @@ void MainProgram::TeleopPeriodic() {
 
 }
 
+void MainProgram::DisabledPeriodic() {
+    humanControl_->ReadControls();
+    superstructureController_->DisabledUpdate();
+
+}
+
 void MainProgram::TestPeriodic() {}
 
 void MainProgram::connectZMQ() {
