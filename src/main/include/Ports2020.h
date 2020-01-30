@@ -45,14 +45,9 @@ static const int OPERATOR_JOY_USB_PORT               = 2;
 static const int OPERATOR_JOY_B_USB_PORT             = 3;
 
 // Buttons
-<<<<<<< HEAD
-static const int HIGH_GEAR_BUTTON_PORT               = 2;
-static const int LOW_GEAR_BUTTON_PORT                = 1;
-=======
 static const int HIGH_GEAR_BUTTON_PORT               = 1;
 static const int LOW_GEAR_BUTTON_PORT                = 2;
 
->>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
 static const int FLYWHEEL_BUTTON_PORT                = 1; // fix
 static const int CLIMBER_BUTTON_PORT                 = 2; // fix
 static const int ALIGN_TAPE_BUTTON_PORT              = 3; // fix

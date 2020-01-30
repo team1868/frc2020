@@ -49,13 +49,7 @@ void SuperstructureController::Update(){
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
             
-=======
-
->>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
                 cout << "in light" << endl;
                 robot_ -> SetLight(true);
@@ -63,7 +57,6 @@ void SuperstructureController::Update(){
                 robot_ -> SetLight(false);
             }
 
->>>>>>> 8dfff5be67f6677eedf030e9c39d2a736e1bfc82
             if(humanControl_ -> GetFlywheelDesired()){
                 printf("flywheel button being pressed\n");
                 cout<<"flywheel power "<<flywheelPower_<<endl;
@@ -79,13 +72,8 @@ void SuperstructureController::Update(){
             } else {
                 robot_ -> SetClimberOutput(0.0);
             }  
-<<<<<<< HEAD
 
             cout << "end update" << endl;
-=======
-            
-
->>>>>>> fb73fd83a759dc5cbe2e33a464b5f997d5991d54
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
