@@ -39,7 +39,6 @@ void MainProgram::RobotPeriodic() {
     driveController_->RefreshShuffleboard();
     superstructureController_->RefreshShuffleboard();
     robot_->RefreshShuffleboard();
-    robot_->GetColorFromSensor();
 }
 
 /**
@@ -134,6 +133,7 @@ void MainProgram::TeleopPeriodic() {
     driveController_->Update();
     superstructureController_->Update();
     robot_->GetColorFromSensor();
+    robot_->MatchColor();
 
 }
 /*
