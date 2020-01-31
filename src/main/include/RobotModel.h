@@ -140,6 +140,7 @@ class RobotModel {
     void SetFlywheelOutput(double power);
     void SetClimberOutput(double power);
     void SetLight(bool setLight);
+
     void GetControlPanelColor();
     void GetColorFromSensor(); // delete or move later
 
