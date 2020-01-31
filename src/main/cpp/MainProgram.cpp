@@ -133,9 +133,6 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();
-<<<<<<< HEAD
-    }
-=======
     robot_->GetColorFromSensor();
 
 }
@@ -145,7 +142,6 @@ void MainProgram::DisabledPeriodic() {
     superstructureController_->DisabledUpdate();
 
 }*/
->>>>>>> fff8693a1f27435a62e36416f8f7e4f4892a2424
 
 void MainProgram::TestPeriodic() {}
 
