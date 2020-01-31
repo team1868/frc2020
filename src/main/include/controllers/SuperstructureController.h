@@ -13,6 +13,7 @@ class SuperstructureController {
  public:
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
   void Update();
+  void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
