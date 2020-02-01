@@ -51,7 +51,7 @@ void DriveStraightCommand::Init() {
 	printf("IN DRIVESTRAIGHT INIT\n");
 	isDone_ = false;
 
-	robot_->ResetDriveEncoders();  //TODO sketch!!! works but we need to fix
+	robot_->ResetDriveEncoders();  
 
 	leftMotorOutput_ = 0.0;
 	rightMotorOutput_ = 0.0;

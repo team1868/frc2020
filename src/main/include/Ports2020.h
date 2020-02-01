@@ -33,10 +33,10 @@ static const int LIGHT_SOLENOID_PORT                 = 4; // fix, should control
 
 
 // PDP Channels 
-static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 1; // drive channels are all wrong
-static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 2;
-static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 14;
-static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 15;
+static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 0; // drive channels are all wrong
+static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 1;
+static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 15;
+static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 14;
 
 // Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;

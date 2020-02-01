@@ -89,6 +89,17 @@ RobotModel::RobotModel() :
     leftSlaveA_->SetInverted(false);
     leftMaster_->SetInverted(false);
 
+	ctre::phoenix::motorcontrol::SupplyCurrentLimitConfiguration currentLimitConfig;
+	currentLimitConfig.enable = true;
+	currentLimitConfig.triggerThresholdCurrent = 32.0;
+	currentLimitConfig.triggerThresholdTime = 100.0;
+	currentLimitConfig.triggerThresholdCurrent = 30.0;
+
+	leftMaster_->ConfigSupplyCurrentLimit(currentLimitConfig);
+	rightMaster_->ConfigSupplyCurrentLimit(currentLimitConfig);
+	leftSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
+    rightSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
+
 	// superstructure robot model
 	
 	flywheelMotor1_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
@@ -125,6 +136,10 @@ RobotModel::RobotModel() :
     rightVelocityEntry_ = GetFunctionalityTab().Add("Right Velocity", 0.0).GetEntry();
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
 	voltageEntry_ = GetModeTab().Add("Battery Voltage", 12.5).GetEntry();
+
+	leftCurrentEntry_ = GetFunctionalityTab().Add("Left Master Current", 0.0).GetEntry();
+	rightCurrentEntry_ = GetFunctionalityTab().Add("Right Master Current", 0.0).GetEntry();
+
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
     lowGearTurnSFrictionEntry_ = GetModeTab().Add("LT total SF", LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER).GetEntry();
@@ -195,14 +210,14 @@ double RobotModel::GetRightEncoderValue(){
     return rightDriveEncoder_->GetIntegratedSensorPosition();
 }
 
-//return feet
+//return feetGetLeftDis
 double RobotModel::GetLeftDistance() {
-    return GetLeftEncoderValue()/ENCODER_TICKS_FOOT;
+    return GetLeftEncoderValue()/HGEAR_ENCODER_TICKS_FOOT; //ft //assumes high gear
 }
 
 //return feet
 double RobotModel::GetRightDistance() {
-	return GetRightEncoderValue()/ENCODER_TICKS_FOOT;
+	return GetRightEncoderValue()/HGEAR_ENCODER_TICKS_FOOT; //ft //assumes high gear
 }
 
 double RobotModel::GetLeftVelocity() {
@@ -285,12 +300,19 @@ double RobotModel::CheckMotorCurrentOver(int channel, double power){
 }
 
 void RobotModel::UpdateCurrent(int channel) {
-    leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
-	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
-	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
-	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+    // leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
+	// leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
+	// rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
+	// rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+
+	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
+	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
+	rightDriveACurrent_ = rightMaster_->GetSupplyCurrent();
+	rightDriveBCurrent_ = rightMaster_->GetSupplyCurrent();
+
     compressorCurrent_ = compressor_->GetCompressorCurrent();
     roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
+
 
     // TODO fix and check logic
 	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE)) && !lastOver_){
@@ -407,10 +429,12 @@ double RobotModel::ModifyCurrent(int channel, double value){
 
 void RobotModel::SetHighGear(){
 	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
+	ResetDriveEncoders();
 }
 
 void RobotModel::SetLowGear(){
 	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
+	ResetDriveEncoders();
 }
 
 void RobotModel::ZeroNavXYaw() {
@@ -483,6 +507,16 @@ void RobotModel::RefreshShuffleboard(){
 	rColorEntry_.SetDouble(detectedColor_.red);
 	gColorEntry_.SetDouble(detectedColor_.green);
 	bColorEntry_.SetDouble(detectedColor_.blue);
+
+	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
+	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
+	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
+	if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
+		std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
+	}
+	std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
+	std::cout<< "time: " << GetTime() << std::endl;
+
 }
 
 RobotModel::~RobotModel(){
@@ -515,6 +549,8 @@ RobotModel::~RobotModel(){
 
 	navXYawEntry_.Delete();
 	voltageEntry_.Delete();
+	leftCurrentEntry_.Delete();
+	rightCurrentEntry_.Delete();
 
 	maxOutputEntry_.Delete();
 	minVoltEntry_.Delete();
