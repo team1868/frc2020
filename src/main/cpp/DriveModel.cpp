@@ -105,6 +105,10 @@ RobotModel::RobotModel() :
 	
 
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
+	colorMatcher_.AddColorMatch(kBlueTarget);
+	colorMatcher_.AddColorMatch(kGreenTarget);
+	colorMatcher_.AddColorMatch(kRedTarget);
+	colorMatcher_.AddColorMatch(kYellowTarget); 
 	
 
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();

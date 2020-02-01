@@ -39,7 +39,6 @@ void MainProgram::RobotPeriodic() {
     driveController_->RefreshShuffleboard();
     superstructureController_->RefreshShuffleboard();
     robot_->RefreshShuffleboard();
-    robot_->GetColorFromSensor();
 }
 
 /**
@@ -134,6 +133,7 @@ void MainProgram::TeleopPeriodic() {
     driveController_->Update();
     superstructureController_->Update();
     robot_->GetColorFromSensor();
+    robot_->MatchColor();
 
 }
 /*
@@ -158,8 +158,6 @@ void MainProgram::connectZMQ() {
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000);
 		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "MESSAGE", 0);
-		printf("done with try");
-        cout << endl;
     } catch(const zmq::error_t &exc) {
 		printf("TRY CATCH FAILED IN ALIGNWITHTAPECOMMAND INIT\n");
 		std::cerr << exc.what();
