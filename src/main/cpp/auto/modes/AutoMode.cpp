@@ -24,7 +24,7 @@ AutoMode::AutoMode(RobotModel* robot, ControlBoard *controlBoard) {
 	printf("Done constructing AutoMode\n");
 }
 
-void AutoMode:: QueueFromString(string autoSequence) {
+void AutoMode::QueueFromString(string autoSequence) {
     firstCommand_ = NULL;
 		currentCommand_ = NULL;
 		AutoCommand *lastCommand = NULL;

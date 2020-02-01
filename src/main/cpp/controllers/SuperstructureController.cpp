@@ -50,12 +50,8 @@ void SuperstructureController::Update(){
             if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
                 robot_ -> SetHighGear();
             }
-            if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
-                printf("in light\n");
-                robot_ -> SetLight(true);
-            } else {
-                robot_->SetLight(false);
-            }
+
+            //light for align tape turned on and off in align tape command
 
             if(humanControl_ -> GetFlywheelDesired()){
                 printf("flywheel button being pressed\n");

@@ -19,12 +19,13 @@
 #include "controllers/DriveController.h"
 #include "auto/commands/DriveStraightCommand.h"
 #include "auto/commands/PivotCommand.h"
+#include "auto/commands/AlignTapeCommand.h"
+#include "auto/commands/TrenchAlignTapeCommand.h"
 #include "auto/commands/WaitingCommand.h"
 #include "auto/modes/TestMode.h"
 #include "auto/commands/profiling/MotionProfileTestCommand.h"
 
 //TODO remove this
-#include "auto/commands/PivotCommand.h"
 #include "auto/PIDsource/PIDInputSource.h"
 
 class MainProgram : public frc::TimedRobot {
@@ -47,6 +48,13 @@ class MainProgram : public frc::TimedRobot {
   SuperstructureController *superstructureController_;
   DriveController *driveController_;
   ControlBoard *humanControl_;
+  TalonEncoderPIDSource *talonEncoderSource_;
+  NavXPIDSource *navX_;
+
+  bool aligningTape_;
+  AlignTapeCommand *alignTapeCommand;
+  TrenchAlignTapeCommand *trenchAlignTapeCommand;
+
 
   //zmq
   zmq::socket_t *subscriber_;

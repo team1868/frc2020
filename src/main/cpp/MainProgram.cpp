@@ -22,6 +22,8 @@ void MainProgram::RobotInit() {
     robot_->ResetDriveEncoders();
     robot_->CreatePID();
     printf("I am alive.");
+
+    aligningTape_ = false;
     
     autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();
     sequence_ = autoSequenceEntry_.GetString("t 0");
@@ -59,6 +61,9 @@ void MainProgram::AutonomousInit() {
 
     //robot_->SetTestSequence("c 1.0 90.0 0");
     robot_->SetTestSequence(sequence_);
+
+    navX_ = new NavXPIDSource(robot_);
+    talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
 
@@ -123,6 +128,8 @@ void MainProgram::DisabledInit() {
 void MainProgram::TeleopInit() {
     robot_->ResetDriveEncoders();
 
+    aligningTape_ = false;
+
     connectZMQ();
 }
 
@@ -135,12 +142,73 @@ void MainProgram::TeleopPeriodic() {
     robot_->GetColorFromSensor();
     robot_->MatchColor();
 
+    //align tapes not at trench (like auto)
+    if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
+        aligningTape_ = true;
+        alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false); //nav, talon variables don't exist yet
+        alignTapeCommand->Init();
+        printf("starting teleop align tapes\n");
+        return;
+    } else if (aligningTape_){
+        // printf("in part align tape :))\n");
+        /*
+        //humanControl_->ReadControls();
+        //autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
+        //autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
+        if(autoJoyVal_ != 0.0 || aCommand == NULL){ //TODO mild sketch, check deadbands more
+            printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband or aCommand is NULL %d\n\n", autoJoyVal_, aCommand==NULL);
+            delete aCommand;
+            aCommand = NULL;
+            aligningTape_ = false;
+        } else */
+        if(!alignTapeCommand->IsDone()){
+            alignTapeCommand->Update(0.0, 0.0); //(currTimeSec_, deltaTimeSec_); - variables don't exist yet
+            printf("updated align tape command\n");
+        } else { //isDone() is true
+            delete alignTapeCommand;
+            alignTapeCommand = NULL;
+            aligningTape_ = false;
+            printf("destroyed align tape command\n");
+        }
+        return;
+    }
+
+    //trench align tapes
+    if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kTrenchAlignButton)){
+        aligningTape_ = true;
+        trenchAlignTapeCommand = new TrenchAlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false); //nav, talon variables don't exist yet
+        trenchAlignTapeCommand->Init();
+        printf("starting teleop align tapes\n");
+        return;
+    } else if (aligningTape_){
+        // printf("in part align tape :))\n");
+        /*
+        //humanControl_->ReadControls();
+        //autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
+        //autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
+        if(autoJoyVal_ != 0.0 || aCommand == NULL){ //TODO mild sketch, check deadbands more
+            printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband or aCommand is NULL %d\n\n", autoJoyVal_, aCommand==NULL);
+            delete aCommand;
+            aCommand = NULL;
+            aligningTape_ = false;
+        } else */
+        if(!trenchAlignTapeCommand->IsDone()){
+            trenchAlignTapeCommand->Update(0.0, 0.0); //(currTimeSec_, deltaTimeSec_); - variables don't exist yet
+            printf("updated align tape command\n");
+        } else { //isDone() is true
+            delete trenchAlignTapeCommand;
+            trenchAlignTapeCommand = NULL;
+            aligningTape_ = false;
+            printf("destroyed align tape command\n");
+        }
+        return;
+    }
+
 }
 /*
 void MainProgram::DisabledPeriodic() {
     humanControl_->ReadControls();
     superstructureController_->DisabledUpdate();
-
 }*/
 
 void MainProgram::TestPeriodic() {}
@@ -176,8 +244,6 @@ void MainProgram::readAngle(string contents) {
     stringstream ss(contents); //split string contents into a vector
 	vector<string> result;
     bool abort_;
-    double desiredDeltaAngle_;
-	double desiredDistance_;
 
 	while(ss.good()) {
 		string substr;
@@ -189,23 +255,23 @@ void MainProgram::readAngle(string contents) {
 	}
 	
 	if(!contents.empty() && result.size() > 1) {
-        desiredDeltaAngle_ = stod(result.at(0));
-		desiredDistance_ = stod(result.at(1));
+        robot_->SetDeltaAngle( stod(result.at(0)) );
+		robot_->SetDistance( stod(result.at(1)) );
 	} else {
 		abort_ = true;
 		printf("contents empty in alignwithtape\n");
 	}
 
 	if(result.size() > 1) {
-		desiredDeltaAngle_ = stod(result.at(0));
-		desiredDistance_ = stod(result.at(1))-1.5;//1.6;
+		robot_->SetDeltaAngle( stod(result.at(0)) );
+		robot_->SetDistance( stod(result.at(1))-1.5 );//1.6;
 	} else {
 		abort_ = true;
-		desiredDeltaAngle_ = 0.0;
-		desiredDistance_ = 0.0;
+		robot_->SetDeltaAngle(0.0);
+		robot_->SetDistance(0.0);
 	}
-	printf("desired delta angle at %f in AlignWithTapeCommand\n", desiredDeltaAngle_);
-    printf("desired delta distance at %f in AlignWithTapeCommand\n", desiredDistance_);
+	printf("desired delta angle at %f in AlignWithTapeCommand\n", robot_->GetDeltaAngle());
+    printf("desired delta distance at %f in AlignWithTapeCommand\n", robot_->GetDistance());
 		
 	/*} catch (const std::exception &exc) {
 		printf("TRY CATCH FAILED IN READFROMJETSON\n");

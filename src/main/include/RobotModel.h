@@ -71,6 +71,7 @@ class RobotModel {
     frc::ShuffleboardTab& GetPIDTab();
     frc::ShuffleboardTab& GetAutoOffsetTab();
     
+
     // drive robot model
     void SetDriveValues(double left, double right);
     void SetDriveValues(RobotModel::Wheels wheels, double value);
@@ -102,6 +103,9 @@ class RobotModel {
     std::string GetTestSequence();
     void SetTestSequence(std::string testSequence);
 
+    std::string GetAlignSequence();
+    void SetAlignSequence(std::string alignSequence);
+
     double GetCurrentVoltage();
     double GetTotalCurrent();
     void UpdateCurrent(int channel);
@@ -118,6 +122,12 @@ class RobotModel {
     void SetHighGear();
     void SetLowGear();
     
+    //for align tape - in drive model
+    void SetDeltaAngle(double angle);
+    void SetDistance(double distance);
+    double GetDeltaAngle();
+    double GetDistance();
+
 
     // PID Stuff (yay)
     void CreatePID(); 
@@ -166,6 +176,7 @@ class RobotModel {
 
     NavXPIDSource* navXSource_;
     std::string testSequence_;
+    std::string alignSequence_;
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     rev::CANSparkMax *flywheelMotor1_, *flywheelMotor2_;
@@ -193,6 +204,9 @@ class RobotModel {
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;
+
+    double desiredDeltaAngle_;//for align tape
+	  double desiredDistance_;//for align tape
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;

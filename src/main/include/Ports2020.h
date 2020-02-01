@@ -51,3 +51,4 @@ static const int LOW_GEAR_BUTTON_PORT                = 2;
 static const int FLYWHEEL_BUTTON_PORT                = 1; // fix
 static const int CLIMBER_BUTTON_PORT                 = 2; // fix
 static const int ALIGN_TAPE_BUTTON_PORT              = 3; // fix
+static const int TRENCH_ALIGN_TAPE_BUTTON_PORT       = 4; // fix

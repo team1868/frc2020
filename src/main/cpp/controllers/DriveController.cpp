@@ -44,6 +44,8 @@ void DriveController::Update(){
     } else {
         TankDrive(-leftJoyY, -rightJoyY);
     }
+        
+
 }
 
 void DriveController::RefreshShuffleboard(){

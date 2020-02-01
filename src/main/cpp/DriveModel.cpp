@@ -413,6 +413,24 @@ void RobotModel::SetLowGear(){
 	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
 }
 
+
+//align tapes
+void RobotModel::SetDeltaAngle(double angle) {
+	desiredDeltaAngle_ = angle;
+}
+void RobotModel::SetDistance(double distance) {
+	desiredDistance_ = distance;
+}
+
+double RobotModel::GetDeltaAngle() {
+	return desiredDeltaAngle_;
+}
+double RobotModel::GetDistance() {
+	return desiredDistance_;
+}
+
+
+
 void RobotModel::ZeroNavXYaw() {
 	navX_->ZeroYaw();
 	printf("Zeroed Yaw\n");
@@ -453,6 +471,15 @@ std::string RobotModel::GetTestSequence() {
 void RobotModel::SetTestSequence(std::string testSequence) {
 	testSequence_ = testSequence;
 }
+
+std::string RobotModel::GetAlignSequence() {
+	return alignSequence_;
+}
+
+void RobotModel::SetAlignSequence(std::string alignSequence) {
+	alignSequence_ = alignSequence;
+}
+
 
 void RobotModel::CreateNavX(){
 	navXSource_ = new NavXPIDSource(this);
