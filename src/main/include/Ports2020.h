@@ -35,7 +35,6 @@ static const int LIGHT_SOLENOID_PORT                 = 4; // fix, should control
 
 
 // PDP Channels 
-<<<<<<< HEAD
 static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 0; 
 static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 1;
 static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 15;
@@ -46,12 +45,8 @@ static const int CLIMB_MOTOR_A_PDP_CHAN              = 5;
 static const int CLIMB_MOTOR_B_PDP_CHAN              = 6;
 static const int CONTROL_PANEL_PDP_CHAN              = 7;
 
-=======
-static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 0; // drive channels are all wrong
-static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 1;
-static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 15;
-static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 14;
->>>>>>> b3e8c1d33a2fcfb3e7ab0aad5464f7aa5fdb4165
+// this comment has been added in attempt to fix merge conflicts
+
 
 // Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;

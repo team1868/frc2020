@@ -21,6 +21,7 @@ RobotModel::RobotModel() :
 	curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
 	curveDistancePIDLayout_(curvePIDLayout_.GetLayout("Curve Distance", "List Layout"))
     {
+		// this comment has been added in attempt to fix merge conflicts
     
     frc::Shuffleboard::SelectTab("Driveteam Display");
 
@@ -309,27 +310,20 @@ double RobotModel::CheckMotorCurrentOver(int channel, double power){
 }
 
 void RobotModel::UpdateCurrent(int channel) {
-<<<<<<< HEAD
-    leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
+    /* leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
-	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
-	flywheelACurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_A_PDP_CHAN);
+	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN); */
+	flywheelACurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_A_PDP_CHAN); // test if this works
 	flywheelBCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_B_PDP_CHAN);
 	climbACurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_A_PDP_CHAN);
 	climbBCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_B_PDP_CHAN);
-=======
-    // leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
-	// leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
-	// rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
-	// rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
 
 	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
 	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
 	rightDriveACurrent_ = rightMaster_->GetSupplyCurrent();
 	rightDriveBCurrent_ = rightMaster_->GetSupplyCurrent();
 
->>>>>>> b3e8c1d33a2fcfb3e7ab0aad5464f7aa5fdb4165
     compressorCurrent_ = compressor_->GetCompressorCurrent();
     roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
 
