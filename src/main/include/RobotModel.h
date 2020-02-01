@@ -48,6 +48,7 @@ static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
 static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
 static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
+static const double COLOR_CONFIDENCE = 0.9; // fix so it can be implemented, color matcher complaining about const double
 
 //color sensor
 static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);
@@ -55,6 +56,7 @@ static constexpr frc::Color kGreenTarget = frc::Color(0.193, 0.555, 0.252);
 static constexpr frc::Color kRedTarget = frc::Color(0.444, 0.388, 0.171);
 static constexpr frc::Color kYellowTarget = frc::Color(0.318, 0.535, 0.147);
 
+// todo - delete later
 static constexpr frc::Color BLUE = frc::Color(0.143, 0.427, 0.429); //0.127, 0.430, 0.442
 static constexpr frc::Color GREEN = frc::Color(0.197, 0.561, 0.240); //0.177, 0.574, 0.249
 static constexpr frc::Color RED = frc::Color(0.561, 0.232, 0.114); //0.478, 0.369, 0.153
@@ -85,6 +87,7 @@ class RobotModel {
     void RefreshShuffleboard();
 
     void StartCompressor();
+    double GetPressureSwitchValue();
     
     void ZeroNavXYaw();
     double GetNavXYaw();
@@ -144,12 +147,15 @@ class RobotModel {
     rev::CANSparkMax* GetFlywheelMotor1();
     rev::CANSparkMax* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
+    
     void SetClimberOutput(double power);
+    
     void SetLight(bool setLight);
 
-    void GetControlPanelColor();
-    void GetColorFromSensor(); // delete or move later
-    void MatchColor();
+    void SetControlPanelOutput(double power);
+    std::string GetControlPanelGameData();
+    void GetColorFromSensor(); 
+    std::string MatchColor();
 
     ~RobotModel();
 
@@ -169,13 +175,16 @@ class RobotModel {
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     rev::CANSparkMax *flywheelMotor1_, *flywheelMotor2_;
+    
     rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
     rev::CANEncoder *climberEncoder1_;
     
+    WPI_TalonSRX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
+    
 
     double navXSpeed_;
     int counter;
@@ -190,6 +199,7 @@ class RobotModel {
 
     double ratioAll_, ratioDrive_, ratioSuperstructure_;
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
+    double flywheelACurrent_, flywheelBCurrent_, climbACurrent_, climbBCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;

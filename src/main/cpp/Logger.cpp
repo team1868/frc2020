@@ -17,9 +17,9 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 		 logData.open(GetTimeStamp((std::string("/home/lvuser/%F_%H_%M_datalog.txt")).c_str()), std::ofstream::out | std::ofstream::app);
 		    logData << "Time, Left Encoder, Right Encoder, Left Wheel Speed,"
 		        << "Right Wheel Speed, Yaw, Roll, Pitch, Voltage, Total Current, "
-		        << "Left Drive A Current, Left Drive B Current, Right Drive A Current, "
-		        << "Right Drive B Current, "
-		        << " Compressor Current, "
+		        << "Left Drive A Current, Left Drive B Current, Right Drive A Current, Right Drive B Current, "
+		        << "Flywheel A Current, Flywheel, Flywheel B Current, Climber A Current, Climber B Current, "
+		        << "Compressor Current, "
 		        << "RoboRIO Current, Total Power, Total Energy, Pressure, "
 		        << "Left Joy X, Left Joy Y, "
 		        << "Right Joy X, Right Joy Y, Reverse (currently not in), Arcade, "
@@ -27,30 +27,33 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 	}
 
 	logData << myRobot->GetTime() << ", " <<
-	      myRobot->GetLeftEncoderValue() << ", " <<
-	      myRobot->GetRightEncoderValue() << ", " <<
+	    myRobot->GetLeftEncoderValue() << ", " <<
+	    myRobot->GetRightEncoderValue() << ", " <<
 	    //   myRobot->GetWheelSpeed(RobotModel::kLeftWheels) << ", " <<
 	    //   myRobot->GetWheelSpeed(RobotModel::kRightWheels) << ", " <<
-	      myRobot->GetNavXYaw() << ", " <<
-	      myRobot->GetNavXRoll() << ", " <<
-	      myRobot->GetNavXPitch() << ", " <<
-		//TODO ADD IN
-	    //   myRobot->GetVoltage() << ", " <<
-	    //   myRobot->GetTotalCurrent() << ", " <<
-	    //   myRobot->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
-	    //   myRobot->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
-	    //   myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
-	    //   myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
-	    //   myRobot->GetCompressorCurrent() << ", " <<
-	    //   myRobot->GetRIOCurrent() << ", " <<
-	    //   myRobot->GetTotalPower() << ", " <<
-	      //myRobot->GetTotalEnergy() << ", " <<
-	      //myRobot->GetPressureSensorVal() << ", " <<
-	      //myRobot->GetIntakeMotorSpeed() << ", " <<
-		  myHumanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kX) << ", " <<
-		  myHumanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY) << ", " <<
-	      myHumanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) << ", " <<
-	      myHumanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY);
+	    myRobot->GetNavXYaw() << ", " <<
+	    myRobot->GetNavXRoll() << ", " <<
+	    myRobot->GetNavXPitch() << ", " <<
+	    
+		myRobot->GetVoltage() << ", " <<
+	    myRobot->GetTotalCurrent() << ", " <<
+	    myRobot->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
+	    myRobot->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
+	    myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
+	    myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(FLYWHEEL_MOTOR_A_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(FLYWHEEL_MOTOR_B_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(CLIMB_MOTOR_A_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(CLIMB_MOTOR_B_PDP_CHAN) << ", " <<
+	    myRobot->GetCompressorCurrent() << ", " <<
+	    myRobot->GetRIOCurrent() << ", " <<
+	    myRobot->GetTotalPower() << ", " <<
+	    myRobot->GetTotalEnergy() << ", " <<
+	    myRobot->GetPressureSwitchValue() << ", " <<
+		myHumanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kX) << ", " <<
+		myHumanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY) << ", " <<
+	    myHumanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) << ", " <<
+	    myHumanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY);
 	  logData.flush();
 }
 /* format:

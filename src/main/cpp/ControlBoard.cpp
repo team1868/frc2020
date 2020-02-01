@@ -24,12 +24,11 @@ ControlBoard::ControlBoard() {
 	buttons_[kHighGearShift] = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
 	buttons_[kLowGearShift] = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	buttons_[kAlignButton] = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
+	buttons_[kFlywheelButton] = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);
+	buttons_[kClimberButton] = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
+	buttons_[kControlPanelStage2Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_2_BUTTON_PORT);
+	buttons_[kControlPanelStage3Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_3_BUTTON_PORT);
 
-	flywheelDesired_ = false;
-	climberDesired_ = false;
-	flywheelButton_ = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);
-	climberButton_ = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
-	alignButton_ = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	//create buttons here after creating a option in the Buttons enum
 	//example
 	//buttons_[kYourButton] = new ButtonReader(joystickname, BUTTON_PORT);
@@ -72,18 +71,7 @@ void ControlBoard::ReadControls(){
 	leftJoyY_ = -leftJoy_->GetY();
     rightJoyX_ = rightJoy_->GetX();
 	rightJoyY_ = -rightJoy_->GetY();
-	flywheelDesired_ = flywheelButton_ -> IsDown();
-	climberDesired_ = climberButton_ -> IsDown();
 }
-
-bool ControlBoard::GetFlywheelDesired() {
-	return flywheelDesired_;
-}
-
-bool ControlBoard::GetClimberDesired() {
-	return climberDesired_;
-}
-
 
 void ControlBoard::ReadAllButtons(){
 	for(std::pair<Buttons, ButtonReader*> b : buttons_){

@@ -17,6 +17,9 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
+  void ControlPanelStage2(double power);
+  void ControlPanelStage3(double power);
+  void ControlPanelFinalSpin();
   void Reset();
 
   enum SuperstructureState {
@@ -37,6 +40,9 @@ class SuperstructureController {
   double flywheelPower_, desiredRPM_; 
   double climberPower_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+  int controlPanelCounter_;
+  double initialControlPanelTime_;
+  std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
 
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
 };
