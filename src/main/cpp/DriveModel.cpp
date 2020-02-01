@@ -21,7 +21,7 @@ RobotModel::RobotModel() :
 	curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
 	curveDistancePIDLayout_(curvePIDLayout_.GetLayout("Curve Distance", "List Layout"))
     {
-		// this comment has been added in attempt to fix merge conflicts
+
     
     frc::Shuffleboard::SelectTab("Driveteam Display");
 

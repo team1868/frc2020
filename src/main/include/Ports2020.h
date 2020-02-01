@@ -45,9 +45,6 @@ static const int CLIMB_MOTOR_A_PDP_CHAN              = 5;
 static const int CLIMB_MOTOR_B_PDP_CHAN              = 6;
 static const int CONTROL_PANEL_PDP_CHAN              = 7;
 
-// this comment has been added in attempt to fix merge conflicts
-
-
 // Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;
 static const int RIGHT_JOY_USB_PORT                  = 1;
