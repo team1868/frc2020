@@ -22,11 +22,15 @@
 #include "Ports2020.h"
 #define PI 3.141592
 
-static const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
-static const double HIGH_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft INCORRECT
-static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50; //INCORRECT
-//static const double ENCODER_TICKS = 2048.0; //units per rotation
+static const double WHEEL_DIAMETER = 0.5; //ft
+//static const double HIGH_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; 
+//static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50; 
+static const double HIGH_GEAR_RATIO = 44*44*44/(14*30*20.0);
+static const double LOW_GEAR_RATIO = 50*44*44/(14*30*14.0);
+static const double ENCODER_TICKS = 2048.0; //ticks per motor rotation
 static const double ENCODER_TICKS_FOOT = 16424.3; //might need to recheck
+static const double HGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*HIGH_GEAR_RATIO/(WHEEL_DIAMETER*PI); //ticks per ft
+static const double LGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*LOW_GEAR_RATIO/(WHEEL_DIAMETER*PI); // ticks per ft
 static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
 static const double STOP_VELOCITY_THRESHOLD = 50.0; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
 
@@ -204,6 +208,7 @@ class RobotModel {
     bool compressorOff_, lastOver_;
     double colorConfidence_;
 
+
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
@@ -214,5 +219,6 @@ class RobotModel {
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
     nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_,tDFacNet_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
+    nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
 
 };
