@@ -33,6 +33,7 @@ ControlBoard::ControlBoard() {
 	buttons_[kClimberButton] = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
 	buttons_[kControlPanelStage2Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_2_BUTTON_PORT);
 	buttons_[kControlPanelStage3Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_3_BUTTON_PORT);
+	buttons_[kIntakeSeriesButton] = new ButtonReader(operatorJoy_, INTAKE_SERIES_BUTTON_PORT);
 
 	//flywheelDesired_ = false;
 	//climberDesired_ = false;

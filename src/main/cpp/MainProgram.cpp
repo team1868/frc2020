@@ -63,7 +63,7 @@ void MainProgram::AutonomousInit() {
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
 
-    robot_->SetTestSequence("d 1.0"); //for testing high gear and low gear
+    robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
     navX_ = new NavXPIDSource(robot_);
     talonEncoderSource_ = new TalonEncoderPIDSource(robot_);

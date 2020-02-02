@@ -35,7 +35,9 @@ RobotModel::RobotModel() :
 	lastLeftVelocity_, lastRightVelocity_ = 0.0;
     lastLeftEncoderValue_ = lastRightEncoderValue_ = 0.0;
     currLeftEncoderValue_ = currRightEncoderValue_ = 0.0;
-    
+    initialLeftEncoderValue_ = initialRightEncoderValue_ = 0.0;
+
+
       // initializing timer
     timer_ = new frc::Timer();
     timer_->Start();
@@ -110,17 +112,24 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	flywheelACurrent_ = 0.0;
-	flywheelBCurrent_ = 0.0;
-	climbACurrent_ = 0.0;
-	climbBCurrent_ = 0.0;
-
 	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
 	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
 
 	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
+
+	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
+    intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
+	gyro_ = new frc::AnalogGyro(GYRO_PORT);
+	gyro_->InitGyro();
+	gyro_->Calibrate();
+	currGyroAngle_ = lastGyroAngle_ = 0.0;
+	currTime_ = lastTime_ = 0.0;
+
+    funnelIndexMotor_ = new WPI_VictorSPX(FUNNEL_INDEX_MOTOR_ID);
+    elevatorIndexMotor1_ = new WPI_TalonSRX(ELEVATOR_INDEX_MOTOR_ONE_ID);
+	elevatorIndexMotor2_ = new WPI_TalonSRX(ELEVATOR_INDEX_MOTOR_TWO_ID);
 	
-	controlPanelMotor_ = new WPI_TalonSRX(CONTROL_PANEL_MOTOR_ID);
+	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
 	colorMatcher_.AddColorMatch(kBlueTarget);
@@ -129,6 +138,16 @@ RobotModel::RobotModel() :
 	colorMatcher_.AddColorMatch(kYellowTarget); 
 
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+
+	flywheelOneCurrent_ = 0.0;
+	flywheelTwoCurrent_ = 0.0;
+	climbOneCurrent_ = 0.0;
+	climbTwoCurrent_ = 0.0;
+	intakeRollersCurrent_ = 0.0;
+	intakeWristCurrent_ = 0.0;
+	funnelIndexCurrent_ = 0.0;
+	elevatorOneCurrent_ = 0.0;
+	elevatorTwoCurrent_ = 0.0;
 
 	// shuffleboard
     testSequence_ = "";
@@ -201,6 +220,9 @@ bool RobotModel::CollisionDetected() {
 		collisionDetected = true;
 		printf("From ENCODER\n");
 	}
+
+	collisionDetected = false; // For testing drive straight
+
 	return collisionDetected;
 }
 
@@ -209,11 +231,20 @@ double RobotModel::GetTime(){
 }
 
 double RobotModel::GetLeftEncoderValue(){
-    return -leftDriveEncoder_->GetIntegratedSensorPosition();
+	//left needs to be negated //finds difference from stored value
+    return -(leftDriveEncoder_->GetIntegratedSensorPosition() - initialLeftEncoderValue_); 
 }
 
 double RobotModel::GetRightEncoderValue(){
-    return rightDriveEncoder_->GetIntegratedSensorPosition();
+    return (rightDriveEncoder_->GetIntegratedSensorPosition() - initialRightEncoderValue_);
+}
+
+double RobotModel::GetRawLeftEncoderValue() {
+	return leftDriveEncoder_->GetIntegratedSensorPosition();
+}
+
+double RobotModel::GetRawRightEncoderValue() {
+	return rightDriveEncoder_->GetIntegratedSensorPosition();
 }
 
 //return feetGetLeftDis
@@ -235,8 +266,9 @@ double RobotModel::GetRightVelocity() {
 }
 
 void RobotModel::ResetDriveEncoders() {
-	leftDriveEncoder_->SetIntegratedSensorPosition(0.0);
-    rightDriveEncoder_->SetIntegratedSensorPosition(0.0);
+	//read curr encoder values and store as initial encoder values
+	initialLeftEncoderValue_ = GetRawLeftEncoderValue();
+	initialRightEncoderValue_ = GetRawRightEncoderValue();
 }
 
 bool RobotModel::GetLeftEncoderStopped() {
@@ -314,10 +346,15 @@ void RobotModel::UpdateCurrent(int channel) {
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN); */
-	flywheelACurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_A_PDP_CHAN); // test if this works
-	flywheelBCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_B_PDP_CHAN);
-	climbACurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_A_PDP_CHAN);
-	climbBCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_B_PDP_CHAN);
+	flywheelOneCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN); // test if this works
+	flywheelTwoCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN);
+	climbOneCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN);
+	climbTwoCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN);
+	intakeRollersCurrent_ = pdp_->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN);
+	intakeWristCurrent_ = pdp_->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN);
+	funnelIndexCurrent_ = pdp_->GetCurrent(FUNNEL_INDEX_MOTOR_PDP_CHAN);
+	elevatorOneCurrent_ = pdp_->GetCurrent(ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN);
+	elevatorTwoCurrent_ = pdp_->GetCurrent(ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN);
 
 	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
 	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
@@ -331,6 +368,8 @@ void RobotModel::UpdateCurrent(int channel) {
     // TODO fix and check logic
 	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE)) && !lastOver_){
 		printf("\nSTOPPING\n\n");
+		printf("Total Current %f", GetTotalCurrent());
+		printf("Voltage %f", GetVoltage());
 		compressorOff_ = true;
 		if(ratioAll_-0.05 > MIN_RATIO_ALL_CURRENT){
 			ratioAll_ -= 0.05;
@@ -386,20 +425,43 @@ double RobotModel::GetCurrent(int channel) {
 	switch(channel) {
 	case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
 		return rightDriveACurrent_;
+		break;
 	case RIGHT_DRIVE_MOTOR_B_PDP_CHAN:
 		return rightDriveBCurrent_;
+		break;
 	case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
 		return leftDriveACurrent_;
+		break;
 	case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
 		return leftDriveBCurrent_;
-	case FLYWHEEL_MOTOR_A_PDP_CHAN:
-		return flywheelACurrent_;
-	case FLYWHEEL_MOTOR_B_PDP_CHAN:
-		return flywheelBCurrent_;
-	case CLIMB_MOTOR_A_PDP_CHAN:
-		return climbACurrent_;
-	case CLIMB_MOTOR_B_PDP_CHAN:
-		return climbBCurrent_;
+		break;
+	case FLYWHEEL_MOTOR_ONE_PDP_CHAN:
+		return flywheelOneCurrent_;
+		break;
+	case FLYWHEEL_MOTOR_TWO_PDP_CHAN:
+		return flywheelTwoCurrent_;
+		break;
+	case CLIMB_MOTOR_ONE_PDP_CHAN:
+		return climbOneCurrent_;
+		break;
+	case CLIMB_MOTOR_TWO_PDP_CHAN:
+		return climbTwoCurrent_;
+		break;
+	case INTAKE_ROLLERS_MOTOR_PDP_CHAN:
+		return intakeRollersCurrent_;
+		break;
+	case INTAKE_WRIST_MOTOR_PDP_CHAN:
+		return intakeWristCurrent_;
+		break;
+	case FUNNEL_INDEX_MOTOR_PDP_CHAN:
+		return funnelIndexCurrent_;
+		break;
+	case ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN:
+		return elevatorOneCurrent_;
+		break;
+	case ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN:
+		return elevatorTwoCurrent_;
+		break;
 	default:
     	printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");
 		return -1;
@@ -557,15 +619,21 @@ void RobotModel::RefreshShuffleboard(){
 	gColorEntry_.SetDouble(detectedColor_.green);
 	bColorEntry_.SetDouble(detectedColor_.blue);
 
+	lastGyroAngle_ = currGyroAngle_;
+	currGyroAngle_ = GetGyroAngle();
+	lastTime_ = currTime_;
+	currTime_ = GetTime();
+
+
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
-	if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
-		std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
-	}
-	std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
-	std::cout<< "time: " << GetTime() << std::endl;
 
+	// if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
+	// 	std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
+	// }
+	//std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
+	//std::cout<< "time: " << GetTime() << std::endl;
 }
 
 RobotModel::~RobotModel(){

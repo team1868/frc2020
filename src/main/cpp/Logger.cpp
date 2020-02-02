@@ -18,7 +18,9 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 		    logData << "Time, Left Encoder, Right Encoder, Left Wheel Speed,"
 		        << "Right Wheel Speed, Yaw, Roll, Pitch, Voltage, Total Current, "
 		        << "Left Drive A Current, Left Drive B Current, Right Drive A Current, Right Drive B Current, "
-		        << "Flywheel A Current, Flywheel, Flywheel B Current, Climber A Current, Climber B Current, "
+		        << "Flywheel One Current, Flywheel Two Current, Climber One Current, Climber Two Current, "
+				<< "Intake Rollers Current, Intake Wrist Current, "
+				<< "Funnel Index Current, Elevator Bottom Current, Elevator Top Current, "
 		        << "Compressor Current, "
 		        << "RoboRIO Current, Total Power, Total Energy, Pressure, "
 		        << "Left Joy X, Left Joy Y, "
@@ -41,10 +43,17 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 	    myRobot->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
 	    myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
 	    myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(FLYWHEEL_MOTOR_A_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(FLYWHEEL_MOTOR_B_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(CLIMB_MOTOR_A_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(CLIMB_MOTOR_B_PDP_CHAN) << ", " <<
+		
+		myRobot->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(FUNNEL_INDEX_MOTOR_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN) << ", " <<
+
 	    myRobot->GetCompressorCurrent() << ", " <<
 	    myRobot->GetRIOCurrent() << ", " <<
 	    myRobot->GetTotalPower() << ", " <<

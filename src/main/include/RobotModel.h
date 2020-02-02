@@ -87,6 +87,8 @@ class RobotModel {
     
     double GetLeftEncoderValue();
     double GetRightEncoderValue();
+    double GetRawLeftEncoderValue();
+    double GetRawRightEncoderValue();
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();
@@ -163,6 +165,15 @@ class RobotModel {
     void SetFlywheelOutput(double power);
     
     void SetClimberOutput(double power);
+
+    void SetIntakeRollersOutput(double power);
+    void SetIntakeWristOutput(double power);
+    AnalogGyro* GetGyro();
+    double GetGyroAngle();
+
+    void SetFunnelIndexOutput(double power);
+    void SetTopElevatorOutput(double power);
+    void SetBottomElevatorOutput(double power);
     
     void SetLight(bool setLight);
 
@@ -194,18 +205,25 @@ class RobotModel {
     rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
     rev::CANEncoder *climberEncoder1_;
     
-    WPI_TalonSRX *controlPanelMotor_;
+    WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
-    
+
+    WPI_VictorSPX *intakeRollersMotor_;
+    WPI_TalonSRX *intakeWristMotor_;
+    AnalogGyro *gyro_;
+
+    WPI_VictorSPX *funnelIndexMotor_;
+    WPI_TalonSRX *elevatorIndexMotor1_, *elevatorIndexMotor2_; // motor1 - bottom, motor2 - top
 
     double navXSpeed_;
     int counter;
     double leftDriveOutput_, rightDriveOutput_;
     double lastLeftEncoderValue_, lastRightEncoderValue_;
     double currLeftEncoderValue_, currRightEncoderValue_;
+    double initialLeftEncoderValue_, initialRightEncoderValue_;
 
     double currLeftVelocity_ , currRightVelocity_;
     double lastLeftVelocity_, lastRightVelocity_;
@@ -214,13 +232,17 @@ class RobotModel {
 
     double ratioAll_, ratioDrive_, ratioSuperstructure_;
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
-    double flywheelACurrent_, flywheelBCurrent_, climbACurrent_, climbBCurrent_;
+    double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
+    double intakeRollersCurrent_, intakeWristCurrent_, funnelIndexCurrent_, elevatorOneCurrent_, elevatorTwoCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;
 
     double desiredDeltaAngle_;//for align tape
 	  double desiredDistance_;//for align tape
+    double currGyroAngle_, lastGyroAngle_;
+    double currTime_, lastTime_;
+    double targetVelocity_;
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;

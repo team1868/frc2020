@@ -25,6 +25,13 @@ static const int FLYWHEEL_MOTOR_TWO_ID               = 5;
 static const int CLIMB_MOTOR_ONE_ID                  = 6; 
 static const int CLIMB_MOTOR_TWO_ID                  = 7; 
 static const int CONTROL_PANEL_MOTOR_ID              = 8;
+static const int INTAKE_ROLLERS_MOTOR_ID             = 9;
+static const int INTAKE_WRIST_MOTOR_ID               = 10;
+static const int FUNNEL_INDEX_MOTOR_ID               = 11;
+static const int ELEVATOR_INDEX_MOTOR_ONE_ID         = 12;
+static const int ELEVATOR_INDEX_MOTOR_TWO_ID         = 13;
+
+
 
 // Pneumatics
 static const int PNEUMATICS_CONTROL_MODULE_ID        = 0;
@@ -39,11 +46,16 @@ static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN         = 0;
 static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN         = 1;
 static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN        = 15;
 static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN        = 14;
-static const int FLYWHEEL_MOTOR_A_PDP_CHAN           = 3; // superstructure pdp channels are all wrong
-static const int FLYWHEEL_MOTOR_B_PDP_CHAN           = 4;
-static const int CLIMB_MOTOR_A_PDP_CHAN              = 5;
-static const int CLIMB_MOTOR_B_PDP_CHAN              = 6;
-static const int CONTROL_PANEL_PDP_CHAN              = 7;
+static const int FLYWHEEL_MOTOR_ONE_PDP_CHAN         = 3; // superstructure pdp channels are all wrong
+static const int FLYWHEEL_MOTOR_TWO_PDP_CHAN         = 4;
+static const int CLIMB_MOTOR_ONE_PDP_CHAN            = 5;
+static const int CLIMB_MOTOR_TWO_PDP_CHAN            = 6;
+static const int CONTROL_PANEL_MOTOR_PDP_CHAN        = 7;
+static const int INTAKE_ROLLERS_MOTOR_PDP_CHAN       = 8;
+static const int INTAKE_WRIST_MOTOR_PDP_CHAN         = 9;
+static const int FUNNEL_INDEX_MOTOR_PDP_CHAN         = 10;
+static const int ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN   = 11;
+static const int ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN   = 12;
 
 // Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;
@@ -58,6 +70,11 @@ static const int LOW_GEAR_BUTTON_PORT                = 2;
 static const int FLYWHEEL_BUTTON_PORT                = 1; // fix all superstructure button ports
 static const int CLIMBER_BUTTON_PORT                 = 2; 
 static const int ALIGN_TAPE_BUTTON_PORT              = 3;
+
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT       = 4;
-static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT   = 5;
-static const int CONTROL_PANEL_STAGE_3_BUTTON_PORT   = 6; 
+static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT   = 4;
+static const int CONTROL_PANEL_STAGE_3_BUTTON_PORT   = 5; 
+static const int INTAKE_SERIES_BUTTON_PORT           = 6;
+
+// SENSORS
+static const int GYRO_PORT                           = 1; // ANALOG IO

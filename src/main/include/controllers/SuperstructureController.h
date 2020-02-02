@@ -37,9 +37,13 @@ class SuperstructureController {
   uint32_t currState_;
 	uint32_t nextState_;
 
-  double flywheelPower_, desiredRPM_; 
-  double climberPower_;
+  double flywheelPower_, desiredRPM_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+
+  double climberPower_;
+
+  double desiredIntakeWristAngle_;
+  
   int controlPanelCounter_;
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
