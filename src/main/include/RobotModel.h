@@ -84,6 +84,8 @@ class RobotModel {
     
     double GetLeftEncoderValue();
     double GetRightEncoderValue();
+    double GetRawLeftEncoderValue();
+    double GetRawRightEncoderValue();
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();
@@ -186,6 +188,7 @@ class RobotModel {
     double leftDriveOutput_, rightDriveOutput_;
     double lastLeftEncoderValue_, lastRightEncoderValue_;
     double currLeftEncoderValue_, currRightEncoderValue_;
+    double initialLeftEncoderValue_, initialRightEncoderValue_;
 
     double currLeftVelocity_ , currRightVelocity_;
     double lastLeftVelocity_, lastRightVelocity_;
@@ -197,7 +200,6 @@ class RobotModel {
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;
-
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
