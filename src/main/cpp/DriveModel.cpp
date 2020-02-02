@@ -35,7 +35,9 @@ RobotModel::RobotModel() :
 	lastLeftVelocity_, lastRightVelocity_ = 0.0;
     lastLeftEncoderValue_ = lastRightEncoderValue_ = 0.0;
     currLeftEncoderValue_ = currRightEncoderValue_ = 0.0;
-    
+    initialLeftEncoderValue_ = initialRightEncoderValue_ = 0.0;
+
+
       // initializing timer
     timer_ = new frc::Timer();
     timer_->Start();
@@ -218,6 +220,9 @@ bool RobotModel::CollisionDetected() {
 		collisionDetected = true;
 		printf("From ENCODER\n");
 	}
+
+	collisionDetected = false; // For testing drive straight
+
 	return collisionDetected;
 }
 
@@ -226,11 +231,20 @@ double RobotModel::GetTime(){
 }
 
 double RobotModel::GetLeftEncoderValue(){
-    return -leftDriveEncoder_->GetIntegratedSensorPosition();
+	//left needs to be negated //finds difference from stored value
+    return -(leftDriveEncoder_->GetIntegratedSensorPosition() - initialLeftEncoderValue_); 
 }
 
 double RobotModel::GetRightEncoderValue(){
-    return rightDriveEncoder_->GetIntegratedSensorPosition();
+    return (rightDriveEncoder_->GetIntegratedSensorPosition() - initialRightEncoderValue_);
+}
+
+double RobotModel::GetRawLeftEncoderValue() {
+	return leftDriveEncoder_->GetIntegratedSensorPosition();
+}
+
+double RobotModel::GetRawRightEncoderValue() {
+	return rightDriveEncoder_->GetIntegratedSensorPosition();
 }
 
 //return feetGetLeftDis
@@ -252,8 +266,9 @@ double RobotModel::GetRightVelocity() {
 }
 
 void RobotModel::ResetDriveEncoders() {
-	leftDriveEncoder_->SetIntegratedSensorPosition(0.0);
-    rightDriveEncoder_->SetIntegratedSensorPosition(0.0);
+	//read curr encoder values and store as initial encoder values
+	initialLeftEncoderValue_ = GetRawLeftEncoderValue();
+	initialRightEncoderValue_ = GetRawRightEncoderValue();
 }
 
 bool RobotModel::GetLeftEncoderStopped() {
@@ -353,6 +368,8 @@ void RobotModel::UpdateCurrent(int channel) {
     // TODO fix and check logic
 	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE)) && !lastOver_){
 		printf("\nSTOPPING\n\n");
+		printf("Total Current %f", GetTotalCurrent());
+		printf("Voltage %f", GetVoltage());
 		compressorOff_ = true;
 		if(ratioAll_-0.05 > MIN_RATIO_ALL_CURRENT){
 			ratioAll_ -= 0.05;
@@ -584,12 +601,12 @@ void RobotModel::RefreshShuffleboard(){
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
+
 	// if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
 	// 	std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
 	// }
 	//std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
 	//std::cout<< "time: " << GetTime() << std::endl;
-
 }
 
 RobotModel::~RobotModel(){

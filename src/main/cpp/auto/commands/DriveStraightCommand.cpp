@@ -53,6 +53,7 @@ void DriveStraightCommand::Init() {
 
 	robot_->ResetDriveEncoders();  
 
+
 	leftMotorOutput_ = 0.0;
 	rightMotorOutput_ = 0.0;
 
@@ -138,7 +139,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 
     //  error check
-	if ((fabs(distancePID_->GetError()) < 1.0) && (robot_->CollisionDetected())) {
+	if ((fabs(distancePID_->GetError()) < 1.0) && (robot_->CollisionDetected())) { // not working
 		numTimesStopped_++;
 		printf("%f Collision Detected \n", robot_->GetTime());
 	} else {
@@ -146,7 +147,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 
 	lastDistance_ = talonEncoderSource_->PIDGet();
-	if((numTimesOnTarget_ > 1) || (diffDriveTime_ > driveTimeoutSec_) || (numTimesStopped_ > 0)) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
+	if((numTimesOnTarget_ > 5) || (diffDriveTime_ > driveTimeoutSec_) || (numTimesStopped_ > 0)) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
 		if (diffDriveTime_ > driveTimeoutSec_) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
 			printf(" %f DRIVESTRAIGHT TIMED OUT!! :) go get chicken tenders %f\n", robot_->GetTime(), diffDriveTime_);
 		}
@@ -268,7 +269,7 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	distancePID_ = NULL;
 
 	rTolerance_ = 0.5;
-	dTolerance_ = 3.0 / 12.0;
+	dTolerance_ = 2.0 / 12.0;
 
 	rMaxOutput_ = 0.15;
 	dMaxOutput_ = 0.85;
