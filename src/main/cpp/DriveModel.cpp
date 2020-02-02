@@ -21,6 +21,7 @@ RobotModel::RobotModel() :
 	curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
 	curveDistancePIDLayout_(curvePIDLayout_.GetLayout("Curve Distance", "List Layout"))
     {
+
     
     frc::Shuffleboard::SelectTab("Driveteam Display");
 
@@ -89,27 +90,43 @@ RobotModel::RobotModel() :
     leftSlaveA_->SetInverted(false);
     leftMaster_->SetInverted(false);
 
+	ctre::phoenix::motorcontrol::SupplyCurrentLimitConfiguration currentLimitConfig;
+	currentLimitConfig.enable = true;
+	currentLimitConfig.triggerThresholdCurrent = 32.0;
+	currentLimitConfig.triggerThresholdTime = 100.0;
+	currentLimitConfig.triggerThresholdCurrent = 30.0;
+
+	leftMaster_->ConfigSupplyCurrentLimit(currentLimitConfig);
+	rightMaster_->ConfigSupplyCurrentLimit(currentLimitConfig);
+	leftSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
+    rightSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
+
 	// superstructure robot model
 	
 	flywheelMotor1_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
 	flywheelMotor2_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
 
-	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :)
+	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
+
+	flywheelACurrent_ = 0.0;
+	flywheelBCurrent_ = 0.0;
+	climbACurrent_ = 0.0;
+	climbBCurrent_ = 0.0;
 
 	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
 	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
 
 	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 	
+	controlPanelMotor_ = new WPI_TalonSRX(CONTROL_PANEL_MOTOR_ID);
 
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
 	colorMatcher_.AddColorMatch(kBlueTarget);
 	colorMatcher_.AddColorMatch(kGreenTarget);
 	colorMatcher_.AddColorMatch(kRedTarget);
 	colorMatcher_.AddColorMatch(kYellowTarget); 
-	
 
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 
@@ -125,6 +142,10 @@ RobotModel::RobotModel() :
     rightVelocityEntry_ = GetFunctionalityTab().Add("Right Velocity", 0.0).GetEntry();
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
 	voltageEntry_ = GetModeTab().Add("Battery Voltage", 12.5).GetEntry();
+
+	leftCurrentEntry_ = GetFunctionalityTab().Add("Left Master Current", 0.0).GetEntry();
+	rightCurrentEntry_ = GetFunctionalityTab().Add("Right Master Current", 0.0).GetEntry();
+
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
     lowGearTurnSFrictionEntry_ = GetModeTab().Add("LT total SF", LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER).GetEntry();
@@ -195,14 +216,14 @@ double RobotModel::GetRightEncoderValue(){
     return rightDriveEncoder_->GetIntegratedSensorPosition();
 }
 
-//return feet
+//return feetGetLeftDis
 double RobotModel::GetLeftDistance() {
-    return GetLeftEncoderValue()/ENCODER_TICKS_FOOT;
+    return GetLeftEncoderValue()/HGEAR_ENCODER_TICKS_FOOT; //ft //assumes high gear
 }
 
 //return feet
 double RobotModel::GetRightDistance() {
-	return GetRightEncoderValue()/ENCODER_TICKS_FOOT;
+	return GetRightEncoderValue()/HGEAR_ENCODER_TICKS_FOOT; //ft //assumes high gear
 }
 
 double RobotModel::GetLeftVelocity() {
@@ -260,6 +281,10 @@ double RobotModel::GetCompressorCurrent() {
 	return compressorCurrent_;
 }
 
+double RobotModel::GetPressureSwitchValue() {
+	return 0.0; // fix
+}
+
 double RobotModel::GetRIOCurrent() {
 	return roboRIOCurrent_;
 }
@@ -285,12 +310,23 @@ double RobotModel::CheckMotorCurrentOver(int channel, double power){
 }
 
 void RobotModel::UpdateCurrent(int channel) {
-    leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
+    /* leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
-	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN); */
+	flywheelACurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_A_PDP_CHAN); // test if this works
+	flywheelBCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_B_PDP_CHAN);
+	climbACurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_A_PDP_CHAN);
+	climbBCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_B_PDP_CHAN);
+
+	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
+	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
+	rightDriveACurrent_ = rightMaster_->GetSupplyCurrent();
+	rightDriveBCurrent_ = rightMaster_->GetSupplyCurrent();
+
     compressorCurrent_ = compressor_->GetCompressorCurrent();
     roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
+
 
     // TODO fix and check logic
 	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE)) && !lastOver_){
@@ -356,6 +392,14 @@ double RobotModel::GetCurrent(int channel) {
 		return leftDriveACurrent_;
 	case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
 		return leftDriveBCurrent_;
+	case FLYWHEEL_MOTOR_A_PDP_CHAN:
+		return flywheelACurrent_;
+	case FLYWHEEL_MOTOR_B_PDP_CHAN:
+		return flywheelBCurrent_;
+	case CLIMB_MOTOR_A_PDP_CHAN:
+		return climbACurrent_;
+	case CLIMB_MOTOR_B_PDP_CHAN:
+		return climbBCurrent_;
 	default:
     	printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");
 		return -1;
@@ -407,10 +451,12 @@ double RobotModel::ModifyCurrent(int channel, double value){
 
 void RobotModel::SetHighGear(){
 	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
+	ResetDriveEncoders();
 }
 
 void RobotModel::SetLowGear(){
 	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
+	ResetDriveEncoders();
 }
 
 
@@ -510,6 +556,16 @@ void RobotModel::RefreshShuffleboard(){
 	rColorEntry_.SetDouble(detectedColor_.red);
 	gColorEntry_.SetDouble(detectedColor_.green);
 	bColorEntry_.SetDouble(detectedColor_.blue);
+
+	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
+	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
+	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
+	if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
+		std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
+	}
+	std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
+	std::cout<< "time: " << GetTime() << std::endl;
+
 }
 
 RobotModel::~RobotModel(){
@@ -542,6 +598,8 @@ RobotModel::~RobotModel(){
 
 	navXYawEntry_.Delete();
 	voltageEntry_.Delete();
+	leftCurrentEntry_.Delete();
+	rightCurrentEntry_.Delete();
 
 	maxOutputEntry_.Delete();
 	minVoltEntry_.Delete();

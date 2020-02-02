@@ -19,6 +19,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     currState_ = kInit;
 	nextState_ = kIdle;
 
+    controlPanelCounter_ = 0;
     
     flywheelPIDController_ = new rev::CANPIDController(*robot_->GetFlywheelMotor1());
     flywheelEncoder1_ = new rev::CANEncoder(*robot_->GetFlywheelMotor1(), rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
@@ -47,27 +48,46 @@ void SuperstructureController::Update(){
         case kIdle:
             cout << "idle" << endl;
 
-            if (humanControl_ -> GetDesired(ControlBoard::Buttons::kHighGearShift)){
-                robot_ -> SetHighGear();
+            if (humanControl_->GetDesired(ControlBoard::Buttons::kHighGearShift)){
+                robot_-> SetHighGear();
             }
 
             //light for align tape turned on and off in align tape command
+            /*if (humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
+                printf("in light\n");
+                robot_->SetLight(true);
+            } else {
+                robot_->SetLight(false);
+            }*/
 
-            if(humanControl_ -> GetFlywheelDesired()){
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelButton)){
                 printf("flywheel button being pressed\n");
                 cout<<"flywheel power "<<flywheelPower_<<endl;
-                robot_ -> SetFlywheelOutput(flywheelPower_);
+                robot_->SetFlywheelOutput(flywheelPower_);
             } else {
-                robot_ -> SetFlywheelOutput(0.0);
+                robot_->SetFlywheelOutput(0.0);
             }  
 
-            if(humanControl_ -> GetClimberDesired()){
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimberButton)){
                 printf("climber button being pressed\n");
                 cout<<"climber power "<<climberPower_<<endl;
-                robot_ -> SetClimberOutput(climberPower_);
+                robot_->SetClimberOutput(climberPower_);
             } else {
-                robot_ -> SetClimberOutput(0.0);
+                robot_->SetClimberOutput(0.0);
             }  
+
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
+                ControlPanelStage2(0.6); // test to see which speed works best
+            } else {
+                robot_->SetControlPanelOutput(0.0);
+            }
+
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage3Button)){
+                // need to do the logic and match for this, based on the placement of the color sensor
+                ControlPanelStage3(0.5); // test to see which speed works best         
+            } else {
+                robot_->SetControlPanelOutput(0.0);
+            }
             
 
             break;
@@ -88,18 +108,84 @@ void SuperstructureController::DisabledUpdate() {
 }
 */
 
-
 void SuperstructureController::FlywheelPIDControllerUpdate() {
     flywheelPIDController_->SetP(flywheelPFac_);
     flywheelPIDController_->SetI(flywheelIFac_);
     flywheelPIDController_->SetD(flywheelDFac_);
-    flywheelPIDController_->SetFF(flywheelFFFac_);
+    flywheelPIDController_->SetFF(flywheelFFFac_);                   // renegade 
     
 }
 
-
 double SuperstructureController::CalculateFlywheelPowerDesired() {
     return 0.5; // fix
+}
+
+void SuperstructureController::ControlPanelStage2(double power){
+    initialControlPanelColor_ = robot_->MatchColor();
+    previousControlPanelColor_ = initialControlPanelColor_;
+    while (controlPanelCounter_ < 8) {
+        robot_->SetControlPanelOutput(power);
+        if (initialControlPanelColor_.compare(robot_->MatchColor()) == 0 && previousControlPanelColor_.compare(robot_->MatchColor()) != 0) {
+            controlPanelCounter_++;
+        }
+        previousControlPanelColor_ = robot_->MatchColor();
+    }
+}
+
+void SuperstructureController::ControlPanelStage3(double power) {
+    // blue: cyan 100 (255, 0, 255)
+    // green: cyan 100 yellow 100 (0, 255, 0)
+    // red: magenta 100 yellow 100 (255, 0 , 0)
+    // yellow: yellow 100 (255, 255, 0)
+
+
+    if(robot_->GetControlPanelGameData().length() > 0)
+    {
+        switch(robot_->GetControlPanelGameData()[0])
+        {
+            case 'B' :
+                colorDesired_ = "Red";
+                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                     robot_->SetControlPanelOutput(power);
+                }
+                ControlPanelFinalSpin();
+                break;
+            case 'G' :
+                colorDesired_ = "Yellow";
+                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                     robot_->SetControlPanelOutput(power);
+                }
+                ControlPanelFinalSpin();
+                break;
+            case 'R' :
+                colorDesired_ = "Blue";
+                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                     robot_->SetControlPanelOutput(power);
+                }
+                ControlPanelFinalSpin();
+                break;
+            case 'Y' :
+                colorDesired_ = "Green";
+                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                     robot_->SetControlPanelOutput(power);
+                }
+                ControlPanelFinalSpin();
+                break;
+            default :
+                printf("this data is corrupt");
+                break;
+        }
+    } else {
+        printf("no data received yet");
+        // no data received yet
+    }
+}
+
+void SuperstructureController::ControlPanelFinalSpin() {
+    initialControlPanelTime_ = robot_->GetTime();
+    while(robot_->GetTime()-initialControlPanelTime_ < 2.0) { // fix time
+        robot_->SetControlPanelOutput(0.3); // fix power
+    }
 }
 
 void SuperstructureController::RefreshShuffleboard(){

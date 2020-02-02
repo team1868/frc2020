@@ -55,12 +55,15 @@ void MainProgram::RobotPeriodic() {
  * make sure to add them to the chooser code above as well.
  */
 void MainProgram::AutonomousInit() {
+    robot_->SetHighGear();
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
 
     //robot_->SetTestSequence("c 1.0 90.0 0");
-    robot_->SetTestSequence(sequence_);
+    //robot_->SetTestSequence(sequence_);
+
+    robot_->SetTestSequence("d 1.0"); //for testing high gear and low gear
 
     navX_ = new NavXPIDSource(robot_);
     talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -75,6 +78,7 @@ void MainProgram::AutonomousInit() {
     //robot_->SetLight(true); //turn on light for auto
 
     testSequence_->Init();
+    std::cout<< "init time: " << robot_->GetTime() << std::endl;
 
     // printf("done with init, moving to periodic\n");
 
@@ -104,6 +108,7 @@ void MainProgram::AutonomousInit() {
 }
 
 void MainProgram::AutonomousPeriodic() {
+    robot_->RefreshShuffleboard();
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
     // }
