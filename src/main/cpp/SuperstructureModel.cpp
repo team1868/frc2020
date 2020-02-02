@@ -88,4 +88,8 @@ AnalogGyro* RobotModel::GetGyro(){
 	return gyro_;
 }
 
+double RobotModel::GetGyroAngle(){
+    return gyro_->GetAngle();
+}
+
 

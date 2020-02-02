@@ -157,6 +157,7 @@ class RobotModel {
     void SetIntakeRollersOutput(double power);
     void SetIntakeWristOutput(double power);
     AnalogGyro* GetGyro();
+    double GetGyroAngle();
 
     void SetFunnelIndexOutput(double power);
     void SetTopElevatorOutput(double power);
@@ -222,6 +223,9 @@ class RobotModel {
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;
+    double currGyroAngle_, lastGyroAngle_;
+    double currTime_, lastTime_;
+    double targetVelocity_;
 
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;

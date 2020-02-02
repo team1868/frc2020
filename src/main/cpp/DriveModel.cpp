@@ -120,6 +120,8 @@ RobotModel::RobotModel() :
 	gyro_ = new frc::AnalogGyro(GYRO_PORT);
 	gyro_->InitGyro();
 	gyro_->Calibrate();
+	currGyroAngle_ = lastGyroAngle_ = 0.0;
+	currTime_ = lastTime_ = 0.0;
 
     funnelIndexMotor_ = new WPI_VictorSPX(FUNNEL_INDEX_MOTOR_ID);
     elevatorIndexMotor1_ = new WPI_TalonSRX(ELEVATOR_INDEX_MOTOR_ONE_ID);
@@ -573,14 +575,20 @@ void RobotModel::RefreshShuffleboard(){
 	gColorEntry_.SetDouble(detectedColor_.green);
 	bColorEntry_.SetDouble(detectedColor_.blue);
 
+	lastGyroAngle_ = currGyroAngle_;
+	currGyroAngle_ = GetGyroAngle();
+	lastTime_ = currTime_;
+	currTime_ = GetTime();
+
+
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
-	if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
-		std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
-	}
-	std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
-	std::cout<< "time: " << GetTime() << std::endl;
+	// if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
+	// 	std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
+	// }
+	//std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
+	//std::cout<< "time: " << GetTime() << std::endl;
 
 }
 
