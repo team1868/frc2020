@@ -110,17 +110,22 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	flywheelACurrent_ = 0.0;
-	flywheelBCurrent_ = 0.0;
-	climbACurrent_ = 0.0;
-	climbBCurrent_ = 0.0;
-
 	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
 	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
 
 	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
+
+	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
+    intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
+	gyro_ = new frc::AnalogGyro(GYRO_PORT);
+	gyro_->InitGyro();
+	gyro_->Calibrate();
+
+    funnelIndexMotor_ = new WPI_VictorSPX(FUNNEL_INDEX_MOTOR_ID);
+    elevatorIndexMotor1_ = new WPI_TalonSRX(ELEVATOR_INDEX_MOTOR_ONE_ID);
+	elevatorIndexMotor2_ = new WPI_TalonSRX(ELEVATOR_INDEX_MOTOR_TWO_ID);
 	
-	controlPanelMotor_ = new WPI_TalonSRX(CONTROL_PANEL_MOTOR_ID);
+	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
 	colorMatcher_.AddColorMatch(kBlueTarget);
@@ -129,6 +134,16 @@ RobotModel::RobotModel() :
 	colorMatcher_.AddColorMatch(kYellowTarget); 
 
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+
+	flywheelOneCurrent_ = 0.0;
+	flywheelTwoCurrent_ = 0.0;
+	climbOneCurrent_ = 0.0;
+	climbTwoCurrent_ = 0.0;
+	intakeRollersCurrent_ = 0.0;
+	intakeWristCurrent_ = 0.0;
+	funnelIndexCurrent_ = 0.0;
+	elevatorOneCurrent_ = 0.0;
+	elevatorTwoCurrent_ = 0.0;
 
 	// shuffleboard
     testSequence_ = "";
@@ -314,10 +329,15 @@ void RobotModel::UpdateCurrent(int channel) {
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN); */
-	flywheelACurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_A_PDP_CHAN); // test if this works
-	flywheelBCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_B_PDP_CHAN);
-	climbACurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_A_PDP_CHAN);
-	climbBCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_B_PDP_CHAN);
+	flywheelOneCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN); // test if this works
+	flywheelTwoCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN);
+	climbOneCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN);
+	climbTwoCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN);
+	intakeRollersCurrent_ = pdp_->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN);
+	intakeWristCurrent_ = pdp_->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN);
+	funnelIndexCurrent_ = pdp_->GetCurrent(FUNNEL_INDEX_MOTOR_PDP_CHAN);
+	elevatorOneCurrent_ = pdp_->GetCurrent(ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN);
+	elevatorTwoCurrent_ = pdp_->GetCurrent(ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN);
 
 	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
 	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
@@ -386,20 +406,43 @@ double RobotModel::GetCurrent(int channel) {
 	switch(channel) {
 	case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
 		return rightDriveACurrent_;
+		break;
 	case RIGHT_DRIVE_MOTOR_B_PDP_CHAN:
 		return rightDriveBCurrent_;
+		break;
 	case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
 		return leftDriveACurrent_;
+		break;
 	case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
 		return leftDriveBCurrent_;
-	case FLYWHEEL_MOTOR_A_PDP_CHAN:
-		return flywheelACurrent_;
-	case FLYWHEEL_MOTOR_B_PDP_CHAN:
-		return flywheelBCurrent_;
-	case CLIMB_MOTOR_A_PDP_CHAN:
-		return climbACurrent_;
-	case CLIMB_MOTOR_B_PDP_CHAN:
-		return climbBCurrent_;
+		break;
+	case FLYWHEEL_MOTOR_ONE_PDP_CHAN:
+		return flywheelOneCurrent_;
+		break;
+	case FLYWHEEL_MOTOR_TWO_PDP_CHAN:
+		return flywheelTwoCurrent_;
+		break;
+	case CLIMB_MOTOR_ONE_PDP_CHAN:
+		return climbOneCurrent_;
+		break;
+	case CLIMB_MOTOR_TWO_PDP_CHAN:
+		return climbTwoCurrent_;
+		break;
+	case INTAKE_ROLLERS_MOTOR_PDP_CHAN:
+		return intakeRollersCurrent_;
+		break;
+	case INTAKE_WRIST_MOTOR_PDP_CHAN:
+		return intakeWristCurrent_;
+		break;
+	case FUNNEL_INDEX_MOTOR_PDP_CHAN:
+		return funnelIndexCurrent_;
+		break;
+	case ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN:
+		return elevatorOneCurrent_;
+		break;
+	case ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN:
+		return elevatorTwoCurrent_;
+		break;
 	default:
     	printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");
 		return -1;

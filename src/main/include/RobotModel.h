@@ -153,6 +153,14 @@ class RobotModel {
     void SetFlywheelOutput(double power);
     
     void SetClimberOutput(double power);
+
+    void SetIntakeRollersOutput(double power);
+    void SetIntakeWristOutput(double power);
+    AnalogGyro* GetGyro();
+
+    void SetFunnelIndexOutput(double power);
+    void SetTopElevatorOutput(double power);
+    void SetBottomElevatorOutput(double power);
     
     void SetLight(bool setLight);
 
@@ -183,12 +191,18 @@ class RobotModel {
     rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
     rev::CANEncoder *climberEncoder1_;
     
-    WPI_TalonSRX *controlPanelMotor_;
+    WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
-    
+
+    WPI_VictorSPX *intakeRollersMotor_;
+    WPI_TalonSRX *intakeWristMotor_;
+    AnalogGyro *gyro_;
+
+    WPI_VictorSPX *funnelIndexMotor_;
+    WPI_TalonSRX *elevatorIndexMotor1_, *elevatorIndexMotor2_; // motor1 - bottom, motor2 - top
 
     double navXSpeed_;
     int counter;
@@ -203,7 +217,8 @@ class RobotModel {
 
     double ratioAll_, ratioDrive_, ratioSuperstructure_;
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
-    double flywheelACurrent_, flywheelBCurrent_, climbACurrent_, climbBCurrent_;
+    double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
+    double intakeRollersCurrent_, intakeWristCurrent_, funnelIndexCurrent_, elevatorOneCurrent_, elevatorTwoCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;

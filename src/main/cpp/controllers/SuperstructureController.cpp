@@ -19,6 +19,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     currState_ = kInit;
 	nextState_ = kIdle;
 
+    desiredIntakeWristAngle_ = 90.0; // fix later :)
+
     controlPanelCounter_ = 0;
     
     flywheelPIDController_ = new rev::CANPIDController(*robot_->GetFlywheelMotor1());
@@ -87,6 +89,15 @@ void SuperstructureController::Update(){
                 robot_->SetControlPanelOutput(0.0);
             }
             
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
+
+            } else {
+                // bring wrist up
+                robot_->SetIntakeRollersOutput(0.0);
+                robot_->SetFunnelIndexOutput(0.0);
+                robot_->SetTopElevatorOutput(0.0);
+                robot_->SetBottomElevatorOutput(0.0);
+            }
 
             break;
         default:
