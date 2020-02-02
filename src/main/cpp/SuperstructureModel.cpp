@@ -13,13 +13,31 @@ void RobotModel::SetFlywheelOutput(double power){
     flywheelMotor1_ -> Set(power);
     //flywheelMotor2_ -> Set(-power);
 }
-
 void RobotModel::SetClimberOutput(double power){
     climberMotor1_ -> Set(power);
-    if (climberEncoder1_->  GetPosition() >= SPARK_ENCODER_TICKS) {
+    if (climberEncoder1_->  GetPosition() >= SPARK_ENCODER_TICKS) { // need to test this
         climberMotor2_ -> Set(-power);
     }
 }
+void RobotModel::SetControlPanelOutput(double power){
+    controlPanelMotor_ -> Set(power);
+}
+void RobotModel::SetIntakeRollersOutput(double power) {
+    intakeRollersMotor_->Set(power);
+}
+void RobotModel::SetIntakeWristOutput(double power) {
+    intakeWristMotor_->Set(power);
+}
+void RobotModel::SetFunnelIndexOutput(double power) {
+    funnelIndexMotor_->Set(power);
+}
+void RobotModel::SetBottomElevatorOutput(double power) {
+    elevatorIndexMotor1_->Set(power);
+}
+void RobotModel::SetTopElevatorOutput(double power) {
+    elevatorIndexMotor2_->Set(power);
+}
+
 
 void RobotModel::SetLight(bool setLight){
 	lightSolenoid_ -> Set(setLight);
@@ -42,7 +60,7 @@ void RobotModel::GetColorFromSensor() {
     cout<<"blue "<<detectedColor_.blue<<endl;
 }
 
-void RobotModel::MatchColor() {
+std::string RobotModel::MatchColor() {
     colorConfidence_ = 0.9;
     matchedColor_ = colorMatcher_.MatchClosestColor(detectedColor_, colorConfidence_);
     
@@ -59,38 +77,15 @@ void RobotModel::MatchColor() {
     }
 
     cout<<colorString_<<endl;
+    return colorString_;
 }
 
-void RobotModel::GetControlPanelColor() {
-    // blue: cyan 100 (255, 0, 255)
-    // green: cyan 100 yellow 100 (0, 255, 0)
-    // red: magenta 100 yellow 100 (255, 0 , 0)
-    // yellow: yellow 100 (255, 255, 0)
-
-    if(controlPanelGameData_.length() > 0)
-    {
-        switch (controlPanelGameData_[0])
-        {
-            case 'B' :
-                //Blue case code
-                break;
-            case 'G' :
-                //Green case code
-                break;
-            case 'R' :
-                 //Red case code
-                break;
-            case 'Y' :
-                //Yellow case code
-                break;
-            default :
-                printf("this data is corrupt");
-                break;
-        }
-    } else {
-        printf("no data received yet");
-        // no data received yet
-    }
-
+std::string RobotModel::GetControlPanelGameData() {
+    return controlPanelGameData_;
 }
+
+AnalogGyro* RobotModel::GetGyro(){
+	return gyro_;
+}
+
 
