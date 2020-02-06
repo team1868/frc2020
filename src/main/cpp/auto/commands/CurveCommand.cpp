@@ -111,11 +111,10 @@ void CurveCommand::Init(){
 
 void CurveCommand::Reset(){
   robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
-  
 	// destroy angle PID
 	if (tPID_ != NULL) {
 		tPID_->Disable();
-    tPID_->~PIDController();
+    //tPID_->~PIDController();
 
 		delete tPID_;
 
@@ -127,7 +126,7 @@ void CurveCommand::Reset(){
 	// destroy distance PID
 	if (dPID_ != NULL) {
 		dPID_->Disable();
-    dPID_->~PIDController();
+    //dPID_->~PIDController();
 
 		delete dPID_;
 
