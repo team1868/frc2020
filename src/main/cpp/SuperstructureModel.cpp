@@ -10,17 +10,20 @@ using namespace std;
 
 
 void RobotModel::SetFlywheelOutput(double power){
-    flywheelMotor1_ -> Set(power);
-    //flywheelMotor2_ -> Set(-power);
+    flywheelMotor1_->Set(power);
+    //flywheelMotor2_->Set(-power);
 }
 void RobotModel::SetClimberOutput(double power){
-    climberMotor1_ -> Set(power);
-    if (climberEncoder1_->  GetPosition() >= SPARK_ENCODER_TICKS) { // need to test this
-        climberMotor2_ -> Set(-power);
+    climberMotor1_->Set(power);
+    if (climberEncoder1_->GetPosition() >= SPARK_ENCODER_TICKS) { // need to test this
+        climberMotor2_->Set(-power);
     }
 }
+void RobotModel::SetClimberElevatorOutput(double power){
+    climberElevatorMotor_->Set(power);
+}
 void RobotModel::SetControlPanelOutput(double power){
-    controlPanelMotor_ -> Set(power);
+    controlPanelMotor_->Set(power);
 }
 void RobotModel::SetIntakeRollersOutput(double power) {
     intakeRollersMotor_->Set(power);
@@ -28,14 +31,14 @@ void RobotModel::SetIntakeRollersOutput(double power) {
 void RobotModel::SetIntakeWristOutput(double power) {
     intakeWristMotor_->Set(power);
 }
-void RobotModel::SetFunnelIndexOutput(double power) {
-    funnelIndexMotor_->Set(power);
+void RobotModel::SetIndexFunnelOutput(double power) {
+    indexFunnelMotor_->Set(power);
 }
-void RobotModel::SetBottomElevatorOutput(double power) {
-    elevatorIndexMotor1_->Set(power);
+void RobotModel::SetBottomIndexElevatorOutput(double power) {
+    indexElevatorMotor1_->Set(power);
 }
-void RobotModel::SetTopElevatorOutput(double power) {
-    elevatorIndexMotor2_->Set(power);
+void RobotModel::SetTopIndexElevatorOutput(double power) {
+    indexElevatorMotor2_->Set(power);
 }
 
 
@@ -44,11 +47,11 @@ void RobotModel::SetLight(bool setLight){
 }
 
 
-rev::CANSparkMax* RobotModel::GetFlywheelMotor1() {
+WPI_TalonFX* RobotModel::GetFlywheelMotor1() {
     return flywheelMotor1_;
 }
 
-rev::CANSparkMax* RobotModel::GetFlywheelMotor2() {
+WPI_TalonFX* RobotModel::GetFlywheelMotor2() {
     return flywheelMotor2_;
 }
 
@@ -85,11 +88,25 @@ std::string RobotModel::GetControlPanelGameData() {
 }
 
 AnalogGyro* RobotModel::GetGyro(){
-	return gyro_;
+	return intakeWristGyro_;
 }
 
 double RobotModel::GetGyroAngle(){
-    return gyro_->GetAngle();
+    return intakeWristGyro_->GetAngle();
 }
 
+double RobotModel::GetDrivePower() {
+    if(-leftDriveOutput_ > -rightDriveOutput_)
+        return -leftDriveOutput_;
+    return -rightDriveOutput_;
+}
 
+bool RobotModel::GetFunnelLightSensorStatus() {
+    return funnelLightSensor_->Get();
+}
+bool RobotModel::GetBottomElevatorLightSensorStatus() {
+    return bottomElevatorLightSensor_->Get();
+}
+bool RobotModel::GetTopElevatorLightSensorStatus() {
+    return topElevatorLightSensor_->Get();
+}
