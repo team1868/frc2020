@@ -160,20 +160,25 @@ class RobotModel {
     double GetCurveTurnD();
 
     // superstructure robot model
-    rev::CANSparkMax* GetFlywheelMotor1();
-    rev::CANSparkMax* GetFlywheelMotor2();
+    WPI_TalonFX* GetFlywheelMotor1();
+    WPI_TalonFX* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
     
     void SetClimberOutput(double power);
+    void SetClimberElevatorOutput(double power);
 
     void SetIntakeRollersOutput(double power);
     void SetIntakeWristOutput(double power);
+    double GetDrivePower(); // to determine rollers speed
     AnalogGyro* GetGyro();
     double GetGyroAngle();
-
-    void SetFunnelIndexOutput(double power);
-    void SetTopElevatorOutput(double power);
-    void SetBottomElevatorOutput(double power);
+    
+    bool GetFunnelLightSensorStatus();
+    bool GetBottomElevatorLightSensorStatus();
+    bool GetTopElevatorLightSensorStatus();
+    void SetIndexFunnelOutput(double power);
+    void SetTopIndexElevatorOutput(double power);
+    void SetBottomIndexElevatorOutput(double power);
     
     void SetLight(bool setLight);
 
@@ -200,10 +205,12 @@ class RobotModel {
     std::string alignSequence_;
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
-    rev::CANSparkMax *flywheelMotor1_, *flywheelMotor2_;
+    WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
+    TalonFXSensorCollection *flywheelEncoder_; // encoder created for motor 1, both motors should be running at the same rpm
     
     rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
     rev::CANEncoder *climberEncoder1_;
+    WPI_VictorSPX *climberElevatorMotor_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
@@ -213,10 +220,11 @@ class RobotModel {
 
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
-    AnalogGyro *gyro_;
-
-    WPI_VictorSPX *funnelIndexMotor_;
-    WPI_TalonSRX *elevatorIndexMotor1_, *elevatorIndexMotor2_; // motor1 - bottom, motor2 - top
+    AnalogGyro *intakeWristGyro_;
+    
+    DigitalInput *funnelLightSensor_, *bottomElevatorLightSensor_, *topElevatorLightSensor_;
+    WPI_VictorSPX *indexFunnelMotor_;
+    WPI_TalonSRX *indexElevatorMotor1_, *indexElevatorMotor2_; // motor1 - bottom, motor2 - top
 
     double navXSpeed_;
     int counter;
@@ -231,17 +239,17 @@ class RobotModel {
     float last_world_linear_accel_y_;
 
     double ratioAll_, ratioDrive_, ratioSuperstructure_;
+
+    double leftDrivePower_, rightDrivePower_; // to determine the speed of the rollers (superstructure)
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
     double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
-    double intakeRollersCurrent_, intakeWristCurrent_, funnelIndexCurrent_, elevatorOneCurrent_, elevatorTwoCurrent_;
+    double intakeRollersCurrent_, intakeWristCurrent_, IndexFunnelCurrent_, elevatorOneCurrent_, elevatorTwoCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;
 
     double desiredDeltaAngle_;//for align tape
 	  double desiredDistance_;//for align tape
-    double currGyroAngle_, lastGyroAngle_;
-    double currTime_, lastTime_;
     double targetVelocity_;
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;

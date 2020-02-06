@@ -76,7 +76,7 @@ RobotModel::RobotModel() :
     leftSlaveA_ = new WPI_TalonFX(LEFT_DRIVE_SLAVE_A_ID);
     rightSlaveA_ = new WPI_TalonFX(RIGHT_DRIVE_SLAVE_A_ID);
     // initializing encoders (talonfxsensorcollection)
-    leftDriveEncoder_ = &leftMaster_->GetSensorCollection();
+    leftDriveEncoder_ = &leftMaster_->GetSensorCollection(); 
     rightDriveEncoder_ = &rightMaster_->GetSensorCollection(); 
 
 
@@ -105,8 +105,8 @@ RobotModel::RobotModel() :
 
 	// superstructure robot model
 	
-	flywheelMotor1_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
-	flywheelMotor2_ = new rev::CANSparkMax(FLYWHEEL_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
+	flywheelMotor1_ = new WPI_TalonFX(FLYWHEEL_MOTOR_ONE_ID);
+	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
@@ -119,25 +119,23 @@ RobotModel::RobotModel() :
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
-	gyro_ = new frc::AnalogGyro(GYRO_PORT);
-	gyro_->InitGyro();
-	gyro_->Calibrate();
-	currGyroAngle_ = lastGyroAngle_ = 0.0;
-	currTime_ = lastTime_ = 0.0;
+	intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
+	leftDriveOutput_ = rightDriveOutput_ = 0;
 
-    funnelIndexMotor_ = new WPI_VictorSPX(FUNNEL_INDEX_MOTOR_ID);
-    elevatorIndexMotor1_ = new WPI_TalonSRX(ELEVATOR_INDEX_MOTOR_ONE_ID);
-	elevatorIndexMotor2_ = new WPI_TalonSRX(ELEVATOR_INDEX_MOTOR_TWO_ID);
+    funnelLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
+	bottomElevatorLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
+	topElevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
+	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
+    indexElevatorMotor1_ = new WPI_TalonSRX(INDEX_ELEVATOR_MOTOR_ONE_ID);
+	indexElevatorMotor2_ = new WPI_TalonSRX(INDEX_ELEVATOR_MOTOR_TWO_ID);
 	
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
-
+	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
 	colorMatcher_.AddColorMatch(kBlueTarget);
 	colorMatcher_.AddColorMatch(kGreenTarget);
 	colorMatcher_.AddColorMatch(kRedTarget);
 	colorMatcher_.AddColorMatch(kYellowTarget); 
-
-	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 
 	flywheelOneCurrent_ = 0.0;
 	flywheelTwoCurrent_ = 0.0;
@@ -145,7 +143,7 @@ RobotModel::RobotModel() :
 	climbTwoCurrent_ = 0.0;
 	intakeRollersCurrent_ = 0.0;
 	intakeWristCurrent_ = 0.0;
-	funnelIndexCurrent_ = 0.0;
+	IndexFunnelCurrent_ = 0.0;
 	elevatorOneCurrent_ = 0.0;
 	elevatorTwoCurrent_ = 0.0;
 
@@ -182,6 +180,8 @@ RobotModel::RobotModel() :
 void RobotModel::SetDriveValues(double left, double right){
     leftMaster_->Set(left);
     rightMaster_->Set(-right);
+	leftDrivePower_ = left;
+	rightDrivePower_ = -right;
 }
 
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
@@ -191,15 +191,19 @@ void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
         case (kLeftWheels): // set left
             leftMaster_->Set(-value);
             leftDriveOutput_ = value;
+			leftDrivePower_ = -value;
             break;
         case (kRightWheels): // set right
             rightMaster_->Set(value);
             rightDriveOutput_ = value;
+			leftDrivePower_ = value;
             break;
         case (kAllWheels): // set both
             rightMaster_->Set(value);
             leftMaster_->Set(-value);
             leftDriveOutput_ = rightDriveOutput_ = value;
+			rightDriveOutput_ = value;
+			leftDriveOutput_ = -value;
             break;
         default:
         printf("WARNING: Drive value not set in RobotModel::SetDriveValues()");
@@ -352,9 +356,9 @@ void RobotModel::UpdateCurrent(int channel) {
 	climbTwoCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN);
 	intakeRollersCurrent_ = pdp_->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN);
 	intakeWristCurrent_ = pdp_->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN);
-	funnelIndexCurrent_ = pdp_->GetCurrent(FUNNEL_INDEX_MOTOR_PDP_CHAN);
-	elevatorOneCurrent_ = pdp_->GetCurrent(ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN);
-	elevatorTwoCurrent_ = pdp_->GetCurrent(ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN);
+	IndexFunnelCurrent_ = pdp_->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN);
+	elevatorOneCurrent_ = pdp_->GetCurrent(INDEX_ELEVATOR_MOTOR_ONE_PDP_CHAN);
+	elevatorTwoCurrent_ = pdp_->GetCurrent(INDEX_ELEVATOR_MOTOR_TWO_PDP_CHAN);
 
 	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
 	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
@@ -453,13 +457,13 @@ double RobotModel::GetCurrent(int channel) {
 	case INTAKE_WRIST_MOTOR_PDP_CHAN:
 		return intakeWristCurrent_;
 		break;
-	case FUNNEL_INDEX_MOTOR_PDP_CHAN:
-		return funnelIndexCurrent_;
+	case INDEX_FUNNEL_MOTOR_PDP_CHAN:
+		return IndexFunnelCurrent_;
 		break;
-	case ELEVATOR_INDEX_MOTOR_ONE_PDP_CHAN:
+	case INDEX_ELEVATOR_MOTOR_ONE_PDP_CHAN:
 		return elevatorOneCurrent_;
 		break;
-	case ELEVATOR_INDEX_MOTOR_TWO_PDP_CHAN:
+	case INDEX_ELEVATOR_MOTOR_TWO_PDP_CHAN:
 		return elevatorTwoCurrent_;
 		break;
 	default:
@@ -618,11 +622,6 @@ void RobotModel::RefreshShuffleboard(){
 	rColorEntry_.SetDouble(detectedColor_.red);
 	gColorEntry_.SetDouble(detectedColor_.green);
 	bColorEntry_.SetDouble(detectedColor_.blue);
-
-	lastGyroAngle_ = currGyroAngle_;
-	currGyroAngle_ = GetGyroAngle();
-	lastTime_ = currTime_;
-	currTime_ = GetTime();
 
 
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);

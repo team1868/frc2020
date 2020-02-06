@@ -17,13 +17,17 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
+  
+
+  void CalculateIntakeRollersPower();
+
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
   void ControlPanelFinalSpin();
   void Reset();
 
   enum SuperstructureState {
-		kInit, kIdle
+		kInit, kIdle, kShooting, kIndexing, kIntaking
 	};
 
   ~SuperstructureController();
@@ -31,8 +35,8 @@ class SuperstructureController {
  private:
   RobotModel *robot_;
   ControlBoard *humanControl_;
-  rev::CANPIDController *flywheelPIDController_;
-  rev::CANEncoder *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
+  TalonFXSensorCollection *flywheelPIDController_;
+  TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
 
   uint32_t currState_;
 	uint32_t nextState_;
@@ -43,10 +47,16 @@ class SuperstructureController {
   double climberPower_;
 
   double desiredIntakeWristAngle_;
+  double currGyroAngle_, lastGyroAngle_;
+  double currTime_, lastTime_;
+
+  bool currFunnelLightSensorStatus_, currBottomElevatorLightSensorStatus_, currTopElevatorLightSensorStatus_;
   
   int controlPanelCounter_;
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
 
+  ShuffleboardLayout &superstructureLayout_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
+  nt::NetworkTableEntry funnelLightSensorEntry_, bottomElevatorLightSensorEntry_, topElevatorLightSensorEntry_;
 };

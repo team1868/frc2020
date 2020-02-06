@@ -33,13 +33,8 @@ ControlBoard::ControlBoard() {
 	buttons_[kClimberButton] = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
 	buttons_[kControlPanelStage2Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_2_BUTTON_PORT);
 	buttons_[kControlPanelStage3Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_3_BUTTON_PORT);
-	buttons_[kIntakeSeriesButton] = new ButtonReader(operatorJoy_, INTAKE_SERIES_BUTTON_PORT);
-
-	//flywheelDesired_ = false;
-	//climberDesired_ = false;
-	//flywheelButton_ = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);
-	//climberButton_ = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
-	//alignButton_ = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
+	buttons_[kIntakeSeriesButton] = new ButtonReader(operatorJoyB_, INTAKE_SERIES_BUTTON_PORT);
+	buttons_[kIndexSeriesButton] = new ButtonReader(operatorJoyB_, INDEX_SERIES_BUTTON_PORT);
 
 	//create buttons here after creating a option in the Buttons enum
 	//example
