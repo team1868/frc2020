@@ -39,9 +39,12 @@ class MainProgram : public frc::TimedRobot {
   void TeleopPeriodic() override;
   //void DisabledPeriodic() override;
   void TestPeriodic() override;
-  void connectZMQ();
+  void connectRecvZMQ();
   string readZMQ();
   void readAngle(string contents);
+  void connectSendZMQ();
+  void sendZMQ();
+
 
  private:
   RobotModel *robot_;
@@ -51,13 +54,17 @@ class MainProgram : public frc::TimedRobot {
   TalonEncoderPIDSource *talonEncoderSource_;
   NavXPIDSource *navX_;
 
+  double matchTime_;
+
   bool aligningTape_;
   AlignTapeCommand *alignTapeCommand;
   TrenchAlignTapeCommand *trenchAlignTapeCommand;
 
 
   //zmq
-  zmq::socket_t *subscriber_;
+  zmq::context_t *context_; //context for creating sockets
+  zmq::socket_t *subscriber_; //socket to receive message from jetson
+  zmq::socket_t *publisher_; //socket to send message to jetson
 
   //MotionProfileTestCommand *thing_;
   VelocityPIDSource *thingS_;

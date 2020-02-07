@@ -135,9 +135,12 @@ void MainProgram::DisabledInit() {
 void MainProgram::TeleopInit() {
     robot_->ResetDriveEncoders();
 
+    matchTime_ = frc::Timer::GetMatchTime();
     aligningTape_ = false;
 
-    connectZMQ();
+    zmq::context_t * context_ = new zmq::context_t(1); //same context for send + receive zmq
+    connectRecvZMQ();
+    connectSendZMQ();
 }
 
 void MainProgram::TeleopPeriodic() {
@@ -148,6 +151,9 @@ void MainProgram::TeleopPeriodic() {
     superstructureController_->Update();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
+
+    matchTime_ = frc::Timer::GetMatchTime();
+    sendZMQ();//sending here bc. returns after each if below and i don't want to change everything hehe
 
     //align tapes not at trench (like auto)
     if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
@@ -220,9 +226,8 @@ void MainProgram::DisabledPeriodic() {
 
 void MainProgram::TestPeriodic() {}
 
-void MainProgram::connectZMQ() {
-    zmq::context_t * context_ = new zmq::context_t(1);
-
+void MainProgram::connectRecvZMQ() {
+    //connect to zmq socket to receive from jetson
     try {
 		printf("in try connect to jetson\n");
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
@@ -234,7 +239,7 @@ void MainProgram::connectZMQ() {
 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000);
 		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "MESSAGE", 0);
     } catch(const zmq::error_t &exc) {
-		printf("TRY CATCH FAILED IN ALIGNWITHTAPECOMMAND INIT\n");
+		printf("TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
 		std::cerr << exc.what();
 	}
 }
@@ -290,6 +295,22 @@ void MainProgram::readAngle(string contents) {
     printf("end of read angle\n");
 
 }
+
+void MainProgram::connectSendZMQ() {
+    //zmq socket to send message to jetson
+    publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
+    publisher_->bind("tcp://*:5802");
+    int confl = 1;
+    publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
+
+}
+
+void MainProgram::sendZMQ() {
+    string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
+    cout << message << endl;
+    zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
+}
+
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<MainProgram>(); }
