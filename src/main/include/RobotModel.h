@@ -163,6 +163,7 @@ class RobotModel {
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
+    void SetFlywheelFeederOutput(double power);
     
     void SetClimberOutput(double power);
     void SetClimberElevatorOutput(double power);
@@ -177,8 +178,8 @@ class RobotModel {
     bool GetBottomElevatorLightSensorStatus();
     bool GetTopElevatorLightSensorStatus();
     void SetIndexFunnelOutput(double power);
-    void SetTopIndexElevatorOutput(double power);
-    void SetBottomIndexElevatorOutput(double power);
+    void SetElevatorFeederOutput(double power);
+    void SetElevatorOutput(double power);
     
     void SetLight(bool setLight);
 
@@ -206,6 +207,7 @@ class RobotModel {
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
+    frc::VictorSP *flywheelFeederMotor_;
     TalonFXSensorCollection *flywheelEncoder_; // encoder created for motor 1, both motors should be running at the same rpm
     
     rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
@@ -224,7 +226,7 @@ class RobotModel {
     
     DigitalInput *funnelLightSensor_, *bottomElevatorLightSensor_, *topElevatorLightSensor_;
     WPI_VictorSPX *indexFunnelMotor_;
-    WPI_TalonSRX *indexElevatorMotor1_, *indexElevatorMotor2_; // motor1 - bottom, motor2 - top
+    WPI_TalonSRX *elevatorFeederMotor_, *elevatorMotor_; // motor1 - bottom, motor2 - top
 
     double navXSpeed_;
     int counter;
@@ -243,7 +245,7 @@ class RobotModel {
     double leftDrivePower_, rightDrivePower_; // to determine the speed of the rollers (superstructure)
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
     double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
-    double intakeRollersCurrent_, intakeWristCurrent_, IndexFunnelCurrent_, elevatorOneCurrent_, elevatorTwoCurrent_;
+    double intakeRollersCurrent_, intakeWristCurrent_, IndexFunnelCurrent_, elevatorFeederCurrent_, elevatorCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;

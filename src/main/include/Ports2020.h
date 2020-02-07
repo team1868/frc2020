@@ -22,14 +22,15 @@ static const int LEFT_DRIVE_SLAVE_A_ID               = 3;
 // Superstructure Motors
 static const int FLYWHEEL_MOTOR_ONE_ID               = 4; // fix/set all superstructure ids
 static const int FLYWHEEL_MOTOR_TWO_ID               = 5; 
-static const int CLIMB_MOTOR_ONE_ID                  = 6; 
-static const int CLIMB_MOTOR_TWO_ID                  = 7; 
+static const int FLYWHEEL_FEEDER_MOTOR_ID            = 14;
+static const int CLIMB_MOTOR_LEFT_ID                 = 6;
+static const int CLIMB_MOTOR_RIGHT_ID                = 7; 
 static const int CONTROL_PANEL_MOTOR_ID              = 8;
 static const int INTAKE_ROLLERS_MOTOR_ID             = 9;
 static const int INTAKE_WRIST_MOTOR_ID               = 10;
 static const int INDEX_FUNNEL_MOTOR_ID               = 11;
-static const int INDEX_ELEVATOR_MOTOR_ONE_ID         = 12;
-static const int INDEX_ELEVATOR_MOTOR_TWO_ID         = 13;
+static const int ELEVATOR_FEEDER_MOTOR_ID            = 12;
+static const int ELEVATOR_MOTOR_ID                   = 13;
 
 
 
@@ -54,8 +55,8 @@ static const int CONTROL_PANEL_MOTOR_PDP_CHAN        = 7;
 static const int INTAKE_ROLLERS_MOTOR_PDP_CHAN       = 8;
 static const int INTAKE_WRIST_MOTOR_PDP_CHAN         = 9;
 static const int INDEX_FUNNEL_MOTOR_PDP_CHAN         = 10;
-static const int INDEX_ELEVATOR_MOTOR_ONE_PDP_CHAN   = 11;
-static const int INDEX_ELEVATOR_MOTOR_TWO_PDP_CHAN   = 12;
+static const int ELEVATOR_FEEDER_MOTOR_PDP_CHAN   = 11;
+static const int ELEVATOR_MOTOR_PDP_CHAN   = 12;
 
 // Joysticks
 static const int LEFT_JOY_USB_PORT                   = 0;

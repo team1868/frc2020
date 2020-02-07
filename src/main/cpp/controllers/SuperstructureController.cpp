@@ -18,12 +18,21 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     desiredRPM_ = 2000;
     flywheelPower_ = CalculateFlywheelPowerDesired();
 
+    elevatorFeederPower_ = 0.3; // fix
+    indexFunnelPower_ = 0.3; // fix
+    flywheelResetTime_ = 5.0; // fix
+    flywheelFeederPower_ = 0.3; // fix!
+    pushNextBallTime_ = 1.0; // fix - minimum time it takes for elevator to move next ball right to topmost sensor
+
     currState_ = kInit;
 	nextState_ = kIdle;
 
     desiredIntakeWristAngle_ = 30.0; // fix later :)
 
     controlPanelCounter_ = 0;
+
+    numBalls_ = 3.0; // not real number, needs to be updated (increased) by kIndexing
+	isSpeed_ = false;
     
     // create talon pid controller
     //flywheelPIDController_ = new rev::CANPIDController(*robot_->GetFlywheelMotor1());
@@ -49,6 +58,7 @@ void SuperstructureController::Reset() { // might not need this
 }
 
 void SuperstructureController::Update(){
+    currTime_ = robot_->GetTime();//may or may not be necessary
     RefreshShuffleboard();
 
     switch(currState_) {
@@ -62,12 +72,13 @@ void SuperstructureController::Update(){
             cout << "idle" << endl;
 
             robot_->SetFlywheelOutput(0.0);
+            robot_->SetFlywheelFeederOutput(0.0);
             robot_->SetClimberOutput(0.0);
             robot_->SetControlPanelOutput(0.0);
             robot_->SetClimberElevatorOutput(0.0);
             robot_->SetIndexFunnelOutput(0.0);
-            robot_->SetTopIndexElevatorOutput(0.0);
-            robot_->SetBottomIndexElevatorOutput(0.0);
+            robot_->SetElevatorOutput(0.0);
+            robot_->SetElevatorFeederOutput(0.0);
             robot_->SetIntakeRollersOutput(0.0);
             robot_->SetIntakeWristOutput(0.0);
 
@@ -133,8 +144,26 @@ void SuperstructureController::Update(){
             break;
         case kIndexing:
             robot_->SetIntakeRollersOutput(0.0);
+            Index();
             break;
         case kShooting:
+            double startTime_;
+            if (!isSpeed_ && numBalls_>0.0);
+                robot_->SetFlywheelOutput(flywheelPower_);
+                robot_->SetFlywheelFeederOutput(flywheelFeederPower_);
+                startTime_ = currTime_;
+                if (currTime_ - startTime_ > flywheelResetTime_)
+                    isSpeed_ = true;
+            if (isSpeed_)
+                if (!robot_->GetTopElevatorLightSensorStatus())
+                    Index(); //get the next ball to the top of the elevator
+                startTime_ = currTime_;
+                robot_->SetElevatorOutput(elevatorPower_);
+                if (currTime_ - startTime_ > pushNextBallTime_ && robot_->GetTopElevatorLightSensorStatus())
+                    robot_->SetElevatorOutput(0.0); // stop when the next ball is at the top
+                numBalls_--;
+                robot_->SetFlywheelFeederOutput(0.0);
+                isSpeed_ = false;
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
@@ -240,6 +269,18 @@ void SuperstructureController::ControlPanelFinalSpin() {
     while(robot_->GetTime()-initialControlPanelTime_ < 2.0) { // fix time
         robot_->SetControlPanelOutput(0.3); // fix power
     }
+}
+
+void SuperstructureController::Index(){
+    robot_->SetElevatorOutput(elevatorPower_);
+    if (numBalls_>3.0) // only run funnel and elevator feeder if > 3 balls
+        double startTime_ = currTime_;
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    if (robot_->GetTopElevatorLightSensorStatus())
+        robot_->SetElevatorOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
+        robot_->SetIndexFunnelOutput(0.0);
 }
 
 void SuperstructureController::RefreshShuffleboard(){
