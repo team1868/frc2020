@@ -162,8 +162,6 @@ class RobotModel {
     double GetPointP();
     double GetPointI();
     double GetPointD();
-
-
     // superstructure robot model
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
@@ -178,12 +176,9 @@ class RobotModel {
     AnalogGyro* GetGyro();
     double GetGyroAngle();
     
-    bool GetFunnelLightSensorStatus();
-    bool GetBottomElevatorLightSensorStatus();
-    bool GetTopElevatorLightSensorStatus();
-    DigitalInput* GetFunnelLightSensor();
-    DigitalInput* GetBottomElevatorLightSensor();
-    DigitalInput* GetTopElevatorLightSensor();
+    bool GetElevatorFeederLightSensorStatus();
+    bool GetElevatorLightSensorStatus();
+
     void SetIndexFunnelOutput(double power);
     void SetElevatorFeederOutput(double power);
     void SetElevatorOutput(double power);
@@ -231,7 +226,7 @@ class RobotModel {
     WPI_TalonSRX *intakeWristMotor_;
     AnalogGyro *intakeWristGyro_;
     
-    DigitalInput *funnelLightSensor_, *bottomElevatorLightSensor_, *topElevatorLightSensor_;
+    DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
     WPI_VictorSPX *indexFunnelMotor_;
     WPI_TalonSRX *elevatorFeederMotor_, *elevatorMotor_; // motor1 - bottom, motor2 - top
 

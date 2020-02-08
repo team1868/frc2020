@@ -124,9 +124,8 @@ RobotModel::RobotModel() :
 	intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
 
-    funnelLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
-	bottomElevatorLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
-	topElevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
+    elevatorFeederLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
+	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
 	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
@@ -658,11 +657,11 @@ RobotModel::~RobotModel(){
  	tPFacNet_.Delete();
   	tIFacNet_.Delete();
   	tDFacNet_.Delete();
-
+	
 	//point
 	pEntryP_.Delete(); 
 	iEntryP_.Delete(); 
-	dEntryP_.Delete(); 
+	dEntryP_.Delete();
 
 	//drive stuff
 	leftDriveEncoderEntry_.Delete();
