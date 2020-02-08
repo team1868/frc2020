@@ -112,8 +112,10 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
-	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
+	flywheelFeederMotor_ = new VictorSP(FLYWHEEL_FEEDER_MOTOR_ID);
+
+	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_LEFT_ID, rev::CANSparkMax::MotorType::kBrushless);
+	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_RIGHT_ID, rev::CANSparkMax::MotorType::kBrushless);
 
 	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 
@@ -126,8 +128,8 @@ RobotModel::RobotModel() :
 	bottomElevatorLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	topElevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
-    indexElevatorMotor1_ = new WPI_TalonSRX(INDEX_ELEVATOR_MOTOR_ONE_ID);
-	indexElevatorMotor2_ = new WPI_TalonSRX(INDEX_ELEVATOR_MOTOR_TWO_ID);
+    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
+	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID );
 	
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
@@ -144,8 +146,8 @@ RobotModel::RobotModel() :
 	intakeRollersCurrent_ = 0.0;
 	intakeWristCurrent_ = 0.0;
 	IndexFunnelCurrent_ = 0.0;
-	elevatorOneCurrent_ = 0.0;
-	elevatorTwoCurrent_ = 0.0;
+	elevatorFeederCurrent_ = 0.0;
+	elevatorCurrent_ = 0.0;
 
 	// shuffleboard
     testSequence_ = "";
@@ -357,8 +359,8 @@ void RobotModel::UpdateCurrent(int channel) {
 	intakeRollersCurrent_ = pdp_->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN);
 	intakeWristCurrent_ = pdp_->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN);
 	IndexFunnelCurrent_ = pdp_->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN);
-	elevatorOneCurrent_ = pdp_->GetCurrent(INDEX_ELEVATOR_MOTOR_ONE_PDP_CHAN);
-	elevatorTwoCurrent_ = pdp_->GetCurrent(INDEX_ELEVATOR_MOTOR_TWO_PDP_CHAN);
+	elevatorFeederCurrent_ = pdp_->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHAN);
+	elevatorCurrent_ = pdp_->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN);
 
 	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
 	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
@@ -460,11 +462,11 @@ double RobotModel::GetCurrent(int channel) {
 	case INDEX_FUNNEL_MOTOR_PDP_CHAN:
 		return IndexFunnelCurrent_;
 		break;
-	case INDEX_ELEVATOR_MOTOR_ONE_PDP_CHAN:
-		return elevatorOneCurrent_;
+	case ELEVATOR_FEEDER_MOTOR_PDP_CHAN:
+		return elevatorFeederCurrent_;
 		break;
-	case INDEX_ELEVATOR_MOTOR_TWO_PDP_CHAN:
-		return elevatorTwoCurrent_;
+	case ELEVATOR_MOTOR_PDP_CHAN:
+		return elevatorCurrent_;
 		break;
 	default:
     	printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");

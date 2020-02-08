@@ -13,6 +13,11 @@ void RobotModel::SetFlywheelOutput(double power){
     flywheelMotor1_->Set(power);
     //flywheelMotor2_->Set(-power);
 }
+
+void RobotModel::SetFlywheelFeederOutput(double power){
+    flywheelFeederMotor_ -> Set(power);
+}
+
 void RobotModel::SetClimberOutput(double power){
     climberMotor1_->Set(power);
     if (climberEncoder1_->GetPosition() >= SPARK_ENCODER_TICKS) { // need to test this
@@ -34,11 +39,11 @@ void RobotModel::SetIntakeWristOutput(double power) {
 void RobotModel::SetIndexFunnelOutput(double power) {
     indexFunnelMotor_->Set(power);
 }
-void RobotModel::SetBottomIndexElevatorOutput(double power) {
-    indexElevatorMotor1_->Set(power);
+void RobotModel::SetElevatorFeederOutput(double power) {
+    elevatorFeederMotor_->Set(power);
 }
-void RobotModel::SetTopIndexElevatorOutput(double power) {
-    indexElevatorMotor2_->Set(power);
+void RobotModel::SetElevatorOutput(double power) {
+    elevatorMotor_->Set(power);
 }
 
 

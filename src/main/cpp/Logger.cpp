@@ -51,8 +51,8 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 		myRobot->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN) << ", " <<
 		myRobot->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN) << ", " <<
 		myRobot->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(INDEX_ELEVATOR_MOTOR_ONE_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(INDEX_ELEVATOR_MOTOR_TWO_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHAN) << ", " <<
+		myRobot->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN) << ", " <<
 
 	    myRobot->GetCompressorCurrent() << ", " <<
 	    myRobot->GetRIOCurrent() << ", " <<

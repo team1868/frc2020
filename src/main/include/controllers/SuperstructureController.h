@@ -17,7 +17,8 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
-  
+
+  void Index();
 
   void CalculateIntakeRollersPower();
 
@@ -41,8 +42,15 @@ class SuperstructureController {
   uint32_t currState_;
 	uint32_t nextState_;
 
-  double flywheelPower_, desiredRPM_;
+  double flywheelPower_, desiredRPM_, flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+
+  double flywheelFeederPower_;
+
+  double pushNextBallTime_; // minimum time it takes for elevator to move next ball right to topmost sensor
+  double elevatorPower_;
+  double elevatorFeederPower_;
+  double indexFunnelPower_;
 
   double climberPower_;
 
@@ -52,6 +60,9 @@ class SuperstructureController {
 
   bool currFunnelLightSensorStatus_, currBottomElevatorLightSensorStatus_, currTopElevatorLightSensorStatus_;
   
+  double numBalls_; //to keep track of how many balls inside bot
+  bool isSpeed_; //is flywheel at desired speed
+
   int controlPanelCounter_;
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
