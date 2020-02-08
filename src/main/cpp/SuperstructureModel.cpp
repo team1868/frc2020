@@ -102,22 +102,10 @@ double RobotModel::GetDrivePower() {
     return -rightDriveOutput_;
 }
 
-bool RobotModel::GetFunnelLightSensorStatus() {
-    return funnelLightSensor_->Get();
+bool RobotModel::GetElevatorFeederLightSensorStatus() {
+    return  elevatorFeederLightSensor_->Get();
 }
-bool RobotModel::GetBottomElevatorLightSensorStatus() {
-    return bottomElevatorLightSensor_->Get();
-}
-bool RobotModel::GetTopElevatorLightSensorStatus() {
-    return topElevatorLightSensor_->Get();
+bool RobotModel::GetElevatorLightSensorStatus() {
+    return elevatorLightSensor_->Get();
 }
 
-DigitalInput* RobotModel::GetFunnelLightSensor(){
-    return funnelLightSensor_;
-}
-DigitalInput* RobotModel::GetBottomElevatorLightSensor(){
-    return bottomElevatorLightSensor_;
-}
-DigitalInput* RobotModel::GetTopElevatorLightSensor(){
-    return topElevatorLightSensor_;
-}

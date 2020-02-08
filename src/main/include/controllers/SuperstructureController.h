@@ -21,7 +21,7 @@ class SuperstructureController {
   void FlywheelHoodUp();
   void FlywheelHoodDown();
 
-  void Index();
+  bool IndexUpdate();
 
   void CalculateIntakeRollersPower();
 

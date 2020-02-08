@@ -128,41 +128,31 @@ void SuperstructureController::Update(){
             
             if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
                 nextState_ = kIntaking;
-            }
+            } /*else if (currState_ == kIntaking) {
+                    nextState_ = kIndexing;
+            } else
+                nextState_ = kIdle;*/
 
             break;
         case kIntaking:
-            while(robot_->GetGyroAngle()<desiredIntakeWristAngle_) { // check units of gyro??
-                robot_->SetIntakeWristOutput(0.2); // tune the arm? pid? encoder? figure that out
-                if(robot_->GetGyroAngle() == desiredIntakeWristAngle_-20) { // fix this angle later
-                    CalculateIntakeRollersPower();
-                }
-                if (!humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)) 
-                    nextState_ = kIndexing;
+            if(robot_->GetGyroAngle()<desiredIntakeWristAngle_-20){
+                robot_->SetIntakeWristOutput(0.3); // tune speeds
+            }
+            CalculateIntakeRollersPower();
+            if(robot_->GetGyroAngle()<desiredIntakeWristAngle_){
+                robot_->SetIntakeWristOutput(0.2);
+            }
+            if(!humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
+                nextState_ = kIndexing;
             }
             break;
         case kIndexing:
             robot_->SetIntakeRollersOutput(0.0);
-            Index();
+            IndexUpdate();
+            //exit condition
             break;
         case kShooting:
-            double startTime_;
-            if (!isSpeed_ && numBalls_>0.0);
-                robot_->SetFlywheelOutput(flywheelPower_);
-                //robot_->SetFlywheelFeederOutput(flywheelFeederPower_);
-                startTime_ = currTime_;
-                if (currTime_ - startTime_ > flywheelResetTime_)
-                    isSpeed_ = true;
-            if (isSpeed_)
-                if (!robot_->GetTopElevatorLightSensorStatus())
-                    Index(); //get the next ball to the top of the elevator
-                startTime_ = currTime_;
-                robot_->SetElevatorOutput(elevatorPower_);
-                if (currTime_ - startTime_ > pushNextBallTime_ && robot_->GetTopElevatorLightSensorStatus())
-                    robot_->SetElevatorOutput(0.0); // stop when the next ball is at the top
-                numBalls_--;
-                //robot_->SetFlywheelFeederOutput(0.0);
-                isSpeed_ = false;
+            
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
@@ -205,7 +195,7 @@ void SuperstructureController::CalculateIntakeRollersPower() {
 void SuperstructureController::ControlPanelStage2(double power){
     initialControlPanelColor_ = robot_->MatchColor();
     previousControlPanelColor_ = initialControlPanelColor_;
-    while (controlPanelCounter_ < 8) {
+    while (controlPanelCounter_ < 8) { //KILL THIS
         robot_->SetControlPanelOutput(power);
         if (initialControlPanelColor_.compare(robot_->MatchColor()) == 0 && previousControlPanelColor_.compare(robot_->MatchColor()) != 0) {
             controlPanelCounter_++;
@@ -227,28 +217,28 @@ void SuperstructureController::ControlPanelStage3(double power) {
         {
             case 'B' :
                 colorDesired_ = "Red";
-                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
                 ControlPanelFinalSpin();
                 break;
             case 'G' :
                 colorDesired_ = "Yellow";
-                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
                 ControlPanelFinalSpin();
                 break;
             case 'R' :
                 colorDesired_ = "Blue";
-                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
                 ControlPanelFinalSpin();
                 break;
             case 'Y' :
                 colorDesired_ = "Green";
-                while(colorDesired_.compare(robot_->MatchColor()) != 0) {
+                if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
                 ControlPanelFinalSpin();
@@ -264,28 +254,32 @@ void SuperstructureController::ControlPanelStage3(double power) {
 }
 
 void SuperstructureController::ControlPanelFinalSpin() {
-    initialControlPanelTime_ = robot_->GetTime();
-    while(robot_->GetTime()-initialControlPanelTime_ < 2.0) { // fix time
+    initialControlPanelTime_ = robot_->GetTime(); // move time
+    while(robot_->GetTime()-initialControlPanelTime_ < 2.0) { // fix time and change to if
         robot_->SetControlPanelOutput(0.3); // fix power
     }
 }
 
-void SuperstructureController::Index(){
-    robot_->SetElevatorOutput(elevatorPower_);
-    if (numBalls_>3.0) // only run funnel and elevator feeder if > 3 balls
-        double startTime_ = currTime_;
-        robot_->SetIndexFunnelOutput(indexFunnelPower_);
-        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-    if (robot_->GetTopElevatorLightSensorStatus())
-        robot_->SetElevatorOutput(0.0);
-        robot_->SetElevatorFeederOutput(0.0);
+bool SuperstructureController::IndexUpdate(){ //returns whether is done!
+    if(robot_->GetElevatorLightSensorStatus()){
         robot_->SetIndexFunnelOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
+        robot_->SetElevatorOutput(0.0);
+    } else {
+        robot_->SetIndexFunnelOutput(0.5); // test power
+        robot_->SetElevatorFeederOutput(0.53); // test power
+        if (robot_->GetElevatorFeederLightSensorStatus()){
+            robot_->SetElevatorOutput(0.5); // test power
+        }
+        robot_->SetElevatorOutput(0.0); //might not need this?
+    }
+    return true;
 }
 
 void SuperstructureController::RefreshShuffleboard(){
-    funnelLightSensorEntry_.SetBoolean(robot_->GetFunnelLightSensorStatus());
-    bottomElevatorLightSensorEntry_.SetBoolean(robot_->GetBottomElevatorLightSensorStatus());
-    topElevatorLightSensorEntry_.SetBoolean(robot_->GetTopElevatorLightSensorStatus());
+    //funnelLightSensorEntry_.SetBoolean(robot_->GetFunnelLightSensorStatus());
+    //bottomElevatorLightSensorEntry_.SetBoolean(robot_->GetBottomElevatorLightSensorStatus());
+    //topElevatorLightSensorEntry_.SetBoolean(robot_->GetTopElevatorLightSensorStatus());
 
     flywheelPFac_ = flywheelPEntry_.GetDouble(0.0);
     flywheelIFac_ = flywheelIEntry_.GetDouble(0.0);
