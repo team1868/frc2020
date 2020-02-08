@@ -109,9 +109,9 @@ public:
 	double GetPIDOutput();
 
 	/**
-	 * PivotPIDTalonOutput is a destructor
+	 * VelocityPIDOutput is a destructor
 	 */
-	virtual ~VelocityPIDOutput();
+	virtual ~VelocityPIDOutput(); // bad thing is being destroyed so whatever
 
 	/**
 	 * @return output

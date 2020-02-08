@@ -159,6 +159,11 @@ class RobotModel {
     double GetCurveTurnI();
     double GetCurveTurnD();
 
+    double GetPointP();
+    double GetPointI();
+    double GetPointD();
+
+
     // superstructure robot model
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
@@ -260,9 +265,10 @@ class RobotModel {
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
 
-    frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_;
+    frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
     nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_,tDFacNet_;
+    nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
 

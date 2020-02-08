@@ -28,6 +28,10 @@ void RobotModel::CreatePID(){
     tPFacNet_ =  curveTurnPIDLayout_.Add("Curve tP", 0.07).GetEntry();
     tIFacNet_ =  curveTurnPIDLayout_.Add("Curve tI", 0.0).GetEntry();
     tDFacNet_ =  curveTurnPIDLayout_.Add("Curve tD", 0.0).GetEntry();
+
+    pEntryP_ = pointPIDLayout_.Add("P", 0.0).GetEntry();
+    iEntryP_ = pointPIDLayout_.Add("I", 0.0).GetEntry();
+    dEntryP_ = pointPIDLayout_.Add("D", 0.0).GetEntry();
 }
 
 double RobotModel::GetDriveStraightAngleP() {
@@ -85,5 +89,15 @@ double RobotModel::GetCurveTurnD(){
     return tDFacNet_.GetDouble(0.0);
 }
 
+double RobotModel::GetPointP() {
+    return pEntryP_.GetDouble(0.0);
+}
 
+double RobotModel::GetPointI() {
+    return iEntryP_.GetDouble(0.0);
+}
+
+double RobotModel::GetPointD() {
+    return dEntryP_.GetDouble(0.0);
+}
 

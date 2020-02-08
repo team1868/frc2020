@@ -27,7 +27,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	} else {
 		desiredAngle_ = initYaw_ + desiredAngle;
 		if (desiredAngle_ > 180) {
-			desiredAngle_ -= -360; //TODO bug that doesn't matter
+			desiredAngle_ += 360; //TODO bug that doesn't matter
 		} else if (desiredAngle_ < -180) {
 			desiredAngle_ += 360;
 		}
