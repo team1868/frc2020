@@ -108,15 +108,14 @@ RobotModel::RobotModel() :
 	
 	flywheelMotor1_ = new WPI_TalonFX(FLYWHEEL_MOTOR_ONE_ID);
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
+	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	flywheelFeederMotor_ = new VictorSP(FLYWHEEL_FEEDER_MOTOR_ID);
-
-	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_LEFT_ID, rev::CANSparkMax::MotorType::kBrushless);
-	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_RIGHT_ID, rev::CANSparkMax::MotorType::kBrushless);
+	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
+	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
 
 	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 
@@ -130,7 +129,7 @@ RobotModel::RobotModel() :
 	topElevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
-	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID );
+	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
 	
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
