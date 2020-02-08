@@ -87,6 +87,15 @@ void SuperstructureController::Update(){
                 robot_->SetLowGear();
             }
 
+            if (humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
+                nextState_ = kControlPanelStage2;
+            }
+
+            if (humanControl_->JustPressed(ControlBoard::Buttons::kControlPanelStage3Button)){
+                initialControlPanelColor_ = robot_->MatchColor(); // only press once color sensor can see the wheel
+                nextState_ = kControlPanelStage3;
+            }
+
             //light for align tape turned on and off in align tape command
             /*if (humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
                 printf("in light\n");
@@ -135,12 +144,11 @@ void SuperstructureController::Update(){
 
             break;
         case kIntaking:
-            if(robot_->GetGyroAngle()<desiredIntakeWristAngle_-20){
+            if(robot_->GetGyroAngle()<desiredIntakeWristAngle_){
                 robot_->SetIntakeWristOutput(0.3); // tune speeds
             }
-            CalculateIntakeRollersPower();
-            if(robot_->GetGyroAngle()<desiredIntakeWristAngle_){
-                robot_->SetIntakeWristOutput(0.2);
+            if(robot_->GetGyroAngle()>desiredIntakeWristAngle_-20){
+                CalculateIntakeRollersPower();
             }
             if(!humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
                 nextState_ = kIndexing;
@@ -153,6 +161,12 @@ void SuperstructureController::Update(){
             break;
         case kShooting:
             
+            break;
+        case kControlPanelStage2:
+            ControlPanelStage2(0.2); // fix power
+            break;
+        case kControlPanelStage3:
+            ControlPanelStage3(0.2); // fix power
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
@@ -185,22 +199,25 @@ double SuperstructureController::CalculateFlywheelPowerDesired() {
 }
 
 void SuperstructureController::CalculateIntakeRollersPower() {
-    double power = abs(robot_->GetDrivePower())*2;
+    /*double power = abs(robot_->GetDrivePower())*2;
     if (power <= 1)
         robot_->SetIntakeRollersOutput(power);
     else
-        robot_->SetIntakeRollersOutput(1.0);
+        robot_->SetIntakeRollersOutput(1.0);*/
 }
 
 void SuperstructureController::ControlPanelStage2(double power){
-    initialControlPanelColor_ = robot_->MatchColor();
     previousControlPanelColor_ = initialControlPanelColor_;
-    while (controlPanelCounter_ < 8) { //KILL THIS
+    if (controlPanelCounter_ < 8) {
         robot_->SetControlPanelOutput(power);
         if (initialControlPanelColor_.compare(robot_->MatchColor()) == 0 && previousControlPanelColor_.compare(robot_->MatchColor()) != 0) {
             controlPanelCounter_++;
         }
         previousControlPanelColor_ = robot_->MatchColor();
+    }
+    if (controlPanelCounter_ >= 8) {
+        robot_->SetControlPanelOutput(0.0);
+        nextState_ = kIdle;
     }
 }
 
@@ -220,6 +237,8 @@ void SuperstructureController::ControlPanelStage3(double power) {
                 if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
+                robot_->SetControlPanelOutput(0.0);
+                initialControlPanelTime_ = robot_->GetTime();
                 ControlPanelFinalSpin();
                 break;
             case 'G' :
@@ -227,6 +246,8 @@ void SuperstructureController::ControlPanelStage3(double power) {
                 if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
+                robot_->SetControlPanelOutput(0.0);
+                initialControlPanelTime_ = robot_->GetTime();
                 ControlPanelFinalSpin();
                 break;
             case 'R' :
@@ -234,6 +255,8 @@ void SuperstructureController::ControlPanelStage3(double power) {
                 if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
+                robot_->SetControlPanelOutput(0.0);
+                initialControlPanelTime_ = robot_->GetTime();
                 ControlPanelFinalSpin();
                 break;
             case 'Y' :
@@ -241,6 +264,8 @@ void SuperstructureController::ControlPanelStage3(double power) {
                 if(colorDesired_.compare(robot_->MatchColor()) != 0) {
                      robot_->SetControlPanelOutput(power);
                 }
+                robot_->SetControlPanelOutput(0.0);
+                initialControlPanelTime_ = robot_->GetTime();
                 ControlPanelFinalSpin();
                 break;
             default :
@@ -251,13 +276,14 @@ void SuperstructureController::ControlPanelStage3(double power) {
         printf("no data received yet");
         // no data received yet
     }
+    nextState_ = kIdle;
 }
 
 void SuperstructureController::ControlPanelFinalSpin() {
-    initialControlPanelTime_ = robot_->GetTime(); // move time
-    while(robot_->GetTime()-initialControlPanelTime_ < 2.0) { // fix time and change to if
+    if(robot_->GetTime()-initialControlPanelTime_ < 2.0) { // fix time and change to if
         robot_->SetControlPanelOutput(0.3); // fix power
     }
+    robot_->SetControlPanelOutput(0.0);
 }
 
 bool SuperstructureController::IndexUpdate(){ //returns whether is done!

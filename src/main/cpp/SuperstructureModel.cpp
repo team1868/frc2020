@@ -96,12 +96,6 @@ double RobotModel::GetGyroAngle(){
     return intakeWristGyro_->GetAngle();
 }
 
-double RobotModel::GetDrivePower() {
-    if(-leftDriveOutput_ > -rightDriveOutput_)
-        return -leftDriveOutput_;
-    return -rightDriveOutput_;
-}
-
 bool RobotModel::GetElevatorFeederLightSensorStatus() {
     return  elevatorFeederLightSensor_->Get();
 }

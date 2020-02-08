@@ -31,7 +31,7 @@ class SuperstructureController {
   void Reset();
 
   enum SuperstructureState {
-		kInit, kIdle, kShooting, kIndexing, kIntaking
+		kInit, kIdle, kShooting, kIndexing, kIntaking, kControlPanelStage2, kControlPanelStage3
 	};
 
   ~SuperstructureController();

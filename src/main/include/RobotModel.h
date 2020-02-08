@@ -172,7 +172,6 @@ class RobotModel {
 
     void SetIntakeRollersOutput(double power);
     void SetIntakeWristOutput(double power);
-    double GetDrivePower(); // to determine rollers speed
     AnalogGyro* GetGyro();
     double GetGyroAngle();
     
