@@ -72,7 +72,6 @@ void SuperstructureController::Update(){
             cout << "idle" << endl;
 
             robot_->SetFlywheelOutput(0.0);
-            robot_->SetFlywheelFeederOutput(0.0);
             robot_->SetClimberOutput(0.0);
             robot_->SetControlPanelOutput(0.0);
             robot_->SetClimberElevatorOutput(0.0);
@@ -150,7 +149,7 @@ void SuperstructureController::Update(){
             double startTime_;
             if (!isSpeed_ && numBalls_>0.0);
                 robot_->SetFlywheelOutput(flywheelPower_);
-                robot_->SetFlywheelFeederOutput(flywheelFeederPower_);
+                //robot_->SetFlywheelFeederOutput(flywheelFeederPower_);
                 startTime_ = currTime_;
                 if (currTime_ - startTime_ > flywheelResetTime_)
                     isSpeed_ = true;
@@ -162,7 +161,7 @@ void SuperstructureController::Update(){
                 if (currTime_ - startTime_ > pushNextBallTime_ && robot_->GetTopElevatorLightSensorStatus())
                     robot_->SetElevatorOutput(0.0); // stop when the next ball is at the top
                 numBalls_--;
-                robot_->SetFlywheelFeederOutput(0.0);
+                //robot_->SetFlywheelFeederOutput(0.0);
                 isSpeed_ = false;
             break;
         default:

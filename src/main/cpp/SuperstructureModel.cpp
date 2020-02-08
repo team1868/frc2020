@@ -14,10 +14,6 @@ void RobotModel::SetFlywheelOutput(double power){
     //flywheelMotor2_->Set(-power);
 }
 
-void RobotModel::SetFlywheelFeederOutput(double power){
-    flywheelFeederMotor_ -> Set(power);
-}
-
 void RobotModel::SetClimberOutput(double power){
     climberMotor1_->Set(power);
     if (climberEncoder1_->GetPosition() >= SPARK_ENCODER_TICKS) { // need to test this
@@ -114,4 +110,14 @@ bool RobotModel::GetBottomElevatorLightSensorStatus() {
 }
 bool RobotModel::GetTopElevatorLightSensorStatus() {
     return topElevatorLightSensor_->Get();
+}
+
+DigitalInput* RobotModel::GetFunnelLightSensor(){
+    return funnelLightSensor_;
+}
+DigitalInput* RobotModel::GetBottomElevatorLightSensor(){
+    return bottomElevatorLightSensor_;
+}
+DigitalInput* RobotModel::GetTopElevatorLightSensor(){
+    return topElevatorLightSensor_;
 }

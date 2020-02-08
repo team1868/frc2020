@@ -26,6 +26,7 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 		        << "Left Joy X, Left Joy Y, "
 		        << "Right Joy X, Right Joy Y, Reverse (currently not in), Arcade, "
 		        << "Quick Turn Desired \r\n";
+				// fix labels
 	}
 
 	logData << myRobot->GetTime() << ", " <<
@@ -51,7 +52,6 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 		myRobot->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN) << ", " <<
 		myRobot->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN) << ", " <<
 		myRobot->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHAN) << ", " <<
 		myRobot->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN) << ", " <<
 
 	    myRobot->GetCompressorCurrent() << ", " <<

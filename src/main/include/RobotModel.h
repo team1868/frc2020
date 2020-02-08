@@ -163,7 +163,6 @@ class RobotModel {
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
-    void SetFlywheelFeederOutput(double power);
     
     void SetClimberOutput(double power);
     void SetClimberElevatorOutput(double power);
@@ -177,6 +176,9 @@ class RobotModel {
     bool GetFunnelLightSensorStatus();
     bool GetBottomElevatorLightSensorStatus();
     bool GetTopElevatorLightSensorStatus();
+    DigitalInput* GetFunnelLightSensor();
+    DigitalInput* GetBottomElevatorLightSensor();
+    DigitalInput* GetTopElevatorLightSensor();
     void SetIndexFunnelOutput(double power);
     void SetElevatorFeederOutput(double power);
     void SetElevatorOutput(double power);
@@ -207,9 +209,9 @@ class RobotModel {
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
-    frc::VictorSP *flywheelFeederMotor_;
     TalonFXSensorCollection *flywheelEncoder_; // encoder created for motor 1, both motors should be running at the same rpm
-    
+    Solenoid *flywheelHoodSolenoid_;
+
     rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
     rev::CANEncoder *climberEncoder1_;
     WPI_VictorSPX *climberElevatorMotor_;

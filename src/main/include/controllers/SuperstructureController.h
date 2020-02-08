@@ -17,6 +17,9 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
+  
+  void FlywheelHoodUp();
+  void FlywheelHoodDown();
 
   void Index();
 
