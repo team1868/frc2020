@@ -14,31 +14,31 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     robot_ = robot;
     humanControl_ = humanControl;
 
-    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, *flywheelEncoder1_, flywheelPIDOutput_);
-    // fix encoder source
     // fix all of this
     climberPower_ = 0.5; // fix
     desiredRPM_ = 2000;
     flywheelPower_ = CalculateFlywheelPowerDesired();
 
     elevatorFeederPower_ = 0.3; // fix
+    elevatorSlowPower_ = 0.2; //fix
+    elevatorFastPower_ = 0.4; //fix
     indexFunnelPower_ = 0.3; // fix
     flywheelResetTime_ = 5.0; // fix
-    flywheelFeederPower_ = 0.3; // fix!
-    pushNextBallTime_ = 1.0; // fix - minimum time it takes for elevator to move next ball right to topmost sensor
+    lowerElevatorTimeout_ = 6.0; //fix
+    //lastBottomStatus_ = false;
 
     currState_ = kInit;
 	nextState_ = kIdle;
+    currIndexState_ = kIndexInit;
+    nextIndexState_ = kIndexInit;
 
     desiredIntakeWristAngle_ = 30.0; // fix later :)
 
     controlPanelCounter_ = 0;
-
-    numBalls_ = 3.0; // not real number, needs to be updated (increased) by kIndexing
-	isSpeed_ = false;
     
     // create talon pid controller
-    //flywheelPIDController_ = new rev::CANPIDController(*robot_->GetFlywheelMotor1());
+    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, *flywheelEncoder1_, flywheelPIDOutput_);
+    // fix encoder source
     flywheelEncoder1_ = &robot_->GetFlywheelMotor1()->GetSensorCollection();
     flywheelEncoder2_ = &robot_->GetFlywheelMotor2()->GetSensorCollection();
     
@@ -50,9 +50,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelDEntry_ = superstructureLayout_.Add("flywheel D", 0.0).GetEntry();
     flywheelFFEntry_ = superstructureLayout_.Add("flywheel FF", 0.0).GetEntry();
 
-    funnelLightSensorEntry_ = superstructureLayout_.Add("funnel ball", false).GetEntry();
-    bottomElevatorLightSensorEntry_ = superstructureLayout_.Add("bottom elevator ball", false).GetEntry();
-    topElevatorLightSensorEntry_ = superstructureLayout_.Add("top elevator ball", false).GetEntry();
+    elevatorFeederLightSensorEntry_ = superstructureLayout_.Add("feeder ball", false).GetEntry();
+    elevatorLightSensorEntry_ = superstructureLayout_.Add("elevator ball", false).GetEntry();
 }
 
 void SuperstructureController::Reset() { // might not need this
@@ -152,7 +151,7 @@ void SuperstructureController::Update(){
             break;
         case kIndexing:
             robot_->SetIntakeRollersOutput(0.0);
-            IndexUpdate();
+            //IndexUpdate();
             //exit condition
             break;
         case kShooting:
@@ -285,26 +284,84 @@ void SuperstructureController::ControlPanelFinalSpin() {
     robot_->SetControlPanelOutput(0.0);
 }
 
-bool SuperstructureController::IndexUpdate(){ //returns whether is done!
-    if(robot_->GetElevatorLightSensorStatus()){
+bool SuperstructureController::IndexUpdate(bool readyToShoot){
+    // switch(currState_){
+    //     case kInit:
+    //         nextState_ = kLower;
+    //         startIndexTime_ = currTime_;
+    //         break;
+        //case kLower:
+            // if (lastBottomStatus_ && !robot_->GetBottomElevatorLightSensorStatus()){
+            //     startIndexTime_ = currTime_;
+            // }
+
+    // if(robot_->GetTopElevatorLightSensorStatus()){
+    //     startElevatorTime_ = currTime_;
+    // }
+    if(robot_->GetElevatorFeederLightSensorStatus()){
+        startIndexTime_ = currTime_;
+        startElevatorTime_ = currTime_;
+    }
+
+    //B and !T, file upwards
+    if (robot_->GetElevatorFeederLightSensorStatus() && !robot_->GetElevatorLightSensorStatus()){
+        //nextState_ = kLift;
+        printf("Idle elevator funnel, shift to moving elevator");
+    }
+    //exit condition - timeout or B
+    else if (currTime_ - startIndexTime_ > lowerElevatorTimeout_ || robot_->GetElevatorFeederLightSensorStatus()){
         robot_->SetIndexFunnelOutput(0.0);
         robot_->SetElevatorFeederOutput(0.0);
-        robot_->SetElevatorOutput(0.0);
-    } else {
-        robot_->SetIndexFunnelOutput(0.5); // test power
-        robot_->SetElevatorFeederOutput(0.53); // test power
-        if (robot_->GetElevatorFeederLightSensorStatus()){
-            robot_->SetElevatorOutput(0.5); // test power
-        }
-        robot_->SetElevatorOutput(0.0); //might not need this?
+        //lastLower_ = false;
+        // lastBottomStatus_ = robot_->GetBottomElevatorLightSensorStatus();
+        return true;
     }
-    return true;
+    //!B
+    else { 
+        // if (!lastLower_){
+        //     startIndexTime_ = currTime_;
+        // }
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+        // lastLower_ = true;
+    }
+    //break;
+//case kLift:
+    if (readyToShoot ||
+        (!robot_->GetElevatorLightSensorStatus() &&
+        robot_->GetElevatorFeederLightSensorStatus()) ||
+        (!robot_->GetElevatorLightSensorStatus() &&
+        (currTime_ - startElevatorTime_ < elevatorTimeout_))) {
+        //!T & B || !T & !timout
+        // if (!lastUpper_){
+        //     startElevatorTime_ = currTime_;
+        // }
+        robot_->SetElevatorOutput(elevatorSlowPower_);
+        // lastUpper_ = true;
+    }
+    else { //T || (!B & timeout)
+        //nextIndexState_ = kLower;
+        robot_->SetElevatorOutput(0.0);
+        startIndexTime_ = currTime_; 
+        // lastUpper_ = false;
+    }
+    // else { //!T & B || !T & !timout
+    //     if (!lastUpper_){
+    //         startElevatorTime_ = currTime_;
+    //     }
+    //     robot_->SetElevatorOutput(elevatorSlowPower_);
+    //     lastUpper_ = true;
+    // }
+    //         break;
+    // }
+    // lastBottomStatus_ = robot_->GetBottomElevatorLightSensorStatus();
+    return false;
 }
 
+
 void SuperstructureController::RefreshShuffleboard(){
-    //funnelLightSensorEntry_.SetBoolean(robot_->GetFunnelLightSensorStatus());
-    //bottomElevatorLightSensorEntry_.SetBoolean(robot_->GetBottomElevatorLightSensorStatus());
-    //topElevatorLightSensorEntry_.SetBoolean(robot_->GetTopElevatorLightSensorStatus());
+    elevatorFeederLightSensorEntry_.SetBoolean(robot_->GetElevatorFeederLightSensorStatus());
+    elevatorLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
 
     flywheelPFac_ = flywheelPEntry_.GetDouble(0.0);
     flywheelIFac_ = flywheelIEntry_.GetDouble(0.0);
