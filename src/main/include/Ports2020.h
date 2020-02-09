@@ -79,6 +79,7 @@ static const int INDEX_SERIES_BUTTON_PORT            = 2;
 
 // SENSORS
 static const int GYRO_PORT                           = 1; // ANALOG IO
+static const int INTAKE_WRIST_POT_PORT               = 0; // ANALOG PORT
 static const int FUNNEL_LIGHT_SENSOR_PORT            = 1;
 static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT   = 2;
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT      = 3;

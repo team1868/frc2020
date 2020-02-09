@@ -13,6 +13,7 @@ RobotModel::RobotModel() :
     functionalityTab_(frc::Shuffleboard::GetTab("Functionality")),
     pidTab_(frc::Shuffleboard::GetTab("PID Values")),
     autoOffsetTab_(frc::Shuffleboard::GetTab("Auto Offset Values")),
+	superstructureTab_(frc::Shuffleboard::GetTab("Superstructure")),
 	driveStraightPIDLayout_(GetPIDTab().GetLayout("DriveStraight PID", "List Layout")),
 	anglePIDLayout_(driveStraightPIDLayout_.GetLayout("Angle", "List Layout")),
 	distancePIDLayout_(driveStraightPIDLayout_.GetLayout("Distance", "List Layout")),
@@ -122,6 +123,7 @@ RobotModel::RobotModel() :
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
 	intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
+	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
@@ -176,6 +178,7 @@ RobotModel::RobotModel() :
 	rColorEntry_ = GetFunctionalityTab().Add("red", 0.0).GetEntry();
 	gColorEntry_ = GetFunctionalityTab().Add("green", 0.0).GetEntry();
 	bColorEntry_ = GetFunctionalityTab().Add("blue", 0.0).GetEntry();
+	potEntry_ =  GetSuperstructureTab().Add("potentiometer", 0.0).GetEntry();
 }
 
 void RobotModel::SetDriveValues(double left, double right){
@@ -577,6 +580,10 @@ frc::ShuffleboardTab& RobotModel::GetAutoOffsetTab(){
     return autoOffsetTab_;
 }
 
+frc::ShuffleboardTab& RobotModel::GetSuperstructureTab(){
+    return superstructureTab_;
+}
+
 std::string RobotModel::GetTestSequence() {
 	return testSequence_;
 }
@@ -628,6 +635,8 @@ void RobotModel::RefreshShuffleboard(){
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
+
+	potEntry_.SetDouble(intakeWristPot_->Get());
 
 	// if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
 	// 	std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
