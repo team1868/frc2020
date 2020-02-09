@@ -47,7 +47,7 @@ static double LOW_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double HIGH_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER =  0.0;
 static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
-
+static const double ROBOT_WIDTH = 33.0/12; //ft
 // superstructure
 static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
@@ -162,6 +162,8 @@ class RobotModel {
     double GetPointP();
     double GetPointI();
     double GetPointD();
+
+
     // superstructure robot model
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();

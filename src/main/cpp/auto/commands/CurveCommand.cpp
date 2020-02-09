@@ -23,6 +23,7 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
 
+
   dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
   tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
   lOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve lO", 0.0).GetEntry();
@@ -46,7 +47,6 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   talonEncoderPIDSource_ = talonEncoderSource;
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
-
 
   dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
   tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
@@ -88,7 +88,7 @@ void CurveCommand::Init(){
   tPID_->SetPID(tPFac_, tIFac_, tDFac_);
 	dPID_->SetPID(dPFac_, dIFac_, dDFac_);
 
-  dPID_->SetSetpoint(desiredAngle_*desiredRadius_*PI/180);//2*PI*desiredRadius_/(360/desiredAngle_));
+  dPID_->SetSetpoint(desiredAngle_*(desiredRadius_+(ROBOT_WIDTH/2))*PI/180);//2*PI*desiredRadius_/(360/desiredAngle_));
   tPID_->SetSetpoint(desiredAngle_);
 
   dPID_->SetAbsoluteTolerance(3.0/12.0); //this too U DUDE
@@ -180,12 +180,13 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     double rOutput;
 
     if(turnLeft_){
-      lOutput = dOutput - tOutput; //TODO SKETCH
-      rOutput = dOutput + tOutput;
-    } else {
-      lOutput = dOutput + tOutput; //TODO SKETCH
-      rOutput = dOutput - tOutput;
+      // turning left, right wheel goes alrger distance
+      rOutput = dOutput;
+      lOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); 
 
+    } else {
+      rOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); 
+      lOutput = dOutput;  
     }
     
     //TODODODODO NEEDED OR IS THIS MESSING WITH THE PID????
@@ -227,6 +228,7 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 
 double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
   double rawAngle = (curPivDistance/desiredRadius_ *180/PI) + initAngle_; //TODO POSSIBLE ERROR WITH INIT ANGLE
+  rawAngle = remainder((rawAngle+540.0), 360.0)-180.0;
   if(turnLeft_){ //CHECK LOGIC??? why is right negative makes no sense
     return -rawAngle;
   } else {
