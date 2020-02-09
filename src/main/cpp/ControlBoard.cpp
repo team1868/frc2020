@@ -29,10 +29,11 @@ ControlBoard::ControlBoard() {
 	buttons_[kLowGearShift] = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	buttons_[kAlignButton] = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	buttons_[kTrenchAlignButton] = new ButtonReader(rightJoy_, TRENCH_ALIGN_TAPE_BUTTON_PORT);
-	buttons_[kFlywheelButton] = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);
+	buttons_[kFlywheelCloseButton] = new ButtonReader(operatorJoy_, FLYWHEEL_FAR_BUTTON_PORT);
+	buttons_[kFlywheelFarButton] = new ButtonReader(operatorJoy_, FLYWHEEL_CLOSE_BUTTON_PORT);
 	buttons_[kClimberButton] = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
 	buttons_[kControlPanelStage2Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_2_BUTTON_PORT);
-	buttons_[kControlPanelStage3Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_3_BUTTON_PORT);
+	buttons_[kControlPanelStage3Button] = new ButtonReader(operatorJoyB_, CONTROL_PANEL_STAGE_3_BUTTON_PORT);
 	buttons_[kIntakeSeriesButton] = new ButtonReader(operatorJoyB_, INTAKE_SERIES_BUTTON_PORT);
 	buttons_[kIndexSeriesButton] = new ButtonReader(operatorJoyB_, INDEX_SERIES_BUTTON_PORT);
 

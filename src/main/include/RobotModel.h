@@ -166,6 +166,9 @@ class RobotModel {
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);
+    void EngageFlywheelHood();
+    void DisengageFlywheelHood();
+    double GetTargetDistance();
     
     void SetClimberOutput(double power);
     void SetClimberElevatorOutput(double power);

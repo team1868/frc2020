@@ -14,6 +14,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     robot_ = robot;
     humanControl_ = humanControl;
 
+    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, *flywheelEncoder1_, flywheelPIDOutput_);
+    // fix encoder source
+    // fix all of this
     climberPower_ = 0.5; // fix
     desiredRPM_ = 2000;
     flywheelPower_ = CalculateFlywheelPowerDesired();
@@ -72,6 +75,7 @@ void SuperstructureController::Update(){
             cout << "idle" << endl;
 
             robot_->SetFlywheelOutput(0.0);
+            robot_->DisengageFlywheelHood();
             robot_->SetClimberOutput(0.0);
             robot_->SetControlPanelOutput(0.0);
             robot_->SetClimberElevatorOutput(0.0);
@@ -94,6 +98,14 @@ void SuperstructureController::Update(){
             if (humanControl_->JustPressed(ControlBoard::Buttons::kControlPanelStage3Button)){
                 initialControlPanelColor_ = robot_->MatchColor(); // only press once color sensor can see the wheel
                 nextState_ = kControlPanelStage3;
+            }
+
+            if (humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelCloseButton)){
+                nextState_ = kShooting;
+            }
+
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelFarButton)){
+                nextState_ = kShooting;
             }
 
             //light for align tape turned on and off in align tape command
@@ -120,27 +132,11 @@ void SuperstructureController::Update(){
             } else {
                 robot_->SetClimberOutput(0.0);
             }  
-
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
-                ControlPanelStage2(0.6); // test to see which speed works best
-            } else {
-                robot_->SetControlPanelOutput(0.0);
-            }
-
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage3Button)){
-                // need to do the logic and match for this, based on the placement of the color sensor
-                ControlPanelStage3(0.5); // test to see which speed works best         
-            } else {
-                robot_->SetControlPanelOutput(0.0);
-            }
             */
             
             if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
                 nextState_ = kIntaking;
-            } /*else if (currState_ == kIntaking) {
-                    nextState_ = kIndexing;
-            } else
-                nextState_ = kIdle;*/
+            } 
 
             break;
         case kIntaking:
@@ -160,7 +156,10 @@ void SuperstructureController::Update(){
             //exit condition
             break;
         case kShooting:
-            
+            if(robot_->GetDistance()>5.0){
+                robot_->EngageFlywheelHood();
+            }
+
             break;
         case kControlPanelStage2:
             ControlPanelStage2(0.2); // fix power

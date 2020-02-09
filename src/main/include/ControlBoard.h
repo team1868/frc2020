@@ -16,9 +16,9 @@ class ControlBoard {
  public:
   enum Joysticks{ kLeftJoy, kRightJoy };
 	enum Axes{ kX, kY, kZ, kLT};
-  enum Buttons{kHighGearShift, kLowGearShift, kFlywheelButton, kClimberButton, kAlignButton, 
+  enum Buttons{kHighGearShift, kLowGearShift, kFlywheelCloseButton, kClimberButton, kAlignButton, 
     kTrenchAlignButton, kControlPanelStage2Button, kControlPanelStage3Button, kIntakeSeriesButton,
-    kIndexSeriesButton};
+    kIndexSeriesButton, kFlywheelFarButton};
 
   ControlBoard();
   void ReadControls();

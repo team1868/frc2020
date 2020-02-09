@@ -73,3 +73,19 @@ double PivotPIDTalonOutput::GetOutput() {
 
 PivotPIDTalonOutput::~PivotPIDTalonOutput(){
 }
+
+FlywheelPIDOutput::FlywheelPIDOutput() {
+	pidOutput_ = 0.0;
+}
+
+void FlywheelPIDOutput::PIDWrite(double output) {
+	pidOutput_ = output;
+}
+
+double FlywheelPIDOutput::GetPIDOutput() {
+	return pidOutput_;
+}
+
+FlywheelPIDOutput::~FlywheelPIDOutput() {
+
+}

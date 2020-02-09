@@ -41,13 +41,15 @@ class SuperstructureController {
   ControlBoard *humanControl_;
   TalonFXSensorCollection *flywheelPIDController_;
   TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
-
+  
   uint32_t currState_;
 	uint32_t nextState_;
 
   double flywheelPower_, desiredRPM_, flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
-
+  PIDController *flywheelPID_;
+  FlywheelPIDOutput* flywheelPIDOutput_;
+  
   double flywheelFeederPower_;
 
   double pushNextBallTime_; // minimum time it takes for elevator to move next ball right to topmost sensor
