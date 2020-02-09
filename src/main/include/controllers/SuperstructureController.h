@@ -21,7 +21,7 @@ class SuperstructureController {
   void FlywheelHoodUp();
   void FlywheelHoodDown();
 
-  bool IndexUpdate();
+  bool IndexUpdate(bool readyToShoot);
 
   void CalculateIntakeRollersPower();
 
@@ -34,6 +34,10 @@ class SuperstructureController {
 		kInit, kIdle, kShooting, kIndexing, kIntaking, kControlPanelStage2, kControlPanelStage3
 	};
 
+  enum IndexState {
+    kIndexInit, kLower, kLift
+  };
+
   ~SuperstructureController();
 
  private:
@@ -41,17 +45,20 @@ class SuperstructureController {
   ControlBoard *humanControl_;
   TalonFXSensorCollection *flywheelPIDController_;
   TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
-
+  
   uint32_t currState_;
 	uint32_t nextState_;
+  IndexState currIndexState_, nextIndexState_;
 
   double flywheelPower_, desiredRPM_, flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+  PIDController *flywheelPID_;
+  FlywheelPIDOutput* flywheelPIDOutput_;
 
-  double flywheelFeederPower_;
-
-  double pushNextBallTime_; // minimum time it takes for elevator to move next ball right to topmost sensor
-  double elevatorPower_;
+  double lowerElevatorTimeout_;
+  double elevatorTimeout_;
+  double elevatorSlowPower_;
+  double elevatorFastPower_;
   double elevatorFeederPower_;
   double indexFunnelPower_;
 
@@ -61,10 +68,10 @@ class SuperstructureController {
   double currGyroAngle_, lastGyroAngle_;
   double currTime_, lastTime_;
 
-  bool currFunnelLightSensorStatus_, currBottomElevatorLightSensorStatus_, currTopElevatorLightSensorStatus_;
-  
-  double numBalls_; //to keep track of how many balls inside bot
-  bool isSpeed_; //is flywheel at desired speed
+  double startIndexTime_;
+  double startElevatorTime_;
+  bool lastLower_;
+  bool lastUpper_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;
@@ -72,5 +79,5 @@ class SuperstructureController {
 
   ShuffleboardLayout &superstructureLayout_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
-  nt::NetworkTableEntry funnelLightSensorEntry_, bottomElevatorLightSensorEntry_, topElevatorLightSensorEntry_;
+  nt::NetworkTableEntry elevatorFeederLightSensorEntry_, elevatorLightSensorEntry_;
 };

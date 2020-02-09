@@ -67,18 +67,20 @@ static const int OPERATOR_JOY_B_USB_PORT             = 3;
 //static const int HIGH_GEAR_BUTTON_PORT               = 1; don't need these w/gearshift
 //static const int LOW_GEAR_BUTTON_PORT                = 2;
 
-static const int FLYWHEEL_BUTTON_PORT                = 1; // fix all superstructure button ports
-static const int CLIMBER_BUTTON_PORT                 = 2; 
-static const int ALIGN_TAPE_BUTTON_PORT              = 3;
+static const int FLYWHEEL_CLOSE_BUTTON_PORT          = 1; // fix all superstructure button ports
+static const int FLYWHEEL_FAR_BUTTON_PORT            = 2;
+static const int CLIMBER_BUTTON_PORT                 = 3; 
+static const int ALIGN_TAPE_BUTTON_PORT              = 4;
 
-static const int TRENCH_ALIGN_TAPE_BUTTON_PORT       = 4;
-static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT   = 5;
-static const int CONTROL_PANEL_STAGE_3_BUTTON_PORT   = 6; 
-static const int INTAKE_SERIES_BUTTON_PORT           = 1;
-static const int INDEX_SERIES_BUTTON_PORT            = 2;
+static const int TRENCH_ALIGN_TAPE_BUTTON_PORT       = 5;
+static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT   = 6;
+static const int CONTROL_PANEL_STAGE_3_BUTTON_PORT   = 1; 
+static const int INTAKE_SERIES_BUTTON_PORT           = 2;
+static const int INDEX_SERIES_BUTTON_PORT            = 3;
 
 // SENSORS
 static const int GYRO_PORT                           = 1; // ANALOG IO
+static const int INTAKE_WRIST_POT_PORT               = 0; // ANALOG PORT
 static const int FUNNEL_LIGHT_SENSOR_PORT            = 1;
 static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT   = 2;
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT      = 3;

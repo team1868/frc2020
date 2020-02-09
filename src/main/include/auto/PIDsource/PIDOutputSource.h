@@ -37,6 +37,31 @@ private:
 	double pidOutput_;
 };
 
+class FlywheelPIDOutput : public frc::PIDOutput {
+public:
+	/**
+	 * Initializes pidOutput_ to 0
+	 */
+	FlywheelPIDOutput();
+	/**
+	 * Gets output from PID loop and assigns it to pidOutput_
+	 */
+	void PIDWrite(double output);
+	/**
+	 * @return pidOutput_
+	 */
+	double GetPIDOutput();
+	/**
+	 * Destructor
+	 */
+	virtual ~FlywheelPIDOutput();
+private:
+	/**
+	 * Output from PID loop
+	 */
+	double pidOutput_;
+};
+
 class DistancePIDOutput : public frc::PIDOutput {
 public:
 	/**

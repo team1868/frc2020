@@ -14,6 +14,14 @@ void RobotModel::SetFlywheelOutput(double power){
     //flywheelMotor2_->Set(-power);
 }
 
+void RobotModel::EngageFlywheelHood() {
+    flywheelHoodSolenoid_->Set(true);
+}
+
+void RobotModel::DisengageFlywheelHood() {
+    flywheelHoodSolenoid_->Set(false);
+}
+
 void RobotModel::SetClimberOutput(double power){
     climberMotor1_->Set(power);
     if (climberEncoder1_->GetPosition() >= SPARK_ENCODER_TICKS) { // need to test this
@@ -42,7 +50,6 @@ void RobotModel::SetElevatorOutput(double power) {
     elevatorMotor_->Set(power);
 }
 
-
 void RobotModel::SetLight(bool setLight){
 	lightSolenoid_ -> Set(setLight);
 }
@@ -54,6 +61,11 @@ WPI_TalonFX* RobotModel::GetFlywheelMotor1() {
 
 WPI_TalonFX* RobotModel::GetFlywheelMotor2() {
     return flywheelMotor2_;
+}
+
+double RobotModel::GetTargetDistance() {
+    // vision code to get distance, idk how that works but it needs to work
+    return 0.0;
 }
 
 
@@ -90,6 +102,10 @@ std::string RobotModel::GetControlPanelGameData() {
 
 AnalogGyro* RobotModel::GetGyro(){
 	return intakeWristGyro_;
+}
+
+AnalogPotentiometer* RobotModel::GetPot(){
+    return intakeWristPot_; 
 }
 
 double RobotModel::GetGyroAngle(){
