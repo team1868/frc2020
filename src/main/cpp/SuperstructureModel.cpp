@@ -104,6 +104,10 @@ AnalogGyro* RobotModel::GetGyro(){
 	return intakeWristGyro_;
 }
 
+AnalogPotentiometer* RobotModel::GetPot(){
+    return intakeWristPot_; 
+}
+
 double RobotModel::GetGyroAngle(){
     return intakeWristGyro_->GetAngle();
 }

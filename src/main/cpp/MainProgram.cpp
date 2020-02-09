@@ -21,6 +21,8 @@ void MainProgram::RobotInit() {
     robot_->CreatePID();
     robot_->ResetDriveEncoders();
     robot_->CreatePID();
+    robot_->GetGyro()->InitGyro();
+	robot_->GetGyro()->Calibrate();
     printf("I am alive.");
 
     aligningTape_ = false;
@@ -59,8 +61,7 @@ void MainProgram::AutonomousInit() {
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
-    robot_->GetGyro()->InitGyro();
-	robot_->GetGyro()->Calibrate();
+
 
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);

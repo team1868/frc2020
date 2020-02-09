@@ -47,8 +47,9 @@ static double LOW_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double HIGH_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER =  0.0;
 static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
-
+static const double ROBOT_WIDTH = 33.0/12; //ft
 // superstructure
+static const double INTAKE_POT_OFFSET = 0.0;
 static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
 static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
@@ -76,6 +77,7 @@ class RobotModel {
     frc::ShuffleboardTab& GetFunctionalityTab();
     frc::ShuffleboardTab& GetPIDTab();
     frc::ShuffleboardTab& GetAutoOffsetTab();
+    frc::ShuffleboardTab& GetSuperstructureTab();
     
 
     // drive robot model
@@ -162,6 +164,8 @@ class RobotModel {
     double GetPointP();
     double GetPointI();
     double GetPointD();
+
+
     // superstructure robot model
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
@@ -176,6 +180,7 @@ class RobotModel {
     void SetIntakeRollersOutput(double power);
     void SetIntakeWristOutput(double power);
     AnalogGyro* GetGyro();
+    AnalogPotentiometer* GetPot();
     double GetGyroAngle();
     
     bool GetElevatorFeederLightSensorStatus();
@@ -227,6 +232,7 @@ class RobotModel {
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
     AnalogGyro *intakeWristGyro_;
+    AnalogPotentiometer *intakeWristPot_; 
     
     DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
     WPI_VictorSPX *indexFunnelMotor_;
@@ -258,11 +264,12 @@ class RobotModel {
 	  double desiredDistance_;//for align tape
     double targetVelocity_;
 
-    frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_;
+    frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
+
 
     frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
@@ -270,5 +277,6 @@ class RobotModel {
     nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
+    nt::NetworkTableEntry potEntry_;
 
 };
