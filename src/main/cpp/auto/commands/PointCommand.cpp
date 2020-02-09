@@ -148,6 +148,8 @@ void PointCommand::Init() {
 	GetPIDValues();
 	pointPID_->SetPID(pFac_, iFac_, dFac_);
 
+	robot_->SetLowGear();
+
 	// initliaze NavX angle
 	initYaw_ = navXSource_->PIDGet();
 

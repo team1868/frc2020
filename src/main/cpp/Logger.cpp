@@ -54,6 +54,9 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 		myRobot->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN) << ", " <<
 		myRobot->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN) << ", " <<
 
+		//myRobot->GetCurrent(HIGH_GEAR) get back to this in a sec
+		
+
 	    myRobot->GetCompressorCurrent() << ", " <<
 	    myRobot->GetRIOCurrent() << ", " <<
 	    myRobot->GetTotalPower() << ", " <<

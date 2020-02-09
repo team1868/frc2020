@@ -64,8 +64,8 @@ static const int OPERATOR_JOY_USB_PORT               = 2;
 static const int OPERATOR_JOY_B_USB_PORT             = 3;
 
 // Buttons
-static const int HIGH_GEAR_BUTTON_PORT               = 1;
-static const int LOW_GEAR_BUTTON_PORT                = 2;
+//static const int HIGH_GEAR_BUTTON_PORT               = 1; don't need these w/gearshift
+//static const int LOW_GEAR_BUTTON_PORT                = 2;
 
 static const int FLYWHEEL_BUTTON_PORT                = 1; // fix all superstructure button ports
 static const int CLIMBER_BUTTON_PORT                 = 2; 

@@ -25,8 +25,8 @@ ControlBoard::ControlBoard() {
 	//example
 	//buttons_[kYourButton] = new ButtonReader(joystickname, BUTTON_PORT);
 
-	buttons_[kHighGearShift] = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
-	buttons_[kLowGearShift] = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
+	//buttons_[kHighGearShift] = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT); don't need these w/gearshift
+	//buttons_[kLowGearShift] = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	buttons_[kAlignButton] = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	buttons_[kTrenchAlignButton] = new ButtonReader(rightJoy_, TRENCH_ALIGN_TAPE_BUTTON_PORT);
 	buttons_[kFlywheelButton] = new ButtonReader(operatorJoy_, FLYWHEEL_BUTTON_PORT);

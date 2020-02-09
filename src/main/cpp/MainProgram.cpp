@@ -23,6 +23,7 @@ void MainProgram::RobotInit() {
     robot_->CreatePID();
     robot_->GetGyro()->InitGyro();
 	robot_->GetGyro()->Calibrate();
+    robot_->SetLowGear();
     printf("I am alive.");
 
     aligningTape_ = false;
