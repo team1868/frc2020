@@ -29,13 +29,14 @@ ControlBoard::ControlBoard() {
 	//buttons_[kLowGearShift] = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	buttons_[kAlignButton] = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	buttons_[kTrenchAlignButton] = new ButtonReader(rightJoy_, TRENCH_ALIGN_TAPE_BUTTON_PORT);
-	buttons_[kFlywheelCloseButton] = new ButtonReader(operatorJoy_, FLYWHEEL_FAR_BUTTON_PORT);
-	buttons_[kFlywheelFarButton] = new ButtonReader(operatorJoy_, FLYWHEEL_CLOSE_BUTTON_PORT);
+	buttons_[kShootButton] = new ButtonReader(operatorJoy_, SHOOT_BUTTON_PORT);
 	buttons_[kClimberButton] = new ButtonReader(operatorJoy_, CLIMBER_BUTTON_PORT);
 	buttons_[kControlPanelStage2Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_2_BUTTON_PORT);
 	buttons_[kControlPanelStage3Button] = new ButtonReader(operatorJoyB_, CONTROL_PANEL_STAGE_3_BUTTON_PORT);
 	buttons_[kIntakeSeriesButton] = new ButtonReader(operatorJoyB_, INTAKE_SERIES_BUTTON_PORT);
 	buttons_[kIndexSeriesButton] = new ButtonReader(operatorJoyB_, INDEX_SERIES_BUTTON_PORT);
+	buttons_[kShootClosePrepButton] = new ButtonReader(operatorJoyB_, SHOOT_CLOSE_PREP_BUTTON_PORT);
+	buttons_[kShootFarPrepButton] = new ButtonReader(operatorJoyB_, SHOOT_FAR_PREP_BUTTON_PORT);
 
 	//create buttons here after creating a option in the Buttons enum
 	//example

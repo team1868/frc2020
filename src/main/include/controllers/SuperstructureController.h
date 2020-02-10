@@ -18,10 +18,13 @@ class SuperstructureController {
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
   
+  //these functions should not exist
   void FlywheelHoodUp();
   void FlywheelHoodDown();
 
-  bool IndexUpdate(bool readyToShoot);
+  bool IsFlywheelAtSpeed();
+
+  bool IndexUpdate();
 
   void CalculateIntakeRollersPower();
 
@@ -31,7 +34,7 @@ class SuperstructureController {
   void Reset();
 
   enum SuperstructureState {
-		kInit, kIdle, kShooting, kIndexing, kIntaking, kControlPanelStage2, kControlPanelStage3
+		kInit, kIdle, kShooting, kIndexing, kIntaking, kReseting, kControlPanelStage2, kControlPanelStage3
 	};
 
   enum IndexState {
@@ -54,9 +57,11 @@ class SuperstructureController {
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
   PIDController *flywheelPID_;
   FlywheelPIDOutput* flywheelPIDOutput_;
+  double desiredFlywheelPower_, closeFlywheelPower_;
 
   double lowerElevatorTimeout_;
   double elevatorTimeout_;
+
   double elevatorSlowPower_;
   double elevatorFastPower_;
   double elevatorFeederPower_;
@@ -71,8 +76,8 @@ class SuperstructureController {
 
   double startIndexTime_;
   double startElevatorTime_;
-  bool lastLower_;
-  bool lastUpper_;
+
+  bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;
