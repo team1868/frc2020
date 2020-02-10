@@ -161,7 +161,6 @@ void PivotCommand::Reset() {
 	if (pivotPID_ != NULL) {
 		pivotPID_->Disable();
 		delete pivotPID_;
-		//delete talonOutput_;
 		pivotPID_ = NULL;
 		printf("Disabling pivotcommand %f \n", robot_->GetNavXYaw());
 
@@ -208,7 +207,7 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		// adjust motor values according to PID
 		robot_->SetDriveValues(RobotModel::kLeftWheels, output);
 		robot_->SetDriveValues(RobotModel::kRightWheels, -output);
-		//robot_->SetDriveValues(-output, -output); //NOTE: NO STATIC FRICTION
+		//robot_->SetDriveValues(output, output); //NOTE: NO STATIC FRICTION
 
 		// update shuffleboard
 		rightDriveEntry_.SetDouble(output);
