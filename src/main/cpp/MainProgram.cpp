@@ -22,7 +22,7 @@ void MainProgram::RobotInit() {
     robot_->ResetDriveEncoders();
     //robot_->GetGyro()->InitGyro();
 	//robot_->GetGyro()->Calibrate();
-    
+    robot_->SetLowGear();
     aligningTape_ = false;
     
     autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();

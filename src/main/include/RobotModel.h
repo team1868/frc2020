@@ -20,6 +20,7 @@
 #include "auto/PIDsource/PIDInputSource.h"
 #include "auto/PIDsource/PIDOutputSource.h"
 #include "Ports2020.h"
+#include "ControlBoard.h"
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -132,6 +133,7 @@ class RobotModel {
 
     void SetHighGear();
     void SetLowGear();
+    void GearShift();
     
     //for align tape - in drive model
     void SetDeltaAngle(double angle);
@@ -201,6 +203,9 @@ class RobotModel {
     ~RobotModel();
 
   private:
+
+    ControlBoard *humanControl_;
+
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
     std::string controlPanelGameData_;
@@ -282,5 +287,4 @@ class RobotModel {
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
     nt::NetworkTableEntry potEntry_;
-
 };

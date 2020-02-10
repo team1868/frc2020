@@ -118,6 +118,7 @@ void PivotCommand::GetPIDValues() {
 
 
 void PivotCommand::Init() {
+	robot_->SetLowGear();
 	//Profiler profiler(robot_, "Pivot Init");
 	// Setting PID values (in case they changed)
 	//TODO INI GetIniValues();

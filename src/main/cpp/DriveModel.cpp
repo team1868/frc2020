@@ -5,7 +5,16 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include "controllers/SuperstructureController.h"
 #include "RobotModel.h"
+#include "ControlBoard.h"
+#include "controllers/DriveController.h"
+
+
+
+const double MIN_TURNING_X = 0.5;
+const double MIN_TURNING_XY_DIFFERENCE = 1.0;
+static const double MAX_LOW_GEAR_VELOCITY = 8.5;
 
 RobotModel::RobotModel() :
     driverTab_(frc::Shuffleboard::GetTab("Driveteam Control")),
@@ -484,6 +493,28 @@ double RobotModel::GetCurrent(int channel) {
 		return -1;
     }
 }
+
+void RobotModel::GearShift() {
+   //assuming arcade:
+           if (humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
+               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) {
+               	SetLowGear();
+           }
+           //assuming tank:
+           /* if ((abs(humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY))
+           - humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY))
+           >= MIN_TURNING_XY_DIFFERENCE) {
+               robot_->SetLowGear();
+           } */
+           else if (GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY ||
+                   GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) {
+               SetHighGear();
+           }
+           else {
+               SetLowGear();
+           }
+}
+
 
 double RobotModel::ModifyCurrent(int channel, double value){
 
