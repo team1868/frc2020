@@ -249,7 +249,7 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 
         }
 		
-		//robot_->SetDriveValues(-output, -output); //NOTE: NO STATIC FRICTION
+		//robot_->SetDriveValues(output, output); //NOTE: NO STATIC FRICTION
 
 		// update shuffleboard
         if (turnLeft_){

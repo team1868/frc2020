@@ -192,10 +192,10 @@ RobotModel::RobotModel() :
 }
 
 void RobotModel::SetDriveValues(double left, double right){
-    leftMaster_->Set(left);
-    rightMaster_->Set(-right);
-	leftDrivePower_ = left;
-	rightDrivePower_ = -right;
+    leftMaster_->Set(-left);
+    rightMaster_->Set(right);
+	leftDrivePower_ = -left;
+	rightDrivePower_ = right;
 }
 
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {

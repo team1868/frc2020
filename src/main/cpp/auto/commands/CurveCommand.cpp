@@ -84,28 +84,28 @@ void CurveCommand::Init(){
   //distancePIDOutput_ = new DistancePIDOutput();
 
   dPID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderPIDSource_, distancePIDOutput_);
-  tPID_ = new PIDController(tPFac_, tIFac_, tDFac_, navXPIDSource_, anglePIDOutput_);
+  //tPID_ = new PIDController(tPFac_, tIFac_, tDFac_, navXPIDSource_, anglePIDOutput_);
 
-  tPID_->SetPID(tPFac_, tIFac_, tDFac_);
+  //tPID_->SetPID(tPFac_, tIFac_, tDFac_);
 	dPID_->SetPID(dPFac_, dIFac_, dDFac_);
 
   dPID_->SetSetpoint(desiredAngle_*(desiredRadius_+(ROBOT_WIDTH/2))*PI/180);//2*PI*desiredRadius_/(360/desiredAngle_));
-  tPID_->SetSetpoint(desiredAngle_);
+  //tPID_->SetSetpoint(desiredAngle_);
 
   dPID_->SetAbsoluteTolerance(3.0/12.0); //this too U DUDE
-  tPID_->SetAbsoluteTolerance(0.5); //HM TUNE TODODODODODOD
+  //tPID_->SetAbsoluteTolerance(0.5); //HM TUNE TODODODODODOD
 
-  tPID_->SetContinuous(true);
-  tPID_->SetInputRange(-180, 180);
+  //tPID_->SetContinuous(true);
+  //tPID_->SetInputRange(-180, 180);
 	dPID_->SetContinuous(false);
 	//tPID_->SetInputRange(-180, 180);
 
-  tPID_->SetOutputRange(-0.9, 0.9);
+  //tPID_->SetOutputRange(-0.9, 0.9);
 	dPID_->SetOutputRange(-0.9, 0.9); //MAKE VARIABLES TODO TODO     //adjust for 2019
 	//tPID_->SetAbsoluteTolerance(0.3);	 //MAKE VARIABLES TODO TODO   //adjust for 2019
 
   dPID_->Enable();
-  tPID_->Enable();
+  //tPID_->Enable();
   //printf("done with init in curve\n");
 
 }
@@ -116,22 +116,15 @@ void CurveCommand::Reset(){
 	// destroy angle PID
 	if (tPID_ != NULL) {
 		tPID_->Disable();
-    //tPID_->~PIDController();
-
 		delete tPID_;
-
 		tPID_ = NULL;
-
 		printf("Reset Angle PID %f \n", robot_->GetNavXYaw());
 	}
 
 	// destroy distance PID
 	if (dPID_ != NULL) {
 		dPID_->Disable();
-    //dPID_->~PIDController();
-
 		delete dPID_;
-
 		dPID_ = NULL;
 //		printf("Reset Distance PID");
 
@@ -145,7 +138,8 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 
   pidSourceNet_.SetDouble(talonEncoderPIDSource_->PIDGet());
 
-  if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
+  //if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
+  if(dPID_->OnTarget()){
     printf("%f Original Desired Distance: %f\n"
         "Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
@@ -157,7 +151,6 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
       printf("Final Distance from robot: %f\n", robot_->GetLeftDistance());
     }
 		Reset();
-		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 		printf("%f CurveCommand IS DONE \n", robot_->GetTime());
 		//if (timeOut) {
@@ -175,10 +168,10 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     curDesiredAngle_ = CalcCurDesiredAngle(curPivDistance_);
     curAngleError_ = curDesiredAngle_ - curAngle_;
 
-    tPID_->SetSetpoint(curDesiredAngle_);
+    //tPID_->SetSetpoint(curDesiredAngle_);
 
     double dOutput = distancePIDOutput_->GetPIDOutput();
-    double tOutput = anglePIDOutput_->GetPIDOutput();
+    //double tOutput = anglePIDOutput_->GetPIDOutput();
 
 
     double lOutput;
@@ -221,10 +214,10 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     lOutput *= 0.5;
     rOutput *= 0.5;
 
-    robot_->SetDriveValues(-lOutput, -rOutput);
+    robot_->SetDriveValues(lOutput, rOutput);
     
     dOutputNet_.SetDouble(dOutput);
-    tOutputNet_.SetDouble(tOutput);
+    //tOutputNet_.SetDouble(tOutput);
     lOutputNet_.SetDouble(lOutput);
     rOutputNet_.SetDouble(rOutput);
 
@@ -279,5 +272,6 @@ CurveCommand::~CurveCommand(){
   rOutputNet_.Delete();
   dErrorNet_.Delete();
   tErrorNet_.Delete();
+  pidSourceNet_.Delete();
 
 }

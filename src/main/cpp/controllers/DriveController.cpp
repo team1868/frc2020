@@ -40,9 +40,9 @@ void DriveController::Update(){
 
 
     if(arcadeMode_){
-        ArcadeDrive(-leftJoyY, rightJoyX, thrustSensitivity_, rotateSensitivity_); //TODO add shuffleboard option
+        ArcadeDrive(leftJoyY, rightJoyX, thrustSensitivity_, rotateSensitivity_); //test turn, might need to negatize rightJoyX
     } else {
-        TankDrive(-leftJoyY, -rightJoyY);
+        TankDrive(leftJoyY, rightJoyY);
     }
         
 
