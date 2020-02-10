@@ -51,6 +51,7 @@ class CurveCommand : public AutoCommand {
 
   bool isDone_;
 
+  frc::ShuffleboardLayout &curveLayout_;
   nt::NetworkTableEntry dOutputNet_, tOutputNet_, lOutputNet_, rOutputNet_,
     dErrorNet_, tErrorNet_, pidSourceNet_;
 };

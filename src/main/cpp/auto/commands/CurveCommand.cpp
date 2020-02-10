@@ -11,7 +11,8 @@
 
 CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft,
   NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
-	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand() { //using absolute angle, radius is inside wheel
+	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand(), 
+  curveLayout_(robot->GetFunctionalityTab().GetLayout("Curve", "List Layout")) { //using absolute angle, radius is middle of robot
   
   robot_ = robot;
   desiredRadius_ = desiredRadius;
@@ -23,20 +24,19 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
 
-
-  dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
-  tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
-  lOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve lO", 0.0).GetEntry();
-  rOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dErr", 0.0).GetEntry(); 
-  tErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tErr", 0.0).GetEntry(); 
-
-  pidSourceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve PID Get", 0.0).GetEntry(); 
+  dOutputNet_ = curveLayout_.Add("Curve dO", 0.0).GetEntry();
+  tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
+  lOutputNet_ = curveLayout_.Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = curveLayout_.Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).GetEntry();
+  tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
+  pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).GetEntry();
 }
 
 CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
   NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
-	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand() { //using absolute angle, radius is inside wheel
+	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand(), 
+  curveLayout_(robot->GetFunctionalityTab().GetLayout("Curve", "List Layout")) { //using absolute angle, radius is middle of robot
   
   robot_ = robot;
   desiredRadius_ = desiredRadius;
@@ -48,14 +48,13 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
 
-  dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
-  tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
-  lOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve lO", 0.0).GetEntry();
-  rOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dErr", 0.0).GetEntry(); 
-  tErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tErr", 0.0).GetEntry(); 
-
-  pidSourceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve PID Get", 0.0).GetEntry(); 
+  dOutputNet_ = curveLayout_.Add("Curve dO", 0.0).GetEntry();
+  tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
+  lOutputNet_ = curveLayout_.Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = curveLayout_.Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).GetEntry();
+  tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
+  pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).GetEntry();
 }
 
 void CurveCommand::Init(){
@@ -105,6 +104,7 @@ void CurveCommand::Init(){
 
   dPID_->Enable();
   tPID_->Enable();
+  //printf("done with init in curve\n");
 
 }
 
@@ -139,6 +139,8 @@ void CurveCommand::Reset(){
 
 void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add timeout!
 
+  //printf("I AM UPDATING\n");
+
   pidSourceNet_.SetDouble(talonEncoderPIDSource_->PIDGet());
 
   if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
@@ -152,7 +154,7 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     } else {
       printf("Final Distance from robot: %f\n", robot_->GetLeftDistance());
     }
-		//Reset();
+		Reset();
 		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 		printf("%f CurveCommand IS DONE \n", robot_->GetTime());
@@ -176,18 +178,26 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     double dOutput = distancePIDOutput_->GetPIDOutput();
     double tOutput = anglePIDOutput_->GetPIDOutput();
 
+
     double lOutput;
     double rOutput;
 
     if(turnLeft_){
-      // turning left, right wheel goes alrger distance
+      // turning left, right wheel goes larger distance
       rOutput = dOutput;
-      lOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); 
-
+      //lOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); //strange math
+      lOutput = (dOutput * (desiredRadius_-ROBOT_WIDTH/2))/(desiredRadius_ + ROBOT_WIDTH/2); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
+      // rOutput = dOutput + tOutput;
+      // lOutput = dOutput - tOutput; 
     } else {
-      rOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); 
-      lOutput = dOutput;  
+      //rOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); //strange math
+      rOutput = (dOutput * (desiredRadius_-ROBOT_WIDTH/2))/(desiredRadius_ + ROBOT_WIDTH/2); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
+      lOutput = dOutput; 
+      // rOutput = dOutput - tOutput;
+      // lOutput = dOutput + tOutput; 
     }
+    
+    //printf("AM I NEGATIVE?? %f %f %f", dOutput, rOutput, lOutput);
     
     //TODODODODO NEEDED OR IS THIS MESSING WITH THE PID????
     //power output checks
@@ -206,7 +216,10 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
       rOutput = -1.0;
     }
 
-    robot_->SetDriveValues(lOutput, rOutput);
+    lOutput *= 0.5;
+    rOutput *= 0.5;
+
+    robot_->SetDriveValues(-lOutput, -rOutput);
     
     dOutputNet_.SetDouble(dOutput);
     tOutputNet_.SetDouble(tOutput);

@@ -13,6 +13,7 @@
 #include "auto/commands/PivotCommand.h"
 //#include "../commands/WaitingCommand.h"
 #include "auto/PIDSource/PIDInputSource.h"
+#include "auto/commands/PointCommand.h"
 #include "auto/PIDSource/PIDOutputSource.h"
 
 class AutoMode {

@@ -166,7 +166,7 @@ void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, 
             minBackwardThrust_ = leftDrive;
         }
         if (testMode){
-        std::cout << "minForward: " << minForwardThrust_ << " minBackward: " << minBackwardThrust_ << std::endl;
+        //std::cout << "minForward: " << minForwardThrust_ << " minBackward: " << minBackwardThrust_ << std::endl;
         }
     }
     // else{

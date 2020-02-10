@@ -109,7 +109,7 @@ private:
 
 	int numTimesStopped_;
 
-  frc::ShuffleboardLayout &driveStraightLayout_, &driveStraightPIDLayout_;
+  frc::ShuffleboardLayout &driveStraightLayout_;
 	nt::NetworkTableEntry leftStraightEntry_, rightStraightEntry_, angleErrorEntry_, angleErrorGraphEntry_, desiredAngleEntry_,
 		encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_;
     

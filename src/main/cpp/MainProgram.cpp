@@ -20,15 +20,14 @@ void MainProgram::RobotInit() {
     driveController_ = new DriveController(robot_, humanControl_);
     robot_->CreatePID();
     robot_->ResetDriveEncoders();
-    robot_->CreatePID();
-    robot_->GetGyro()->InitGyro();
-	robot_->GetGyro()->Calibrate();
-    printf("I am alive.");
-
+    //robot_->GetGyro()->InitGyro();
+	//robot_->GetGyro()->Calibrate();
+    
     aligningTape_ = false;
     
     autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();
     sequence_ = autoSequenceEntry_.GetString("t 0");
+    printf("I am alive.\n");
 }
 
 /**
@@ -66,7 +65,9 @@ void MainProgram::AutonomousInit() {
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
 
-    robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
+    robot_->SetTestSequence("d 1.0 c 3.0 90.0 0 c 3.0 0.0 1"); //for testing high gear and low gear
+
+    //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
     navX_ = new NavXPIDSource(robot_);
     talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -76,7 +77,6 @@ void MainProgram::AutonomousInit() {
     testSequence_ = new TestMode(robot_, humanControl_);
     testSequence_->QueueFromString(robot_->GetTestSequence());
 
-    printf("before init\n");
 
     //robot_->SetLight(true); //turn on light for auto
 
@@ -87,8 +87,8 @@ void MainProgram::AutonomousInit() {
 
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
 
-    // testSequence_ = new TestMode(robot_, humanControl_);
-    // testSequence_->QueueFromString(robot_->GetTestSequence());
+    //testSequence_ = new TestMode(robot_, humanControl_);
+    //testSequence_->QueueFromString(robot_->GetTestSequence());
 
     // printf("before init\n");
     // testSequence_->Init();
@@ -140,8 +140,8 @@ void MainProgram::TeleopInit() {
     aligningTape_ = false;
 
     zmq::context_t * context_ = new zmq::context_t(1); //same context for send + receive zmq
-    connectRecvZMQ();
-    connectSendZMQ();
+    //connectRecvZMQ();
+    //connectSendZMQ();
 }
 
 void MainProgram::TeleopPeriodic() {
@@ -154,7 +154,7 @@ void MainProgram::TeleopPeriodic() {
     robot_->MatchColor();
 
     matchTime_ = frc::Timer::GetMatchTime();
-    sendZMQ();//sending here bc. returns after each if below and i don't want to change everything hehe
+    //sendZMQ();//sending here bc. returns after each if below and i don't want to change everything hehe
 
     //align tapes not at trench (like auto)
     if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){

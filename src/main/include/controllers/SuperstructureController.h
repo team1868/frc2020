@@ -65,7 +65,8 @@ class SuperstructureController {
   double climberPower_;
 
   double desiredIntakeWristAngle_;
-  double currGyroAngle_, lastGyroAngle_;
+  //double currGyroAngle_, lastGyroAngle_;
+  double currIntakeAngle_, lastIntakeAngle_;
   double currTime_, lastTime_;
 
   double startIndexTime_;

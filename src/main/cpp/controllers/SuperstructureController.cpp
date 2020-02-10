@@ -60,6 +60,7 @@ void SuperstructureController::Reset() { // might not need this
 }
 
 void SuperstructureController::Update(){
+    /*
     currTime_ = robot_->GetTime();//may or may not be necessary
     RefreshShuffleboard();
 
@@ -67,6 +68,7 @@ void SuperstructureController::Update(){
         case kInit:
             // calibrate our gyro in autonomous init
 	        //currGyroAngle_ = lastGyroAngle_ = 0.0;
+            currIntakeAngle_ = lastIntakeAngle_ = 0.0;
 	        // currTime_ = lastTime_ = 0.0;
             nextState_ = kIdle;
             break;
@@ -108,30 +110,30 @@ void SuperstructureController::Update(){
             }
 
             //light for align tape turned on and off in align tape command
-            /*if (humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
-                printf("in light\n");
-                robot_->SetLight(true);
-            } else {
-                robot_->SetLight(false);
-            }*/
+            // if (humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
+            //     printf("in light\n");
+            //     robot_->SetLight(true);
+            // } else {
+            //     robot_->SetLight(false);
+            // }
 
-            /*
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelButton)){
-                printf("flywheel button being pressed\n");
-                cout<<"flywheel power "<<flywheelPower_<<endl;
-                robot_->SetFlywheelOutput(flywheelPower_);
-            } else {
-                robot_->SetFlywheelOutput(0.0);
-            }  
+            
+            // if(humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelButton)){
+            //     printf("flywheel button being pressed\n");
+            //     cout<<"flywheel power "<<flywheelPower_<<endl;
+            //     robot_->SetFlywheelOutput(flywheelPower_);
+            // } else {
+            //     robot_->SetFlywheelOutput(0.0);
+            // }  
 
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimberButton)){
-                printf("climber button being pressed\n");
-                cout<<"climber power "<<climberPower_<<endl;
-                robot_->SetClimberOutput(climberPower_);
-            } else {
-                robot_->SetClimberOutput(0.0);
-            }  
-            */
+            // if(humanControl_->GetDesired(ControlBoard::Buttons::kClimberButton)){
+            //     printf("climber button being pressed\n");
+            //     cout<<"climber power "<<climberPower_<<endl;
+            //     robot_->SetClimberOutput(climberPower_);
+            // } else {
+            //     robot_->SetClimberOutput(0.0);
+            // }  
+            
             
             if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
                 nextState_ = kIntaking;
@@ -139,12 +141,18 @@ void SuperstructureController::Update(){
 
             break;
         case kIntaking:
-            if(robot_->GetGyroAngle()<desiredIntakeWristAngle_){
+            if(robot_->GetIntakeWristPotValue()<desiredIntakeWristAngle_){
                 robot_->SetIntakeWristOutput(0.3); // tune speeds
             }
-            if(robot_->GetGyroAngle()>desiredIntakeWristAngle_-20){
+            if(robot_->GetIntakeWristPotValue()>desiredIntakeWristAngle_-20){
                 CalculateIntakeRollersPower();
             }
+            // if(robot_->GetGyroAngle()<desiredIntakeWristAngle_){
+            //     robot_->SetIntakeWristOutput(0.3); // tune speeds
+            // }
+            // if(robot_->GetGyroAngle()>desiredIntakeWristAngle_-20){
+            //     CalculateIntakeRollersPower();
+            // }
             if(!humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
                 nextState_ = kIndexing;
             }
@@ -170,6 +178,7 @@ void SuperstructureController::Update(){
             printf("WARNING: State not found in SuperstructureController::Update()\n");
     }
     currState_ = nextState_;
+    */
 }
 
 /*
@@ -368,8 +377,10 @@ void SuperstructureController::RefreshShuffleboard(){
     flywheelDFac_ = flywheelDEntry_.GetDouble(0.0);
     flywheelFFFac_ = flywheelFFEntry_.GetDouble(0.0);
     //flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelEncoder1Velocity()*8*M_PI/60); (figure out what units this is generated in)
-    lastGyroAngle_ = currGyroAngle_;
-	currGyroAngle_ = robot_->GetGyroAngle();
+    //lastGyroAngle_ = currGyroAngle_;
+	//currGyroAngle_ = robot_->GetGyroAngle();
+    lastIntakeAngle_ = currIntakeAngle_;
+    currIntakeAngle_ = robot_->GetIntakeWristPotValue();
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
 }

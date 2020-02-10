@@ -9,7 +9,7 @@
 #include <frc/WPILib.h>
 
 // constructor
-PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource) :
+PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, bool turnLeft) :
 	pointLayout_(robot->GetFunctionalityTab().GetLayout("Point", "List Layout"))
 	{
 
@@ -21,14 +21,15 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	initYaw_ = navXSource_->PIDGet();
 
-    relativeAngle_ = desiredAngle - initYaw_;
-    if (isAbsoluteAngle){
-        if (fabs(relativeAngle_) > 180.0){
-            turnLeft_ = (relativeAngle_ > 0.0);
-        }else {
-            turnLeft_ = (relativeAngle_ <= 0.0);
-        }
-    }
+	turnLeft_ = turnLeft;
+    // relativeAngle_ = desiredAngle - initYaw_;
+    // if (isAbsoluteAngle){
+    //     if (fabs(relativeAngle_) > 180.0){
+    //         turnLeft_ = (relativeAngle_ > 0.0);
+    //     }else {
+    //         turnLeft_ = (relativeAngle_ <= 0.0);
+    //     }
+    // }
 
 	// adjust angle is absolute
 	if (isAbsoluteAngle){
@@ -70,7 +71,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 }
 
 // constructor
-PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance) :
+PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance, bool turnLeft) :
 	pointLayout_(robot->GetFunctionalityTab().GetLayout("Point", "List Layout"))
 	{
 
@@ -81,22 +82,23 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	navXSource_ = navXSource;
 
 	initYaw_ = navXSource_->PIDGet();
-    relativeAngle_ = desiredAngle - initYaw_;
-    if (isAbsoluteAngle){
-        if (fabs(relativeAngle_) > 180.0){
-            if (relativeAngle_ > 0.0) {
-                turnLeft_ = true;
-            } else {
-                turnLeft_ = false;
-            }
-        }else {
-            if (relativeAngle_ > 0.0) {
-                turnLeft_ = false;
-            } else {
-                turnLeft_ = true;
-            }
-        }
-    }
+    // relativeAngle_ = desiredAngle - initYaw_;
+    // if (isAbsoluteAngle){
+    //     if (fabs(relativeAngle_) > 180.0){
+    //         if (relativeAngle_ > 0.0) {
+    //             turnLeft_ = true;
+    //         } else {
+    //             turnLeft_ = false;
+    //         }
+    //     }else {
+    //         if (relativeAngle_ > 0.0) {
+    //             turnLeft_ = false;
+    //         } else {
+    //             turnLeft_ = true;
+    //         }
+    //     }
+    // }
+	turnLeft_ = turnLeft;
 	// adjust angle is absolute
 	if (isAbsoluteAngle){
 		desiredAngle_ = desiredAngle;
@@ -145,6 +147,7 @@ void PointCommand::Init() {
 	//Profiler profiler(robot_, "Point Init");
 	// Setting PID values (in case they changed)
 	//TODO INI GetIniValues();
+	//robot_->ZeroNavXYaw();
 	GetPIDValues();
 	pointPID_->SetPID(pFac_, iFac_, dFac_);
 
@@ -196,20 +199,20 @@ void PointCommand::Reset() {
 
 // update time variables
 void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible source of error TODO reset encoders
-	printf("Updating pointcommand \n");
+	//printf("Updating pointcommand \n");
 
 	// calculate time difference
 	double timeDiff = robot_->GetTime() - pointCommandStartTime_;
 	bool timeOut = (timeDiff > pointTimeoutSec_);								//test this value
 
-	printf("error is %f in point command\n",pointPID_->GetError());
+	//printf("error is %f in point command\n",pointPID_->GetError());
 	// on target
 	if (pointPID_->OnTarget()) {
 		numTimesOnTarget_++;
 	} else {
 		numTimesOnTarget_ = 0;
 	}
-	printf("On target %d times\n",numTimesOnTarget_);
+	//printf("On target %d times\n",numTimesOnTarget_);
 	if ((pointPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
 		printf("%f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
@@ -229,10 +232,12 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		output *= 0.5;
 //		double output = 0.0;
 		// adjust motor values according to PID
+		//printf("OUTPUT IS %f\n", output);
+		printf("ERROR IS %f\n", pointPID_->GetError());
         if (turnLeft_) {
             // turning left, set left wheel to stationary
             robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
-		    robot_->SetDriveValues(RobotModel::kRightWheels, output);
+		    robot_->SetDriveValues(RobotModel::kRightWheels, -output);
 
         }
          else {
@@ -256,7 +261,7 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		
 		pointErrorEntry_.SetDouble(pointPID_->GetError());
 
-		printf("output is %f\n", output);
+		//printf("output is %f\n", output);
 	}
 }
 

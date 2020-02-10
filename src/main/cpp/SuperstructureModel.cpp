@@ -71,9 +71,9 @@ double RobotModel::GetTargetDistance() {
 
 void RobotModel::GetColorFromSensor() {
     detectedColor_ = colorSensor_->GetColor();
-    cout<<"red "<<detectedColor_.red<<endl;
-    cout<<"green "<<detectedColor_.green<<endl;
-    cout<<"blue "<<detectedColor_.blue<<endl;
+    // cout<<"red "<<detectedColor_.red<<endl;
+    // cout<<"green "<<detectedColor_.green<<endl;
+    // cout<<"blue "<<detectedColor_.blue<<endl;
 }
 
 std::string RobotModel::MatchColor() {
@@ -92,7 +92,7 @@ std::string RobotModel::MatchColor() {
       colorString_ = "Unknown"; // add some command to move forward if this happens
     }
 
-    cout<<colorString_<<endl;
+    //cout<<colorString_<<endl;
     return colorString_;
 }
 
@@ -100,17 +100,21 @@ std::string RobotModel::GetControlPanelGameData() {
     return controlPanelGameData_;
 }
 
-AnalogGyro* RobotModel::GetGyro(){
-	return intakeWristGyro_;
-}
+// AnalogGyro* RobotModel::GetGyro(){
+// 	return intakeWristGyro_;
+// }
 
 AnalogPotentiometer* RobotModel::GetPot(){
     return intakeWristPot_; 
 }
 
-double RobotModel::GetGyroAngle(){
-    return intakeWristGyro_->GetAngle();
+double RobotModel::GetIntakeWristPotValue(){
+    return intakeWristPot_->Get();
 }
+
+// double RobotModel::GetGyroAngle(){
+//     return intakeWristGyro_->GetAngle();
+// }
 
 bool RobotModel::GetElevatorFeederLightSensorStatus() {
     return  elevatorFeederLightSensor_->Get();

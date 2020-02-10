@@ -25,8 +25,8 @@ public:
 	 * @param isAbsolutePosition a bool that represents whether the angle is absolute position of deta angle
 	 * @param navXSource a NavXPIDSource
 	 */
-	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource);
-	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance);
+	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, bool turnLeft);
+	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance, bool turnLeft);
 
 	/**
 	 * PivotCommand a destructor

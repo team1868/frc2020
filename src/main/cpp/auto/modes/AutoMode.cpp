@@ -119,6 +119,19 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance);
 			}
 			break;
+		case '!':
+			double pointAngle;
+			bool turningLeft;
+			iss >> pointAngle;
+			iss >> turningLeft;
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				currAngle_ = pointAngle;
+				printf("point angle: %f\n", pointAngle);
+				tempCommand = new PointCommand(robot_, pointAngle, true, navX_, turningLeft);
+			}
+			break;
 		case 'c':	// curve command
 			double curveRadius;
 			double curveAngle;
@@ -174,7 +187,7 @@ bool AutoMode::IsFailed(char command) {
 }
 
 void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
-	printf("Currently Updating \n");
+	//printf("Currently Updating \n");
     if (currentCommand_ != NULL) {
         //			printf("Update in automode running\n");
 		// if (currentCommand_->Abort()) {

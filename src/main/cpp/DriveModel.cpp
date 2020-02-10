@@ -24,7 +24,7 @@ RobotModel::RobotModel() :
 	pointPIDLayout_(GetPIDTab().GetLayout("Point", "List Layout"))
     {
 
-    
+    printf("I am in drive model constructor\n");
     frc::Shuffleboard::SelectTab("Driveteam Display");
 
     last_world_linear_accel_x_ = 0.0f;
@@ -38,7 +38,7 @@ RobotModel::RobotModel() :
     lastLeftEncoderValue_ = lastRightEncoderValue_ = 0.0;
     currLeftEncoderValue_ = currRightEncoderValue_ = 0.0;
     initialLeftEncoderValue_ = initialRightEncoderValue_ = 0.0;
-
+	isHighGear_ = true;
 
       // initializing timer
     timer_ = new frc::Timer();
@@ -47,7 +47,6 @@ RobotModel::RobotModel() :
     navXSpeed_ = 200;
     navX_ = new AHRS(SPI::kMXP, navXSpeed_);
     Wait(1.0); // NavX takes a second to calibrate
-
     // initializing pdp
     pdp_ = new frc::PowerDistributionPanel();
 
@@ -122,9 +121,10 @@ RobotModel::RobotModel() :
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
-	intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
+	//intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
 	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
+
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
@@ -179,6 +179,7 @@ RobotModel::RobotModel() :
 	gColorEntry_ = GetFunctionalityTab().Add("green", 0.0).GetEntry();
 	bColorEntry_ = GetFunctionalityTab().Add("blue", 0.0).GetEntry();
 	potEntry_ =  GetSuperstructureTab().Add("potentiometer", 0.0).GetEntry();
+	std::cout<< "end of drive model constructor" << std::endl;
 }
 
 void RobotModel::SetDriveValues(double left, double right){
@@ -257,12 +258,20 @@ double RobotModel::GetRawRightEncoderValue() {
 
 //return feetGetLeftDis
 double RobotModel::GetLeftDistance() {
-    return GetLeftEncoderValue()/HGEAR_ENCODER_TICKS_FOOT; //ft //assumes high gear
+	if (isHighGear_){
+		return GetLeftEncoderValue()/HGEAR_ENCODER_TICKS_FOOT;
+	} else{
+		return GetLeftEncoderValue()/LGEAR_ENCODER_TICKS_FOOT;
+	}
 }
 
 //return feet
 double RobotModel::GetRightDistance() {
-	return GetRightEncoderValue()/HGEAR_ENCODER_TICKS_FOOT; //ft //assumes high gear
+	if (isHighGear_){
+		return GetRightEncoderValue()/HGEAR_ENCODER_TICKS_FOOT;
+	} else{
+		return GetRightEncoderValue()/LGEAR_ENCODER_TICKS_FOOT;
+	}
 }
 
 double RobotModel::GetLeftVelocity() {
@@ -521,12 +530,15 @@ double RobotModel::ModifyCurrent(int channel, double value){
 
 void RobotModel::SetHighGear(){
 	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
-	ResetDriveEncoders();
+	isHighGear_ = true;
+
+	//ResetDriveEncoders();
 }
 
 void RobotModel::SetLowGear(){
 	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
-	ResetDriveEncoders();
+	isHighGear_ = false;
+	//ResetDriveEncoders();
 }
 
 
@@ -636,7 +648,7 @@ void RobotModel::RefreshShuffleboard(){
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
 
-	potEntry_.SetDouble(intakeWristPot_->Get());
+	potEntry_.SetDouble(GetIntakeWristPotValue());
 
 	// if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
 	// 	std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
@@ -693,4 +705,5 @@ RobotModel::~RobotModel(){
     ratioAllEntry_.Delete();
 	ratioDriveEntry_.Delete();
 	ratioSuperstructureEntry_.Delete();
+	potEntry_.Delete();
 };

@@ -12,8 +12,7 @@
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance) : AutoCommand(),
-		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
-		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout"))
+		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout"))
 		{
 	isAbsoluteAngle_ = false;
 
@@ -36,8 +35,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance, double absoluteAngle) :
-		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout")),
-		driveStraightPIDLayout_(robot->GetModeTab().GetLayout("DriveStraight PID", "List Layout"))
+		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout"))
 		{
 	isAbsoluteAngle_ = true;
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
@@ -155,7 +153,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 				"Final Right Distance: %f\n"
 				"Final Average Distance: %f\n"
 				"Final Drivestraight error: %f\n",
-				robot_->GetTime(), robot_->GetLeftEncoderValue(), robot_->GetRightEncoderValue(),
+				robot_->GetTime(), robot_->GetLeftDistance(), robot_->GetRightDistance(),
 				talonEncoderSource_->PIDGet(), distancePID_->GetError());
 		Reset();
 
