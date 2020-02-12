@@ -28,6 +28,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     intakeWristPower_ = 0.3;
     initialTheta_ = 0.0;
+    desiredWristAngle_ = 40; // fix
    
 
     lowerElevatorTimeout_ = 4.0; //fix
@@ -72,16 +73,28 @@ void SuperstructureController::Reset() { // might not need this
 
 void SuperstructureController::ArmControllerUpdate(){
 
-    double val = robot_ -> GetIntakeWristPotValue(); // this gets the angle of the potentiometer thing
+    currWristAngle_ = robot_ -> GetIntakeWristPotValue(); // might not need?
     switch (currWristState_){
         case kWristIdle:
+            robot_->SetIntakeRollersOutput(0.0);
+            if(currWristAngle_ > 0) {
+                robot_ -> SetIntakeWristOutput(intakeWristPower_);
+            }
             break;
         case kRaising:
-            //if()
-            robot_ -> SetIntakeWristOutput(intakeWristPower_ * (initialTheta_ - val)); // wait idk if this is the thing that gives powerof the arm lmao
+            // might not need lowering if we have an idle
+            robot_->SetIntakeRollersOutput(0.0);
+            if(currWristAngle_ > 0) {
+                robot_ -> SetIntakeWristOutput(intakeWristPower_);
+            }
             break;
         case kLowering:
-            robot_ -> SetIntakeWristOutput(intakeWristPower_ * (initialTheta_ + 90 - val));
+            if(currWristAngle_ < desiredWristAngle_) {
+                robot_ -> SetIntakeWristOutput(intakeWristPower_); // wait idk if this is the thing that gives powerof the arm lmao
+            }
+            if(currWristAngle_ > desiredWristAngle_ - 20.0){
+                robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
+            }
             break;
         default:
             printf("hi");
@@ -542,8 +555,7 @@ void SuperstructureController::RefreshShuffleboard(){
     //flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelEncoder1Velocity()*8*M_PI/60); (figure out what units this is generated in)
     //lastGyroAngle_ = currGyroAngle_;
 	//currGyroAngle_ = robot_->GetGyroAngle();
-    lastIntakeAngle_ = currIntakeAngle_;
-    currIntakeAngle_ = robot_->GetIntakeWristPotValue();
+    currWristAngle_ = robot_->GetIntakeWristPotValue();
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
 }

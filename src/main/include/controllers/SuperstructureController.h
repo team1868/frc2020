@@ -88,7 +88,6 @@ class SuperstructureController {
 
   double desiredIntakeWristAngle_;
   // double currGyroAngle_, lastGyroAngle_;
-  double currIntakeAngle_, lastIntakeAngle_;
   double currTime_, lastTime_;
 
   double startIndexTime_;
@@ -96,7 +95,7 @@ class SuperstructureController {
 
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
-  double currWristAngle_;
+  double currWristAngle_, lastWristAngle_, desiredWristAngle_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;
