@@ -39,10 +39,12 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     resetTimeout_ = 3.0;
 
     currState_ = kInit;
-	nextState_ = kIdle;
+	nextState_ = kIndexing;
+    currAutoState_ = kInit;
+    nextAutoState_ = kAutoIndexing;
     currIndexState_ = kIndexInit;
     nextIndexState_ = kIndexInit;
-    currWristState_ = kWristIdle;
+    currWristState_ = kRaising;
     desiredIntakeWristAngle_ = 30.0; // fix later :)
 
     controlPanelCounter_ = 0;
@@ -67,25 +69,22 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
 void SuperstructureController::Reset() { // might not need this
     currState_ = kInit;
-	nextState_ = kIdle;
-    currWristState_ = kWristIdle;
+	nextState_ = kIndexing;
+    // check whether autostates should be reset here or should 
+    currAutoState_ = kAutoInit;
+    nextAutoState_ = kAutoIndexing;
+    currWristState_ = kRaising;
 }
 
-void SuperstructureController::ArmControllerUpdate(){
+void SuperstructureController::WristControllerUpdate(){
 
     currWristAngle_ = robot_ -> GetIntakeWristPotValue(); // might not need?
     switch (currWristState_){
-        case kWristIdle:
-            robot_->SetIntakeRollersOutput(0.0);
-            if(currWristAngle_ > 0) {
-                robot_ -> SetIntakeWristOutput(intakeWristPower_);
-            }
-            break;
         case kRaising:
             // might not need lowering if we have an idle
             robot_->SetIntakeRollersOutput(0.0);
             if(currWristAngle_ > 0) {
-                robot_ -> SetIntakeWristOutput(intakeWristPower_);
+                robot_ -> SetIntakeWristOutput(intakeWristPower_); // add p factor and multiply by error
             }
             break;
         case kLowering:
@@ -99,6 +98,74 @@ void SuperstructureController::ArmControllerUpdate(){
         default:
             printf("hi");
 
+    }
+}
+
+void SuperstructureController::AutoUpdate(){
+    RefreshShuffleboard();
+    // auto states 
+    switch(currAutoState_){
+        case kAutoInit:
+            break;
+        case kAutoIndexing:
+            IndexUpdate();
+            break;
+        case kAutoIntaking:
+            IndexUpdate();
+            break;
+        case kAutoCloseShooting:
+            desiredFlywheelPower_ = closeFlywheelPower_;
+            robot_->SetFlywheelOutput(desiredFlywheelPower_);
+            if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
+                robot_->SetElevatorOutput(elevatorSlowPower_);
+            } else {
+                robot_->SetElevatorOutput(0.0);
+            }
+
+            if(!bottomSensor_ && !bTimeout_){
+                robot_->SetIndexFunnelOutput(indexFunnelPower_);
+                robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+            } else {
+                robot_->SetIndexFunnelOutput(0.0);
+                robot_->SetElevatorFeederOutput(0.0);
+            }
+
+            if(tTimeout_ && bTimeout_){
+                nextState_ = kResetting;
+                startResetTime_ = currTime_;
+            }
+
+            robot_->SetIntakeRollersOutput(0.0);
+            //robot_->SetArm(false); TODO IMPLEMENT
+            break;
+        case kAutoFarShooting:
+            desiredFlywheelPower_ = CalculateFlywheelPowerDesired();
+            // add hood for far shots
+            robot_->SetFlywheelOutput(desiredFlywheelPower_);
+            if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
+                robot_->SetElevatorOutput(elevatorSlowPower_);
+            } else {
+                robot_->SetElevatorOutput(0.0);
+            }
+
+            if(!bottomSensor_ && !bTimeout_){
+                robot_->SetIndexFunnelOutput(indexFunnelPower_);
+                robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+            } else {
+                robot_->SetIndexFunnelOutput(0.0);
+                robot_->SetElevatorFeederOutput(0.0);
+            }
+
+            if(tTimeout_ && bTimeout_){
+                nextState_ = kResetting;
+                startResetTime_ = currTime_;
+            }
+
+            robot_->SetIntakeRollersOutput(0.0);
+            //robot_->SetArm(false); TODO IMPLEMENT
+            break;
+        default:
+            printf("auto update \n");
     }
 }
 
@@ -123,7 +190,7 @@ void SuperstructureController::Update(){
             robot_->SetFlywheelOutput(desiredFlywheelPower_);
             //robot_->SetHood(false); //TODO WRITE CODE FOR HOOD
         } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootFarPrepButton)){
-            desiredFlywheelPower_ = 0.8; //TODO REPLACE WITH VISION
+            desiredFlywheelPower_ = 0.8; //TODO REPLACE WITH VISION & CalculateFlywheelPower();
             robot_->SetFlywheelOutput(desiredFlywheelPower_);
             //robot_->SetHood(true); //TODO add
         } else {
@@ -371,7 +438,7 @@ void SuperstructureController::ControlPanelStage2(double power){
     }
     if (controlPanelCounter_ >= 8) {
         robot_->SetControlPanelOutput(0.0);
-        nextState_ = kIdle;
+        nextState_ = kIndexing;
     }
 }
 
@@ -435,7 +502,7 @@ void SuperstructureController::ControlPanelStage3(double power) {
         printf("no data received yet");
         // no data received yet
     }
-    nextState_ = kIdle;
+    nextState_ = kIndexing;
 }
 
 void SuperstructureController::ControlPanelFinalSpin() {
@@ -468,79 +535,6 @@ bool SuperstructureController::IndexUpdate(){
     } else {
         return false;
     }
-
-    /*
-    // switch(currState_){
-    //     case kInit:
-    //         nextState_ = kLower;
-    //         startIndexTime_ = currTime_;
-    //         break;
-        //case kLower:
-            // if (lastBottomStatus_ && !robot_->GetBottomElevatorLightSensorStatus()){
-            //     startIndexTime_ = currTime_;
-            // }
-
-    // if(robot_->GetTopElevatorLightSensorStatus()){
-    //     startElevatorTime_ = currTime_;
-    // }
-    if(robot_->GetElevatorFeederLightSensorStatus()){
-        startIndexTime_ = currTime_;
-        startElevatorTime_ = currTime_;
-    }
-
-    //B and !T, file upwards
-    if (robot_->GetElevatorFeederLightSensorStatus() && !robot_->GetElevatorLightSensorStatus()){
-        //nextState_ = kLift;
-        printf("Idle elevator funnel, shift to moving elevator");
-    }
-    //exit condition - timeout or B
-    else if (currTime_ - startIndexTime_ > lowerElevatorTimeout_ || robot_->GetElevatorFeederLightSensorStatus()){
-        robot_->SetIndexFunnelOutput(0.0);
-        robot_->SetElevatorFeederOutput(0.0);
-        //lastLower_ = false;
-        // lastBottomStatus_ = robot_->GetBottomElevatorLightSensorStatus();
-        return true;
-    }
-    //!B
-    else { 
-        // if (!lastLower_){
-        //     startIndexTime_ = currTime_;
-        // }
-        robot_->SetIndexFunnelOutput(indexFunnelPower_);
-        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-        // lastLower_ = true;
-    }
-    //break;
-//case kLift:
-    if (readyToShoot ||
-        (!robot_->GetElevatorLightSensorStatus() &&
-        robot_->GetElevatorFeederLightSensorStatus()) ||
-        (!robot_->GetElevatorLightSensorStatus() &&
-        (currTime_ - startElevatorTime_ < elevatorTimeout_))) {
-        //!T & B || !T & !timout
-        // if (!lastUpper_){
-        //     startElevatorTime_ = currTime_;
-        // }
-        robot_->SetElevatorOutput(elevatorSlowPower_);
-        // lastUpper_ = true;
-    }
-    else { //T || (!B & timeout)
-        //nextIndexState_ = kLower;
-        robot_->SetElevatorOutput(0.0);
-        startIndexTime_ = currTime_; 
-        // lastUpper_ = false;
-    }
-    // else { //!T & B || !T & !timout
-    //     if (!lastUpper_){
-    //         startElevatorTime_ = currTime_;
-    //     }
-    //     robot_->SetElevatorOutput(elevatorSlowPower_);
-    //     lastUpper_ = true;
-    // }
-    //         break;
-    // }
-    // lastBottomStatus_ = robot_->GetBottomElevatorLightSensorStatus();
-    return false;*/
 }
 
 

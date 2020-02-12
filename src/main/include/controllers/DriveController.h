@@ -18,6 +18,7 @@ class DriveController {
     DriveController(RobotModel *robot, ControlBoard *humanControl);
 
     void Update();
+    void Reset();
     void RefreshShuffleboard();
     void TankDrive(double left, double right);
     void ArcadeDrive(double thrust, double rotate, double thrustSensitivity, double rotateSensitivity);

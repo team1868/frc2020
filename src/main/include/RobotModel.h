@@ -169,6 +169,8 @@ class RobotModel {
 
 
     // superstructure robot model
+    uint32_t SetAutoState(uint32_t state);
+
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
     void SetFlywheelOutput(double power);

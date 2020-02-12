@@ -54,6 +54,10 @@ void DriveController::RefreshShuffleboard(){
     arcadeMode_ = arcadeEntry_.GetBoolean(true);
 }
 
+void DriveController::Reset(){
+    
+}
+
 void DriveController::TankDrive(double left, double right){
     left = GetDeadbandAdjustment(left);
     left = GetCubicAdjustment(left, thrustSensitivity_);

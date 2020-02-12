@@ -123,7 +123,7 @@ void MainProgram::AutonomousPeriodic() {
     // if(!thing_->IsDone()){
     //     thing_->Update(currTime_, currTime_-lastTime_);
     // }
-
+    superstructureController_->AutoUpdate();
     if(!testSequence_->IsDone()){
         testSequence_->Update(currTime_, currTime_-lastTime_);
     }
@@ -226,6 +226,11 @@ void MainProgram::DisabledPeriodic() {
 }*/
 
 void MainProgram::TestPeriodic() {}
+
+void MainProgram::ResetControllers() {
+    driveController_->Reset();
+    superstructureController_->Reset();
+}
 
 void MainProgram::connectRecvZMQ() {
     //connect to zmq socket to receive from jetson
