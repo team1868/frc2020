@@ -12,9 +12,11 @@
 class SuperstructureController {
  public:
 
-   enum SuperstructureState {
+  enum SuperstructureState {
 		kInit, kIdle, kShooting, kIndexing, kIntaking, kResetting, kControlPanelStage2, kControlPanelStage3
 	};
+
+  
 
   enum IndexState {
     kIndexInit, kLower, kLift, kIndexIdle
