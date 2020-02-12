@@ -45,6 +45,7 @@ class MainProgram : public frc::TimedRobot {
   void connectSendZMQ();
   void sendZMQ();
 
+  void ResetControllers();
 
  private:
   RobotModel *robot_;

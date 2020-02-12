@@ -8,6 +8,7 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
+#include "controllers/SuperstructureController.h" // this could be why the code is crashing lmao
 #include "../commands/CurveCommand.h"
 #include "auto/commands/DriveStraightCommand.h"
 #include "auto/commands/PivotCommand.h"
@@ -21,7 +22,7 @@ class AutoMode {
     enum AutoPositions {kBlank, kLeft, kMiddle, kRight};
 
     AutoMode(RobotModel *robot, ControlBoard *controlBoard);
-
+    // might need to comment out the robot and controlBoard up here because superstructure controller takes in robot and controlboard as parameters when created
     virtual ~AutoMode() {};
 
     virtual void CreateQueue(AutoMode::AutoPositions pos) {};

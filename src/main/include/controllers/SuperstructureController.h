@@ -12,11 +12,15 @@
 class SuperstructureController {
  public:
 
-  enum SuperstructureState {
-		kInit, kIdle, kShooting, kIndexing, kIntaking, kResetting, kControlPanelStage2, kControlPanelStage3
+   enum SuperstructureState {
+		kInit, kShooting, kIndexing, kIntaking, kResetting, 
+    kControlPanelStage2, kControlPanelStage3, kClimbing
 	};
 
-  
+  enum AutoState {
+    kAutoInit, kAutoCloseShooting, kAutoFarShooting,
+    kAutoIntaking, kAutoIndexing
+  };
 
   enum IndexState {
     kIndexInit, kLower, kLift, kIndexIdle
@@ -24,16 +28,17 @@ class SuperstructureController {
 
   
    enum WristState {
-    kWristIdle, kRaising, kLowering
+    kRaising, kLowering
   }; 
 
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
   void Update();
+  void AutoUpdate();
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
-  void ArmControllerUpdate();
+  void WristControllerUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -60,10 +65,11 @@ class SuperstructureController {
   TalonFXSensorCollection *flywheelPIDController_;
   TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
   
-  uint32_t currState_;
-	uint32_t nextState_;
+  uint32_t currState_, nextState_;
+  uint32_t currAutoState_, nextAutoState_;
   WristState currWristState_, nextWristState_;
   IndexState currIndexState_, nextIndexState_;
+  
 
   double flywheelPower_, desiredRPM_, flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;

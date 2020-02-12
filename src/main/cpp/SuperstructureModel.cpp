@@ -8,6 +8,9 @@
 #include "RobotModel.h"
 using namespace std;
 
+uint32_t RobotModel::SetAutoState(uint32_t state) {
+    return state;
+}
 
 void RobotModel::SetFlywheelOutput(double power){
     flywheelMotor1_->Set(power);

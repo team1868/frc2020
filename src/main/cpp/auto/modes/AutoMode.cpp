@@ -7,7 +7,7 @@
 
 #include "auto/modes/AutoMode.h"
 
-AutoMode::AutoMode(RobotModel* robot, ControlBoard *controlBoard) {
+AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");
 
         firstCommand_ = NULL;
