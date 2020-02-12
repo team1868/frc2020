@@ -13,7 +13,7 @@ class SuperstructureController {
  public:
 
    enum SuperstructureState {
-		kInit, kIdle, kShooting, kIndexing, kIntaking, kReseting, kControlPanelStage2, kControlPanelStage3
+		kInit, kIdle, kShooting, kIndexing, kIntaking, kResetting, kControlPanelStage2, kControlPanelStage3
 	};
 
   enum IndexState {
@@ -24,7 +24,6 @@ class SuperstructureController {
    enum WristState {
     kWristIdle, kRaising, kLowering
   }; 
-
 
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
   void Update();

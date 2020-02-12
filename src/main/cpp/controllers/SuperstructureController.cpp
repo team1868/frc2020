@@ -99,7 +99,7 @@ void SuperstructureController::Update(){
         currState_ = kIntaking;
     } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootButton)){
         currState_ = kShooting; 
-    } else if(currState_ != kReseting){
+    } else if(currState_ != kResetting){
         currState_ = kIndexing;
     }
     
@@ -163,14 +163,14 @@ void SuperstructureController::Update(){
             }
 
             if(tTimeout_ && bTimeout_){
-                nextState_ = kReseting;
+                nextState_ = kResetting;
                 startResetTime_ = currTime_;
             }
 
             robot_->SetIntakeRollersOutput(0.0);
             //robot_->SetArm(false); TODO IMPLEMENT
             break;
-        case kReseting:
+        case kResetting:
             if(!bottomSensor_ && currTime_-startResetTime_ <= resetTimeout_){
                 robot_->SetElevatorOutput(-elevatorFastPower_); //bring down elevator
             } else {
