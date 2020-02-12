@@ -62,6 +62,10 @@ void SuperstructureController::Reset() { // might not need this
 	nextState_ = kIdle;
 }
 
+void SuperstructureController::ArmControllerUpdate() {
+  
+}
+
 void SuperstructureController::Update(){
     
     currTime_ = robot_->GetTime();//may or may not be necessary
@@ -304,16 +308,19 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
     
 }*/
 
+
+
 double SuperstructureController::CalculateFlywheelPowerDesired() {
     return 0.5; // fix
 }
 
-void SuperstructureController::CalculateIntakeRollersPower() {
+double SuperstructureController::CalculateIntakeRollersPower() {
     /*double power = abs(robot_->GetDrivePower())*2;
     if (power <= 1)
         robot_->SetIntakeRollersOutput(power);
     else
         robot_->SetIntakeRollersOutput(1.0);*/
+    return 0.5; // fix to be based on velocity
 }
 
 void SuperstructureController::ControlPanelStage2(double power){

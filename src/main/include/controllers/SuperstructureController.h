@@ -17,6 +17,7 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
+  void ArmControllerUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -26,7 +27,7 @@ class SuperstructureController {
 
   bool IndexUpdate();
 
-  void CalculateIntakeRollersPower();
+  double CalculateIntakeRollersPower();
 
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
@@ -39,6 +40,10 @@ class SuperstructureController {
 
   enum IndexState {
     kIndexInit, kLower, kLift
+  };
+
+  enum ArmState {
+    kIdleArm, kRaising, kLowering
   };
 
   ~SuperstructureController();
