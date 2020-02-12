@@ -11,12 +11,28 @@
 
 class SuperstructureController {
  public:
+
+   enum SuperstructureState {
+		kInit, kIdle, kShooting, kIndexing, kIntaking, kReseting, kControlPanelStage2, kControlPanelStage3
+	};
+
+  enum IndexState {
+    kIndexInit, kLower, kLift
+  };
+
+  
+   enum ArmState {
+    kIdleArm, kRaising, kLowering
+  }; 
+
+
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
   void Update();
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
+  void ArmControllerUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -26,20 +42,14 @@ class SuperstructureController {
 
   bool IndexUpdate();
 
-  void CalculateIntakeRollersPower();
+  double CalculateIntakeRollersPower();
 
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
   void ControlPanelFinalSpin();
   void Reset();
 
-  enum SuperstructureState {
-		kInit, kIdle, kShooting, kIndexing, kIntaking, kReseting, kControlPanelStage2, kControlPanelStage3
-	};
 
-  enum IndexState {
-    kIndexInit, kLower, kLift
-  };
 
   ~SuperstructureController();
 
@@ -67,10 +77,16 @@ class SuperstructureController {
   double elevatorFeederPower_;
   double indexFunnelPower_;
 
+  double armPower_;
+  double initialTheta_; //theta starting val from potentiometer
+
+
+  double startResetTime_, resetTimeout_;
+
   double climberPower_;
 
   double desiredIntakeWristAngle_;
-  //double currGyroAngle_, lastGyroAngle_;
+  // double currGyroAngle_, lastGyroAngle_;
   double currIntakeAngle_, lastIntakeAngle_;
   double currTime_, lastTime_;
 
@@ -78,6 +94,8 @@ class SuperstructureController {
   double startElevatorTime_;
 
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
+
+  ArmState intakeArmState_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;

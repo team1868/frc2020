@@ -17,7 +17,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     // fix all of this
     climberPower_ = 0.5; // fix
     desiredRPM_ = 2000;
-    flywheelPower_ = CalculateFlywheelPowerDesired();
+    flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
     closeFlywheelPower_ = 0.4;
 
     elevatorFeederPower_ = 0.3; // fix
@@ -26,15 +26,22 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     indexFunnelPower_ = 0.3; // fix
     flywheelResetTime_ = 5.0; // fix //why does this exist
 
+    armPower_ = 0.0;
+    initialTheta_ = 0.0;
+   
+    intakeArmState_ = kIdleArm;
+
     lowerElevatorTimeout_ = 4.0; //fix
     elevatorTimeout_ = 4.0;
     //lastBottomStatus_ = false;
+
+    startResetTime_ = 0.0;
+    resetTimeout_ = 3.0;
 
     currState_ = kInit;
 	nextState_ = kIdle;
     currIndexState_ = kIndexInit;
     nextIndexState_ = kIndexInit;
-
     desiredIntakeWristAngle_ = 30.0; // fix later :)
 
     controlPanelCounter_ = 0;
@@ -60,6 +67,25 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 void SuperstructureController::Reset() { // might not need this
     currState_ = kInit;
 	nextState_ = kIdle;
+}
+
+void SuperstructureController::ArmControllerUpdate(){
+    //putting everything in comments so I can know what to do
+
+    double val = robot_ -> GetIntakeWristPotValue(); // this gets the angle of the potentiometer thing
+    switch (intakeArmState_){
+        case kRaising :
+            robot_ -> SetIntakeWristOutput(armPower_ * (initialTheta_ - val)); // wait idk if this is the thing that gives powerof the arm lmao
+            break;
+        case kLowering :
+            robot_ -> SetIntakeWristOutput(armPower_ * (initialTheta_ + 90 - val));
+            break;
+        case kIdleArm :
+            //just stay the same?? what do i write though??
+            //yeet
+            break;
+
+    }
 }
 
 void SuperstructureController::Update(){
@@ -137,13 +163,14 @@ void SuperstructureController::Update(){
 
             if(tTimeout_ && bTimeout_){
                 nextState_ = kReseting;
+                startResetTime_ = currTime_;
             }
 
             robot_->SetIntakeRollersOutput(0.0);
             //robot_->SetArm(false); TODO IMPLEMENT
             break;
         case kReseting:
-            if(!bottomSensor_){
+            if(!bottomSensor_ && currTime_-startResetTime_ <= resetTimeout_){
                 robot_->SetElevatorOutput(-elevatorFastPower_); //bring down elevator
             } else {
                 robot_->SetElevatorOutput(0.0);
@@ -308,12 +335,13 @@ double SuperstructureController::CalculateFlywheelPowerDesired() {
     return 0.5; // fix
 }
 
-void SuperstructureController::CalculateIntakeRollersPower() {
+double SuperstructureController::CalculateIntakeRollersPower() {
     /*double power = abs(robot_->GetDrivePower())*2;
     if (power <= 1)
         robot_->SetIntakeRollersOutput(power);
     else
         robot_->SetIntakeRollersOutput(1.0);*/
+    return 1.0;
 }
 
 void SuperstructureController::ControlPanelStage2(double power){

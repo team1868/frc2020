@@ -186,6 +186,7 @@ class RobotModel {
     double GetIntakeWristPotValue();
     //double GetGyroAngle();
     
+    
     bool GetElevatorFeederLightSensorStatus();
     bool GetElevatorLightSensorStatus();
 
