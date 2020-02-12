@@ -17,12 +17,12 @@ class SuperstructureController {
 	};
 
   enum IndexState {
-    kIndexInit, kLower, kLift
+    kIndexInit, kLower, kLift, kIndexIdle
   };
 
   
-   enum ArmState {
-    kIdleArm, kRaising, kLowering
+   enum WristState {
+    kWristIdle, kRaising, kLowering
   }; 
 
 
@@ -61,6 +61,7 @@ class SuperstructureController {
   
   uint32_t currState_;
 	uint32_t nextState_;
+  WristState currWristState_, nextWristState_;
   IndexState currIndexState_, nextIndexState_;
 
   double flywheelPower_, desiredRPM_, flywheelResetTime_;
@@ -77,7 +78,7 @@ class SuperstructureController {
   double elevatorFeederPower_;
   double indexFunnelPower_;
 
-  double armPower_;
+  double intakeWristPower_;
   double initialTheta_; //theta starting val from potentiometer
 
 
@@ -95,7 +96,7 @@ class SuperstructureController {
 
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
-  ArmState intakeArmState_;
+  double currWristAngle_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;

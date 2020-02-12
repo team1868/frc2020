@@ -26,10 +26,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     indexFunnelPower_ = 0.3; // fix
     flywheelResetTime_ = 5.0; // fix //why does this exist
 
-    armPower_ = 0.0;
+    intakeWristPower_ = 0.3;
     initialTheta_ = 0.0;
    
-    intakeArmState_ = kIdleArm;
 
     lowerElevatorTimeout_ = 4.0; //fix
     elevatorTimeout_ = 4.0;
@@ -42,6 +41,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 	nextState_ = kIdle;
     currIndexState_ = kIndexInit;
     nextIndexState_ = kIndexInit;
+    currWristState_ = kWristIdle;
     desiredIntakeWristAngle_ = 30.0; // fix later :)
 
     controlPanelCounter_ = 0;
@@ -67,23 +67,24 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 void SuperstructureController::Reset() { // might not need this
     currState_ = kInit;
 	nextState_ = kIdle;
+    currWristState_ = kWristIdle;
 }
 
 void SuperstructureController::ArmControllerUpdate(){
-    //putting everything in comments so I can know what to do
 
     double val = robot_ -> GetIntakeWristPotValue(); // this gets the angle of the potentiometer thing
-    switch (intakeArmState_){
-        case kRaising :
-            robot_ -> SetIntakeWristOutput(armPower_ * (initialTheta_ - val)); // wait idk if this is the thing that gives powerof the arm lmao
+    switch (currWristState_){
+        case kWristIdle:
             break;
-        case kLowering :
-            robot_ -> SetIntakeWristOutput(armPower_ * (initialTheta_ + 90 - val));
+        case kRaising:
+            //if()
+            robot_ -> SetIntakeWristOutput(intakeWristPower_ * (initialTheta_ - val)); // wait idk if this is the thing that gives powerof the arm lmao
             break;
-        case kIdleArm :
-            //just stay the same?? what do i write though??
-            //yeet
+        case kLowering:
+            robot_ -> SetIntakeWristOutput(intakeWristPower_ * (initialTheta_ + 90 - val));
             break;
+        default:
+            printf("hi");
 
     }
 }
