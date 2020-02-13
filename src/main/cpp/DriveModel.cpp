@@ -123,13 +123,13 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	climberMotor1_ = new rev::CANSparkMax(CLIMB_MOTOR_ONE_ID, rev::CANSparkMax::MotorType::kBrushless);
-	climberMotor2_ = new rev::CANSparkMax(CLIMB_MOTOR_TWO_ID, rev::CANSparkMax::MotorType::kBrushless);
+	climberMotor1_ = new WPI_TalonSRX(CLIMB_MOTOR_ONE_ID);
+	climberMotor2_ = new WPI_TalonSRX(CLIMB_MOTOR_TWO_ID);
 
-	climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
+	//climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
-    intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
+    intakeWristMotor_ = new WPI_VictorSPX(INTAKE_WRIST_MOTOR_ID);
 	//intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
 	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
@@ -141,7 +141,7 @@ RobotModel::RobotModel() :
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
 	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
 	
-	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
+	controlPanelMotor_ = new Victor(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
 	colorMatcher_.AddColorMatch(kBlueTarget);

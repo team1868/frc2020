@@ -8,6 +8,7 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
+//#include "auto/PIDSource/PIDOutputSource.h"
 
 class SuperstructureController {
  public:
@@ -74,7 +75,7 @@ class SuperstructureController {
   double flywheelPower_, desiredRPM_, flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
   PIDController *flywheelPID_;
-  FlywheelPIDOutput* flywheelPIDOutput_;
+  SuperstructurePIDOutput *flywheelPIDOutput_;
   double desiredFlywheelPower_, closeFlywheelPower_;
 
   double lowerElevatorTimeout_;

@@ -50,11 +50,10 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     controlPanelCounter_ = 0;
     
     // create talon pid controller
-    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, *flywheelEncoder1_, flywheelPIDOutput_);
     // fix encoder source
     flywheelEncoder1_ = &robot_->GetFlywheelMotor1()->GetSensorCollection();
     flywheelEncoder2_ = &robot_->GetFlywheelMotor2()->GetSensorCollection();
-    
+    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelEncoder1_, flywheelPIDOutput_);
     // shuffleboard
     flywheelVelocityEntry_ = superstructureLayout_.Add("flywheel velocity", 0.0).GetEntry();
     
@@ -113,7 +112,7 @@ void SuperstructureController::AutoUpdate(){
         case kAutoIntaking:
             IndexUpdate();
             break;
-        case kAutoCloseShooting:
+        case kAutoCloseShooting: // fix for auto, there is no next state or kresetting
             desiredFlywheelPower_ = closeFlywheelPower_;
             robot_->SetFlywheelOutput(desiredFlywheelPower_);
             if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
