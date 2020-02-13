@@ -11,7 +11,7 @@ void RobotModel::CreatePID(){
     aPEntry_ = anglePIDLayout_.Add("P", 0.0055).GetEntry(); // 0.0055 for practice bot
     aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
     aDEntry_ = anglePIDLayout_.Add("D", 0.02).GetEntry();
-    dPEntry_ = distancePIDLayout_.Add("P", 0.18).GetEntry(); // 0.18 for practice bot
+    dPEntry_ = distancePIDLayout_.Add("P", 0.19).GetEntry(); // 0.19 for practice bot
     dIEntry_ = distancePIDLayout_.Add("I", 0.0).GetEntry();
     dDEntry_ = distancePIDLayout_.Add("D", 0.08).GetEntry(); // 0.08 for practice bot
 
@@ -28,10 +28,6 @@ void RobotModel::CreatePID(){
     tPFacNet_ =  curveTurnPIDLayout_.Add("Curve tP", 0.07).GetEntry();
     tIFacNet_ =  curveTurnPIDLayout_.Add("Curve tI", 0.0).GetEntry();
     tDFacNet_ =  curveTurnPIDLayout_.Add("Curve tD", 0.0).GetEntry();
-
-    pEntryP_ = pointPIDLayout_.Add("P", 0.0).GetEntry();
-    iEntryP_ = pointPIDLayout_.Add("I", 0.0).GetEntry();
-    dEntryP_ = pointPIDLayout_.Add("D", 0.0).GetEntry();
 }
 
 double RobotModel::GetDriveStraightAngleP() {
@@ -88,7 +84,6 @@ double RobotModel::GetCurveTurnI(){
 double RobotModel::GetCurveTurnD(){
     return tDFacNet_.GetDouble(0.0);
 }
-
 double RobotModel::GetPointP() {
     return pEntryP_.GetDouble(0.0);
 }
@@ -100,4 +95,5 @@ double RobotModel::GetPointI() {
 double RobotModel::GetPointD() {
     return dEntryP_.GetDouble(0.0);
 }
+
 

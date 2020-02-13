@@ -134,6 +134,18 @@ class RobotModel {
     void SetHighGear();
     void SetLowGear();
     void GearShift();
+
+    //field error
+    double SetInitLineError();
+    double SetTrenchDistError(); //distance from initiation to trench edge
+    double SetTrenchWidthError(); 
+    double SetTrenchLengthError(); //Control Panel is too close/far
+    double SetTargetZDistError();
+    double SetTargetZHeightError();
+    double SetLoadingDDistError();
+    double SetPlayerSt2MidError(); //Player Station 2, midpoint distnance error
+    double SetInitLineSlant(); //initiation line is slanted
+
     
     //for align tape - in drive model
     void SetDeltaAngle(double angle);
@@ -293,4 +305,5 @@ class RobotModel {
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
     nt::NetworkTableEntry potEntry_;
+    nt::NetworkTableEntry initLineErrorEntry_, trenchDistErrorEntry_, trenchWidthErrorEntry_, trenchLengthErrorEntry_, targetZDistErrorEntry_, targetZHeightErrorEntry_, loadingDDistErrorEntry_, playerSt2MidErrorEntry_, initLineSlantEntry_;
 };
