@@ -25,9 +25,9 @@ void RobotModel::CreatePID(){
     dPFacNet_ =  curveDistancePIDLayout_.Add("Curve dP", 0.8).GetEntry();
     dIFacNet_ =  curveDistancePIDLayout_.Add("Curve dI", 0.0).GetEntry();
     dDFacNet_ =  curveDistancePIDLayout_.Add("Curve dD", 0.2).GetEntry();
-    tPFacNet_ =  curveTurnPIDLayout_.Add("Curve tP", 0.07).GetEntry();
-    tIFacNet_ =  curveTurnPIDLayout_.Add("Curve tI", 0.0).GetEntry();
-    tDFacNet_ =  curveTurnPIDLayout_.Add("Curve tD", 0.0).GetEntry();
+    //tPFacNet_ =  curveTurnPIDLayout_.Add("Curve tP", 0.07).GetEntry();
+    //tIFacNet_ =  curveTurnPIDLayout_.Add("Curve tI", 0.0).GetEntry();
+    //tDFacNet_ =  curveTurnPIDLayout_.Add("Curve tD", 0.0).GetEntry();
 
     pEntryP_ = pointPIDLayout_.Add("P", 0.0).GetEntry();
     iEntryP_ = pointPIDLayout_.Add("I", 0.0).GetEntry();
@@ -79,6 +79,7 @@ double RobotModel::GetCurveDistanceI(){
 double RobotModel::GetCurveDistanceD(){
     return dPFacNet_.GetDouble(0.0);
 }
+/*
 double RobotModel::GetCurveTurnP(){
     return tPFacNet_.GetDouble(0.0);
 }
@@ -88,7 +89,7 @@ double RobotModel::GetCurveTurnI(){
 double RobotModel::GetCurveTurnD(){
     return tDFacNet_.GetDouble(0.0);
 }
-
+*/
 double RobotModel::GetPointP() {
     return pEntryP_.GetDouble(0.0);
 }

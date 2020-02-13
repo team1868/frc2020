@@ -28,7 +28,7 @@ RobotModel::RobotModel() :
 	distancePIDLayout_(driveStraightPIDLayout_.GetLayout("Distance", "List Layout")),
 	pivotPIDLayout_(GetPIDTab().GetLayout("Pivot", "List Layout")), 
 	curvePIDLayout_(GetPIDTab().GetLayout("Curve PID", "List Layout")),
-	curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
+	//curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
 	curveDistancePIDLayout_(curvePIDLayout_.GetLayout("Curve Distance", "List Layout")),
 	pointPIDLayout_(GetPIDTab().GetLayout("Point", "List Layout"))
     {
@@ -706,9 +706,9 @@ RobotModel::~RobotModel(){
 	dPFacNet_.Delete();
   	dIFacNet_.Delete();
   	dDFacNet_.Delete();
- 	tPFacNet_.Delete();
-  	tIFacNet_.Delete();
-  	tDFacNet_.Delete();
+ 	// tPFacNet_.Delete();
+  	// tIFacNet_.Delete();
+  	// tDFacNet_.Delete();
 	
 	//point
 	pEntryP_.Delete(); 
@@ -737,4 +737,4 @@ RobotModel::~RobotModel(){
 	ratioDriveEntry_.Delete();
 	ratioSuperstructureEntry_.Delete();
 	potEntry_.Delete();
-};
+}

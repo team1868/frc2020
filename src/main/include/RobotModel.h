@@ -283,9 +283,9 @@ class RobotModel {
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
 
 
-    frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;
+    frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, /*&curveTurnPIDLayout_,*/ &pointPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
-    nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_,tDFacNet_;
+    nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_; //tPFacNet_, tIFacNet_,tDFacNet_;
     nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;

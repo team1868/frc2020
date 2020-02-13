@@ -81,7 +81,7 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
     double rotationValueAdjustment = GetRotateVelocityAdjustment(rotate);
 
     double leftOutput, rightOutput;
-    if(thrust > 0.0){
+    if(thrust >= 0.0){
         leftOutput = thrust + rotate;		
 		rightOutput = thrust - rotate*(1+rotationValueAdjustment);
 	} else {

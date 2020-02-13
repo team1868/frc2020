@@ -10,7 +10,7 @@
 #include <cmath>
 
 CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft,
-  NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+  bool goForward, NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand(), 
   curveLayout_(robot->GetFunctionalityTab().GetLayout("Curve", "List Layout")) { //using absolute angle, radius is middle of robot
   
@@ -18,18 +18,25 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   desiredRadius_ = desiredRadius;
   desiredAngle_ = desiredAngle;
   turnLeft_ = turnLeft;
+  goForward_ = goForward;
+  if (goForward_) {
+    direction_ = 1.0;
+  } else{
+    direction_ = -1.0;
+  }
 
   navXPIDSource_ = navXSource;
   talonEncoderPIDSource_ = talonEncoderSource;
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
+  isDone_ = false;
 
   dOutputNet_ = curveLayout_.Add("Curve dO", 0.0).GetEntry();
-  tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
+  //tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
   lOutputNet_ = curveLayout_.Add("Curve lO", 0.0).GetEntry();
   rOutputNet_ = curveLayout_.Add("Curve rO", 0.0).GetEntry();
   dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).GetEntry();
-  tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
+  //tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
   pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).GetEntry();
 }
 
@@ -42,6 +49,7 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   desiredRadius_ = desiredRadius;
   desiredAngle_ = abs(desiredAngle);
   turnLeft_ = desiredAngle_<0;
+  isDone_ = false;
 
   navXPIDSource_ = navXSource;
   talonEncoderPIDSource_ = talonEncoderSource;
@@ -49,17 +57,17 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   distancePIDOutput_ = distancePIDOutput;
 
   dOutputNet_ = curveLayout_.Add("Curve dO", 0.0).GetEntry();
-  tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
+  //tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
   lOutputNet_ = curveLayout_.Add("Curve lO", 0.0).GetEntry();
   rOutputNet_ = curveLayout_.Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).GetEntry();
-  tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
+  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+  //tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
   pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).GetEntry();
 }
 
 void CurveCommand::Init(){
 
-  robot_->SetLowGear();
+  //robot_->SetLowGear();
 
   initAngle_ = robot_->GetNavXYaw();
 
@@ -89,7 +97,7 @@ void CurveCommand::Init(){
   //tPID_->SetPID(tPFac_, tIFac_, tDFac_);
 	dPID_->SetPID(dPFac_, dIFac_, dDFac_);
 
-  dPID_->SetSetpoint(desiredAngle_*(desiredRadius_+(ROBOT_WIDTH/2))*PI/180);//2*PI*desiredRadius_/(360/desiredAngle_));
+  dPID_->SetSetpoint(direction_*desiredAngle_*desiredRadius_*PI/180.0);//2*PI*desiredRadius_/(360/desiredAngle_));
   //tPID_->SetSetpoint(desiredAngle_);
 
   dPID_->SetAbsoluteTolerance(3.0/12.0); //this too U DUDE
@@ -106,27 +114,26 @@ void CurveCommand::Init(){
 
   dPID_->Enable();
   //tPID_->Enable();
-  //printf("done with init in curve\n");
-
+  printf("done with init in curve\n");
 }
 
 
 void CurveCommand::Reset(){
   robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 	// destroy angle PID
-	if (tPID_ != NULL) {
-		tPID_->Disable();
-		delete tPID_;
-		tPID_ = NULL;
-		printf("Reset Angle PID %f \n", robot_->GetNavXYaw());
-	}
+	// if (tPID_ != NULL) {
+	// 	tPID_->Disable();
+	// 	delete tPID_;
+	// 	tPID_ = NULL;
+	// 	printf("Reset Angle PID %f \n", robot_->GetNavXYaw());
+	// }
 
 	// destroy distance PID
 	if (dPID_ != NULL) {
 		dPID_->Disable();
 		delete dPID_;
 		dPID_ = NULL;
-//		printf("Reset Distance PID");
+		printf("Reset Distance PID");
 
 	}
 	isDone_ = true;
@@ -144,20 +151,19 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
         "Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
         "Final Distance from PID Source: %f\n",
-				robot_->GetTime(), desiredAngle_*desiredRadius_*PI/180, navXPIDSource_->PIDGet(), robot_->GetNavXYaw(), talonEncoderPIDSource_->PIDGet());
+				robot_->GetTime(), direction_*desiredAngle_*desiredRadius_*PI/180, navXPIDSource_->PIDGet(), robot_->GetNavXYaw(), talonEncoderPIDSource_->PIDGet());
     if(turnLeft_){
       printf("Final Distance from robot: %f\n", robot_->GetRightDistance());//robot_->GetLeftDistance()); /fixed inversion
     } else {
       printf("Final Distance from robot: %f\n", robot_->GetLeftDistance());
     }
 		Reset();
-		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
+		//robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 		printf("%f CurveCommand IS DONE \n", robot_->GetTime());
 		//if (timeOut) {
 		//	printf("%f FROM CURVE TIME OUT GO LEAVEEEEEE %f\n", robot_->GetTime(), timeDiff);
 		//}
   } else {
-
     /* pid vs robot
     if(turnLeft_){
       curPivDistance_ = robot_->GetRightDistance();//robot_->GetLeftDistance();
@@ -179,18 +185,19 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 
     if(turnLeft_){
       // turning left, right wheel goes larger distance
-      rOutput = dOutput;
+      rOutput = direction_*dOutput*(desiredRadius_+ROBOT_WIDTH/2)/(desiredRadius_);
       //lOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); //strange math
-      lOutput = (dOutput * (desiredRadius_-ROBOT_WIDTH/2))/(desiredRadius_ + ROBOT_WIDTH/2); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
+      lOutput = direction_*dOutput * (desiredRadius_-ROBOT_WIDTH/2)/(desiredRadius_); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
       // rOutput = dOutput + tOutput;
       // lOutput = dOutput - tOutput; 
     } else {
       //rOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); //strange math
-      rOutput = (dOutput * (desiredRadius_-ROBOT_WIDTH/2))/(desiredRadius_ + ROBOT_WIDTH/2); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
-      lOutput = dOutput; 
+      rOutput = direction_*dOutput * (desiredRadius_-ROBOT_WIDTH/2)/(desiredRadius_); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
+      lOutput = direction_*dOutput * (desiredRadius_+ROBOT_WIDTH/2)/(desiredRadius_);
       // rOutput = dOutput - tOutput;
       // lOutput = dOutput + tOutput; 
     }
+
     
     //printf("AM I NEGATIVE?? %f %f %f", dOutput, rOutput, lOutput);
     
@@ -215,13 +222,15 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     rOutput *= 0.5;
 
     robot_->SetDriveValues(lOutput, rOutput);
-    
+    printf("dOutput: %f\n""rOutput: %f\n""lOutput: %f\n""curPivDistance: %f\n",
+          dOutput, rOutput, lOutput, curPivDistance_);
+
     dOutputNet_.SetDouble(dOutput);
     //tOutputNet_.SetDouble(tOutput);
     lOutputNet_.SetDouble(lOutput);
     rOutputNet_.SetDouble(rOutput);
 
-    dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - talonEncoderPIDSource_->PIDGet());
+    dErrorNet_.SetDouble(direction_*desiredRadius_*desiredAngle_*(PI/180.0) - curPivDistance_);
     /*
     pid vs robot
     if(turnLeft_){
@@ -230,9 +239,10 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
       dErrorNet_.SetDouble((2*PI/(360/desiredAngle_) - robot_->GetLeftDistance()));
     }
     */
-    tErrorNet_.SetDouble(curAngleError_);
+    //tErrorNet_.SetDouble(curAngleError_);
   }
 }
+
 
 double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
   double rawAngle = (curPivDistance/desiredRadius_ *180/PI) + initAngle_; //TODO POSSIBLE ERROR WITH INIT ANGLE
@@ -244,14 +254,15 @@ double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
   }
 }
 
+
 void CurveCommand::GetPIDValues(){
   dPFac_ = robot_-> GetCurveDistanceP();
   dIFac_ = robot_-> GetCurveDistanceI();
   dDFac_ = robot_-> GetCurveDistanceD();
 
-  tPFac_ = robot_-> GetCurveTurnP();
-  tIFac_ = robot_-> GetCurveTurnI();
-  tDFac_ = robot_-> GetCurveTurnD();
+  // tPFac_ = robot_-> GetCurveTurnP();
+  // tIFac_ = robot_-> GetCurveTurnI();
+  // tDFac_ = robot_-> GetCurveTurnD();
 }
 
 bool CurveCommand::IsDone(){
@@ -267,11 +278,10 @@ CurveCommand::~CurveCommand(){
   Reset();
 
   dOutputNet_.Delete();
-  tOutputNet_.Delete();
+  //tOutputNet_.Delete();
   lOutputNet_.Delete();
   rOutputNet_.Delete();
   dErrorNet_.Delete();
-  tErrorNet_.Delete();
+  //tErrorNet_.Delete();
   pidSourceNet_.Delete();
-
 }
