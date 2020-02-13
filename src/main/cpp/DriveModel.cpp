@@ -188,6 +188,16 @@ RobotModel::RobotModel() :
 	gColorEntry_ = GetFunctionalityTab().Add("green", 0.0).GetEntry();
 	bColorEntry_ = GetFunctionalityTab().Add("blue", 0.0).GetEntry();
 	potEntry_ =  GetSuperstructureTab().Add("potentiometer", 0.0).GetEntry();
+
+	initLineErrorEntry_ = GetAutoOffsetTab().Add("initiation line distance", 0.0).GetEntry(); 
+	trenchDistErrorEntry_ = GetAutoOffsetTab().Add("trench distance", 0.0).GetEntry(); 
+	trenchWidthErrorEntry_ = GetAutoOffsetTab().Add("trench width", 0.0).GetEntry();  
+	trenchLengthErrorEntry_ = GetAutoOffsetTab().Add("trench length", 0.0).GetEntry(); 
+	targetZDistErrorEntry_ = GetAutoOffsetTab().Add("target zone", 0.0).GetEntry(); 
+	targetZHeightErrorEntry_ = GetAutoOffsetTab().Add("target zone height", 0.0).GetEntry(); 
+	loadingDDistErrorEntry_ = GetAutoOffsetTab().Add("loading dock", 0.0).GetEntry(); 
+	playerSt2MidErrorEntry_ = GetAutoOffsetTab().Add("player station midpoint", 0.0).GetEntry(); 
+	initLineSlantEntry_ = GetAutoOffsetTab().Add("initiation line slant", 0.0).GetEntry(); 
 	std::cout<< "end of drive model constructor" << std::endl;
 }
 
