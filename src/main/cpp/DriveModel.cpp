@@ -28,7 +28,7 @@ RobotModel::RobotModel() :
 	distancePIDLayout_(driveStraightPIDLayout_.GetLayout("Distance", "List Layout")),
 	pivotPIDLayout_(GetPIDTab().GetLayout("Pivot", "List Layout")), 
 	curvePIDLayout_(GetPIDTab().GetLayout("Curve PID", "List Layout")),
-	//curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
+	curveTurnPIDLayout_(curvePIDLayout_.GetLayout("Curve Turn", "List Layout")),
 	curveDistancePIDLayout_(curvePIDLayout_.GetLayout("Curve Distance", "List Layout")),
 	pointPIDLayout_(GetPIDTab().GetLayout("Point", "List Layout"))
     {
@@ -516,12 +516,18 @@ void RobotModel::GearShift() {
            >= MIN_TURNING_XY_DIFFERENCE) {
                robot_->SetLowGear();
            } */
-           else if (GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY ||
-                   GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) {
+           else if ((GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+                   GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) || 
+				   (GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
+                   GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
                SetHighGear();
+			   //printf("High gear: %f ", GetRightVelocity());
+			   //printf("%f\n", GetLeftVelocity());
            }
            else {
                SetLowGear();
+			   //printf("Low gear: %f ", GetRightVelocity());
+			   //printf("%f\n", GetLeftVelocity());
            }
 }
 
@@ -570,15 +576,18 @@ double RobotModel::ModifyCurrent(int channel, double value){
 }
 
 void RobotModel::SetHighGear(){
-	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
-	isHighGear_ = true;
-
+	if (isHighGear_ = false) {
+		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
+		isHighGear_ = true;
+	}
 	//ResetDriveEncoders();
 }
 
 void RobotModel::SetLowGear(){
-	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
-	isHighGear_ = false;
+	if (isHighGear_ = true) {
+		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
+		isHighGear_ = false;
+	}
 	//ResetDriveEncoders();
 }
 
