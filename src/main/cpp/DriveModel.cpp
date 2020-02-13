@@ -135,7 +135,7 @@ RobotModel::RobotModel() :
 	leftDriveOutput_ = rightDriveOutput_ = 0;
 
 
-    elevatorFeederLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
+    elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
