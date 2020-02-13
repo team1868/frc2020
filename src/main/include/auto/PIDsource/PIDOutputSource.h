@@ -37,12 +37,12 @@ private:
 	double pidOutput_;
 };
 
-class FlywheelPIDOutput : public frc::PIDOutput {
+class SuperstructurePIDOutput : public frc::PIDOutput {
 public:
 	/**
 	 * Initializes pidOutput_ to 0
 	 */
-	FlywheelPIDOutput();
+	SuperstructurePIDOutput();
 	/**
 	 * Gets output from PID loop and assigns it to pidOutput_
 	 */
@@ -54,7 +54,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~FlywheelPIDOutput();
+	virtual ~SuperstructurePIDOutput();
 private:
 	/**
 	 * Output from PID loop

@@ -74,18 +74,18 @@ double PivotPIDTalonOutput::GetOutput() {
 PivotPIDTalonOutput::~PivotPIDTalonOutput(){
 }
 
-FlywheelPIDOutput::FlywheelPIDOutput() {
+SuperstructurePIDOutput::SuperstructurePIDOutput() {
 	pidOutput_ = 0.0;
 }
 
-void FlywheelPIDOutput::PIDWrite(double output) {
+void SuperstructurePIDOutput::PIDWrite(double output) {
 	pidOutput_ = output;
 }
 
-double FlywheelPIDOutput::GetPIDOutput() {
+double SuperstructurePIDOutput::GetPIDOutput() {
 	return pidOutput_;
 }
 
-FlywheelPIDOutput::~FlywheelPIDOutput() {
+SuperstructurePIDOutput::~SuperstructurePIDOutput() {
 
 }

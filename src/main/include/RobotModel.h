@@ -134,6 +134,18 @@ class RobotModel {
     void SetHighGear();
     void SetLowGear();
     void GearShift();
+
+    //field error
+    double SetInitLineError();
+    double SetTrenchDistError(); //distance from initiation to trench edge
+    double SetTrenchWidthError(); 
+    double SetTrenchLengthError(); //Control Panel is too close/far
+    double SetTargetZDistError();
+    double SetTargetZHeightError();
+    double SetLoadingDDistError();
+    double SetPlayerSt2MidError(); //Player Station 2, midpoint distnance error
+    double SetInitLineSlant(); //initiation line is slanted
+
     
     //for align tape - in drive model
     void SetDeltaAngle(double angle);
@@ -169,7 +181,8 @@ class RobotModel {
 
 
     // superstructure robot model
-    uint32_t SetAutoState(uint32_t state);
+    void SetAutoState(uint32_t state);
+    uint32_t GetAutoState();
 
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
@@ -228,18 +241,18 @@ class RobotModel {
     TalonFXSensorCollection *flywheelEncoder_; // encoder created for motor 1, both motors should be running at the same rpm
     Solenoid *flywheelHoodSolenoid_;
 
-    rev::CANSparkMax *climberMotor1_, *climberMotor2_; 
-    rev::CANEncoder *climberEncoder1_;
+    WPI_TalonSRX *climberMotor1_, *climberMotor2_; 
+    //rev::CANEncoder *climberEncoder1_;
     WPI_VictorSPX *climberElevatorMotor_;
     
-    WPI_VictorSPX *controlPanelMotor_;
+    Victor *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
 
     WPI_VictorSPX *intakeRollersMotor_;
-    WPI_TalonSRX *intakeWristMotor_;
+    WPI_VictorSPX *intakeWristMotor_;
     //AnalogGyro *intakeWristGyro_;
     AnalogPotentiometer *intakeWristPot_; 
     
@@ -264,6 +277,8 @@ class RobotModel {
 
     double leftDrivePower_, rightDrivePower_; // to determine the speed of the rollers (superstructure)
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
+   
+    uint32_t state_;
     double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
     double intakeRollersCurrent_, intakeWristCurrent_, IndexFunnelCurrent_, elevatorFeederCurrent_, elevatorCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
@@ -290,4 +305,5 @@ class RobotModel {
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
     nt::NetworkTableEntry potEntry_;
+    nt::NetworkTableEntry initLineErrorEntry_, trenchDistErrorEntry_, trenchWidthErrorEntry_, trenchLengthErrorEntry_, targetZDistErrorEntry_, targetZHeightErrorEntry_, loadingDDistErrorEntry_, playerSt2MidErrorEntry_, initLineSlantEntry_;
 };

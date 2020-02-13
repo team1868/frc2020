@@ -8,8 +8,12 @@
 #include "RobotModel.h"
 using namespace std;
 
-uint32_t RobotModel::SetAutoState(uint32_t state) {
-    return state;
+void RobotModel::SetAutoState(uint32_t state) {
+    state_ = state;
+}
+
+uint32_t RobotModel::GetAutoState() {
+    return state_;
 }
 
 void RobotModel::SetFlywheelOutput(double power){
@@ -26,10 +30,7 @@ void RobotModel::DisengageFlywheelHood() {
 }
 
 void RobotModel::SetClimberOutput(double power){
-    climberMotor1_->Set(power);
-    if (climberEncoder1_->GetPosition() >= SPARK_ENCODER_TICKS) { // need to test this
-        climberMotor2_->Set(-power);
-    }
+    // fix code
 }
 void RobotModel::SetClimberElevatorOutput(double power){
     climberElevatorMotor_->Set(power);

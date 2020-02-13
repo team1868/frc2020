@@ -8,6 +8,7 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
+//#include "auto/PIDSource/PIDOutputSource.h"
 
 class SuperstructureController {
  public:
@@ -74,7 +75,7 @@ class SuperstructureController {
   double flywheelPower_, desiredRPM_, flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
   PIDController *flywheelPID_;
-  FlywheelPIDOutput* flywheelPIDOutput_;
+  SuperstructurePIDOutput *flywheelPIDOutput_;
   double desiredFlywheelPower_, closeFlywheelPower_;
 
   double lowerElevatorTimeout_;
@@ -85,6 +86,7 @@ class SuperstructureController {
   double elevatorFeederPower_;
   double indexFunnelPower_;
 
+  double wristPFac_;
   double intakeWristPower_;
   double initialTheta_; //theta starting val from potentiometer
 
@@ -107,8 +109,10 @@ class SuperstructureController {
   int controlPanelCounter_;
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
+  double controlPanelPower_;
 
-  ShuffleboardLayout &superstructureLayout_;
+  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
-  nt::NetworkTableEntry elevatorFeederLightSensorEntry_, elevatorLightSensorEntry_;
+  nt::NetworkTableEntry wristPEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

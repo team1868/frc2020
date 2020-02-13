@@ -19,17 +19,19 @@ static const int RIGHT_DRIVE_SLAVE_A_ID              = 1;
 static const int LEFT_DRIVE_MASTER_ID                = 2;
 static const int LEFT_DRIVE_SLAVE_A_ID               = 3;
 
+// fix/set all superstructure ids
 // Superstructure Motors
-static const int FLYWHEEL_MOTOR_ONE_ID               = 4; // fix/set all superstructure ids
-static const int FLYWHEEL_MOTOR_TWO_ID               = 5; 
-static const int CLIMB_MOTOR_ONE_ID                  = 6; 
-static const int CLIMB_MOTOR_TWO_ID                  = 7; 
-static const int CONTROL_PANEL_MOTOR_ID              = 8;
-static const int INTAKE_ROLLERS_MOTOR_ID             = 9;
-static const int INTAKE_WRIST_MOTOR_ID               = 10;
-static const int INDEX_FUNNEL_MOTOR_ID               = 11;
-static const int ELEVATOR_FEEDER_MOTOR_ID            = 12;
-static const int ELEVATOR_MOTOR_ID                   = 13;
+static const int FLYWHEEL_MOTOR_ONE_ID               = 6; // fx
+static const int FLYWHEEL_MOTOR_TWO_ID               = 13;  // fx
+static const int CLIMB_MOTOR_ONE_ID                  = 5;  // srx // done // left
+static const int CLIMB_MOTOR_TWO_ID                  = 7;  // srx
+static const int CLIMB_ELEVATOR_ID                   = 8; // spx // done
+static const int CONTROL_PANEL_MOTOR_ID              = 14;  // sp
+static const int INTAKE_ROLLERS_MOTOR_ID             = 9; // spx // done
+static const int INTAKE_WRIST_MOTOR_ID               = 10; // spx
+static const int INDEX_FUNNEL_MOTOR_ID               = 11; // spx // done
+static const int ELEVATOR_FEEDER_MOTOR_ID            = 4; // srx // done
+static const int ELEVATOR_MOTOR_ID                   = 12; // srx // done
 
 
 
@@ -82,6 +84,5 @@ static const int SHOOT_FAR_PREP_BUTTON_PORT          = 5; //random
 // SENSORS
 static const int GYRO_PORT                           = 1; // ANALOG IO
 static const int INTAKE_WRIST_POT_PORT               = 0; // ANALOG PORT
-static const int FUNNEL_LIGHT_SENSOR_PORT            = 1;
-static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT   = 2;
-static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT      = 3;
+static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT   = 1;//1
+static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT      = 0;//3
