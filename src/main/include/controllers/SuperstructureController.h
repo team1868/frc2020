@@ -111,7 +111,7 @@ class SuperstructureController {
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
   double controlPanelPower_;
 
-  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_;
+  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &potLayout_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;

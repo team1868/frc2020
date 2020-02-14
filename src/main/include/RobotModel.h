@@ -21,6 +21,7 @@
 #include "auto/PIDsource/PIDOutputSource.h"
 #include "Ports2020.h"
 #include "ControlBoard.h"
+#include <frc/AnalogPotentiometer.h>
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
