@@ -16,27 +16,31 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     humanControl_ = humanControl;
 
     // fix all of this
-    climberPower_ = 0.5; // fix
+    climbElevatorUpPower_ = 0.5; // fix
+    climbElevatorDownPower_ = -0.4; // fix
+    
     desiredRPM_ = 2000;
     flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
     closeFlywheelPower_ = 0.4;
+    flywheelResetTime_ = 5.0; // fix //why does this exist
+    // create talon pid controller
+    // fix encoder source
+    flywheelEncoder1_ = &robot_->GetFlywheelMotor1()->GetSensorCollection();
+    flywheelEncoder2_ = &robot_->GetFlywheelMotor2()->GetSensorCollection();
+    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelEncoder1_, flywheelPIDOutput_);
 
     elevatorFeederPower_ = 0.3; // fix
     elevatorSlowPower_ = 0.2; //fix
     elevatorFastPower_ = 0.4; //fix
     indexFunnelPower_ = 0.3; // fix
-    flywheelResetTime_ = 5.0; // fix //why does this exist
-
-    controlPanelPower_ = 0.5; // fix
-
-    intakeWristPower_ = 0.3;
-    initialTheta_ = 0.0;
-    desiredWristAngle_ = 40; // fix
-   
-
     lowerElevatorTimeout_ = 4.0; //fix
     elevatorTimeout_ = 4.0;
     //lastBottomStatus_ = false;
+
+    controlPanelPower_ = 0.5; // fix
+    controlPanelCounter_ = 0;
+
+    desiredIntakeWristAngle_ = 30.0; // fix later :)
 
     startResetTime_ = 0.0;
     resetTimeout_ = 3.0;
@@ -48,15 +52,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     currIndexState_ = kIndexInit;
     nextIndexState_ = kIndexInit;
     currWristState_ = kRaising;
-    desiredIntakeWristAngle_ = 30.0; // fix later :)
-
-    controlPanelCounter_ = 0;
     
-    // create talon pid controller
-    // fix encoder source
-    flywheelEncoder1_ = &robot_->GetFlywheelMotor1()->GetSensorCollection();
-    flywheelEncoder2_ = &robot_->GetFlywheelMotor2()->GetSensorCollection();
-    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelEncoder1_, flywheelPIDOutput_);
 
     // shuffleboard
     flywheelVelocityEntry_ = flywheelPIDLayout_.Add("flywheel velocity", 0.0).GetEntry();
@@ -93,10 +89,10 @@ void SuperstructureController::WristControllerUpdate(){
             }
             break;
         case kLowering:
-            if(currWristAngle_ < desiredWristAngle_) {
+            if(currWristAngle_ < desiredIntakeWristAngle_) {
                 robot_ -> SetIntakeWristOutput((desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
             }
-            if(currWristAngle_ > desiredWristAngle_ - 20.0){
+            if(currWristAngle_ > desiredIntakeWristAngle_ - 20.0){
                 robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
             }
             break;
@@ -152,7 +148,7 @@ void SuperstructureController::AutoUpdate(){
             /*if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
                 robot_->SetElevatorOutput(elevatorSlowPower_);
             } else {
-                
+
                 robot_->SetElevatorOutput(0.0);
             }
 
@@ -186,7 +182,7 @@ void SuperstructureController::Update(){
     //human override state
     if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
         currState_ = kIntaking;
-    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootButton)){
+    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){
         currState_ = kShooting; 
     } else if(currState_ != kResetting){
         currState_ = kIndexing;
@@ -225,6 +221,12 @@ void SuperstructureController::Update(){
     }
     if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
         ControlPanelStage3(controlPanelPower_);
+    }
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
+        robot_->SetClimberElevatorOutput(climbElevatorUpPower_);
+    }
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
+        robot_->SetClimberElevatorOutput(climbElevatorDownPower_);
     }
 
     //TODO replace "//robot_->SetArm(bool a);" with if !sensorGood set arm power small in bool a direction

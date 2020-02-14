@@ -123,8 +123,8 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	climberWinchMotor1_ = new WPI_VictorSPX(CLIMB_MOTOR_ONE_ID);
-	climberWinchMotor2_ = new WPI_VictorSPX(CLIMB_MOTOR_TWO_ID);
+	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
+	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
 	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);
 	//climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 

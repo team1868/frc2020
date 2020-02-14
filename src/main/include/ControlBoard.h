@@ -16,8 +16,8 @@ class ControlBoard {
  public:
   enum Joysticks{ kLeftJoy, kRightJoy };
 	enum Axes{ kX, kY, kZ, kLT};
-  enum Buttons{kHighGearShift, kLowGearShift, kShootButton, kClimberButton, kAlignButton, 
-    kTrenchAlignButton, kControlPanelStage2Button, kControlPanelStage3Button, kIntakeSeriesButton,
+  enum Buttons{kHighGearShift, kLowGearShift, kShootingButton, kClimbElevatorUpButton, kClimbElevatorDownButton,
+    kAlignButton, kTrenchAlignButton, kControlPanelStage2Button, kControlPanelStage3Button, kIntakeSeriesButton,
     kIndexSeriesButton, kShootClosePrepButton, kShootFarPrepButton};
 
   ControlBoard();
@@ -34,7 +34,6 @@ class ControlBoard {
  private:
   void ReadAllButtons();
   frc::Joystick *leftJoy_, *rightJoy_, *operatorJoy_, *operatorJoyB_;
-  ButtonReader *flywheelButton_, *climberButton_, *alignButton_, *trenchAlignButton_;
   double leftJoyX_, leftJoyY_, rightJoyX_, rightJoyY_;
   std::unordered_map<Buttons, ButtonReader*> buttons_;
 };
