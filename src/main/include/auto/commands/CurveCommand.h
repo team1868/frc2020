@@ -13,7 +13,7 @@
 
 class CurveCommand : public AutoCommand {
  public:
-  CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft,
+  CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft, bool goForward,
     NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
@@ -35,10 +35,10 @@ class CurveCommand : public AutoCommand {
   TalonEncoderPIDSource *talonEncoderPIDSource_;
   AnglePIDOutput *anglePIDOutput_;
   DistancePIDOutput *distancePIDOutput_;
-  PIDController *dPID_, *tPID_;
+  PIDController *dPID_; //*tPID_
 
   double dPFac_, dIFac_, dDFac_;
-  double tPFac_, tIFac_, tDFac_;
+  //double tPFac_, tIFac_, tDFac_;
 
   RobotModel *robot_;
   double initAngle_;
@@ -48,10 +48,12 @@ class CurveCommand : public AutoCommand {
   double curAngleError_;
 
   bool turnLeft_;
+  bool goForward_;
+  double direction_;
 
   bool isDone_;
 
   frc::ShuffleboardLayout &curveLayout_;
-  nt::NetworkTableEntry dOutputNet_, tOutputNet_, lOutputNet_, rOutputNet_,
+  nt::NetworkTableEntry dOutputNet_, /*tOutputNet_,*/ lOutputNet_, rOutputNet_,
     dErrorNet_, tErrorNet_, pidSourceNet_;
 };

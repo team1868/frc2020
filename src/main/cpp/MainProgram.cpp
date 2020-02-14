@@ -56,7 +56,8 @@ void MainProgram::RobotPeriodic() {
  * make sure to add them to the chooser code above as well.
  */
 void MainProgram::AutonomousInit() {
-    robot_->SetHighGear();
+    //robot_->SetHighGear();
+    robot_->SetLowGear();
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
@@ -65,8 +66,8 @@ void MainProgram::AutonomousInit() {
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
 
-    robot_->SetTestSequence("d 1.0 c 3.0 90.0 0 c 3.0 0.0 1"); //for testing high gear and low gear
-
+    //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
+    robot_->SetTestSequence("d 3.5");
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
     navX_ = new NavXPIDSource(robot_);
@@ -150,6 +151,7 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();
+    superstructureController_->WristControllerUpdate();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
 

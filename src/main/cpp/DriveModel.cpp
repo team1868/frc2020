@@ -124,25 +124,25 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	climberMotor1_ = new WPI_TalonSRX(CLIMB_MOTOR_ONE_ID);
-	climberMotor2_ = new WPI_TalonSRX(CLIMB_MOTOR_TWO_ID);
-
+	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
+	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
+	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);
 	//climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
-    intakeWristMotor_ = new WPI_VictorSPX(INTAKE_WRIST_MOTOR_ID);
+    intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
 	//intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
 	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
 
 
-    elevatorFeederLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
+    elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
-    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
+    elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID);
 	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
 	
-	controlPanelMotor_ = new Victor(CONTROL_PANEL_MOTOR_ID);
+	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
 	colorMatcher_.AddColorMatch(kBlueTarget);
@@ -517,12 +517,18 @@ void RobotModel::GearShift() {
            >= MIN_TURNING_XY_DIFFERENCE) {
                robot_->SetLowGear();
            } */
-           else if (GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY ||
-                   GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) {
+           else if ((GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+                   GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) || 
+				   (GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
+                   GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
                SetHighGear();
+			   //printf("High gear: %f ", GetRightVelocity());
+			   //printf("%f\n", GetLeftVelocity());
            }
            else {
                SetLowGear();
+			   //printf("Low gear: %f ", GetRightVelocity());
+			   //printf("%f\n", GetLeftVelocity());
            }
 }
 
@@ -571,15 +577,18 @@ double RobotModel::ModifyCurrent(int channel, double value){
 }
 
 void RobotModel::SetHighGear(){
-	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
-	isHighGear_ = true;
-
+	if (isHighGear_ == false) {
+		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
+		isHighGear_ = true;
+	}
 	//ResetDriveEncoders();
 }
 
 void RobotModel::SetLowGear(){
-	gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
-	isHighGear_ = false;
+	if (isHighGear_ == true) {
+		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
+		isHighGear_ = false;
+	}
 	//ResetDriveEncoders();
 }
 
@@ -725,9 +734,9 @@ RobotModel::~RobotModel(){
 	dPFacNet_.Delete();
   	dIFacNet_.Delete();
   	dDFacNet_.Delete();
- 	tPFacNet_.Delete();
-  	tIFacNet_.Delete();
-  	tDFacNet_.Delete();
+ 	// tPFacNet_.Delete();
+  	// tIFacNet_.Delete();
+  	// tDFacNet_.Delete();
 	
 	//point
 	pEntryP_.Delete(); 
@@ -756,4 +765,4 @@ RobotModel::~RobotModel(){
 	ratioDriveEntry_.Delete();
 	ratioSuperstructureEntry_.Delete();
 	potEntry_.Delete();
-};
+}

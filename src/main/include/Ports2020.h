@@ -19,17 +19,19 @@ static const int RIGHT_DRIVE_SLAVE_A_ID              = 1;
 static const int LEFT_DRIVE_MASTER_ID                = 2;
 static const int LEFT_DRIVE_SLAVE_A_ID               = 3;
 
+// fix/set all superstructure ids
 // Superstructure Motors
-static const int FLYWHEEL_MOTOR_ONE_ID               = 4; // fix/set all superstructure ids
-static const int FLYWHEEL_MOTOR_TWO_ID               = 5; 
-static const int CLIMB_MOTOR_ONE_ID                  = 6; 
-static const int CLIMB_MOTOR_TWO_ID                  = 7; 
-static const int CONTROL_PANEL_MOTOR_ID              = 8;
-static const int INTAKE_ROLLERS_MOTOR_ID             = 9;
-static const int INTAKE_WRIST_MOTOR_ID               = 10;
-static const int INDEX_FUNNEL_MOTOR_ID               = 11;
-static const int ELEVATOR_FEEDER_MOTOR_ID            = 12;
-static const int ELEVATOR_MOTOR_ID                   = 13;
+static const int FLYWHEEL_MOTOR_ONE_ID               = 6; // fx
+static const int FLYWHEEL_MOTOR_TWO_ID               = 13;  // fx
+static const int CLIMB_WINCH_LEFT_MOTOR_ID           = 5;  // srx // done // left
+static const int CLIMB_WINCH_RIGHT_MOTOR_ID          = 7;  // srx
+static const int CLIMB_ELEVATOR_ID                   = 8; // spx // done
+static const int CONTROL_PANEL_MOTOR_ID              = 14;  // sp
+static const int INTAKE_ROLLERS_MOTOR_ID             = 9; // spx // done
+static const int INTAKE_WRIST_MOTOR_ID               = 10; // spx
+static const int INDEX_FUNNEL_MOTOR_ID               = 11; // spx // done
+static const int ELEVATOR_FEEDER_MOTOR_ID            = 4; // srx // done
+static const int ELEVATOR_MOTOR_ID                   = 12; // srx // done
 
 
 
@@ -67,8 +69,9 @@ static const int OPERATOR_JOY_B_USB_PORT             = 3;
 //static const int HIGH_GEAR_BUTTON_PORT               = 1; don't need these w/gearshift
 //static const int LOW_GEAR_BUTTON_PORT                = 2;
 
-static const int SHOOT_BUTTON_PORT                  = 1; // fix all superstructure button ports
-static const int CLIMBER_BUTTON_PORT                 = 3; 
+static const int SHOOTING_BUTTON_PORT                = 1; // fix all superstructure button ports
+static const int CLIMB_ELEVATOR_UP_BUTTON_PORT       = 3; 
+static const int CLIMB_ELEVATOR_DOWN_BUTTON_PORT     = 7;
 static const int ALIGN_TAPE_BUTTON_PORT              = 4;
 
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT       = 5;
@@ -82,6 +85,5 @@ static const int SHOOT_FAR_PREP_BUTTON_PORT          = 5; //random
 // SENSORS
 static const int GYRO_PORT                           = 1; // ANALOG IO
 static const int INTAKE_WRIST_POT_PORT               = 0; // ANALOG PORT
-static const int FUNNEL_LIGHT_SENSOR_PORT            = 1;
-static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT   = 2;
-static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT      = 3;
+static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT   = 1;//1
+static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT      = 0;//3

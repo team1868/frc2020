@@ -70,7 +70,9 @@ class SuperstructureController {
   uint32_t currAutoState_, nextAutoState_;
   WristState currWristState_, nextWristState_;
   IndexState currIndexState_, nextIndexState_;
-  
+
+  double currTime_, lastTime_;
+  double startResetTime_, resetTimeout_;
 
   double flywheelPower_, desiredRPM_, flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
@@ -78,38 +80,25 @@ class SuperstructureController {
   SuperstructurePIDOutput *flywheelPIDOutput_;
   double desiredFlywheelPower_, closeFlywheelPower_;
 
-  double lowerElevatorTimeout_;
-  double elevatorTimeout_;
-
-  double elevatorSlowPower_;
-  double elevatorFastPower_;
-  double elevatorFeederPower_;
-  double indexFunnelPower_;
-
-  double intakeWristPower_;
-  double initialTheta_; //theta starting val from potentiometer
-
-
-  double startResetTime_, resetTimeout_;
-
-  double climberPower_;
-
+  double wristPFac_;
   double desiredIntakeWristAngle_;
   // double currGyroAngle_, lastGyroAngle_;
-  double currTime_, lastTime_;
+  double currWristAngle_, lastWristAngle_;
 
-  double startIndexTime_;
-  double startElevatorTime_;
-
+  double lowerElevatorTimeout_, elevatorTimeout_;
+  double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, indexFunnelPower_;
+  double startIndexTime_, startElevatorTime_;
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
-  double currWristAngle_, lastWristAngle_, desiredWristAngle_;
+  double climbElevatorUpPower_, climbElevatorDownPower_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
+  double controlPanelPower_;
 
-  ShuffleboardLayout &superstructureLayout_;
+  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
-  nt::NetworkTableEntry elevatorFeederLightSensorEntry_, elevatorLightSensorEntry_;
+  nt::NetworkTableEntry wristPEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

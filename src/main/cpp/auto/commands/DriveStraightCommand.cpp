@@ -49,7 +49,7 @@ void DriveStraightCommand::Init() {
 	printf("IN DRIVESTRAIGHT INIT\n");
 	isDone_ = false;
 
-	robot_->SetHighGear();
+	//robot_->SetHighGear();
 
 	robot_->ResetDriveEncoders();  
 

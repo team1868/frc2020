@@ -136,17 +136,27 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			double curveRadius;
 			double curveAngle;
 			int turnLeft;
+			int goForward;
 			iss >> curveRadius;
 			iss >> curveAngle;
 			iss >> turnLeft;
+			iss >> goForward;
 			if (IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
 				printf("radius: %f\n, angle: %f\n, turnleft: %d\n", curveRadius, curveAngle, turnLeft);
 				if (turnLeft == 0) {
-					tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+					if (goForward == 0) {
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, false, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+					} else{
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, true, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+					}
 				} else {
-					tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+					if (goForward == 0) {
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, false, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+					} else{
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, true, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+					}
 				}
 			}
 			break;
@@ -196,7 +206,9 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
 		// }
         if (currentCommand_->IsDone()) {
             //				DO_PERIODIC(1, printf("Command complete at: %f \n", currTimeSec));
-            currentCommand_->Reset();
+			printf("before reset in autmode\n");
+			currentCommand_->Reset();
+			printf("reset in automode\n");
 			AutoCommand *nextCommand = currentCommand_->GetNextCommand();
 			// currentCommand_->~AutoCommand();
             // delete currentCommand_;
