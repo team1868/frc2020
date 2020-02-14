@@ -123,13 +123,13 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
-	climberMotor1_ = new WPI_TalonSRX(CLIMB_MOTOR_ONE_ID);
-	climberMotor2_ = new WPI_TalonSRX(CLIMB_MOTOR_TWO_ID);
-
+	climberWinchMotor1_ = new WPI_VictorSPX(CLIMB_MOTOR_ONE_ID);
+	climberWinchMotor2_ = new WPI_VictorSPX(CLIMB_MOTOR_TWO_ID);
+	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);
 	//climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
-    intakeWristMotor_ = new WPI_VictorSPX(INTAKE_WRIST_MOTOR_ID);
+    intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
 	//intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
 	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
@@ -138,10 +138,10 @@ RobotModel::RobotModel() :
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
-    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
+    elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID);
 	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
 	
-	controlPanelMotor_ = new Victor(CONTROL_PANEL_MOTOR_ID);
+	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
 	colorMatcher_.AddColorMatch(kBlueTarget);
@@ -576,7 +576,7 @@ double RobotModel::ModifyCurrent(int channel, double value){
 }
 
 void RobotModel::SetHighGear(){
-	if (isHighGear_ = false) {
+	if (isHighGear_ == false) {
 		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
 		isHighGear_ = true;
 	}
@@ -584,7 +584,7 @@ void RobotModel::SetHighGear(){
 }
 
 void RobotModel::SetLowGear(){
-	if (isHighGear_ = true) {
+	if (isHighGear_ == true) {
 		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
 		isHighGear_ = false;
 	}
