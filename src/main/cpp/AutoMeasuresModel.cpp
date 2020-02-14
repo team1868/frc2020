@@ -35,7 +35,7 @@ AutoMeasures::AutoMeasures(){
     distInitLinetoTZ_ = 85.0; 
     distSidewaysTZToMidTrench = 66.91;
     distSidewaysLBToMidTrench_ = 113 + distSidewaysMidPSToMidTrench_; 
-    distSidewaysPSToMidTrench_ = 133.875; 
+    distSidewaysPSToMidTrench_ = 133.875;                      
     distInitLineAlignedWithPSToMidTrench_ = sqrt(distInitLinetoTrench_ * distInitLinetoTrench_ + distSidewaysMidPSToMidTrench_ * distSidewaysMidPSToMidTrench_);
 
     distInitLineToPS_ += initLineError_;
