@@ -84,6 +84,39 @@ TalonEncoderPIDSource::~TalonEncoderPIDSource() {
 
 }
 
+
+
+TalonFXPIDSource::TalonFXPIDSource(RobotModel* robot) {
+	robot_ = robot;
+	averageTalonDistance_ = 0.0;
+
+}
+
+double TalonFXPIDSource::PIDGet() {
+	/*
+	double leftDistance = robot_->GetLeftDistance();
+	double rightDistance = robot_->GetRightDistance();
+
+	// FIX THIS TO BE BETTER THANKS
+	if (robot_->GetLeftEncoderStopped()) {
+		averageTalonDistance_ = rightDistance;
+	} else if (robot_->GetRightEncoderStopped()) {
+		averageTalonDistance_ = leftDistance;
+	} else {
+		averageTalonDistance_= (rightDistance + leftDistance) / 2;
+	}
+
+	SmartDashboard::PutNumber("Left Distance", leftDistance);
+	SmartDashboard::PutNumber("Right Distance", rightDistance);
+	SmartDashboard::PutNumber("Average Distance", averageTalonDistance_);
+	return averageTalonDistance_;*/
+
+}
+
+TalonFXPIDSource::~TalonFXPIDSource() {
+
+}
+
 VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
 	robot_ = robot;
 	lastTime_ = robot_->GetTime();
