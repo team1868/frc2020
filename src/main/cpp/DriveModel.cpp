@@ -9,6 +9,7 @@
 #include "RobotModel.h"
 #include "ControlBoard.h"
 #include "controllers/DriveController.h"
+#include "auto/AutoMeasures.h"
 
 
 
@@ -683,13 +684,21 @@ void RobotModel::RefreshShuffleboard(){
 	rColorEntry_.SetDouble(detectedColor_.red);
 	gColorEntry_.SetDouble(detectedColor_.green);
 	bColorEntry_.SetDouble(detectedColor_.blue);
-
+ 
 
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
 
 	potEntry_.SetDouble(GetIntakeWristPotValue());
+
+	initLineError_ = initLineErrorEntry_.GetDouble(0.0);
+	trenchDistError_ = trenchDistErrorEntry_.GetDouble(0.0);
+	trenchWidthError_ = trenchWidthErrorEntry_.GetDouble(0.0);
+	trenchLengthError_ = trenchLengthErrorEntry_.GetDouble(0.0);
+	targetZDistError_ = targetZDistErrorEntry_.GetDouble(0.0);
+	loadingDDistError_ = loadingDDistErrorEntry_.GetDouble(0.0);
+	playerSt2MidError_ = playerSt2MidErrorEntry_.GetDouble(0.0);
 
 	// if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
 	// 	std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
