@@ -23,8 +23,8 @@ static const int LEFT_DRIVE_SLAVE_A_ID               = 3;
 // Superstructure Motors
 static const int FLYWHEEL_MOTOR_ONE_ID               = 6; // fx
 static const int FLYWHEEL_MOTOR_TWO_ID               = 13;  // fx
-static const int CLIMB_MOTOR_ONE_ID                  = 5;  // srx // done // left
-static const int CLIMB_MOTOR_TWO_ID                  = 7;  // srx
+static const int CLIMB_WINCH_LEFT_MOTOR_ID           = 5;  // srx // done // left
+static const int CLIMB_WINCH_RIGHT_MOTOR_ID          = 7;  // srx
 static const int CLIMB_ELEVATOR_ID                   = 8; // spx // done
 static const int CONTROL_PANEL_MOTOR_ID              = 14;  // sp
 static const int INTAKE_ROLLERS_MOTOR_ID             = 9; // spx // done
@@ -69,8 +69,9 @@ static const int OPERATOR_JOY_B_USB_PORT             = 3;
 //static const int HIGH_GEAR_BUTTON_PORT               = 1; don't need these w/gearshift
 //static const int LOW_GEAR_BUTTON_PORT                = 2;
 
-static const int SHOOT_BUTTON_PORT                  = 1; // fix all superstructure button ports
-static const int CLIMBER_BUTTON_PORT                 = 3; 
+static const int SHOOTING_BUTTON_PORT                = 1; // fix all superstructure button ports
+static const int CLIMB_ELEVATOR_UP_BUTTON_PORT       = 3; 
+static const int CLIMB_ELEVATOR_DOWN_BUTTON_PORT     = 7;
 static const int ALIGN_TAPE_BUTTON_PORT              = 4;
 
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT       = 5;

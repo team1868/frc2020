@@ -29,27 +29,38 @@ void RobotModel::DisengageFlywheelHood() {
     flywheelHoodSolenoid_->Set(false);
 }
 
-void RobotModel::SetClimberOutput(double power){
-    // fix code
+void RobotModel::SetClimbWinchLeftOutput(double power){
+    climberWinchLeftMotor_->Set(power);
 }
+
+void RobotModel::SetClimbWinchRightOutput(double power){
+    climberWinchRightMotor_->Set(power);
+}
+
 void RobotModel::SetClimberElevatorOutput(double power){
     climberElevatorMotor_->Set(power);
 }
+
 void RobotModel::SetControlPanelOutput(double power){
     controlPanelMotor_->Set(power);
 }
+
 void RobotModel::SetIntakeRollersOutput(double power) {
     intakeRollersMotor_->Set(power);
 }
+
 void RobotModel::SetIntakeWristOutput(double power) {
     intakeWristMotor_->Set(power);
 }
+
 void RobotModel::SetIndexFunnelOutput(double power) {
     indexFunnelMotor_->Set(power);
 }
+
 void RobotModel::SetElevatorFeederOutput(double power) {
     elevatorFeederMotor_->Set(power);
 }
+
 void RobotModel::SetElevatorOutput(double power) {
     elevatorMotor_->Set(power);
 }

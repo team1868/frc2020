@@ -192,7 +192,8 @@ class RobotModel {
     void DisengageFlywheelHood();
     double GetTargetDistance();
     
-    void SetClimberOutput(double power);
+    void SetClimbWinchLeftOutput(double power);
+    void SetClimbWinchRightOutput(double power);
     void SetClimberElevatorOutput(double power);
 
     void SetIntakeRollersOutput(double power);
@@ -242,24 +243,24 @@ class RobotModel {
     TalonFXSensorCollection *flywheelEncoder_; // encoder created for motor 1, both motors should be running at the same rpm
     Solenoid *flywheelHoodSolenoid_;
 
-    WPI_TalonSRX *climberMotor1_, *climberMotor2_; 
+    WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
     //rev::CANEncoder *climberEncoder1_;
-    WPI_VictorSPX *climberElevatorMotor_;
+    WPI_TalonSRX *climberElevatorMotor_;
     
-    Victor *controlPanelMotor_;
+    WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
 
     WPI_VictorSPX *intakeRollersMotor_;
-    WPI_VictorSPX *intakeWristMotor_;
+    WPI_TalonSRX *intakeWristMotor_;
     //AnalogGyro *intakeWristGyro_;
     AnalogPotentiometer *intakeWristPot_; 
     
     DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_VictorSPX *indexFunnelMotor_;
-    WPI_TalonSRX *elevatorFeederMotor_, *elevatorMotor_; // motor1 - bottom, motor2 - top
+    WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_;
+    WPI_TalonSRX *elevatorMotor_;
 
     double navXSpeed_;
     int counter;
@@ -290,7 +291,32 @@ class RobotModel {
 	  double desiredDistance_;//for align tape
     double targetVelocity_;
 
+    // if smth is closer to the side of the opposing player station then subtract that # from the variable 
+    double initLineError_ ;      
+    double trenchDistError_;
+    double trenchWidthError_;
+    double trenchLengthError_;
+    double targetZDistError_;
+    double loadingDDistError_;
+    double playerSt2MidError_; // add positive number if it's more to the left than expected 
 
+    // Distance of Initiation Line To...
+    double distInitLineToPS_; 
+    double distInitLinetoTrench_;
+    double distInitLinetoTZ_;
+    double distSidewaysTZToMidTrench; // InitLineAlignedWithTZToInitLineAlignedWithMidTrench
+    double distSidewaysLBToMidTrench_; //InitLineAlignedWithLBToInitLineAlignedWithMidTrench_
+    double distInitLinetoCP_; // should = distInitLinetoTrench + trenchLength_        
+    double distInitLineAlignedWithPSToMidTrench_;
+    double distSidewaysPSToMidTrench_; 
+
+    // Trench
+    double trenchWidth_;
+    double trenchLength_; // not entire trench length just side of trench near opposing alliance stations to control panel
+
+    double distCenterLBtoCenterTZ_;
+    double distSidewaysMidPSToMidTrench_; //distInitLineAlignedWithMidPSToInitLineAlignedWithMidTrench_
+    
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
@@ -299,7 +325,7 @@ class RobotModel {
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
 
 
-    frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, /*&curveTurnPIDLayout_,*/ &pointPIDLayout_;
+    frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
     nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_; //tPFacNet_, tIFacNet_,tDFacNet_;
     nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
