@@ -26,6 +26,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
     arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
     thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.0).GetEntry();
     rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.0).GetEntry();
+    printf("end of drive controller constructor\n");
 }
 
 void DriveController::Update(){

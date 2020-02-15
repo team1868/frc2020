@@ -259,8 +259,8 @@ class RobotModel {
     AnalogPotentiometer *intakeWristPot_; 
     
     DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_;
-    WPI_TalonSRX *elevatorMotor_;
+    WPI_TalonSRX *indexFunnelMotor_;
+    WPI_TalonSRX *elevatorMotor_, *elevatorFeederMotor_;
 
     double navXSpeed_;
     int counter;
