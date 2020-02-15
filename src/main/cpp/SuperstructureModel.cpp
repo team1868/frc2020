@@ -119,6 +119,7 @@ std::string RobotModel::GetControlPanelGameData() {
 // 	return intakeWristGyro_;
 // }
 
+//TODO DELETE we shouldn't be returning classes. ever.
 AnalogPotentiometer* RobotModel::GetPot(){
     return intakeWristPot_; 
 }

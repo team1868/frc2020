@@ -151,7 +151,7 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();
-    superstructureController_->WristControllerUpdate();
+    superstructureController_->WristUpdate();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
 

@@ -39,7 +39,7 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
-  void WristControllerUpdate();
+  void WristUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -91,6 +91,9 @@ class SuperstructureController {
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_;
+
+  double shootPrepStartTime_;
+  bool prepping_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;
