@@ -673,6 +673,9 @@ NavXPIDSource* RobotModel::GetNavXSource(){
 }
 
 void RobotModel::RefreshShuffleboard(){
+
+	lastVelocTime_ = currVelocTime_;
+	currVelocTime_ = GetTime();
     lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;
     currLeftEncoderValue_ = GetLeftEncoderValue();
@@ -680,8 +683,8 @@ void RobotModel::RefreshShuffleboard(){
 
 	lastLeftVelocity_ = currLeftVelocity_;
 	lastRightVelocity_ = currRightVelocity_;
-	currLeftVelocity_ = GetLeftVelocity();
-	currRightVelocity_ = GetRightVelocity();
+	currLeftVelocity_ = //GetLeftVelocity();
+	currRightVelocity_ = //GetRightVelocity();
 
     leftDriveEncoderEntry_.SetDouble(currLeftEncoderValue_); 
     rightDriveEncoderEntry_.SetDouble(currRightEncoderValue_);

@@ -291,6 +291,8 @@ class RobotModel {
 	  double desiredDistance_;//for align tape
     double targetVelocity_;
 
+    double lastVelocTime_, currVelocTime_;
+
     // if smth is closer to the side of the opposing player station then subtract that # from the variable 
     double initLineError_ ;      
     double trenchDistError_;

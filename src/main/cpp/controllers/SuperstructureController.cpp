@@ -36,7 +36,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     elevatorFeederPower_ = 1.0; // fix
     elevatorSlowPower_ = 0.5; //fix
     elevatorFastPower_ = 1.0; //fix
-    indexFunnelPower_ = 0.5; // fix
+    indexFunnelPower_ = 0.3; // fix
     lowerElevatorTimeout_ = 4.0; //fix
     elevatorTimeout_ = 4.0;
     //lastBottomStatus_ = false;
@@ -84,7 +84,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 }
 
 void SuperstructureController::Reset() { // might not need this
-    currState_ = kInit;
+    currState_ = kIndexing;
 	nextState_ = kIndexing;
     // check whether autostates should be reset here or should 
     currAutoState_ = kAutoInit;
@@ -114,12 +114,12 @@ void SuperstructureController::WristUpdate(){
             else{
                 robot_->SetIntakeWristOutput(0.0);
             }
-            if(currWristAngle_ > desiredIntakeWristAngle_ - 20.0){ //within acceptable range
+            //if(currWristAngle_ > desiredIntakeWristAngle_ - 20.0){ //within acceptable range
                 robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
-            }
-            else{
-                robot_->SetIntakeRollersOutput(0.0);
-            }
+            //}
+            //else{
+            //    robot_->SetIntakeRollersOutput(0.0);
+            //}
             break;
         default:
             printf("ERROR: no state in wrist controller \n");
@@ -203,6 +203,7 @@ void SuperstructureController::AutoUpdate(){
 
 void SuperstructureController::Update(){
     
+    
     currTime_ = robot_->GetTime();//may or may not be necessary
     RefreshShuffleboard();
 
@@ -212,6 +213,7 @@ void SuperstructureController::Update(){
     } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && 
                currTime_ - shootPrepStartTime_ > 1.0){
         currState_ = kShooting; 
+        startIndexTime_ = currTime_;
     } else if(currState_ != kResetting){ //not intaking, shooting, or resetting. so default = index
         currState_ = kIndexing;
     }
@@ -301,9 +303,9 @@ void SuperstructureController::Update(){
             }
 
             if(!bottomSensor_ && !bTimeout_){
-                //robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
+                robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
                 robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-            } else {
+            } else { //timed out or something in bottom
                 robot_->SetIndexFunnelOutput(0.0);
                 robot_->SetElevatorFeederOutput(0.0);
             }
@@ -325,6 +327,7 @@ void SuperstructureController::Update(){
             if(!bottomSensor_ && currTime_-startResetTime_ <= resetTimeout_){
                 robot_->SetElevatorOutput(-elevatorFastPower_); //bring down elevator
             } else {
+                //done
                 robot_->SetElevatorOutput(0.0);
                 nextState_ = kIndexing;
             }
@@ -501,7 +504,7 @@ bool SuperstructureController::IndexUpdate(){
 
     //control bottom
     if(!bottomSensor_ && (!bTimeout_ || currState_ == kIntaking)){
-        //robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
+        robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");
     } else {
