@@ -192,6 +192,7 @@ void SuperstructureController::AutoUpdate(){
     }
 }
 
+
 void SuperstructureController::Update(){
     
     currTime_ = robot_->GetTime();//may or may not be necessary
@@ -206,6 +207,32 @@ void SuperstructureController::Update(){
     } else if(currState_ != kResetting){ //not intaking, shooting, or resetting. so default = index
         currState_ = kIndexing;
     }
+
+    //Winch power update based on angle from NavX 
+    double initRobotAngle = robot_->GetNavXYaw();
+    double initEncoderVal = getEncoderValue(climberWinchRightMotor_()); 
+    double wheelbaseWidth = 0.64;
+//DONT PUSH THIS CODE IT BREAKS SHIT
+
+    if (initRobotAngle > 0) {
+        // if the right winch rope thing has distance K, want to get to dist (robotWidth)(sin(initAngle_)
+        //1440 ticks per revolution over 4.32 in circumference of outershaft drum = 333.3 tics/inch
+        // Then change right winch motor output by raising equiv to (333.3)(robotWidht)(sin(initAngle))
+        while(getEncoderValue(climberWinchRightMotor_()) < initEncoderVal*wheelbaseWidth*sin(initAngle)){
+            robot ->SetClimbWinchRightOutput() = 1; //idk how much power you give a motor lmao
+        }
+    }
+    else if (initAngle < 0) {
+        while(getEncoderValue(climberWinchLeftMotor_()) < initEncoderVal*wheelbaseWidth*sin(initAngle)) {
+            // check that sin outputs pos val, else put an abs in front
+            robot -> SetClimbWinchLeftOutput() = 1;
+        }
+    }
+
+
+
+
+
     
     //flywheel control if not shooting
     if (currState_ != kShooting){
