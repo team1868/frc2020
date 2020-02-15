@@ -45,6 +45,13 @@ void RobotModel::SetClimbWinchRightOutput(double power){
     climberWinchRightMotor_->Set(power);
 }
 
+double RobotModel::GetClimberWinchRightEncoderValue(){
+    return climberWinchRightEncoder_->Get();
+}
+double RobotModel::GetClimberWinchLeftEncoderValue(){
+    return climberWinchLeftEncoder_->Get();
+}
+
 void RobotModel::SetClimberElevatorOutput(double power){
     climberElevatorMotor_->Set(power);
 }

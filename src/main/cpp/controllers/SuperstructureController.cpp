@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "controllers/SuperstructureController.h"
+#include <math.h>
 using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
@@ -14,22 +15,27 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     potLayout_(robot->GetSuperstructureTab().GetLayout("Potentiometer", "List Layout").WithPosition(0, 1))
     {
     robot_ = robot;
-    humanControl_ = humanControl;
+    humanControl_ = humanControl; 
 
     // fix all of this
     climbElevatorUpPower_ = 0.5; // fix
     climbElevatorDownPower_ = -0.4; // fix
     bool positiveDirection_ = true;
+    climbWinchPower_ = 0.5; // fix
     
-
+    //desiredVelocity_
     desiredRPM_ = 2000; // was supposed to be used to calculate desired power from far shot
     flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
 
     closeFlywheelPower_ = 0.5;
     flywheelResetTime_ = 2.0; // fix //why does this exist
     
-    // create talon pid controller  
+    // create talon pid controller
+    /*
+    flywheelPIDSource_ = new TalonFXPIDSource(robot_);
+    flywheelPIDOutput_ = new SuperstructurePIDOutput();
     flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelPIDSource_, flywheelPIDOutput_);
+    */
 
     elevatorFeederPower_ = 1.0; // fix
     elevatorSlowPower_ = 0.5; //fix
@@ -271,6 +277,15 @@ void SuperstructureController::Update(){
         currState_ = kClimbingElevator;
     }
 
+    // independent climbing buttons, please move setting output from main
+    /*
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchLeftButton)){
+        robot_->SetClimbWinchLeftOutput(climbWinchPower_);
+    }
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchRightButton)){
+        robot_->SetClimbWinchRightOutput(climbWinchPower_);
+    }*/
+
     //TODO replace "//robot_->SetArm(bool a);" with if !sensorGood set arm power small in bool a direction
     //in current code: true is arm down and false is arm up
     //TODO ADD CLIMBING AND SPINNER SEMIAUTO
@@ -374,8 +389,38 @@ void SuperstructureController::DisabledUpdate() {
 */
 
 void SuperstructureController::FlywheelPIDControllerUpdate() {
-    flywheelPID_->SetPID(flywheelPFac_, flywheelPFac_, flywheelDFac_);
+    //flywheelPID_->SetPID(flywheelPFac_, flywheelPFac_, flywheelDFac_);
     // flywheel FF Fac
+    // use config
+}
+
+void SuperstructureController::WinchUpdate() {
+    double currRobotAngle_ = (atan(tan(robot_-> GetNavXPitch()) * sin(robot_ -> GetNavXYaw())));
+    double initRightEncoderVal = robot_->GetClimberWinchRightEncoderValue();
+    double initLeftEncoderVal = robot_->GetClimberWinchRightEncoderValue();
+    double ticksPerFt = 256/4.32/12.0; // ticks per rotation / circumference of drum
+
+    if (currRobotAngle_ < 0.0){
+        if(robot_->GetClimberWinchRightEncoderValue() < initRightEncoderVal + (ROBOT_WIDTH*sin(currRobotAngle_)*ticksPerFt)){
+            robot_->SetClimbWinchRightOutput(climbWinchPower_);
+        }
+        else{
+            robot_->SetClimbWinchRightOutput(0.0);
+        }
+    }
+    else if (currRobotAngle_ > 0.0){
+        if(robot_->GetClimberWinchLeftEncoderValue() < initLeftEncoderVal + (ROBOT_WIDTH*sin(currRobotAngle_)*ticksPerFt)) {
+            robot_->SetClimbWinchLeftOutput(climbWinchPower_);
+        }
+        else{
+            robot_->SetClimbWinchRightOutput(0.0);
+        }
+    }
+    else{
+        robot_->SetClimbWinchRightOutput(0);
+        robot_->SetClimbWinchLeftOutput(0);
+    }
+
 }
 
 bool SuperstructureController::IndexUpdate(){
@@ -410,8 +455,11 @@ bool SuperstructureController::IndexUpdate(){
 }
 
 //TODO actually implement
-double SuperstructureController::CalculateFlywheelPowerDesired() {
-    return 0.2; // fix
+double SuperstructureController::CalculateFlywheelPowerDesired(/*double desiredVelocity*/) {
+    //robot_->GetFlywheelMotor1()->Set(ControlMode::Velocity, desiredVelocity);
+    return 0.2;
+    //translate into double power // how?
+    // output->get pid output
 }
 
 //TODO actually implement
@@ -440,6 +488,7 @@ void SuperstructureController::ControlPanelStage2(double power){
 
 //TODO FIX
 bool SuperstructureController::IsFlywheelAtSpeed(){
+    // threshold
     return true;
 }
 

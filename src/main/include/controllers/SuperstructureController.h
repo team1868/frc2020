@@ -39,8 +39,9 @@ class SuperstructureController {
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
-  double CalculateFlywheelPowerDesired();
+  double CalculateFlywheelPowerDesired(/*double desiredVelocity*/);
   void WristUpdate();
+  void WinchUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -93,6 +94,8 @@ class SuperstructureController {
 
   double climbElevatorUpPower_, climbElevatorDownPower_;
   bool positiveDirection_;
+  double climbWinchPower_;
+  double currRobotAngle_;
 
   double shootPrepStartTime_;
   bool closePrepping_, farPrepping_;
