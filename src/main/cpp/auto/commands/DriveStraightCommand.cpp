@@ -49,7 +49,6 @@ void DriveStraightCommand::Init() {
 	printf("IN DRIVESTRAIGHT INIT\n");
 	isDone_ = false;
 
-	//robot_->SetHighGear();
 
 	robot_->ResetDriveEncoders();  
 
@@ -108,7 +107,7 @@ void DriveStraightCommand::Init() {
 			"Initial angle: %f \n"
 			"Distance error: %f\n"
 			"Angle error: %f \n",
-			robot_->GetRightEncoderValue(), robot_->GetLeftEncoderValue(),
+			robot_->GetRightDistance(), robot_->GetLeftDistance(),
 			initialAvgDistance_, desiredTotalAvgDistance_, desiredAngle_,
 			talonEncoderSource_->PIDGet(),  navXSource_->PIDGet(),
 			distancePID_->GetError(), anglePID_->GetError());

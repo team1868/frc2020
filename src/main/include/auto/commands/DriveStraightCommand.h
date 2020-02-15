@@ -104,14 +104,13 @@ private:
 	int numTimesOnTarget_;
 	double lastDOutput_;
 	double lastDistance_;
-  
-  
-
 	int numTimesStopped_;
 
+  
+  
   frc::ShuffleboardLayout &driveStraightLayout_;
 	nt::NetworkTableEntry leftStraightEntry_, rightStraightEntry_, angleErrorEntry_, angleErrorGraphEntry_, desiredAngleEntry_,
-		encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_;
+	encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_;
     
 
 };

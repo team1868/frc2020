@@ -10,7 +10,8 @@ using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
     flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 1)),
-    sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1))
+    sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1)),
+    potLayout_(robot_->GetSuperstructureTab().GetLayout("Potentiometer", "List Layout").WithPosition(0, 1))
     {
     robot_ = robot;
     humanControl_ = humanControl;

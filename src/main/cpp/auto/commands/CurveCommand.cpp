@@ -67,8 +67,6 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
 
 void CurveCommand::Init(){
 
-  //robot_->SetLowGear();
-
   initAngle_ = robot_->GetNavXYaw();
 
   curAngle_ = initAngle_;
@@ -81,7 +79,6 @@ void CurveCommand::Init(){
   curAngleError_ = 0.0;
 
   //robot_->SetTalonCoastMode();
-  //robot_->SetHighGear(); //TODO tune/fix
   robot_->ResetDriveEncoders(); 
 
   GetPIDValues();
