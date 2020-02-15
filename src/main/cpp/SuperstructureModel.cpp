@@ -59,10 +59,12 @@ void RobotModel::SetIndexFunnelOutput(double power) {
 
 void RobotModel::SetElevatorFeederOutput(double power) {
     elevatorFeederMotor_->Set(power);
+    //elevatorMotor_->Set(power);
 }
 
 void RobotModel::SetElevatorOutput(double power) {
     elevatorMotor_->Set(power);
+    //elevatorFeederMotor_->Set(power);
 }
 
 void RobotModel::SetLight(bool setLight){
@@ -119,6 +121,7 @@ std::string RobotModel::GetControlPanelGameData() {
 // 	return intakeWristGyro_;
 // }
 
+//TODO DELETE we shouldn't be returning classes. ever.
 AnalogPotentiometer* RobotModel::GetPot(){
     return intakeWristPot_; 
 }

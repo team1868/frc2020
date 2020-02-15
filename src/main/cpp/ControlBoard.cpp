@@ -42,6 +42,7 @@ ControlBoard::ControlBoard() {
 	//buttons_[kYourButton] = new ButtonReader(joystickname, BUTTON_PORT);
 	
     ReadControls();
+	printf("end of control board constructor\ns");
 }
 
 double ControlBoard::GetJoystickValue(Joysticks j, Axes a) {

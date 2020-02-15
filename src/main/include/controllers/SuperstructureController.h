@@ -40,7 +40,7 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelPowerDesired();
-  void WristControllerUpdate();
+  void WristUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -94,12 +94,15 @@ class SuperstructureController {
   double climbElevatorUpPower_, climbElevatorDownPower_;
   bool positiveDirection_;
 
+  double shootPrepStartTime_;
+  bool closePrepping_, farPrepping_;
+
   int controlPanelCounter_;
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
   double controlPanelPower_;
 
-  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_;
+  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &potLayout_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;

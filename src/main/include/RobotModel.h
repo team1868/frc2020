@@ -21,6 +21,7 @@
 #include "auto/PIDsource/PIDOutputSource.h"
 #include "Ports2020.h"
 #include "ControlBoard.h"
+#include <frc/AnalogPotentiometer.h>
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -29,10 +30,10 @@ static const double WHEEL_DIAMETER = 0.5; //ft
 static const double HIGH_GEAR_RATIO = 44*44*44/(14*30*20.0);
 static const double LOW_GEAR_RATIO = 50*44*44/(14*30*14.0);
 static const double ENCODER_TICKS = 2048.0; //ticks per motor rotation
-static const double ENCODER_TICKS_FOOT = 16424.3; //might need to recheck
+//static const double ENCODER_TICKS_FOOT = 16424.3; //might need to recheck, DONT USE
 static const double HGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*HIGH_GEAR_RATIO/(WHEEL_DIAMETER*PI); //ticks per ft
 static const double LGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*LOW_GEAR_RATIO/(WHEEL_DIAMETER*PI); // ticks per ft
-static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
+//static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
 static const double STOP_VELOCITY_THRESHOLD = 50.0; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX
@@ -258,8 +259,8 @@ class RobotModel {
     AnalogPotentiometer *intakeWristPot_; 
     
     DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_;
-    WPI_TalonSRX *elevatorMotor_;
+    WPI_TalonSRX *indexFunnelMotor_;
+    WPI_TalonSRX *elevatorMotor_, *elevatorFeederMotor_;
 
     double navXSpeed_;
     int counter;

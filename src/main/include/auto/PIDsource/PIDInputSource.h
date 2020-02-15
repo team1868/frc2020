@@ -113,3 +113,4 @@ private:
 	double lastAvgPosition_, currAvgPosition_;
 	double avgVelocity_;
 };
+ 

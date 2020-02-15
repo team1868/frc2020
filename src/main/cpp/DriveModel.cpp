@@ -137,8 +137,8 @@ RobotModel::RobotModel() :
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
-	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
-    elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID);
+	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
+    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
 	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
 	
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
@@ -489,9 +489,9 @@ double RobotModel::GetCurrent(int channel) {
 	case INTAKE_WRIST_MOTOR_PDP_CHAN:
 		return intakeWristCurrent_;
 		break;
-	case INDEX_FUNNEL_MOTOR_PDP_CHAN:
+	/*case INDEX_FUNNEL_MOTOR_PDP_CHAN:
 		return IndexFunnelCurrent_;
-		break;
+		break; TODO FIX THIS BACK*/
 	case ELEVATOR_FEEDER_MOTOR_PDP_CHAN:
 		return elevatorFeederCurrent_;
 		break;

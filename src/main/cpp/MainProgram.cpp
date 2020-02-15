@@ -18,7 +18,8 @@ void MainProgram::RobotInit() {
     humanControl_ = new ControlBoard();
     superstructureController_ = new SuperstructureController(robot_, humanControl_);
     driveController_ = new DriveController(robot_, humanControl_);
-    robot_->CreatePID();
+    robot_->CreatePID(); //variable
+    printf("created PID\n"); //what pid???
     robot_->ResetDriveEncoders();
     //robot_->GetGyro()->InitGyro();
 	//robot_->GetGyro()->Calibrate();
@@ -151,7 +152,7 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
     driveController_->Update();
     superstructureController_->Update();
-    superstructureController_->WristControllerUpdate();
+    superstructureController_->WristUpdate();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
 
