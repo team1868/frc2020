@@ -39,7 +39,8 @@ class SuperstructureController {
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
-  double CalculateFlywheelPowerDesired(/*double desiredVelocity*/);
+  double CalculateFlywheelVelocityDesired();
+  double CalculateFlywheelPowerDesired();
   void WristUpdate();
   void WinchUpdate();
   
@@ -74,13 +75,13 @@ class SuperstructureController {
   double currTime_, lastTime_;
   double startResetTime_, resetTimeout_;
 
-  double flywheelPower_, desiredRPM_, flywheelResetTime_;
+  double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+  double desiredFlywheelPower_, closeFlywheelPower_;
+  double desiredFlywheelVelocity_;
   PIDController *flywheelPID_;
   SuperstructurePIDOutput *flywheelPIDOutput_;
   TalonFXPIDSource *flywheelPIDSource_;
-
-  double desiredFlywheelPower_, closeFlywheelPower_;
 
   double wristPFac_;
   double desiredIntakeWristAngle_;

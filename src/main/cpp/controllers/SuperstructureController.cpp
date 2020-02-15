@@ -23,9 +23,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     bool positiveDirection_ = true;
     climbWinchPower_ = 0.5; // fix
     
-    //desiredVelocity_
-    desiredRPM_ = 2000; // was supposed to be used to calculate desired power from far shot
-    flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
+    desiredFlywheelVelocity_ = 2000; // fix
 
     closeFlywheelPower_ = 0.5;
     flywheelResetTime_ = 2.0; // fix //why does this exist
@@ -205,7 +203,6 @@ void SuperstructureController::AutoUpdate(){
     }
 }
 
-
 void SuperstructureController::Update(){
     
     
@@ -222,32 +219,6 @@ void SuperstructureController::Update(){
     } else if(currState_ != kResetting){ //not intaking, shooting, or resetting. so default = index
         currState_ = kIndexing;
     }
-
-    //Winch power update based on angle from NavX 
-    double initRobotAngle = robot_->GetNavXYaw();
-    double initEncoderVal = getEncoderValue(climberWinchRightMotor_()); 
-    double wheelbaseWidth = 0.64;
-//DONT PUSH THIS CODE IT BREAKS SHIT
-
-    if (initRobotAngle > 0) {
-        // if the right winch rope thing has distance K, want to get to dist (robotWidth)(sin(initAngle_)
-        //1440 ticks per revolution over 4.32 in circumference of outershaft drum = 333.3 tics/inch
-        // Then change right winch motor output by raising equiv to (333.3)(robotWidht)(sin(initAngle))
-        while(getEncoderValue(climberWinchRightMotor_()) < initEncoderVal*wheelbaseWidth*sin(initAngle)){
-            robot ->SetClimbWinchRightOutput() = 1; //idk how much power you give a motor lmao
-        }
-    }
-    else if (initAngle < 0) {
-        while(getEncoderValue(climberWinchLeftMotor_()) < initEncoderVal*wheelbaseWidth*sin(initAngle)) {
-            // check that sin outputs pos val, else put an abs in front
-            robot -> SetClimbWinchLeftOutput() = 1;
-        }
-    }
-
-
-
-
-
     
     //flywheel control if not shooting
     if (currState_ != kShooting){
@@ -304,15 +275,21 @@ void SuperstructureController::Update(){
     } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorDownButton)){
         positiveDirection_ = false;
         currState_ = kClimbingElevator;
+    } else {
+        robot_->SetClimberElevatorOutput(0.0);
     }
 
     // independent climbing buttons, please move setting output from main
     /*
     if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchLeftButton)){
         robot_->SetClimbWinchLeftOutput(climbWinchPower_);
+    } else {
+        robot_->SetClimbWinchLeftOutput(0.0);
     }
     if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchRightButton)){
         robot_->SetClimbWinchRightOutput(climbWinchPower_);
+    }else {
+        robot_->SetClimbWinchRightOutput(0.0);
     }*/
 
     //TODO replace "//robot_->SetArm(bool a);" with if !sensorGood set arm power small in bool a direction
@@ -484,9 +461,14 @@ bool SuperstructureController::IndexUpdate(){
     }
 }
 
+double SuperstructureController::CalculateFlywheelVelocityDesired() {
+    return 2000; // fix
+}
+
 //TODO actually implement
-double SuperstructureController::CalculateFlywheelPowerDesired(/*double desiredVelocity*/) {
-    //robot_->GetFlywheelMotor1()->Set(ControlMode::Velocity, desiredVelocity);
+double SuperstructureController::CalculateFlywheelPowerDesired() {
+    desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
+    robot_->GetFlywheelMotor1()->Set(ControlMode::Velocity, desiredFlywheelVelocity_);
     return 0.2;
     //translate into double power // how?
     // output->get pid output
