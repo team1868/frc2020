@@ -124,6 +124,11 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
+	std::cout << "start flywheel encoder creation" << std::endl << std::flush;
+    flywheelEncoder1_ = &flywheelMotor1_->GetSensorCollection();
+    flywheelEncoder2_ = &flywheelMotor2_->GetSensorCollection();
+    std::cout << "end flywheel encoder creation" << std::endl << std::flush;
+
 	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
 	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);

@@ -64,8 +64,6 @@ class SuperstructureController {
  private:
   RobotModel *robot_;
   ControlBoard *humanControl_;
-  TalonFXSensorCollection *flywheelPIDController_;
-  TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
   
   uint32_t currState_, nextState_;
   uint32_t currAutoState_, nextAutoState_;
@@ -79,6 +77,8 @@ class SuperstructureController {
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
   PIDController *flywheelPID_;
   SuperstructurePIDOutput *flywheelPIDOutput_;
+  TalonFXPIDSource *flywheelPIDSource_;
+
   double desiredFlywheelPower_, closeFlywheelPower_;
 
   double wristPFac_;

@@ -21,18 +21,15 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     climbElevatorDownPower_ = -0.4; // fix
     bool positiveDirection_ = true;
     
-    desiredRPM_ = 2000;
+
+    desiredRPM_ = 2000; // was supposed to be used to calculate desired power from far shot
     flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
+
     closeFlywheelPower_ = 0.5;
     flywheelResetTime_ = 2.0; // fix //why does this exist
-    // create talon pid controller
-    // fix encoder source
-    std::cout << "start flywheel encoder creation" << std::endl << std::flush;
-    flywheelEncoder1_ = &robot_->GetFlywheelMotor1()->GetSensorCollection();
-    flywheelEncoder2_ = &robot_->GetFlywheelMotor2()->GetSensorCollection();
-    std::cout << "end flywheel encoder creation" << std::endl << std::flush;
     
-    //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelEncoder1_, flywheelPIDOutput_);
+    // create talon pid controller  
+    flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelPIDSource_, flywheelPIDOutput_);
 
     elevatorFeederPower_ = 1.0; // fix
     elevatorSlowPower_ = 0.5; //fix
@@ -376,14 +373,10 @@ void SuperstructureController::DisabledUpdate() {
 }
 */
 
-/*
 void SuperstructureController::FlywheelPIDControllerUpdate() {
-    flywheelPIDController_->SetP(flywheelPFac_);
-    flywheelPIDController_->SetI(flywheelIFac_);
-    flywheelPIDController_->SetD(flywheelDFac_);
-    flywheelPIDController_->SetFF(flywheelFFFac_);                   // renegade 
-    
-}*/
+    flywheelPID_->SetPID(flywheelPFac_, flywheelPFac_, flywheelDFac_);
+    // flywheel FF Fac
+}
 
 bool SuperstructureController::IndexUpdate(){
 

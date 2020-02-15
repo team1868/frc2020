@@ -187,6 +187,8 @@ class RobotModel {
 
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
+    double GetFlywheel1EncoderValue();
+    double GetFlywheel2EncoderValue();
     void SetFlywheelOutput(double power);
     void EngageFlywheelHood();
     void DisengageFlywheelHood();
@@ -240,11 +242,10 @@ class RobotModel {
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
-    TalonFXSensorCollection *flywheelEncoder_; // encoder created for motor 1, both motors should be running at the same rpm
+    TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 
     Solenoid *flywheelHoodSolenoid_;
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
-    //rev::CANEncoder *climberEncoder1_;
     WPI_TalonSRX *climberElevatorMotor_;
     
     WPI_VictorSPX *controlPanelMotor_;
