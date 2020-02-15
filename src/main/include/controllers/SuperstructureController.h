@@ -15,7 +15,8 @@ class SuperstructureController {
 
    enum SuperstructureState {
 		kInit, kShooting, kIndexing, kIntaking, kResetting, 
-    kControlPanelStage2, kControlPanelStage3, kClimbing
+    kControlPanelStage2, kControlPanelStage3, kClimbingElevator,
+    kClimbing
 	};
 
   enum AutoState {
@@ -91,6 +92,7 @@ class SuperstructureController {
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_;
+  bool positiveDirection_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;

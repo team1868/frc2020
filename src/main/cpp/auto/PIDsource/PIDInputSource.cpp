@@ -94,8 +94,8 @@ TalonFXPIDSource::TalonFXPIDSource(RobotModel* robot) {
 
 double TalonFXPIDSource::PIDGet() {
 	/*
-	double leftDistance = robot_->GetLeftDistance();
-	double rightDistance = robot_->GetRightDistance();
+	double flywheel1Distance = robot_->GetLeftDistance();
+	double flywheel2Distance = robot_->GetRightDistance();
 
 	// FIX THIS TO BE BETTER THANKS
 	if (robot_->GetLeftEncoderStopped()) {

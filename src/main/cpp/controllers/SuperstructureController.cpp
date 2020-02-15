@@ -18,6 +18,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     // fix all of this
     climbElevatorUpPower_ = 0.5; // fix
     climbElevatorDownPower_ = -0.4; // fix
+    bool positiveDirection_ = true;
     
     desiredRPM_ = 2000;
     flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
@@ -217,16 +218,17 @@ void SuperstructureController::Update(){
     bTimeout_ = currTime_-startIndexTime_ > lowerElevatorTimeout_;
 
     if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
-        ControlPanelStage2(controlPanelPower_);
+        currState_ = kControlPanelStage2; // verify
     }
     if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
-        ControlPanelStage3(controlPanelPower_);
+        currState_ = kControlPanelStage3;
     }
     if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
-        robot_->SetClimberElevatorOutput(climbElevatorUpPower_);
-    }
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
-        robot_->SetClimberElevatorOutput(climbElevatorDownPower_);
+        positiveDirection_ = true;
+        currState_ = kClimbingElevator;
+    } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorDownButton)){
+        positiveDirection_ = false;
+        currState_ = kClimbingElevator;
     }
 
     //TODO replace "//robot_->SetArm(bool a);" with if !sensorGood set arm power small in bool a direction
@@ -285,6 +287,21 @@ void SuperstructureController::Update(){
             currWristState_ = kRaising;
             //robot_->SetArm(false); TODO IMPLEMENT
             break;
+        case kControlPanelStage2:
+            ControlPanelStage2(controlPanelPower_);
+            nextState_ = kIndexing;
+            break;
+        case kControlPanelStage3:
+            ControlPanelStage3(controlPanelPower_);
+            nextState_ = kIndexing;
+            break;
+        case kClimbingElevator:
+            if (positiveDirection_){
+                robot_->SetClimberElevatorOutput(climbElevatorUpPower_);
+            } else {
+                climbElevatorDownPower_;
+            }
+            break;
         default:
             printf("ERROR: no state in superstructure controller\n");
             robot_->SetFlywheelOutput(0.0);
@@ -296,123 +313,6 @@ void SuperstructureController::Update(){
     }
 
     currState_ = nextState_;
-
-    /*
-    switch(currState_) {
-        case kInit:
-            // calibrate our gyro in autonomous init
-	        //currGyroAngle_ = lastGyroAngle_ = 0.0;
-            currIntakeAngle_ = lastIntakeAngle_ = 0.0;
-	        // currTime_ = lastTime_ = 0.0;
-            nextState_ = kIdle;
-            break;
-        case kIdle:
-            cout << "idle" << endl;
-
-            robot_->SetFlywheelOutput(0.0);
-            robot_->DisengageFlywheelHood();
-            robot_->SetClimberOutput(0.0);
-            robot_->SetControlPanelOutput(0.0);
-            robot_->SetClimberElevatorOutput(0.0);
-            robot_->SetIndexFunnelOutput(0.0);
-            robot_->SetElevatorOutput(0.0);
-            robot_->SetElevatorFeederOutput(0.0);
-            robot_->SetIntakeRollersOutput(0.0);
-            robot_->SetIntakeWristOutput(0.0);
-
-            if (humanControl_->GetDesired(ControlBoard::Buttons::kHighGearShift)){
-                robot_->SetHighGear();
-            } else {
-                robot_->SetLowGear();
-            }
-
-            if (humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
-                nextState_ = kControlPanelStage2;
-            }
-
-            if (humanControl_->JustPressed(ControlBoard::Buttons::kControlPanelStage3Button)){
-                initialControlPanelColor_ = robot_->MatchColor(); // only press once color sensor can see the wheel
-                nextState_ = kControlPanelStage3;
-            }
-
-            if (humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelCloseButton)){
-                nextState_ = kShooting;
-            }
-
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelFarButton)){
-                nextState_ = kShooting;
-            }
-
-            //light for align tape turned on and off in align tape command
-            // if (humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
-            //     printf("in light\n");
-            //     robot_->SetLight(true);
-            // } else {
-            //     robot_->SetLight(false);
-            // }
-
-            
-            // if(humanControl_->GetDesired(ControlBoard::Buttons::kFlywheelButton)){
-            //     printf("flywheel button being pressed\n");
-            //     cout<<"flywheel power "<<flywheelPower_<<endl;
-            //     robot_->SetFlywheelOutput(flywheelPower_);
-            // } else {
-            //     robot_->SetFlywheelOutput(0.0);
-            // }  
-
-            // if(humanControl_->GetDesired(ControlBoard::Buttons::kClimberButton)){
-            //     printf("climber button being pressed\n");
-            //     cout<<"climber power "<<climberPower_<<endl;
-            //     robot_->SetClimberOutput(climberPower_);
-            // } else {
-            //     robot_->SetClimberOutput(0.0);
-            // }  
-            
-            
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
-                nextState_ = kIntaking;
-            } 
-
-            break;
-        case kIntaking:
-            if(robot_->GetIntakeWristPotValue()<desiredIntakeWristAngle_){
-                robot_->SetIntakeWristOutput(0.3); // tune speeds
-            }
-            if(robot_->GetIntakeWristPotValue()>desiredIntakeWristAngle_-20){
-                CalculateIntakeRollersPower();
-            }
-            // if(robot_->GetGyroAngle()<desiredIntakeWristAngle_){
-            //     robot_->SetIntakeWristOutput(0.3); // tune speeds
-            // }
-            // if(robot_->GetGyroAngle()>desiredIntakeWristAngle_-20){
-            //     CalculateIntakeRollersPower();
-            // }
-            if(!humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
-                nextState_ = kIndexing;
-            }
-            break;
-        case kIndexing:
-            robot_->SetIntakeRollersOutput(0.0);
-            //IndexUpdate();
-            //exit condition
-            break;
-        case kShooting:
-            if(robot_->GetDistance()>5.0){
-                robot_->EngageFlywheelHood();
-            }
-
-            break;
-        case kControlPanelStage2:
-            ControlPanelStage2(0.2); // fix power
-            break;
-        case kControlPanelStage3:
-            ControlPanelStage3(0.2); // fix power
-            break;
-        default:
-            printf("WARNING: State not found in SuperstructureController::Update()\n");
-    }
-    currState_ = nextState_;
-    */
 }
 
 /*
