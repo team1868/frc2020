@@ -15,7 +15,8 @@ class SuperstructureController {
 
    enum SuperstructureState {
 		kInit, kShooting, kIndexing, kIntaking, kResetting, 
-    kControlPanelStage2, kControlPanelStage3, kClimbing
+    kControlPanelStage2, kControlPanelStage3, kClimbingElevator,
+    kClimbing
 	};
 
   enum AutoState {
@@ -38,8 +39,9 @@ class SuperstructureController {
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
-  double CalculateFlywheelPowerDesired();
+  double CalculateFlywheelPowerDesired(/*double desiredVelocity*/);
   void WristUpdate();
+  void WinchUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -63,8 +65,6 @@ class SuperstructureController {
  private:
   RobotModel *robot_;
   ControlBoard *humanControl_;
-  TalonFXSensorCollection *flywheelPIDController_;
-  TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; // unused rn
   
   uint32_t currState_, nextState_;
   uint32_t currAutoState_, nextAutoState_;
@@ -78,6 +78,8 @@ class SuperstructureController {
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
   PIDController *flywheelPID_;
   SuperstructurePIDOutput *flywheelPIDOutput_;
+  TalonFXPIDSource *flywheelPIDSource_;
+
   double desiredFlywheelPower_, closeFlywheelPower_;
 
   double wristPFac_;
@@ -91,6 +93,9 @@ class SuperstructureController {
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_;
+  bool positiveDirection_;
+  double climbWinchPower_;
+  double currRobotAngle_;
 
   double shootPrepStartTime_;
   bool closePrepping_, farPrepping_;

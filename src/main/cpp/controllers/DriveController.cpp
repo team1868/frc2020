@@ -26,6 +26,8 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
     arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
     thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.0).GetEntry();
     rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.0).GetEntry();
+    anaModeEntry_ = driveLayout_.Add("Ana Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+    printf("end of drive controller constructor\n");
 }
 
 void DriveController::Update(){
@@ -81,13 +83,22 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
     double rotationValueAdjustment = GetRotateVelocityAdjustment(rotate);
 
     double leftOutput, rightOutput;
-    if(thrust >= 0.0){
-        leftOutput = thrust + rotate;		
+    // if(thrust >= 0.0){
+    //     leftOutput = thrust + rotate;		
+	// 	rightOutput = thrust - rotate*(1+rotationValueAdjustment);
+	// } else {
+	// 	leftOutput = thrust - rotate;
+	// 	rightOutput = thrust + rotate*(1+rotationValueAdjustment);
+    // }
+
+    if(anaModeEntry_.GetBoolean(true) || (!anaModeEntry_.GetBoolean(true) && thrust >= 0.0)){
+	// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ (for lili mode)
+		leftOutput = thrust + rotate;		
 		rightOutput = thrust - rotate*(1+rotationValueAdjustment);
 	} else {
 		leftOutput = thrust - rotate;
 		rightOutput = thrust + rotate*(1+rotationValueAdjustment);
-    }
+	}
 
     MaxSpeedAdjustment(leftOutput, rightOutput);
     FrictionAdjustment(leftOutput, rightOutput, true);

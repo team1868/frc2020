@@ -124,10 +124,17 @@ RobotModel::RobotModel() :
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
+	std::cout << "start flywheel encoder creation" << std::endl << std::flush;
+    flywheelEncoder1_ = &flywheelMotor1_->GetSensorCollection();
+    flywheelEncoder2_ = &flywheelMotor2_->GetSensorCollection();
+    std::cout << "end flywheel encoder creation" << std::endl << std::flush;
+
 	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
 	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);
-	//climberEncoder1_ = new rev::CANEncoder(*climberMotor1_, rev::CANEncoder::EncoderType::kHallSensor, SPARK_ENCODER_TICKS);
+
+	climberWinchRightEncoder_ = new Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
+	climberWinchLeftEncoder_ = new Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
@@ -138,8 +145,8 @@ RobotModel::RobotModel() :
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
-	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID);
-    elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID);
+	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
+    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
 	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
 	
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
@@ -490,9 +497,9 @@ double RobotModel::GetCurrent(int channel) {
 	case INTAKE_WRIST_MOTOR_PDP_CHAN:
 		return intakeWristCurrent_;
 		break;
-	case INDEX_FUNNEL_MOTOR_PDP_CHAN:
+	/*case INDEX_FUNNEL_MOTOR_PDP_CHAN:
 		return IndexFunnelCurrent_;
-		break;
+		break; TODO FIX THIS BACK*/
 	case ELEVATOR_FEEDER_MOTOR_PDP_CHAN:
 		return elevatorFeederCurrent_;
 		break;
@@ -507,8 +514,13 @@ double RobotModel::GetCurrent(int channel) {
 
 void RobotModel::GearShift() {
    //assuming arcade:
-           if (humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
-               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) {
+           if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
+               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) 
+			   && isHighGear_== true) {
+               	SetHighGear();
+           }
+		   else if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
+               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) && isHighGear_ == false) {
                	SetLowGear();
            }
            //assuming tank:
@@ -517,10 +529,10 @@ void RobotModel::GearShift() {
            >= MIN_TURNING_XY_DIFFERENCE) {
                robot_->SetLowGear();
            } */
-           else if ((GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+           else if ((GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
                    GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) || 
-				   (GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
-                   GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
+				   (-GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+                   -GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
                SetHighGear();
 			   //printf("High gear: %f ", GetRightVelocity());
 			   //printf("%f\n", GetLeftVelocity());
@@ -673,6 +685,9 @@ NavXPIDSource* RobotModel::GetNavXSource(){
 }
 
 void RobotModel::RefreshShuffleboard(){
+
+	lastVelocTime_ = currVelocTime_;
+	currVelocTime_ = GetTime();
     lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;
     currLeftEncoderValue_ = GetLeftEncoderValue();

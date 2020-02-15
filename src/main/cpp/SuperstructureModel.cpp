@@ -21,6 +21,14 @@ void RobotModel::SetFlywheelOutput(double power){
     //flywheelMotor2_->Set(-power);
 }
 
+double RobotModel::GetFlywheel1EncoderValue(){
+    return flywheelEncoder1_->GetIntegratedSensorPosition();
+}
+
+double RobotModel::GetFlywheel2EncoderValue() {
+    return -flywheelEncoder2_->GetIntegratedSensorPosition(); 
+}
+
 void RobotModel::EngageFlywheelHood() {
     flywheelHoodSolenoid_->Set(true);
 }
@@ -35,6 +43,13 @@ void RobotModel::SetClimbWinchLeftOutput(double power){
 
 void RobotModel::SetClimbWinchRightOutput(double power){
     climberWinchRightMotor_->Set(power);
+}
+
+double RobotModel::GetClimberWinchRightEncoderValue(){
+    return climberWinchRightEncoder_->Get();
+}
+double RobotModel::GetClimberWinchLeftEncoderValue(){
+    return climberWinchLeftEncoder_->Get();
 }
 
 void RobotModel::SetClimberElevatorOutput(double power){
@@ -59,10 +74,12 @@ void RobotModel::SetIndexFunnelOutput(double power) {
 
 void RobotModel::SetElevatorFeederOutput(double power) {
     elevatorFeederMotor_->Set(power);
+    //elevatorMotor_->Set(power);
 }
 
 void RobotModel::SetElevatorOutput(double power) {
     elevatorMotor_->Set(power);
+    //elevatorFeederMotor_->Set(power);
 }
 
 void RobotModel::SetLight(bool setLight){

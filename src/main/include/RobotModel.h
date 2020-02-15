@@ -30,10 +30,10 @@ static const double WHEEL_DIAMETER = 0.5; //ft
 static const double HIGH_GEAR_RATIO = 44*44*44/(14*30*20.0);
 static const double LOW_GEAR_RATIO = 50*44*44/(14*30*14.0);
 static const double ENCODER_TICKS = 2048.0; //ticks per motor rotation
-static const double ENCODER_TICKS_FOOT = 16424.3; //might need to recheck
+//static const double ENCODER_TICKS_FOOT = 16424.3; //might need to recheck, DONT USE
 static const double HGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*HIGH_GEAR_RATIO/(WHEEL_DIAMETER*PI); //ticks per ft
 static const double LGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*LOW_GEAR_RATIO/(WHEEL_DIAMETER*PI); // ticks per ft
-static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
+//static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
 static const double STOP_VELOCITY_THRESHOLD = 50.0; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX
@@ -187,6 +187,8 @@ class RobotModel {
 
     WPI_TalonFX* GetFlywheelMotor1();
     WPI_TalonFX* GetFlywheelMotor2();
+    double GetFlywheel1EncoderValue();
+    double GetFlywheel2EncoderValue();
     void SetFlywheelOutput(double power);
     void EngageFlywheelHood();
     void DisengageFlywheelHood();
@@ -195,6 +197,8 @@ class RobotModel {
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
     void SetClimberElevatorOutput(double power);
+    double GetClimberWinchRightEncoderValue();
+    double GetClimberWinchLeftEncoderValue(); 
 
     void SetIntakeRollersOutput(double power);
     void SetIntakeWristOutput(double power);
@@ -240,12 +244,12 @@ class RobotModel {
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
-    TalonFXSensorCollection *flywheelEncoder_; // encoder created for motor 1, both motors should be running at the same rpm
+    TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 
     Solenoid *flywheelHoodSolenoid_;
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
-    //rev::CANEncoder *climberEncoder1_;
     WPI_TalonSRX *climberElevatorMotor_;
+    Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
@@ -259,8 +263,8 @@ class RobotModel {
     AnalogPotentiometer *intakeWristPot_; 
     
     DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_;
-    WPI_TalonSRX *elevatorMotor_;
+    WPI_TalonSRX *indexFunnelMotor_;
+    WPI_TalonSRX *elevatorMotor_, *elevatorFeederMotor_;
 
     double navXSpeed_;
     int counter;
@@ -290,6 +294,8 @@ class RobotModel {
     double desiredDeltaAngle_;//for align tape
 	  double desiredDistance_;//for align tape
     double targetVelocity_;
+
+    double lastVelocTime_, currVelocTime_;
 
     // if smth is closer to the side of the opposing player station then subtract that # from the variable 
     double initLineError_ ;      
