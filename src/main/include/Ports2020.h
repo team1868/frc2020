@@ -21,6 +21,7 @@ static const int LEFT_DRIVE_SLAVE_A_ID                   = 3;
 
 // fix/set all superstructure ids
 // Superstructure Motors
+<<<<<<< HEAD
 static const int FLYWHEEL_MOTOR_ONE_ID                   = 20; // fx
 static const int FLYWHEEL_MOTOR_TWO_ID                   = 21;  // fx
 static const int CLIMB_WINCH_LEFT_MOTOR_ID               = 5; //TODO WAS SOMETHING // srx // done // left
@@ -32,6 +33,19 @@ static const int INTAKE_WRIST_MOTOR_ID                   = 10; // spx
 static const int INDEX_FUNNEL_MOTOR_ID                   = 5; // spx // done
 static const int ELEVATOR_FEEDER_MOTOR_ID                = 4; // srx // done
 static const int ELEVATOR_MOTOR_ID                       = 12; // srx // done
+=======
+static const int FLYWHEEL_MOTOR_ONE_ID               = 20; // fx
+static const int FLYWHEEL_MOTOR_TWO_ID               = 21;  // fx
+static const int CLIMB_WINCH_LEFT_MOTOR_ID           = 5; //TODO WAS SOMETHING // srx // done // left
+static const int CLIMB_WINCH_RIGHT_MOTOR_ID          = 7;  // srx
+static const int CLIMB_ELEVATOR_ID                   = 8; // spx // done
+static const int CONTROL_PANEL_MOTOR_ID              = 14;  // sp
+static const int INTAKE_ROLLERS_MOTOR_ID             = 10; // spx // done
+static const int INTAKE_WRIST_MOTOR_ID               = 10; // spx
+static const int INDEX_FUNNEL_MOTOR_ID               = 5; // spx // done
+static const int ELEVATOR_FEEDER_MOTOR_ID            = 4; // srx // done
+static const int ELEVATOR_MOTOR_ID                   = 12; // srx // done
+>>>>>>> 569cbd50f0b391c5d6d68cedd8464c0625f6012a
 
 
 

@@ -514,8 +514,13 @@ double RobotModel::GetCurrent(int channel) {
 
 void RobotModel::GearShift() {
    //assuming arcade:
-           if (humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
-               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) {
+           if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
+               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) 
+			   && isHighGear_== true) {
+               	SetHighGear();
+           }
+		   else if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
+               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) && isHighGear_ == false) {
                	SetLowGear();
            }
            //assuming tank:
@@ -524,10 +529,10 @@ void RobotModel::GearShift() {
            >= MIN_TURNING_XY_DIFFERENCE) {
                robot_->SetLowGear();
            } */
-           else if ((GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+           else if ((GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
                    GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) || 
-				   (GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
-                   GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
+				   (-GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+                   -GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
                SetHighGear();
 			   //printf("High gear: %f ", GetRightVelocity());
 			   //printf("%f\n", GetLeftVelocity());
@@ -680,6 +685,9 @@ NavXPIDSource* RobotModel::GetNavXSource(){
 }
 
 void RobotModel::RefreshShuffleboard(){
+
+	lastVelocTime_ = currVelocTime_;
+	currVelocTime_ = GetTime();
     lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;
     currLeftEncoderValue_ = GetLeftEncoderValue();
