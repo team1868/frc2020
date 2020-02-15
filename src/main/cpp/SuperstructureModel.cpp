@@ -21,6 +21,14 @@ void RobotModel::SetFlywheelOutput(double power){
     //flywheelMotor2_->Set(-power);
 }
 
+double RobotModel::GetFlywheel1EncoderValue(){
+    return flywheelEncoder1_->GetIntegratedSensorPosition();
+}
+
+double RobotModel::GetFlywheel2EncoderValue() {
+    return -flywheelEncoder2_->GetIntegratedSensorPosition(); 
+}
+
 void RobotModel::EngageFlywheelHood() {
     flywheelHoodSolenoid_->Set(true);
 }

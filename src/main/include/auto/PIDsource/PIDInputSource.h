@@ -71,7 +71,6 @@ private:
 	double averageTalonDistance_;
 };
 
-#if 0
 class TalonFXPIDSource : public frc::PIDSource {
 public:
 	/**
@@ -82,7 +81,7 @@ public:
 	/**
 	 *Gets distance from left and right encoders and sets averageTalonDistance
 	 *as average of the two
-	 *@return averageTalonDistance_
+	 *@return averageTalonFXDistance_
 	 */
 	double PIDGet();
 	/**
@@ -94,9 +93,8 @@ private:
 	/**
 	 * Average distance of left and right encoders
 	 */
-	double averageTalonDistance_;
+	double averageTalonFXDistance_;
 };
-#endif
 
 class VelocityPIDSource : public frc::PIDSource {
 public:
