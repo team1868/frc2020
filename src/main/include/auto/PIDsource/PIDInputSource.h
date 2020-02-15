@@ -71,6 +71,33 @@ private:
 	double averageTalonDistance_;
 };
 
+#if 0
+class TalonFXPIDSource : public frc::PIDSource {
+public:
+	/**
+	 * Assigns robot and sets averageTalonDistance to 0
+	 * @param RobotModel
+	 */
+	TalonFXPIDSource(RobotModel *robot);
+	/**
+	 *Gets distance from left and right encoders and sets averageTalonDistance
+	 *as average of the two
+	 *@return averageTalonDistance_
+	 */
+	double PIDGet();
+	/**
+	 * Destructor
+	 */
+	virtual ~TalonFXPIDSource();
+private:
+	RobotModel *robot_;
+	/**
+	 * Average distance of left and right encoders
+	 */
+	double averageTalonDistance_;
+};
+#endif
+
 class VelocityPIDSource : public frc::PIDSource {
 public:
 	
@@ -88,3 +115,4 @@ private:
 	double lastAvgPosition_, currAvgPosition_;
 	double avgVelocity_;
 };
+ 
