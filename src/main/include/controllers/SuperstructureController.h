@@ -93,7 +93,7 @@ class SuperstructureController {
   double climbElevatorUpPower_, climbElevatorDownPower_;
 
   double shootPrepStartTime_;
-  bool prepping_;
+  bool closePrepping_, farPrepping_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;

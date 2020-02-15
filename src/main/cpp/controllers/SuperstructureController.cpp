@@ -22,7 +22,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     
     desiredRPM_ = 2000;
     flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
-    closeFlywheelPower_ = 0.4;
+    closeFlywheelPower_ = 0.1;
     flywheelResetTime_ = 5.0; // fix //why does this exist
     // create talon pid controller
     // fix encoder source
@@ -45,7 +45,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     desiredIntakeWristAngle_ = 110.0; // fix later :) probably wrong, ask mech
 
-    prepping_ = false;
+    closePrepping_ = false;
+    farPrepping_ = false;
 
     shootPrepStartTime_ = 0.0;
     startResetTime_ = 0.0;
@@ -199,22 +200,33 @@ void SuperstructureController::Update(){
     //human override state
     if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
         currState_ = kIntaking;
-    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){
+    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && 
+               currTime_ - shootPrepStartTime_ > 1.0){
         currState_ = kShooting; 
-    } else if(currState_ != kResetting){
+    } else if(currState_ != kResetting){ //not intaking, shooting, or resetting. so default = index
         currState_ = kIndexing;
     }
     
     //flywheel control if not shooting
     if (currState_ != kShooting){
         if(humanControl_->GetDesired(ControlBoard::Buttons::kShootClosePrepButton)){
+            if(!closePrepping_){
+                shootPrepStartTime_ = currTime_;
+            }
             desiredFlywheelPower_ = closeFlywheelPower_;
             robot_->SetFlywheelOutput(desiredFlywheelPower_);
             robot_->DisengageFlywheelHood();
+            closePrepping_ = true;
+            farPrepping_ = false;
         } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootFarPrepButton)){
+            if(!farPrepping_){
+                shootPrepStartTime_ = currTime_;
+            }
             desiredFlywheelPower_ = CalculateFlywheelPowerDesired(); //TODO REPLACE WITH VISION & CalculateFlywheelPower(); currently returning 0.5
             robot_->SetFlywheelOutput(desiredFlywheelPower_);
             robot_->EngageFlywheelHood(); //TODO add if distance > x
+            closePrepping_ = false;
+            farPrepping_ = true;
         } else {
             robot_->SetFlywheelOutput(0.0);
             robot_->DisengageFlywheelHood();
@@ -234,6 +246,7 @@ void SuperstructureController::Update(){
     tTimeout_ = currTime_-startElevatorTime_ > elevatorTimeout_;
     bTimeout_ = currTime_-startIndexTime_ > lowerElevatorTimeout_;
 
+    //TODO quit out of main sequence if this is true, this code is wrong
     if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
         ControlPanelStage2(controlPanelPower_);
     }
@@ -455,11 +468,11 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
 
 bool SuperstructureController::IndexUpdate(){
 
-    printf("top sensor %f and bottom sensor %f\n", topSensor_, bottomSensor_);
+    //printf("top sensor %f and bottom sensor %f\n", topSensor_, bottomSensor_);
 
     //control top
     if(!topSensor_ && bottomSensor_){
-        printf("RUNNING TOP ELEVATOR\n");
+        //printf("RUNNING TOP ELEVATOR\n");
         robot_->SetElevatorOutput(elevatorFastPower_);
     } else {
         robot_->SetElevatorOutput(0.0);
@@ -483,11 +496,11 @@ bool SuperstructureController::IndexUpdate(){
 
 //TODO actually implement
 double SuperstructureController::CalculateFlywheelPowerDesired() {
-    return 0.5; // fix
+    return 0.2; // fix
 }
 
 //TODO actually implement
-double SuperstructureController::CalculateIntakeRollersPower() { //TODO actually implement
+double SuperstructureController::CalculateIntakeRollersPower() { 
     /*double power = abs(robot_->GetDrivePower())*2;
     if (power <= 1)
         robot_->SetIntakeRollersOutput(power);
