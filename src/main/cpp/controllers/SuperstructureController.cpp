@@ -10,7 +10,7 @@
 using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
-    flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 0)),
+    flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(3, 3)),
     sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1)),
     manualOverrideLayout_(robot->GetModeTab().GetLayout("climboverride", "List Layout").WithPosition(1,1))
     {
@@ -24,8 +24,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     bool positiveDirection_ = true;
     climbWinchPower_ = 0.5; // fix
     
-    desiredFlywheelVelocity_ = 7000; // ticks per 0.1 seconds
-    closeFlywheelVelocity_ = 2000;
+    desiredFlywheelVelocity_ = 1.0;//7000; // ticks per 0.1 seconds
+    closeFlywheelVelocity_ = 1.0;//5000.0*2048.0/60000.0;//2000; //5000 r/m * 2048 tick/r / (60 s/m * 1000 ms/s)
     flywheelResetTime_ = 2.0; // fix //why does this exist
     // create talon pid controller
     // fix encoder source
@@ -60,7 +60,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     farPrepping_ = false;
 
     currTime_ = robot_->GetTime();
-    shootPrepStartTime_ = currTime_;
+    shootPrepStartTime_ = currTime_; //TODO not used rn
     startResetTime_ = currTime_;
     resetTimeout_ = 2.0;
 
@@ -84,7 +84,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.0).GetEntry();
     flywheelIEntry_ = flywheelPIDLayout_.Add("flywheel I", 0.0).GetEntry();
     flywheelDEntry_ = flywheelPIDLayout_.Add("flywheel D", 0.0).GetEntry();
-    flywheelFFEntry_ = flywheelPIDLayout_.Add("flywheel FF", false).GetEntry();
+    flywheelFFEntry_ = flywheelPIDLayout_.Add("flywheel FF", 0.0).GetEntry();
 
     wristPEntry_ = robot_->GetSuperstructureTab().Add("wrist P", 0.0).GetEntry();
 
@@ -266,13 +266,16 @@ void SuperstructureController::Update(){
 
     if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
         currState_ = kIntaking;
-    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && 
-               currTime_ - shootPrepStartTime_ > 1.0){
+    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)/* && 
+               currTime_ - shootPrepStartTime_ > 1.0*/){ //TODO remove this
         if(currState_!=kShooting){
             startIndexTime_ = currTime_;
         }
         currState_ = kShooting; 
-    } else if(currState_ != kResetting){ //not intaking, shooting, or resetting. so default = index
+    } else if(/*!humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && */
+              currState_ == kShooting){ //shooting to decide not to shoot
+        currState_ = kResetting;
+    } else if(currState_ != kResetting){ //not intaking, shooting, or resetting, only option is indexing or prepping (also includes indexing)
         currState_ = kIndexing;
     }
     
@@ -285,7 +288,8 @@ void SuperstructureController::Update(){
             }
             printf("in close PREPPING -------------\n");
             desiredFlywheelVelocity_ = closeFlywheelVelocity_;
-            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+            robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+            //SetFlywheelPowerDesired(desiredFlywheelVelocity_);
             robot_->DisengageFlywheelHood();
             closePrepping_ = true;
             farPrepping_ = false;
@@ -296,7 +300,8 @@ void SuperstructureController::Update(){
                 shootPrepStartTime_ = currTime_;
             }
             desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
-            SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
+            robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+            //SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
             robot_->EngageFlywheelHood(); //TODO add if distance > x
             closePrepping_ = false;
             farPrepping_ = true;
@@ -341,7 +346,8 @@ void SuperstructureController::Update(){
             break;
         case kShooting:
             printf("in kShooting with %f\n", desiredFlywheelVelocity_);
-            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+            robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+            //SetFlywheelPowerDesired(desiredFlywheelVelocity_);
             //raise elevator if not at speed, OR nothing at top and not timed out at bottom
             if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
                 robot_->SetElevatorOutput(elevatorSlowPower_);
@@ -358,7 +364,7 @@ void SuperstructureController::Update(){
             }
 
             if(tTimeout_ && bTimeout_){
-                nextState_ = kResetting;
+                nextState_ = kIndexing;//kResetting;
                 //robot_->SetFlywheelOutput(0.0);
                 startResetTime_ = currTime_;
             }
@@ -424,7 +430,7 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
 }
 
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
-    return 2000; // fix
+    return 1.0;//2000; // fix
 }
 
 //TODO actually implement
@@ -433,10 +439,10 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocity) 
 }
 
 bool SuperstructureController::IsFlywheelAtSpeed(){
-    if(robot_->GetFlywheelMotor1Velocity() > desiredFlywheelVelocity_-50 && robot_->GetFlywheelMotor1Velocity() < desiredFlywheelVelocity_+50){
+    //if(robot_->GetFlywheelMotor1Velocity() > desiredFlywheelVelocity_-50 && robot_->GetFlywheelMotor1Velocity() < desiredFlywheelVelocity_+50){
         return true; // random threshold value, change as desired
-    }
-    return false;
+    //}
+    //return false;
 }
 
 
@@ -600,7 +606,7 @@ void SuperstructureController::RefreshShuffleboard(){
     //flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelEncoder1Velocity()*8*M_PI/60); (figure out what units this is generated in)
     currWristAngle_ = robot_->GetIntakeWristAngle();
 
-    flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()); 
+    flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()/2048.0*60000.0); //rpm
     flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity());
 
 	lastTime_ = currTime_;
