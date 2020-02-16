@@ -39,8 +39,10 @@ class SuperstructureController {
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
-  double CalculateFlywheelPowerDesired();
+  double CalculateFlywheelVelocityDesired();
+  void SetFlywheelPowerDesired(double flywheelVelocity);
   void WristUpdate();
+  void WinchUpdate();
   
   //these functions should not exist
   void FlywheelHoodUp();
@@ -73,13 +75,13 @@ class SuperstructureController {
   double currTime_, lastTime_;
   double startResetTime_, resetTimeout_;
 
-  double flywheelPower_, desiredRPM_, flywheelResetTime_;
-  double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+  double flywheelResetTime_;
+  double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
+  double desiredFlywheelPower_, closeFlywheelPower_;
+  double desiredFlywheelVelocity_, closeFlywheelVelocity_;
   PIDController *flywheelPID_;
   SuperstructurePIDOutput *flywheelPIDOutput_;
   TalonFXPIDSource *flywheelPIDSource_;
-
-  double desiredFlywheelPower_, closeFlywheelPower_;
 
   double wristPFac_;
   double desiredIntakeWristAngle_;
@@ -92,6 +94,11 @@ class SuperstructureController {
 
   double climbElevatorUpPower_, climbElevatorDownPower_;
   bool positiveDirection_;
+  double climbWinchPower_;
+  double currRobotAngle_;
+
+  double closeTicksPerSecDesired_;
+  double farTicksPerSecDesired_;
 
   double shootPrepStartTime_;
   bool closePrepping_, farPrepping_;
@@ -101,9 +108,13 @@ class SuperstructureController {
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
   double controlPanelPower_;
 
-  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_;
-  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
+
+  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_;
+  nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
+  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_;
+
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry intakeWristAngleEntry_;
+  nt::NetworkTableEntry winchAutoEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

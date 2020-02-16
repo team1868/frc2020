@@ -133,6 +133,9 @@ RobotModel::RobotModel() :
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
 	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);
 
+	climberWinchRightEncoder_ = new Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
+	climberWinchLeftEncoder_ = new Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted
+
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
 	intakeWristMotor_->ConfigFactoryDefault();
@@ -618,7 +621,6 @@ double RobotModel::GetDistance() {
 }
 
 
-
 void RobotModel::ZeroNavXYaw() {
 	navX_->ZeroYaw();
 	printf("Zeroed Yaw\n");
@@ -680,6 +682,7 @@ void RobotModel::CreateNavX(){
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
 }
+
 
 void RobotModel::RefreshShuffleboard(){
 

@@ -58,6 +58,10 @@ static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
 static const double COLOR_CONFIDENCE = 0.9; // fix so it can be implemented, color matcher complaining about const double
 static const int CTRE_MAG_ENCODER_TICKS = 4096;
 
+static const int FLYWHEEL_PID_LOOP_ID = 0;
+static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
+
+
 //color sensor
 static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);
 static constexpr frc::Color kGreenTarget = frc::Color(0.193, 0.555, 0.252);
@@ -186,18 +190,25 @@ class RobotModel {
     void SetAutoState(uint32_t state);
     uint32_t GetAutoState();
 
-    WPI_TalonFX* GetFlywheelMotor1();
-    WPI_TalonFX* GetFlywheelMotor2();
     double GetFlywheel1EncoderValue();
     double GetFlywheel2EncoderValue();
     void SetFlywheelOutput(double power);
+    int GetFlywheelMotor1Velocity();
     void EngageFlywheelHood();
     void DisengageFlywheelHood();
     double GetTargetDistance();
+    void SetControlModeVelocity(double desiredVelocity);
+    void ConfigFlywheelP(double pFac_);
+    void ConfigFlywheelI(double iFac_);
+    void ConfigFlywheelD(double dFac_);
+    void ConfigFlywheelF(double fFac_);
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
     void SetClimberElevatorOutput(double power);
+
+    double GetClimberWinchRightEncoderValue();
+    double GetClimberWinchLeftEncoderValue(); 
     void SetIntakeWristOutput(double power);
     void SetIntakeRollersOutput(double power);
     double GetIntakeWristPotValue();
@@ -245,6 +256,7 @@ class RobotModel {
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
     WPI_TalonSRX *climberElevatorMotor_;
+    Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;

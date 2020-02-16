@@ -37,6 +37,9 @@ ControlBoard::ControlBoard() {
 	buttons_[kShootClosePrepButton] = new ButtonReader(operatorJoyB_, SHOOT_CLOSE_PREP_BUTTON_PORT);
 	buttons_[kShootFarPrepButton] = new ButtonReader(operatorJoyB_, SHOOT_FAR_PREP_BUTTON_PORT);
 
+	buttons_[kClimbWinchLeftButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_RIGHT_BUTTON_PORT);
+	buttons_[kClimbWinchRightButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_LEFT_BUTTON_PORT);
+
 	//create buttons here after creating a option in the Buttons enum
 	//example
 	//buttons_[kYourButton] = new ButtonReader(joystickname, BUTTON_PORT);
