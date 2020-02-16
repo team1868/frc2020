@@ -29,6 +29,29 @@ double RobotModel::GetFlywheel2EncoderValue() {
     return -flywheelEncoder2_->GetIntegratedSensorPosition(); 
 }
 
+void RobotModel::SetControlModeVelocity(double desiredVelocity) {
+    flywheelMotor1_->Set(ControlMode::Velocity, desiredVelocity);
+}
+
+int RobotModel::GetFlywheelMotor1Velocity() {
+    return flywheelMotor1_->GetSelectedSensorVelocity(0); // 0 means primary closed loop
+    // raw sensor units per 100 ms
+}
+
+// make into one function later whoops
+void RobotModel::ConfigFlywheelP(double pFac_){
+    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+}
+void RobotModel::ConfigFlywheelI(double iFac_){
+    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+}
+void RobotModel::ConfigFlywheelD(double dFac_){
+    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+}
+void RobotModel::ConfigFlywheelF(double fFac_){
+    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+}
+
 void RobotModel::EngageFlywheelHood() {
     flywheelHoodSolenoid_->Set(true);
 }
@@ -86,14 +109,6 @@ void RobotModel::SetLight(bool setLight){
 	lightSolenoid_ -> Set(setLight);
 }
 
-
-WPI_TalonFX* RobotModel::GetFlywheelMotor1() {
-    return flywheelMotor1_;
-}
-
-WPI_TalonFX* RobotModel::GetFlywheelMotor2() {
-    return flywheelMotor2_;
-}
 
 double RobotModel::GetTargetDistance() {
     // vision code to get distance, idk how that works but it needs to work

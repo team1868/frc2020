@@ -56,6 +56,8 @@ static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
 static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
 static const double COLOR_CONFIDENCE = 0.9; // fix so it can be implemented, color matcher complaining about const double
+static const int FLYWHEEL_PID_LOOP_ID = 0;
+static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
 
 //color sensor
 static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);
@@ -106,6 +108,9 @@ class RobotModel {
     double GetNavXRoll();
     void CreateNavX();
     NavXPIDSource* GetNavXSource();
+
+    double GetFlywheelEncoder1Velocity();
+    double GetFlywheelEncoder2Velocity();
     
     double GetRightDistance();
     double GetLeftDistance();
@@ -185,14 +190,18 @@ class RobotModel {
     void SetAutoState(uint32_t state);
     uint32_t GetAutoState();
 
-    WPI_TalonFX* GetFlywheelMotor1();
-    WPI_TalonFX* GetFlywheelMotor2();
     double GetFlywheel1EncoderValue();
     double GetFlywheel2EncoderValue();
     void SetFlywheelOutput(double power);
+    int GetFlywheelMotor1Velocity();
     void EngageFlywheelHood();
     void DisengageFlywheelHood();
     double GetTargetDistance();
+    void SetControlModeVelocity(double desiredVelocity);
+    void ConfigFlywheelP(double pFac_);
+    void ConfigFlywheelI(double iFac_);
+    void ConfigFlywheelD(double dFac_);
+    void ConfigFlywheelF(double fFac_);
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
