@@ -613,7 +613,6 @@ double RobotModel::GetDistance() {
 }
 
 
-
 void RobotModel::ZeroNavXYaw() {
 	navX_->ZeroYaw();
 	printf("Zeroed Yaw\n");
@@ -675,6 +674,7 @@ void RobotModel::CreateNavX(){
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
 }
+
 
 void RobotModel::RefreshShuffleboard(){
 

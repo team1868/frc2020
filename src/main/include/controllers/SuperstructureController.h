@@ -94,6 +94,9 @@ class SuperstructureController {
   double climbElevatorUpPower_, climbElevatorDownPower_;
   bool positiveDirection_;
 
+  double closeTicksPerSecDesired_;
+  double farTicksPerSecDesired_;
+
   double shootPrepStartTime_;
   bool closePrepping_, farPrepping_;
 
