@@ -40,7 +40,7 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelVelocityDesired();
-  double CalculateFlywheelPowerDesired();
+  void SetFlywheelPowerDesired(double flywheelVelocity);
   void WristUpdate();
   void WinchUpdate();
   
@@ -76,7 +76,7 @@ class SuperstructureController {
   double startResetTime_, resetTimeout_;
 
   double flywheelResetTime_;
-  double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFFac_;
+  double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
   double desiredFlywheelVelocity_;
   PIDController *flywheelPID_;
@@ -107,7 +107,7 @@ class SuperstructureController {
   double controlPanelPower_;
 
   ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &potLayout_;
-  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
+  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };
