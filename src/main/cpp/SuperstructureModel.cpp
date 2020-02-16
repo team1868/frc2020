@@ -40,16 +40,16 @@ int RobotModel::GetFlywheelMotor1Velocity() {
 
 // make into one function later whoops
 void RobotModel::ConfigFlywheelP(double pFac_){
-    flywheelMotor1_->Config_kF(FLYWHEEL_PID_TIMEOUT, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
 }
 void RobotModel::ConfigFlywheelI(double iFac_){
-    flywheelMotor1_->Config_kI(FLYWHEEL_PID_TIMEOUT, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
 }
 void RobotModel::ConfigFlywheelD(double dFac_){
-    flywheelMotor1_->Config_kD(FLYWHEEL_PID_TIMEOUT, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
 }
 void RobotModel::ConfigFlywheelF(double fFac_){
-    flywheelMotor1_->Config_kF(FLYWHEEL_PID_TIMEOUT, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
 }
 
 void RobotModel::EngageFlywheelHood() {

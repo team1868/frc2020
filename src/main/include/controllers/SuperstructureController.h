@@ -98,6 +98,9 @@ class SuperstructureController {
   double climbWinchPower_;
   double currRobotAngle_;
 
+  double closeTicksPerSecDesired_;
+  double farTicksPerSecDesired_;
+
   double shootPrepStartTime_;
   bool closePrepping_, farPrepping_;
 
