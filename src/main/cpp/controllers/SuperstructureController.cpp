@@ -10,10 +10,11 @@
 using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
-    flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 1)),
+    flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 0)),
     sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1)),
-    potLayout_(robot->GetSuperstructureTab().GetLayout("Potentiometer", "List Layout").WithPosition(0, 1))
-    {
+    potLayout_(robot->GetSuperstructureTab().GetLayout("Potentiometer", "List Layout").WithPosition(1, 0)),
+    manualOverrideLayout_(robot->GetModeTab().GetLayout("climboverride", "List Layour").WithPosition(1,1)){
+    
     robot_ = robot;
     humanControl_ = humanControl; 
 
@@ -76,9 +77,11 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.0).GetEntry();
     flywheelIEntry_ = flywheelPIDLayout_.Add("flywheel I", 0.0).GetEntry();
     flywheelDEntry_ = flywheelPIDLayout_.Add("flywheel D", 0.0).GetEntry();
-    flywheelFFEntry_ = flywheelPIDLayout_.Add("flywheel FF", 0.0).GetEntry();
+    flywheelFFEntry_ = flywheelPIDLayout_.Add("flywheel FF", false).GetEntry();
 
     wristPEntry_ = robot_->GetSuperstructureTab().Add("wrist P", 0.0).GetEntry();
+
+    winchAutoEntry_ = manualOverrideLayout_.Add("override climber", 0.0).GetEntry();
 
     elevatorTopLightSensorEntry_ = sensorsLayout_.Add("bottom elevator", false).GetEntry();
     elevatorBottomLightSensorEntry_ = sensorsLayout_.Add("top elevator", false).GetEntry();
@@ -208,6 +211,19 @@ void SuperstructureController::Update(){
     
     currTime_ = robot_->GetTime();//may or may not be necessary
     RefreshShuffleboard();
+    //winch: automatic or human 
+
+
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchLeftButton)){
+        robot_->SetClimbWinchLeftOutput(climbWinchPower_);
+    } else {
+        robot_->SetClimbWinchLeftOutput(0.0);
+    }
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchRightButton)){
+        robot_->SetClimbWinchRightOutput(climbWinchPower_);
+    }else {
+        robot_->SetClimbWinchRightOutput(0.0);
+    }
 
     //human override state
     if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
