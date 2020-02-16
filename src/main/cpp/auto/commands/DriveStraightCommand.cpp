@@ -19,8 +19,8 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
 	
-	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).GetEntry();
-	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).GetEntry();
+	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
 	desiredAngleEntry_ = driveStraightLayout_.Add("Desired Angle", 0.0).GetEntry();
 	desiredTotalFeetEntry_ = driveStraightLayout_.Add("Desired Total Feet", 0.0).GetEntry();
 	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
@@ -81,7 +81,8 @@ void DriveStraightCommand::Init() {
 	distancePID_->SetContinuous(false); 
 
 	anglePID_->SetOutputRange(-rMaxOutput_, rMaxOutput_);
-	distancePID_->SetOutputRange(-dMaxOutput_, dMaxOutput_);
+	//distancePID_->SetOutputRange(-dMaxOutput_, dMaxOutput_);
+	distancePID_->SetOutputRange(-0.5, 0.5);
 
 	anglePID_->SetAbsoluteTolerance(rTolerance_);
 	distancePID_->SetAbsoluteTolerance(dTolerance_);
@@ -128,6 +129,16 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	desiredTotalFeetEntry_.SetDouble(desiredTotalAvgDistance_);
 
 	diffDriveTime_ = robot_->GetTime() - initialDriveTime_;
+
+	double dMax = 0.1;
+	if (diffDriveTime_ > 1.0){
+		dMax = dMaxOutput_;
+	}
+	else {
+		dMax = 0.1 + 0.75/1.0*diffDriveTime_;
+	}
+	distancePID_->SetOutputRange(-dMax, dMax);
+	
 
 // on target
 	if (distancePID_->OnTarget() && fabs(talonEncoderSource_->PIDGet() - lastDistance_) < 0.04 ) {

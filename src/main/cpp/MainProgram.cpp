@@ -21,9 +21,7 @@ void MainProgram::RobotInit() {
     robot_->CreatePID(); //variable
     printf("created PID\n"); //what pid???
     robot_->ResetDriveEncoders();
-    //robot_->GetGyro()->InitGyro();
-	//robot_->GetGyro()->Calibrate();
-    robot_->SetLowGear();
+    robot_->SetHighGear();
     aligningTape_ = false;
     
     autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();
@@ -57,8 +55,7 @@ void MainProgram::RobotPeriodic() {
  * make sure to add them to the chooser code above as well.
  */
 void MainProgram::AutonomousInit() {
-    //robot_->SetHighGear();
-    robot_->SetLowGear();
+    robot_->SetHighGear();
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
@@ -68,7 +65,7 @@ void MainProgram::AutonomousInit() {
     //robot_->SetTestSequence(sequence_);
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
-    robot_->SetTestSequence("d 3.5");
+    robot_->SetTestSequence("c 3.0 90.0 0 0");
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
     navX_ = new NavXPIDSource(robot_);
@@ -136,6 +133,7 @@ void MainProgram::DisabledInit() {
 }
 
 void MainProgram::TeleopInit() {
+    printf("in teleopinit\n");
     robot_->ResetDriveEncoders();
 
     matchTime_ = frc::Timer::GetMatchTime();
@@ -144,6 +142,7 @@ void MainProgram::TeleopInit() {
     zmq::context_t * context_ = new zmq::context_t(1); //same context for send + receive zmq
     //connectRecvZMQ();
     //connectSendZMQ();
+    printf("end of teleopinit\n");
 }
 
 void MainProgram::TeleopPeriodic() {

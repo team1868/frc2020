@@ -135,7 +135,8 @@ RobotModel::RobotModel() :
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
-	//intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
+	intakeWristMotor_->ConfigFactoryDefault();
+	intakeWristMotor_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0);
 	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
 
@@ -192,7 +193,6 @@ RobotModel::RobotModel() :
 	rColorEntry_ = GetFunctionalityTab().Add("red", 0.0).GetEntry();
 	gColorEntry_ = GetFunctionalityTab().Add("green", 0.0).GetEntry();
 	bColorEntry_ = GetFunctionalityTab().Add("blue", 0.0).GetEntry();
-	potEntry_ =  GetSuperstructureTab().Add("potentiometer", 0.0).GetEntry();
 
 	initLineErrorEntry_ = GetAutoOffsetTab().Add("initiation line distance", 0.0).GetEntry(); 
 	trenchDistErrorEntry_ = GetAutoOffsetTab().Add("trench distance", 0.0).GetEntry(); 
@@ -711,7 +711,6 @@ void RobotModel::RefreshShuffleboard(){
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
 
-	potEntry_.SetDouble(GetIntakeWristPotValue());
 
 	initLineError_ = initLineErrorEntry_.GetDouble(0.0);
 	trenchDistError_ = trenchDistErrorEntry_.GetDouble(0.0);
@@ -776,5 +775,4 @@ RobotModel::~RobotModel(){
     ratioAllEntry_.Delete();
 	ratioDriveEntry_.Delete();
 	ratioSuperstructureEntry_.Delete();
-	potEntry_.Delete();
 }

@@ -83,7 +83,6 @@ class SuperstructureController {
 
   double wristPFac_;
   double desiredIntakeWristAngle_;
-  // double currGyroAngle_, lastGyroAngle_;
   double currWristAngle_, lastWristAngle_;
 
   double lowerElevatorTimeout_, elevatorTimeout_;
@@ -102,8 +101,9 @@ class SuperstructureController {
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
   double controlPanelPower_;
 
-  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &potLayout_;
+  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
   nt::NetworkTableEntry wristPEntry_;
+  nt::NetworkTableEntry intakeWristAngleEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

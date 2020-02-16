@@ -140,6 +140,7 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 
   //printf("I AM UPDATING\n");
 
+  printf("direction: %f\n", direction_);
   pidSourceNet_.SetDouble(talonEncoderPIDSource_->PIDGet());
 
   //if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
@@ -182,15 +183,15 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 
     if(turnLeft_){
       // turning left, right wheel goes larger distance
-      rOutput = direction_*dOutput*(desiredRadius_+ROBOT_WIDTH/2)/(desiredRadius_);
+      rOutput = dOutput*(desiredRadius_+ROBOT_WIDTH/2)/(desiredRadius_);
       //lOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); //strange math
-      lOutput = direction_*dOutput * (desiredRadius_-ROBOT_WIDTH/2)/(desiredRadius_); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
+      lOutput = dOutput * (desiredRadius_-ROBOT_WIDTH/2)/(desiredRadius_); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
       // rOutput = dOutput + tOutput;
       // lOutput = dOutput - tOutput; 
     } else {
       //rOutput = (dOutput)/(ROBOT_WIDTH*desiredAngle_*PI/180); //strange math
-      rOutput = direction_*dOutput * (desiredRadius_-ROBOT_WIDTH/2)/(desiredRadius_); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
-      lOutput = direction_*dOutput * (desiredRadius_+ROBOT_WIDTH/2)/(desiredRadius_);
+      rOutput = dOutput * (desiredRadius_-ROBOT_WIDTH/2)/(desiredRadius_); //WORKS WHEN RADIUS > ROBOT_WIDTH/2
+      lOutput = dOutput * (desiredRadius_+ROBOT_WIDTH/2)/(desiredRadius_);
       // rOutput = dOutput - tOutput;
       // lOutput = dOutput + tOutput; 
     }

@@ -56,6 +56,7 @@ static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
 static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
 static const double COLOR_CONFIDENCE = 0.9; // fix so it can be implemented, color matcher complaining about const double
+static const int CTRE_MAG_ENCODER_TICKS = 4096;
 
 //color sensor
 static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);
@@ -197,14 +198,11 @@ class RobotModel {
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
     void SetClimberElevatorOutput(double power);
-
-    void SetIntakeRollersOutput(double power);
     void SetIntakeWristOutput(double power);
-    //AnalogGyro* GetGyro();
-    AnalogPotentiometer* GetPot();
+    void SetIntakeRollersOutput(double power);
     double GetIntakeWristPotValue();
-    //double GetGyroAngle();
     
+    double GetIntakeWristAngle();
     
     bool GetElevatorFeederLightSensorStatus();
     bool GetElevatorLightSensorStatus();
@@ -256,7 +254,6 @@ class RobotModel {
 
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
-    //AnalogGyro *intakeWristGyro_;
     AnalogPotentiometer *intakeWristPot_; 
     
     DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
@@ -334,6 +331,5 @@ class RobotModel {
     nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
-    nt::NetworkTableEntry potEntry_;
     nt::NetworkTableEntry initLineErrorEntry_, trenchDistErrorEntry_, trenchWidthErrorEntry_, trenchLengthErrorEntry_, targetZDistErrorEntry_, targetZHeightErrorEntry_, loadingDDistErrorEntry_, playerSt2MidErrorEntry_, initLineSlantEntry_;
 };

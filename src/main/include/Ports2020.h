@@ -28,7 +28,7 @@ static const int CLIMB_WINCH_RIGHT_MOTOR_ID          = 7;  // srx
 static const int CLIMB_ELEVATOR_ID                   = 8; // spx // done
 static const int CONTROL_PANEL_MOTOR_ID              = 14;  // sp
 static const int INTAKE_ROLLERS_MOTOR_ID             = 10; // spx // done
-static const int INTAKE_WRIST_MOTOR_ID               = 10; // spx
+static const int INTAKE_WRIST_MOTOR_ID               = 10; // srx
 static const int INDEX_FUNNEL_MOTOR_ID               = 5; // spx // done
 static const int ELEVATOR_FEEDER_MOTOR_ID            = 4; // srx // done
 static const int ELEVATOR_MOTOR_ID                   = 12; // srx // done
@@ -83,7 +83,7 @@ static const int SHOOT_CLOSE_PREP_BUTTON_PORT        = 4; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT          = 5; //random
 
 // SENSORS
-static const int GYRO_PORT                           = 1; // ANALOG IO
+//static const int GYRO_PORT                           = 1; // ANALOG IO
 static const int INTAKE_WRIST_POT_PORT               = 0; // ANALOG PORT
 static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT   = 1;//1
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT      = 0;//3

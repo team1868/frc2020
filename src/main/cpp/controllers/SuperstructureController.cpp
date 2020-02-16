@@ -10,8 +10,7 @@ using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
     flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 1)),
-    sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1)),
-    potLayout_(robot->GetSuperstructureTab().GetLayout("Potentiometer", "List Layout").WithPosition(0, 1))
+    sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1))
     {
     robot_ = robot;
     humanControl_ = humanControl;
@@ -78,6 +77,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     elevatorTopLightSensorEntry_ = sensorsLayout_.Add("bottom elevator", false).GetEntry();
     elevatorBottomLightSensorEntry_ = sensorsLayout_.Add("top elevator", false).GetEntry();
+    intakeWristAngleEntry_ = sensorsLayout_.Add("intake wrist angle", 0.0).GetEntry();
     printf("end of superstructure controller constructor\n");
 }
 
@@ -92,7 +92,7 @@ void SuperstructureController::Reset() { // might not need this
 
 void SuperstructureController::WristUpdate(){
 
-    currWristAngle_ = robot_->GetIntakeWristPotValue(); // might not need?
+    currWristAngle_ = robot_->GetIntakeWristAngle(); // might not need?
     switch (currWristState_){
         case kRaising:
             // might not need lowering if we have an idle
@@ -518,11 +518,23 @@ void SuperstructureController::RefreshShuffleboard(){
 
     wristPFac_ = wristPEntry_.GetDouble(0.03);
     //flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelEncoder1Velocity()*8*M_PI/60); (figure out what units this is generated in)
-    //lastGyroAngle_ = currGyroAngle_;
-	//currGyroAngle_ = robot_->GetGyroAngle();
-    currWristAngle_ = robot_->GetIntakeWristPotValue();
+    currWristAngle_ = robot_->GetIntakeWristAngle();
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
 }
 
-SuperstructureController::~SuperstructureController() {}
+SuperstructureController::~SuperstructureController() {
+    intakeWristAngleEntry_.Delete();
+    flywheelPEntry_.Delete();
+    flywheelIEntry_.Delete();
+    flywheelDEntry_.Delete();
+    flywheelFFEntry_.Delete();
+    flywheelVelocityEntry_.Delete();
+    wristPEntry_.Delete();
+    elevatorBottomLightSensorEntry_.Delete();
+    elevatorTopLightSensorEntry_.Delete();
+    if (flywheelPID_ != NULL) {
+        flywheelPID_->Disable();
+        delete flywheelPID_;
+    } 
+}

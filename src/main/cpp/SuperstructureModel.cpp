@@ -125,22 +125,11 @@ std::string RobotModel::GetControlPanelGameData() {
     return controlPanelGameData_;
 }
 
-// AnalogGyro* RobotModel::GetGyro(){
-// 	return intakeWristGyro_;
-// }
 
-//TODO DELETE we shouldn't be returning classes. ever.
-AnalogPotentiometer* RobotModel::GetPot(){
-    return intakeWristPot_; 
+//should return degrees
+double RobotModel::GetIntakeWristAngle(){
+    return (360.0/4096)*intakeWristMotor_->GetSelectedSensorPosition();
 }
-
-double RobotModel::GetIntakeWristPotValue(){
-    return intakeWristPot_->Get();
-}
-
-// double RobotModel::GetGyroAngle(){
-//     return intakeWristGyro_->GetAngle();
-// }
 
 bool RobotModel::GetElevatorFeederLightSensorStatus() {
     return  elevatorFeederLightSensor_->Get();
