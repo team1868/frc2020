@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "controllers/SuperstructureController.h"
+#include <math.h>
 using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
@@ -14,15 +15,24 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     potLayout_(robot->GetSuperstructureTab().GetLayout("Potentiometer", "List Layout").WithPosition(0, 1))
     {
     robot_ = robot;
-    humanControl_ = humanControl;
+    humanControl_ = humanControl; 
 
     // fix all of this
     climbElevatorUpPower_ = 0.5; // fix
     climbElevatorDownPower_ = -0.4; // fix
+<<<<<<< HEAD
     
     desiredRPM_ = 2000;
     flywheelPower_ = 0.0; //CalculateFlywheelPowerDesired();
     closeFlywheelPower_ = 0.6;
+=======
+    bool positiveDirection_ = true;
+    climbWinchPower_ = 0.5; // fix
+    
+    desiredFlywheelVelocity_ = 2000; // fix
+
+    closeFlywheelPower_ = 0.5;
+>>>>>>> ba8d2376d1be321a6168395d74e92e27ca3ee723
     flywheelResetTime_ = 2.0; // fix //why does this exist
     // create talon pid controller
     // fix encoder source
@@ -31,7 +41,16 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     //flywheelEncoder2_ = &robot_->GetFlywheelMotor2()->GetSensorCollection();
     std::cout << "end flywheel encoder creation" << std::endl << std::flush;
     
+<<<<<<< HEAD
     //flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelEncoder1_, flywheelPIDOutput_);
+=======
+    // create talon pid controller
+    /*
+    flywheelPIDSource_ = new TalonFXPIDSource(robot_);
+    flywheelPIDOutput_ = new SuperstructurePIDOutput();
+    flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelPIDSource_, flywheelPIDOutput_);
+    */
+>>>>>>> ba8d2376d1be321a6168395d74e92e27ca3ee723
 
     elevatorFeederPower_ = 1.0; // fix
     elevatorSlowPower_ = 0.5; //fix
@@ -275,8 +294,31 @@ void SuperstructureController::Update(){
         robot_->SetClimberElevatorOutput(climbElevatorUpPower_);
     }
     if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
+<<<<<<< HEAD
         robot_->SetClimberElevatorOutput(climbElevatorDownPower_);
+=======
+        positiveDirection_ = true;
+        currState_ = kClimbingElevator;
+    } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorDownButton)){
+        positiveDirection_ = false;
+        currState_ = kClimbingElevator;
+    } else {
+        robot_->SetClimberElevatorOutput(0.0);
     }
+
+    // independent climbing buttons, please move setting output from main
+    /*
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchLeftButton)){
+        robot_->SetClimbWinchLeftOutput(climbWinchPower_);
+    } else {
+        robot_->SetClimbWinchLeftOutput(0.0);
+>>>>>>> ba8d2376d1be321a6168395d74e92e27ca3ee723
+    }
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchRightButton)){
+        robot_->SetClimbWinchRightOutput(climbWinchPower_);
+    }else {
+        robot_->SetClimbWinchRightOutput(0.0);
+    }*/
 
     //TODO replace "//robot_->SetArm(bool a);" with if !sensorGood set arm power small in bool a direction
     //in current code: true is arm down and false is arm up
@@ -486,12 +528,48 @@ void SuperstructureController::DisabledUpdate() {
 
 /*
 void SuperstructureController::FlywheelPIDControllerUpdate() {
+<<<<<<< HEAD
     flywheelPIDController_->SetP(flywheelPFac_);
     flywheelPIDController_->SetI(flywheelIFac_);
     flywheelPIDController_->SetD(flywheelDFac_);
     flywheelPIDController_->SetFF(flywheelFFFac_);                   // renegade 
     
 }*/
+=======
+    //flywheelPID_->SetPID(flywheelPFac_, flywheelPFac_, flywheelDFac_);
+    // flywheel FF Fac
+    // use config
+}
+
+void SuperstructureController::WinchUpdate() {
+    double currRobotAngle_ = (atan(tan(robot_-> GetNavXPitch()) * sin(robot_ -> GetNavXYaw())));
+    double initRightEncoderVal = robot_->GetClimberWinchRightEncoderValue();
+    double initLeftEncoderVal = robot_->GetClimberWinchRightEncoderValue();
+    double ticksPerFt = 256/4.32/12.0; // ticks per rotation / circumference of drum
+
+    if (currRobotAngle_ < 0.0){
+        if(robot_->GetClimberWinchRightEncoderValue() < initRightEncoderVal + (ROBOT_WIDTH*sin(currRobotAngle_)*ticksPerFt)){
+            robot_->SetClimbWinchRightOutput(climbWinchPower_);
+        }
+        else{
+            robot_->SetClimbWinchRightOutput(0.0);
+        }
+    }
+    else if (currRobotAngle_ > 0.0){
+        if(robot_->GetClimberWinchLeftEncoderValue() < initLeftEncoderVal + (ROBOT_WIDTH*sin(currRobotAngle_)*ticksPerFt)) {
+            robot_->SetClimbWinchLeftOutput(climbWinchPower_);
+        }
+        else{
+            robot_->SetClimbWinchRightOutput(0.0);
+        }
+    }
+    else{
+        robot_->SetClimbWinchRightOutput(0);
+        robot_->SetClimbWinchLeftOutput(0);
+    }
+
+}
+>>>>>>> ba8d2376d1be321a6168395d74e92e27ca3ee723
 
 bool SuperstructureController::IndexUpdate(){
 
@@ -524,9 +602,21 @@ bool SuperstructureController::IndexUpdate(){
     }
 }
 
+double SuperstructureController::CalculateFlywheelVelocityDesired() {
+    return 2000; // fix
+}
+
 //TODO actually implement
 double SuperstructureController::CalculateFlywheelPowerDesired() {
+<<<<<<< HEAD
     return 0.5; // fix
+=======
+    desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
+    robot_->GetFlywheelMotor1()->Set(ControlMode::Velocity, desiredFlywheelVelocity_);
+    return 0.2;
+    //translate into double power // how?
+    // output->get pid output
+>>>>>>> ba8d2376d1be321a6168395d74e92e27ca3ee723
 }
 
 //TODO actually implement
@@ -555,6 +645,7 @@ void SuperstructureController::ControlPanelStage2(double power){
 
 //TODO FIX
 bool SuperstructureController::IsFlywheelAtSpeed(){
+    // threshold
     return true;
 }
 

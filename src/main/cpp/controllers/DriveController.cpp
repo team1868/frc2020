@@ -76,7 +76,7 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
     //std::cout<< "thrust before:"<<  thrust  << std::endl;
     thrust = GetDeadbandAdjustment(thrust);
     //std::cout<< "thrust deadband adj: " <<  thrust  << std::endl;
-    thrust = GetCubicAdjustment(thrust, thrustSensitivity_);
+    thrust = GetCubicAdjustment(thrust, thrustSensitivity_); //todo logic error, pass in param but use class var
     rotate = GetDeadbandAdjustment(rotate);
     rotate = GetCubicAdjustment(rotate, rotateSensitivity_);
     

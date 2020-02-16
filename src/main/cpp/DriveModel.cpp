@@ -133,6 +133,9 @@ RobotModel::RobotModel() :
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
 	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);
 
+	climberWinchRightEncoder_ = new Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
+	climberWinchLeftEncoder_ = new Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted
+
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
 	//intakeWristGyro_ = new frc::AnalogGyro(GYRO_PORT);
@@ -511,8 +514,13 @@ double RobotModel::GetCurrent(int channel) {
 
 void RobotModel::GearShift() {
    //assuming arcade:
-           if (humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
-               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) {
+           if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
+               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) 
+			   && isHighGear_== true) {
+               	SetHighGear();
+           }
+		   else if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
+               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) && isHighGear_ == false) {
                	SetLowGear();
            }
            //assuming tank:
@@ -521,10 +529,10 @@ void RobotModel::GearShift() {
            >= MIN_TURNING_XY_DIFFERENCE) {
                robot_->SetLowGear();
            } */
-           else if ((GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+           else if ((GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
                    GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) || 
-				   (GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
-                   GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
+				   (-GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
+                   -GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
                SetHighGear();
 			   //printf("High gear: %f ", GetRightVelocity());
 			   //printf("%f\n", GetLeftVelocity());
@@ -687,8 +695,8 @@ void RobotModel::RefreshShuffleboard(){
 
 	lastLeftVelocity_ = currLeftVelocity_;
 	lastRightVelocity_ = currRightVelocity_;
-	currLeftVelocity_ = //GetLeftVelocity();
-	currRightVelocity_ = //GetRightVelocity();
+	currLeftVelocity_ = GetLeftVelocity();
+	currRightVelocity_ = GetRightVelocity();
 
     leftDriveEncoderEntry_.SetDouble(currLeftEncoderValue_); 
     rightDriveEncoderEntry_.SetDouble(currRightEncoderValue_);

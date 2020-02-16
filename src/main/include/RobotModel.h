@@ -200,6 +200,8 @@ class RobotModel {
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
     void SetClimberElevatorOutput(double power);
+    double GetClimberWinchRightEncoderValue();
+    double GetClimberWinchLeftEncoderValue(); 
 
     void SetIntakeRollersOutput(double power);
     void SetIntakeWristOutput(double power);
@@ -250,6 +252,7 @@ class RobotModel {
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
     WPI_TalonSRX *climberElevatorMotor_;
+    Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
