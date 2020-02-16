@@ -91,11 +91,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.0).GetEntry();
     flywheelIEntry_ = flywheelPIDLayout_.Add("flywheel I", 0.0).GetEntry();
     flywheelDEntry_ = flywheelPIDLayout_.Add("flywheel D", 0.0).GetEntry();
-<<<<<<< HEAD
     flywheelFFEntry_ = flywheelPIDLayout_.Add("flywheel FF", false).GetEntry();
-=======
-    flywheelFEntry_ = flywheelPIDLayout_.Add("flywheel FF", 0.0).GetEntry();
->>>>>>> 18ba3995a01495e0413570a9f78c8bc665e1473b
 
     wristPEntry_ = robot_->GetSuperstructureTab().Add("wrist P", 0.0).GetEntry();
 
