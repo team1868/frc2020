@@ -23,9 +23,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     bool positiveDirection_ = true;
     climbWinchPower_ = 0.5; // fix
     
-    desiredFlywheelVelocity_ = 2000; // fix
-
-    closeFlywheelPower_ = 0.5;
+    desiredFlywheelVelocity_ = 7000; // ticks per 0.1 seconds
+    closeFlywheelVelocity_ = 2000;
     flywheelResetTime_ = 2.0; // fix //why does this exist
     // create talon pid controller
     // fix encoder source
@@ -79,6 +78,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     // shuffleboard
     flywheelVelocityEntry_ = flywheelPIDLayout_.Add("flywheel velocity", 0.0).GetEntry();
+    flywheelVelocityErrorEntry_ = flywheelPIDLayout_.Add("flywheel error", 0.0).GetEntry();
     
     flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.0).GetEntry();
     flywheelIEntry_ = flywheelPIDLayout_.Add("flywheel I", 0.0).GetEntry();
@@ -151,8 +151,8 @@ void SuperstructureController::AutoUpdate(){
             IndexUpdate();
             break;
         case kAutoCloseShooting: // fix for auto, there is no next state or kresetting
-            desiredFlywheelPower_ = closeFlywheelPower_;
-            robot_->SetFlywheelOutput(desiredFlywheelPower_);
+            desiredFlywheelVelocity_ = closeFlywheelVelocity_;
+            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
             /*
             if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
                 robot_->SetElevatorOutput(elevatorSlowPower_);
@@ -181,7 +181,6 @@ void SuperstructureController::AutoUpdate(){
             desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
             SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
             robot_->EngageFlywheelHood(); // hood implemented
-            robot_->SetFlywheelOutput(desiredFlywheelPower_);
             /*if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
                 robot_->SetElevatorOutput(elevatorSlowPower_);
             } else {
@@ -267,8 +266,8 @@ void SuperstructureController::Update(){
                 printf("start close prep shooting\n");
             }
             printf("in close PREPPING -------------\n");
-            desiredFlywheelPower_ = closeFlywheelPower_;
-            robot_->SetFlywheelOutput(desiredFlywheelPower_);
+            desiredFlywheelVelocity_ = closeFlywheelVelocity_;
+            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
             robot_->DisengageFlywheelHood();
             closePrepping_ = true;
             farPrepping_ = false;
@@ -280,7 +279,6 @@ void SuperstructureController::Update(){
             }
             desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
             SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
-            robot_->SetFlywheelOutput(desiredFlywheelPower_);
             robot_->EngageFlywheelHood(); //TODO add if distance > x
             closePrepping_ = false;
             farPrepping_ = true;
@@ -324,8 +322,8 @@ void SuperstructureController::Update(){
             IndexUpdate();
             break;
         case kShooting:
-            printf("in kShooting with %f\n", desiredFlywheelPower_);
-            robot_->SetFlywheelOutput(desiredFlywheelPower_);
+            printf("in kShooting with %f\n", desiredFlywheelVelocity_);
+            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
             //raise elevator if not at speed, OR nothing at top and not timed out at bottom
             if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
                 robot_->SetElevatorOutput(elevatorSlowPower_);
@@ -378,7 +376,7 @@ void SuperstructureController::Update(){
             //robot_->SetArm(false); TODO IMPLEMENT
     }
 
-    printf("DESIRED FLYWHEEL POWER %f\n", desiredFlywheelPower_);
+    printf("DESIRED FLYWHEEL VELOCITY %f\n", desiredFlywheelVelocity_);
     currState_ = nextState_;
 
 
@@ -581,6 +579,7 @@ void SuperstructureController::RefreshShuffleboard(){
 
     wristPFac_ = wristPEntry_.GetDouble(0.03);
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()); 
+    flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity());
     //lastGyroAngle_ = currGyroAngle_;
 	//currGyroAngle_ = robot_->GetGyroAngle();
     currWristAngle_ = robot_->GetIntakeWristPotValue();

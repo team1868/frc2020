@@ -78,7 +78,7 @@ class SuperstructureController {
   double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
-  double desiredFlywheelVelocity_;
+  double desiredFlywheelVelocity_, closeFlywheelVelocity_;
   PIDController *flywheelPID_;
   SuperstructurePIDOutput *flywheelPIDOutput_;
   TalonFXPIDSource *flywheelPIDSource_;
@@ -110,7 +110,8 @@ class SuperstructureController {
   double controlPanelPower_;
 
   ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &potLayout_;
-  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
+  nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
+  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_;
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

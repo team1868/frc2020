@@ -108,9 +108,6 @@ class RobotModel {
     double GetNavXRoll();
     void CreateNavX();
     NavXPIDSource* GetNavXSource();
-
-    double GetFlywheelEncoder1Velocity();
-    double GetFlywheelEncoder2Velocity();
     
     double GetRightDistance();
     double GetLeftDistance();
