@@ -35,11 +35,11 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     std::cout << "end flywheel encoder creation" << std::endl << std::flush;
     
     // create talon pid controller
-    
+    /*
     flywheelPIDSource_ = new TalonFXPIDSource(robot_);
     flywheelPIDOutput_ = new SuperstructurePIDOutput();
-    flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_, flywheelPIDSource_, flywheelPIDOutput_);
-    
+    flywheelPID_ = new PIDController(flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelPIDSource_, flywheelPIDOutput_);
+    */
 
     elevatorFeederPower_ = 1.0; // fix
     elevatorSlowPower_ = 0.5; //fix
