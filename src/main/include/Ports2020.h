@@ -83,6 +83,7 @@ static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 4; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 5; //random
 static const int CLIMB_WINCH_RIGHT_BUTTON_PORT           = 8;
 static const int CLIMB_WINCH_LEFT_BUTTON_PORT            = 7;
+static const int GEARSHIFT_BUTTON_PORT                   = 9; //random
 static const int WRIST_DOWN_BUTTON_PORT                  = 5;
 static const int WRIST_UP_BUTTON_PORT                    = 4;
 static const int WRIST_RUN_ROLLERS_BUTTON                = 7;
