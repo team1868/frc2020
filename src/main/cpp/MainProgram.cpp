@@ -136,6 +136,8 @@ void MainProgram::TeleopInit() {
     printf("in teleopinit\n");
     robot_->ResetDriveEncoders();
 
+    robot_->StartCompressor();
+
     matchTime_ = frc::Timer::GetMatchTime();
     aligningTape_ = false;
 

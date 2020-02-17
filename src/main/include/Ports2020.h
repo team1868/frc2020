@@ -29,7 +29,7 @@ static const int CLIMB_ELEVATOR_ID                       = 8; // spx // done
 static const int CONTROL_PANEL_MOTOR_ID                  = 14;  // sp
 static const int INTAKE_ROLLERS_MOTOR_ID                 = 10; // spx // done
 static const int INTAKE_WRIST_MOTOR_ID                   = 11; // spx
-static const int INDEX_FUNNEL_MOTOR_ID                   = 5; // spx // done
+static const int INDEX_FUNNEL_MOTOR_ID                   = 5; // srx // done
 static const int ELEVATOR_FEEDER_MOTOR_ID                = 4; // srx // done
 static const int ELEVATOR_MOTOR_ID                       = 12; // srx // done
 
@@ -38,10 +38,10 @@ static const int ELEVATOR_MOTOR_ID                       = 12; // srx // done
 // Pneumatics
 static const int PNEUMATICS_CONTROL_MODULE_ID            = 0;
 
-static const int GEAR_SHIFT_FORWARDS_SOLENOID_PORT       = 0; // fix
+static const int GEAR_SHIFT_FORWARDS_SOLENOID_PORT       = 1; // fix
 static const int GEAR_SHIFT_REVERSE_SOLENOID_PORT        = 2; // fix
 static const int LIGHT_SOLENOID_PORT                     = 4; // fix, should control LED light on tape detect camera
-static const int FLYWHEEL_HOOD_SOLENOID_PORT             = 5; // fix
+static const int FLYWHEEL_HOOD_SOLENOID_PORT             = 0; // fix
 
 // PDP Channels 
 static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN             = 0; 
@@ -83,6 +83,11 @@ static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 4; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 5; //random
 static const int CLIMB_WINCH_RIGHT_BUTTON_PORT           = 8;
 static const int CLIMB_WINCH_LEFT_BUTTON_PORT            = 7;
+static const int WRIST_DOWN_BUTTON_PORT                  = 5;
+static const int WRIST_UP_BUTTON_PORT                    = 4;
+static const int WRIST_RUN_ROLLERS_BUTTON                = 7;
+static const int WRIST_REVERSE_ROLLERS_BUTTON            = 6;
+
 
 // SENSORS
 static const int GYRO_PORT                               = 1; // ANALOG IO

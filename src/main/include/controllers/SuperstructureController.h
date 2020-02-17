@@ -115,6 +115,6 @@ class SuperstructureController {
 
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry intakeWristAngleEntry_;
-  nt::NetworkTableEntry winchAutoEntry_;
-  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
+  nt::NetworkTableEntry autoWristEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, autoWinchEntry_;
 };

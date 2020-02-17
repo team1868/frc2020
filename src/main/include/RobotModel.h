@@ -258,6 +258,7 @@ class RobotModel {
     WPI_TalonSRX *climberElevatorMotor_;
     Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
+    //Compressor *compressor_;
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
