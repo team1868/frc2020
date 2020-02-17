@@ -12,7 +12,8 @@ using namespace std;
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
     flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(3, 3)),
     sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1)),
-    manualOverrideLayout_(robot->GetModeTab().GetLayout("climboverride", "List Layout").WithPosition(1,1))
+    manualOverrideLayout_(robot->GetModeTab().GetLayout("climb override", "List Layout").WithPosition(1,1)),
+    powerLayout_(robot->GetSuperstructureTab().GetLayout("power control", "List Layout").WithPosition(3, 0))
     {
     
     robot_ = robot;
@@ -48,6 +49,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     lowerElevatorTimeout_ = 4.0; //fix
     elevatorTimeout_ = 4.0;
     //lastBottomStatus_ = false;
+    manualRollerPower_ = 0.5;
 
     wristPFac_ = 0.03;
 
@@ -91,6 +93,15 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     autoWinchEntry_ = manualOverrideLayout_.Add("auto climber", true).GetEntry();
     autoWristEntry_ = manualOverrideLayout_.Add("auto wrist", true).GetEntry();
 
+    slowElevatorEntry_ = powerLayout_.Add("slow elevator", elevatorSlowPower_).GetEntry();
+    fastElevatorEntry_ = powerLayout_.Add("fast elevator", elevatorFastPower_).GetEntry();
+    funnelEntry_ = powerLayout_.Add("funnel", indexFunnelPower_).GetEntry();
+    rollerManualEntry_ = powerLayout_.Add("manual rollers", manualRollerPower_).GetEntry();
+    closeFlywheelEntry_ = powerLayout_.Add("close flywheel", closeFlywheelVelocity_).GetEntry();
+
+    //TODO make timeout
+
+
     elevatorTopLightSensorEntry_ = sensorsLayout_.Add("bottom elevator", false).GetEntry();
     elevatorBottomLightSensorEntry_ = sensorsLayout_.Add("top elevator", false).GetEntry();
     intakeWristAngleEntry_ = sensorsLayout_.Add("intake wrist angle", 0.0).GetEntry();
@@ -126,7 +137,7 @@ void SuperstructureController::WristUpdate(){
             robot_->SetIntakeRollersOutput(-0.5);
         } else if(humanControl_->GetDesired(ControlBoard::Buttons::kRunRollersButton)){
             //printf("RUNNING ROLLERS RIGH NOWWWWW\n");
-            robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
+            robot_->SetIntakeRollersOutput(manualRollerPower_);
         }else {
             robot_->SetIntakeRollersOutput(0.0);
         }
@@ -461,7 +472,7 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
 }
 
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
-    return 0.85;//1.0;//2000; // fix
+    return closeFlywheelVelocity_;//0.85; //2000; // fix
 }
 
 //TODO actually implement
@@ -623,6 +634,12 @@ void SuperstructureController::ControlPanelFinalSpin() {
 }
 
 void SuperstructureController::RefreshShuffleboard(){
+    manualRollerPower_ = rollerManualEntry_.GetDouble(manualRollerPower_);
+    closeFlywheelVelocity_ = closeFlywheelEntry_.GetDouble(closeFlywheelVelocity_);
+    elevatorFastPower_ = fastElevatorEntry_.GetDouble(elevatorFastPower_);
+    elevatorSlowPower_ = slowElevatorEntry_.GetDouble(elevatorSlowPower_);
+    indexFunnelPower_ = funnelEntry_.GetDouble(indexFunnelPower_);
+
     elevatorBottomLightSensorEntry_.SetBoolean(robot_->GetElevatorFeederLightSensorStatus());
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
 
