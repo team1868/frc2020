@@ -297,6 +297,8 @@ class RobotModel {
     bool compressorOff_, lastOver_;
     double colorConfidence_;
 
+    double flywheelVelocTimeout_;
+
     double desiredDeltaAngle_;//for align tape
 	  double desiredDistance_;//for align tape
     double targetVelocity_;

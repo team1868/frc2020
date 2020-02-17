@@ -37,6 +37,8 @@ RobotModel::RobotModel() :
     printf("I am in drive model constructor\n");
     frc::Shuffleboard::SelectTab("Driveteam Display");
 
+	flywheelVelocTimeout_ = 30;
+
     last_world_linear_accel_x_ = 0.0f;
     last_world_linear_accel_y_ = 0.0f;
 	
@@ -170,6 +172,18 @@ RobotModel::RobotModel() :
 
 	// shuffleboard
     testSequence_ = "";
+
+	// flywheelMotor1_->ConfigFactoryDefault();
+	// /* first choose the sensor */
+	// flywheelMotor1_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, kTimeoutMs);
+	// flywheelMotor1_->SetSensorPhase(true);
+
+	// /* set the peak and nominal outputs */
+	// flywheelMotor1_->ConfigNominalOutputForward(0, kTimeoutMs);
+	// flywheelMotor1_->ConfigNominalOutputReverse(0, kTimeoutMs);
+	// flywheelMotor1_->ConfigPeakOutputForward(1, kTimeoutMs);
+	// flywheelMotor1_->ConfigPeakOutputReverse(-1, kTimeoutMs);
+	
 
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_BROWNOUT_VOLTAGE).GetEntry();
@@ -686,6 +700,13 @@ NavXPIDSource* RobotModel::GetNavXSource(){
 
 
 void RobotModel::RefreshShuffleboard(){
+
+	/* set closed loop gains in slot0 */
+
+	// flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
+	// flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
+	// flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
+	// flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
 
 	lastVelocTime_ = currVelocTime_;
 	currVelocTime_ = GetTime();
