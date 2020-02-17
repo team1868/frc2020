@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "controllers/SuperstructureController.h"
+#include "controllers/SuperstructureController.h
 #include "RobotModel.h"
 #include "ControlBoard.h"
 #include "controllers/DriveController.h"
@@ -45,8 +45,10 @@ RobotModel::RobotModel() :
 
     leftDriveOutput_ = rightDriveOutput_ = 0.0;
 	counter = 0;
-	currLeftVelocity_ , currRightVelocity_ = 0.0;
-	lastLeftVelocity_, lastRightVelocity_ = 0.0;
+	currLeftVelocity_ = currRightVelocity_ = 0.0;
+	lastLeftVelocity_ = lastRightVelocity_ = 0.0;
+	currLeftDistance_ = currRightDistance_ = 0.0;
+	lastLeftDistance_ = lastRightDistance_ = 0.0;
     lastLeftEncoderValue_ = lastRightEncoderValue_ = 0.0;
     currLeftEncoderValue_ = currRightEncoderValue_ = 0.0;
     initialLeftEncoderValue_ = initialRightEncoderValue_ = 0.0;
@@ -183,7 +185,7 @@ RobotModel::RobotModel() :
 	// flywheelMotor1_->ConfigNominalOutputReverse(0, kTimeoutMs);
 	// flywheelMotor1_->ConfigPeakOutputForward(1, kTimeoutMs);
 	// flywheelMotor1_->ConfigPeakOutputReverse(-1, kTimeoutMs);
-	
+
 
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_BROWNOUT_VOLTAGE).GetEntry();
@@ -316,18 +318,17 @@ double RobotModel::GetRightDistance() {
 }
 
 double RobotModel::GetLeftVelocity() {
-    return -10*leftDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
+	return (currLeftDistance_ - lastLeftDistance_)/(currVelocTime_ - lastVelocTime_);
 }
-
+ 
 double RobotModel::GetRightVelocity() {
-    return 10*rightDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
+   return (currRightDistance_ - lastLeftDistance_)/(currVelocTime_ - lastVelocTime_);
 }
 
 void RobotModel::ResetDriveEncoders() {
 	//read curr encoder values and store as initial encoder values
 	initialLeftEncoderValue_ = GetRawLeftEncoderValue();
 	initialRightEncoderValue_ = GetRawRightEncoderValue();
-	printf("initial left: %f, initial right: %f\n", initialLeftEncoderValue_, initialRightEncoderValue_);
 }
 
 bool RobotModel::GetLeftEncoderStopped() {
@@ -528,35 +529,19 @@ double RobotModel::GetCurrent(int channel) {
 }
 
 void RobotModel::GearShift() {
-   //assuming arcade:
-           if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
-               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) 
-			   && isHighGear_== true) {
-               	SetHighGear();
-           }
-		   else if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
-               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) && isHighGear_ == false) {
-               	SetLowGear();
-           }
-           //assuming tank:
-           /* if ((abs(humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY))
-           - humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY))
-           >= MIN_TURNING_XY_DIFFERENCE) {
-               robot_->SetLowGear();
-           } */
-           else if ((GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
-                   GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) || 
-				   (-GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
-                   -GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
-               SetHighGear();
-			   //printf("High gear: %f ", GetRightVelocity());
-			   //printf("%f\n", GetLeftVelocity());
-           }
-           else {
-               SetLowGear();
-			   //printf("Low gear: %f ", GetRightVelocity());
-			   //printf("%f\n", GetLeftVelocity());
-           }
+   if ((currLeftVelocity_ > MAX_LOW_GEAR_VELOCITY ||
+        currRightVelocity_ > MAX_LOW_GEAR_VELOCITY) || 
+	   (currLeftVelocity_ < -MAX_LOW_GEAR_VELOCITY ||
+        currRightVelocity_ < -MAX_LOW_GEAR_VELOCITY)) {
+            SetHighGear();
+			//printf("High gear: %f ", GetRightVelocity());
+			//printf("%f\n", GetLeftVelocity());
+    }
+	else {
+        SetLowGear();
+		//printf("Low gear: %f ", GetRightVelocity());
+		//printf("%f\n", GetLeftVelocity());
+    }
 }
 
 
@@ -710,6 +695,10 @@ void RobotModel::RefreshShuffleboard(){
 
 	lastVelocTime_ = currVelocTime_;
 	currVelocTime_ = GetTime();
+	lastLeftDistance_ = currLeftDistance_;
+	lastRightDistance_ = currRightDistance_;
+	currLeftDistance_ = GetLeftDistance();
+	currRightDistance_ = GetRightDistance();
     lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;
     currLeftEncoderValue_ = GetLeftEncoderValue();
