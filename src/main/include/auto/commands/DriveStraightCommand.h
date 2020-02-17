@@ -94,6 +94,7 @@ private:
 	double rMaxOutput_, rTolerance_;
 	double dPFac_, dIFac_, dDFac_;
 	double dMaxOutput_, dTolerance_;
+  double initialDMax_, finalDMax_, maxT_;
 	double desiredAngle_;
 	double initialAvgDistance_;
 	double desiredDistance_;

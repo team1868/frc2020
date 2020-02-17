@@ -16,6 +16,7 @@ AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
 		humanControl_ = controlBoard;
 		navX_ = robot_->GetNavXSource();
 		talonEncoder_ = new TalonEncoderPIDSource(robot_);
+		talonEncoderCurve_ = new TalonEncoderCurvePIDSource(robot_);
 		angleOutput_ = new AnglePIDOutput();
 		distanceOutput_ = new DistancePIDOutput();
 		breakDesired_ = false;
@@ -147,15 +148,15 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				printf("radius: %f\n, angle: %f\n, turnleft: %d\n, goForward: %d\n", curveRadius, curveAngle, turnLeft, goForward);
 				if (turnLeft == 0) {
 					if (goForward == 0) {
-						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, false, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, false, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					} else{
-						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, true, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, true, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					}
 				} else {
 					if (goForward == 0) {
-						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, false, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, false, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					} else{
-						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, true, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, true, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					}
 				}
 			}
@@ -255,4 +256,11 @@ void AutoMode::Disable() {
     }
 
     printf("Successfully disabled\n");
+}
+
+AutoMode::~AutoMode(){
+	if(talonEncoder_ != NULL) delete talonEncoder_;
+	if(talonEncoderCurve_ != NULL) delete talonEncoderCurve_;
+	if(angleOutput_ != NULL) delete angleOutput_;
+	if(distanceOutput_ != NULL) delete distanceOutput_;
 }

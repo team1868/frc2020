@@ -18,8 +18,8 @@ void MainProgram::RobotInit() {
     humanControl_ = new ControlBoard();
     superstructureController_ = new SuperstructureController(robot_, humanControl_);
     driveController_ = new DriveController(robot_, humanControl_);
-    robot_->CreatePID(); //variable
-    printf("created PID\n"); //what pid???
+    robot_->CreatePIDEntries(); 
+    printf("created PID\n"); 
     robot_->ResetDriveEncoders();
     robot_->SetHighGear();
     aligningTape_ = false;
@@ -65,7 +65,7 @@ void MainProgram::AutonomousInit() {
     //robot_->SetTestSequence(sequence_);
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
-    robot_->SetTestSequence("c 3.0 90.0 0 0");
+    robot_->SetTestSequence("c 3.0 90.0 1 1");
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
     navX_ = new NavXPIDSource(robot_);

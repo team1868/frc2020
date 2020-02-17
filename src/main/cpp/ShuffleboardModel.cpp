@@ -7,7 +7,7 @@
 
 #include "RobotModel.h"
 
-void RobotModel::CreatePID(){
+void RobotModel::CreatePIDEntries(){
     aPEntry_ = anglePIDLayout_.Add("P", 0.0055).GetEntry(); // 0.0055 for practice bot
     aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
     aDEntry_ = anglePIDLayout_.Add("D", 0.02).GetEntry();
@@ -22,7 +22,7 @@ void RobotModel::CreatePID(){
     iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
     dEntry_ = pivotPIDLayout_.Add("D", 0.0162).GetEntry(); // 0.0173 for nova, 0.0162 for practice bot
 
-    dPFacNet_ =  curveDistancePIDLayout_.Add("Curve dP", 0.2).GetEntry();
+    dPFacNet_ =  curveDistancePIDLayout_.Add("Curve dP", 0.1).GetEntry();
     dIFacNet_ =  curveDistancePIDLayout_.Add("Curve dI", 0.0).GetEntry();
     dDFacNet_ =  curveDistancePIDLayout_.Add("Curve dD", 0.0).GetEntry();
     //tPFacNet_ =  curveTurnPIDLayout_.Add("Curve tP", 0.07).GetEntry();

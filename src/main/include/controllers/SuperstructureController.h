@@ -54,6 +54,7 @@ class SuperstructureController {
 
   double CalculateIntakeRollersPower();
 
+
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
   void ControlPanelFinalSpin();
