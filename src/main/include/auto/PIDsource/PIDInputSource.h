@@ -113,4 +113,29 @@ private:
 	double lastAvgPosition_, currAvgPosition_;
 	double avgVelocity_;
 };
- 
+
+
+class TalonEncoderCurvePIDSource : public frc::PIDSource {
+public:
+	/**
+	 * Assigns robot and sets averageTalonDistance to 0
+	 * @param RobotModel
+	 */
+	TalonEncoderCurvePIDSource(RobotModel *robot);
+	/**
+	 *Gets distance from left and right encoders and sets averageTalonDistance
+	 *as average of the two
+	 *@return averageTalonDistance_
+	 */
+	double PIDGet();
+	/**
+	 * Destructor
+	 */
+	virtual ~TalonEncoderCurvePIDSource();
+private:
+	RobotModel *robot_;
+	/**
+	 * Average distance of left and right encoders
+	 */
+	double averageTalonDistance_;
+};

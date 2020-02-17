@@ -57,7 +57,6 @@ NavXPIDSource::~NavXPIDSource() {
 TalonEncoderPIDSource::TalonEncoderPIDSource(RobotModel* robot) {
 	robot_ = robot;
 	averageTalonDistance_ = 0.0;
-
 }
 
 double TalonEncoderPIDSource::PIDGet() {
@@ -72,7 +71,6 @@ double TalonEncoderPIDSource::PIDGet() {
 	} else {
 		averageTalonDistance_= (rightDistance + leftDistance) / 2;
 	}
-
 	SmartDashboard::PutNumber("Left Distance", leftDistance);
 	SmartDashboard::PutNumber("Right Distance", rightDistance);
 	SmartDashboard::PutNumber("Average Distance", averageTalonDistance_);
@@ -136,5 +134,21 @@ double VelocityPIDSource::PIDGet(){
 }
 
 VelocityPIDSource::~VelocityPIDSource(){
+
+}
+
+TalonEncoderCurvePIDSource::TalonEncoderCurvePIDSource(RobotModel * robot){
+	robot_ = robot;
+	averageTalonDistance_ = 0.0;
+}
+
+double TalonEncoderCurvePIDSource::PIDGet(){
+	double leftDistance = robot_->GetLeftDistance();
+	double rightDistance = robot_->GetRightDistance();
+	averageTalonDistance_= (rightDistance + leftDistance) / 2;
+	return averageTalonDistance_;
+}
+
+TalonEncoderCurvePIDSource::~TalonEncoderCurvePIDSource(){
 
 }

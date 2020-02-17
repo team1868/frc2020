@@ -14,10 +14,10 @@
 class CurveCommand : public AutoCommand {
  public:
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft, bool goForward,
-    NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+    NavXPIDSource* navXSource, TalonEncoderCurvePIDSource *talonEncoderCurvePIDSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
-    NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+    NavXPIDSource* navXSource, TalonEncoderCurvePIDSource *talonEncoderCurvePIDSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
@@ -32,7 +32,7 @@ class CurveCommand : public AutoCommand {
 
 
   NavXPIDSource *navXPIDSource_;
-  TalonEncoderPIDSource *talonEncoderPIDSource_;
+  TalonEncoderCurvePIDSource *talonEncoderCurvePIDSource_;
   AnglePIDOutput *anglePIDOutput_;
   DistancePIDOutput *distancePIDOutput_;
   PIDController *dPID_; //*tPID_
@@ -44,6 +44,17 @@ class CurveCommand : public AutoCommand {
   double initAngle_;
   double desiredRadius_, desiredAngle_;
   double curPivDistance_, curDesiredAngle_, curAngle_;
+  double initialCurveTime_;
+  double diffCurveTime_;
+
+  double dMaxOutput_; // motor output
+  double initialDMax_; // motor output
+  double finalDMax_; // motor output
+  double maxT_; //secs
+
+  int numTimesOnTarget_;
+  double curveTimeoutSec_;
+  bool timeOut;
 
   double curAngleError_;
 

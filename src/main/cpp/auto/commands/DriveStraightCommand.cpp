@@ -82,7 +82,7 @@ void DriveStraightCommand::Init() {
 
 	anglePID_->SetOutputRange(-rMaxOutput_, rMaxOutput_);
 	//distancePID_->SetOutputRange(-dMaxOutput_, dMaxOutput_);
-	distancePID_->SetOutputRange(-0.5, 0.5);
+	distancePID_->SetOutputRange(-initialDMax_, initialDMax_);
 
 	anglePID_->SetAbsoluteTolerance(rTolerance_);
 	distancePID_->SetAbsoluteTolerance(dTolerance_);
@@ -130,14 +130,13 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 
 	diffDriveTime_ = robot_->GetTime() - initialDriveTime_;
 
-	double dMax = 0.1;
-	if (diffDriveTime_ > 1.0){
-		dMax = dMaxOutput_;
+	if (diffDriveTime_ > maxT_){
+		dMaxOutput_ = finalDMax_;
 	}
 	else {
-		dMax = 0.1 + 0.75/1.0*diffDriveTime_;
+		dMaxOutput_ = initialDMax_ + ((finalDMax_-initialDMax_)/maxT_)*diffDriveTime_;
 	}
-	distancePID_->SetOutputRange(-dMax, dMax);
+	distancePID_->SetOutputRange(-dMaxOutput_, dMaxOutput_);
 	
 
 // on target
@@ -283,7 +282,10 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	dTolerance_ = 2.0 / 12.0;
 
 	rMaxOutput_ = 0.15;
-	dMaxOutput_ = 0.85;
+	dMaxOutput_ = 0.1;
+	initialDMax_ = 0.1;
+	finalDMax_ = 0.85;
+	maxT_ = 1.0;
 
 	// initializing number of times robot is on target
 	numTimesOnTarget_ = 0;

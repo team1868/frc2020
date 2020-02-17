@@ -161,7 +161,7 @@ class RobotModel {
 
 
     // PID Stuff (yay)
-    void CreatePID(); 
+    void CreatePIDEntries(); 
 
     double GetDriveStraightAngleP();
     double GetDriveStraightAngleI();

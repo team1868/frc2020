@@ -313,6 +313,7 @@ void RobotModel::ResetDriveEncoders() {
 	//read curr encoder values and store as initial encoder values
 	initialLeftEncoderValue_ = GetRawLeftEncoderValue();
 	initialRightEncoderValue_ = GetRawRightEncoderValue();
+	printf("initial left: %f, initial right: %f\n", initialLeftEncoderValue_, initialRightEncoderValue_);
 }
 
 bool RobotModel::GetLeftEncoderStopped() {

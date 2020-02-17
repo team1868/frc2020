@@ -23,7 +23,7 @@ class AutoMode {
 
     AutoMode(RobotModel *robot, ControlBoard *controlBoard);
     // might need to comment out the robot and controlBoard up here because superstructure controller takes in robot and controlboard as parameters when created
-    virtual ~AutoMode() {};
+    virtual ~AutoMode();
 
     virtual void CreateQueue(AutoMode::AutoPositions pos) {};
 
@@ -51,6 +51,7 @@ class AutoMode {
 
 	  NavXPIDSource* navX_;
 	  TalonEncoderPIDSource* talonEncoder_;
+    TalonEncoderCurvePIDSource* talonEncoderCurve_;
 
 	  AnglePIDOutput *angleOutput_;
 	  DistancePIDOutput *distanceOutput_;
