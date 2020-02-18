@@ -51,7 +51,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	talonOutput_ = new PivotPIDTalonOutput(robot_);
 
 	// initialize time variables
-	pointCommandStartTime_ = robot_->GetTime();
+	pointCommandStartTime_ =  robot_->GetTime();
 	pointTimeoutSec_ = 5.0;//0.0; //note edited from last year
 
 	// retrieve pid values from user //moved to shuffleboard model
@@ -214,10 +214,10 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	}
 	//printf("On target %d times\n",numTimesOnTarget_);
 	if ((pointPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
-		printf("%f Final NavX Angle from PID Source: %f\n"
+		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
 				"%f Angle NavX Error %f\n",
-				robot_->GetTime(), navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
+				timeDiff, navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
 					pointPID_->GetError());
 		Reset();
 		isDone_ = true;

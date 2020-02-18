@@ -186,11 +186,11 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	}
 	printf("On target %d times\n",numTimesOnTarget_);
 	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
-		printf("%f Final NavX Angle from PID Source: %f\n"
+		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
 				"%f Angle NavX Error %f\n",
-				robot_->GetTime(), navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
-					pivotPID_->GetError());
+				timeDiff, navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
+				pivotPID_->GetError());
 		Reset();
 		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);

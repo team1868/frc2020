@@ -121,7 +121,7 @@ double DriveController::GetCubicAdjustment(double value, double adjustmentConsta
 double DriveController::GetRotateVelocityAdjustment(double value){
     rightJoystickXLastValue_ = rightJoystickXCurrValue_;
     rightJoystickXCurrValue_ = value;
-    double time = 60/50;
+    double time = 60.0/50;
     return abs(rightJoystickXCurrValue_-rightJoystickXLastValue_)/time;
 }
 
