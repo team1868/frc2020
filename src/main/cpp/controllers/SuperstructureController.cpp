@@ -23,7 +23,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     climbElevatorUpPower_ = 0.5; // fix
     climbElevatorDownPower_ = -0.4; // fix
     climbPowerDesired_ = 0.0; // needs to equal 0
-    climbWinchPower_ = 0.5; // fix
+    climbWinchPower_ = 0.75; // fix
     climbWinchUpdatePower_ = 0.55; // fix (extra speed needed to level the power)
     
     desiredFlywheelVelocity_ = 0.0;//7000; // ticks per 0.1 seconds
@@ -250,6 +250,7 @@ void SuperstructureController::AutoUpdate(){
 void SuperstructureController::Update(){
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
+    CheckClimbDesired();
 
     switch(currState_){
         case kDefaultTeleop:

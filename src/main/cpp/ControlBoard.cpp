@@ -39,8 +39,8 @@ ControlBoard::ControlBoard() {
 	buttons_[kClimbWinchButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_BUTTON_PORT);
 
 	buttons_[kGearShiftButton] = new ButtonReader(leftJoy_, GEARSHIFT_BUTTON_PORT);
-	buttons_[kClimbWinchLeftButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_RIGHT_BUTTON_PORT);
-	buttons_[kClimbWinchRightButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_LEFT_BUTTON_PORT);
+	buttons_[kClimbWinchLeftButton] = new ButtonReader(operatorJoyB_, CLIMB_WINCH_RIGHT_BUTTON_PORT);
+	buttons_[kClimbWinchRightButton] = new ButtonReader(operatorJoyB_, CLIMB_WINCH_LEFT_BUTTON_PORT);
 
 	buttons_[kWristDownButton] = new ButtonReader(operatorJoy_, WRIST_DOWN_BUTTON_PORT);
     buttons_[kWristUpButton] = new ButtonReader(operatorJoy_, WRIST_UP_BUTTON_PORT);
