@@ -9,7 +9,7 @@
 
 WaitingCommand::WaitingCommand(double myWaitTimeSec) : AutoCommand() {
 	waitTimeSec_ = myWaitTimeSec;
-	timer_ = new Timer();
+	timer_ = new frc::Timer();
 	isDone_ = false;
 }
 

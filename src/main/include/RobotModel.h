@@ -252,11 +252,11 @@ class RobotModel {
     
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
     TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 
-    Solenoid *flywheelHoodSolenoid_;
+    frc::Solenoid *flywheelHoodSolenoid_;
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
     WPI_TalonSRX *climberElevatorMotor_;
-    Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
+    frc::Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
     //Compressor *compressor_;
     WPI_VictorSPX *controlPanelMotor_;
@@ -267,9 +267,9 @@ class RobotModel {
 
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
-    AnalogPotentiometer *intakeWristPot_; 
+    frc::AnalogPotentiometer *intakeWristPot_; 
     
-    DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
+    frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
     WPI_TalonSRX *indexFunnelMotor_;
     WPI_TalonSRX *elevatorMotor_, *elevatorFeederMotor_;
 
@@ -305,7 +305,8 @@ class RobotModel {
     double targetVelocity_;
 
     double lastVelocTime_, currVelocTime_;
-
+    double currLeftDistance_, currRightDistance_; 
+    double lastLeftDistance_, lastRightDistance_; 
     // if smth is closer to the side of the opposing player station then subtract that # from the variable 
     double initLineError_ ;      
     double trenchDistError_;

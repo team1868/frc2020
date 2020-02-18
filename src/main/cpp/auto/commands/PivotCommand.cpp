@@ -15,7 +15,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	leftDriveEntry_ = pivotLayout_.Add("Left Drive Output", 0.0).GetEntry();
 	rightDriveEntry_ = pivotLayout_.Add("Right Drive Output", 0.0).GetEntry();
-	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
     navXSource_ = navXSource;
 
@@ -51,7 +51,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
-	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pivotPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = 3.0;//1.0;
@@ -101,7 +101,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	dFac_ = robot_->GetPivotD();
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
-	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pivotPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = tolerance;//3.0;

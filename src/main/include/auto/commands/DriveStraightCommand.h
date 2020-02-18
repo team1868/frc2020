@@ -85,8 +85,8 @@ private:
 	TalonEncoderPIDSource *talonEncoderSource_;
 	AnglePIDOutput *anglePIDOutput_;
 	DistancePIDOutput *distancePIDOutput_;
-	PIDController *anglePID_;
-	PIDController *distancePID_;
+	frc::PIDController *anglePID_;
+	frc::PIDController *distancePID_;
 	RobotModel *robot_;
 
 	bool isAbsoluteAngle_;

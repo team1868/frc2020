@@ -40,6 +40,6 @@ public:
 	void Reset();
 private:
 	double waitTimeSec_;
-	Timer *timer_;
+	frc::Timer *timer_;
 	bool isDone_;
 };

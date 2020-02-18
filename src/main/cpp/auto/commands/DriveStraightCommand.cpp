@@ -19,12 +19,12 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
 	
-	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
-	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 	desiredAngleEntry_ = driveStraightLayout_.Add("Desired Angle", 0.0).GetEntry();
 	desiredTotalFeetEntry_ = driveStraightLayout_.Add("Desired Total Feet", 0.0).GetEntry();
-	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
-	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 	aPIDOutputEntry_ = driveStraightLayout_.Add("Angle PID Output", 0.0).GetEntry();
 	dPIDOutputEntry_ = driveStraightLayout_.Add("Distance PID Output", 0.0).GetEntry();
 	
@@ -58,8 +58,8 @@ void DriveStraightCommand::Init() {
 
 	GetPIDValues();
 	// Setting up PID vals
-	anglePID_ = new PIDController(rPFac_, rIFac_, rDFac_, navXSource_, anglePIDOutput_);
-	distancePID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderSource_, distancePIDOutput_);
+	anglePID_ = new frc::PIDController(rPFac_, rIFac_, rDFac_, navXSource_, anglePIDOutput_);
+	distancePID_ = new frc::PIDController(dPFac_, dIFac_, dDFac_, talonEncoderSource_, distancePIDOutput_);
 
 	// absolute angle
 	if (!isAbsoluteAngle_) {

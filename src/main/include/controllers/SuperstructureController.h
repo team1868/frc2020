@@ -80,7 +80,7 @@ class SuperstructureController {
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
   double desiredFlywheelVelocity_, closeFlywheelVelocity_;
-  PIDController *flywheelPID_;
+  frc::PIDController *flywheelPID_;
   SuperstructurePIDOutput *flywheelPIDOutput_;
   TalonFXPIDSource *flywheelPIDSource_;
 
@@ -112,7 +112,7 @@ class SuperstructureController {
   double manualRollerPower_;
 
 
-  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
+  frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_;
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_,

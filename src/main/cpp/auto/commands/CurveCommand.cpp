@@ -37,13 +37,13 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   finalDMax_ = 0.9; // motor output
   maxT_ = 1.0; //secs
 
-  dOutputNet_ = curveLayout_.Add("Curve dO", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+  dOutputNet_ = curveLayout_.Add("Curve dO", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
   //tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
-  lOutputNet_ = curveLayout_.Add("Curve lO", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
-  rOutputNet_ = curveLayout_.Add("Curve rO", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
-  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+  lOutputNet_ = curveLayout_.Add("Curve lO", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+  rOutputNet_ = curveLayout_.Add("Curve rO", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
   //tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
-  pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+  pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 }
 
 CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
@@ -66,7 +66,7 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   //tOutputNet_ = curveLayout_.Add("Curve tO", 0.0).GetEntry(); 
   lOutputNet_ = curveLayout_.Add("Curve lO", 0.0).GetEntry();
   rOutputNet_ = curveLayout_.Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+  dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
   //tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
   pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).GetEntry();
 }
@@ -99,7 +99,7 @@ void CurveCommand::Init(){
   //anglePIDOutput_ = new AnglePIDOutput();
   //distancePIDOutput_ = new DistancePIDOutput();
 
-  dPID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderCurvePIDSource_, distancePIDOutput_);
+  dPID_ = new frc::PIDController(dPFac_, dIFac_, dDFac_, talonEncoderCurvePIDSource_, distancePIDOutput_);
   //tPID_ = new PIDController(tPFac_, tIFac_, tDFac_, navXPIDSource_, anglePIDOutput_);
 
   //tPID_->SetPID(tPFac_, tIFac_, tDFac_);

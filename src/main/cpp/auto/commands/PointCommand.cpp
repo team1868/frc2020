@@ -15,7 +15,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	leftDriveEntry_ = pointLayout_.Add("Left Drive Output", 0.0).GetEntry();
 	rightDriveEntry_ = pointLayout_.Add("Right Drive Output", 0.0).GetEntry();
-	pointErrorEntry_ = pointLayout_.Add("Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	pointErrorEntry_ = pointLayout_.Add("Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
     navXSource_ = navXSource;
 
@@ -61,7 +61,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pointTimeoutSec_ / 90.0;
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
-	pointPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pointPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = 3.0;//1.0;
@@ -127,7 +127,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	dFac_ = robot_->GetPointD();
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pointTimeoutSec_ / 90.0;
-	pointPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pointPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = tolerance;//3.0;

@@ -21,7 +21,7 @@ double NavXPIDSource::PIDGet() {
 //	CalculateAccumulatedYaw();
 	accumulatedYaw_ = robot_->GetNavXYaw();
 //	accumulatedYaw_ = robot_->GetNavXYaw();
-	SmartDashboard::PutNumber("Accumulated Yawwwww", accumulatedYaw_);
+	frc::SmartDashboard::PutNumber("Accumulated Yawwwww", accumulatedYaw_);
 	return accumulatedYaw_;
 }
 
@@ -71,9 +71,9 @@ double TalonEncoderPIDSource::PIDGet() {
 	} else {
 		averageTalonDistance_= (rightDistance + leftDistance) / 2;
 	}
-	SmartDashboard::PutNumber("Left Distance", leftDistance);
-	SmartDashboard::PutNumber("Right Distance", rightDistance);
-	SmartDashboard::PutNumber("Average Distance", averageTalonDistance_);
+	frc::SmartDashboard::PutNumber("Left Distance", leftDistance);
+	frc::SmartDashboard::PutNumber("Right Distance", rightDistance);
+	frc::SmartDashboard::PutNumber("Average Distance", averageTalonDistance_);
 	return averageTalonDistance_;
 
 }
@@ -98,9 +98,9 @@ double TalonFXPIDSource::PIDGet() {
 	// FIX THIS TO BE BETTER THANKS
 	averageTalonFXDistance_ = flywheel1Distance;
 
-	SmartDashboard::PutNumber("Flywheel 1 Distance", flywheel1Distance);
-	SmartDashboard::PutNumber("Flywheel 2 Distance", flywheel2Distance);
-	SmartDashboard::PutNumber("Average Distance", averageTalonFXDistance_);
+	frc::SmartDashboard::PutNumber("Flywheel 1 Distance", flywheel1Distance);
+	frc::SmartDashboard::PutNumber("Flywheel 2 Distance", flywheel2Distance);
+	frc::SmartDashboard::PutNumber("Average Distance", averageTalonFXDistance_);
 	return averageTalonFXDistance_;
 
 }

@@ -59,8 +59,8 @@ RobotModel::RobotModel() :
     timer_->Start();
     // Initializing NavX
     navXSpeed_ = 200;
-    navX_ = new AHRS(SPI::kMXP, navXSpeed_);
-    Wait(1.0); // NavX takes a second to calibrate
+    navX_ = new AHRS(frc::SPI::kMXP, navXSpeed_);
+    frc::Wait(1.0); // NavX takes a second to calibrate
     // initializing pdp
     pdp_ = new frc::PowerDistributionPanel();
 

@@ -37,7 +37,7 @@ class DriveController {
 	  ControlBoard *humanControl_;
     bool arcadeMode_;
 
-    ShuffleboardLayout &driveLayout_;
+    frc::ShuffleboardLayout &driveLayout_;
     nt::NetworkTableEntry arcadeEntry_, thrustSensitivityEntry_, rotateSensitivityEntry_, anaModeEntry_;
     
     double thrustSensitivity_, rotateSensitivity_;
