@@ -40,16 +40,16 @@ int RobotModel::GetFlywheelMotor1Velocity() {
 
 // make into one function later whoops
 void RobotModel::ConfigFlywheelP(double pFac_){
-    flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac_);
 }
 void RobotModel::ConfigFlywheelI(double iFac_){
-    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, iFac_);
 }
 void RobotModel::ConfigFlywheelD(double dFac_){
-    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac_);
 }
 void RobotModel::ConfigFlywheelF(double fFac_){
-    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac_);
 }
 
 void RobotModel::EngageFlywheelHood() {
@@ -65,7 +65,7 @@ void RobotModel::SetClimbWinchLeftOutput(double power){
 }
 
 void RobotModel::SetClimbWinchRightOutput(double power){
-    climberWinchRightMotor_->Set(power);
+    climberWinchRightMotor_->Set(-power);
 }
 
 double RobotModel::GetClimberWinchRightEncoderValue(){

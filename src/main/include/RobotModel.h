@@ -258,7 +258,7 @@ class RobotModel {
     frc::Solenoid *flywheelHoodSolenoid_;
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
-    WPI_TalonSRX *climberElevatorMotor_;
+    WPI_VictorSPX *climberElevatorMotor_;
     frc::Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
     //Compressor *compressor_;

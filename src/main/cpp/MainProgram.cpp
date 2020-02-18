@@ -24,7 +24,7 @@ void MainProgram::RobotInit() {
     robot_->SetHighGear();
     aligningTape_ = false;
     
-    autoSequenceEntry_ = frc::Shuffleboard::GetTab("Programmer Control").Add("Auto Test Sequence", "t 0").GetEntry();
+    autoSequenceEntry_ = robot_->GetModeTab().Add("Auto Test Sequence", "t 0").GetEntry();
     sequence_ = autoSequenceEntry_.GetString("t 0");
     printf("I am alive.\n");
 }
@@ -134,7 +134,7 @@ void MainProgram::DisabledInit() {
 }
 
 void MainProgram::TeleopInit() {
-    printf("in teleopinit\n");
+    std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();
 
     robot_->StartCompressor();
@@ -142,10 +142,11 @@ void MainProgram::TeleopInit() {
     matchTime_ = frc::Timer::GetMatchTime();
     aligningTape_ = false;
 
+    std::cout << "before zmq\n" << std::flush;
     zmq::context_t * context_ = new zmq::context_t(1); //same context for send + receive zmq
     //connectRecvZMQ();
     //connectSendZMQ();
-    printf("end of teleopinit\n");
+    std::cout << "end of teleopinit\n" << std::flush;
 }
 
 void MainProgram::TeleopPeriodic() {
@@ -153,15 +154,22 @@ void MainProgram::TeleopPeriodic() {
     //printf("left distance is %f and right distance is %f\n", robot_->GetLeftDistance(), robot_->GetRightDistance());
     humanControl_->ReadControls();
     driveController_->Update();
+    //std::cout << "before superstructure\n" << std::flush;
     superstructureController_->Update();
-    superstructureController_->WristUpdate();
+    //std::cout << "updated drive and superstructure\n" << std::flush;
+    //\superstructureController_->WristUpdate();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
+    
+    //std::cout << "updated colors\n" << std::flush;
+    
 
     matchTime_ = frc::Timer::GetMatchTime();
     //sendZMQ();//sending here bc. returns after each if below and i don't want to change everything hehe
 
     //align tapes not at trench (like auto)
+    //std::cout << "checking tape align\n" << std::flush;
+    
     if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
         aligningTape_ = true;
         alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false); //nav, talon variables don't exist yet

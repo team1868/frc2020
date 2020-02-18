@@ -23,9 +23,9 @@ static const int LEFT_DRIVE_SLAVE_A_ID                   = 3;
 // Superstructure Motors
 static const int FLYWHEEL_MOTOR_ONE_ID                   = 20; // fx
 static const int FLYWHEEL_MOTOR_TWO_ID                   = 21;  // fx
-static const int CLIMB_WINCH_LEFT_MOTOR_ID               = 5; //TODO WAS SOMETHING // srx // done // left
-static const int CLIMB_WINCH_RIGHT_MOTOR_ID              = 7;  // srx
-static const int CLIMB_ELEVATOR_ID                       = 8; // spx // done
+static const int CLIMB_WINCH_LEFT_MOTOR_ID               = 7; //TODO WAS SOMETHING // srx // done // left
+static const int CLIMB_WINCH_RIGHT_MOTOR_ID              = 6;  // srx
+static const int CLIMB_ELEVATOR_ID                       = 9; // spx // done
 static const int CONTROL_PANEL_MOTOR_ID                  = 14;  // sp
 static const int INTAKE_ROLLERS_MOTOR_ID                 = 10; // spx // done
 static const int INTAKE_WRIST_MOTOR_ID                   = 11; // spx
@@ -70,9 +70,9 @@ static const int OPERATOR_JOY_B_USB_PORT                 = 3;
 //static const int LOW_GEAR_BUTTON_PORT                = 2;
 
 static const int SHOOTING_BUTTON_PORT                    = 1; // fix all superstructure button ports
-static const int CLIMB_ELEVATOR_UP_BUTTON_PORT           = 3; 
-static const int CLIMB_ELEVATOR_DOWN_BUTTON_PORT         = 7;
-static const int ALIGN_TAPE_BUTTON_PORT                  = 4;
+static const int CLIMB_ELEVATOR_UP_BUTTON_PORT           = 4; 
+static const int CLIMB_ELEVATOR_DOWN_BUTTON_PORT         = 5;
+static const int ALIGN_TAPE_BUTTON_PORT                  = 20;
 
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT           = 5;
 static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT       = 2;
@@ -81,8 +81,8 @@ static const int INTAKE_SERIES_BUTTON_PORT               = 2;
 static const int INDEX_SERIES_BUTTON_PORT                = 3;
 static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 4; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 5; //random
-static const int CLIMB_WINCH_BUTTON_PORT                 = 6;
-static const int CLIMB_WINCH_RIGHT_BUTTON_PORT           = 8;
+static const int CLIMB_WINCH_BUTTON_PORT                 = 50;
+static const int CLIMB_WINCH_RIGHT_BUTTON_PORT           = 6;
 static const int CLIMB_WINCH_LEFT_BUTTON_PORT            = 7;
 static const int GEARSHIFT_BUTTON_PORT                   = 9; //random
 static const int WRIST_DOWN_BUTTON_PORT                  = 5;

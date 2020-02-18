@@ -46,10 +46,6 @@ class SuperstructureController {
   void SetFlywheelPowerDesired(double flywheelVelocityRPM);
   void WristUpdate();
   void WinchUpdate();
-  
-  //these functions should not exist
-  void FlywheelHoodUp();
-  void FlywheelHoodDown();
 
   bool IsFlywheelAtSpeed();
 
@@ -68,6 +64,14 @@ class SuperstructureController {
   ~SuperstructureController();
 
  private:
+  void IndexPrep();
+  void Intaking();
+  void Indexing();
+  void Shooting();
+  void Resetting();
+  void CheckControlPanelDesired();
+  void CheckClimbDesired();
+
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
@@ -98,7 +102,6 @@ class SuperstructureController {
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
-  bool positiveDirection_;
   double climbWinchPower_, climbWinchUpdatePower_;
   double currRobotAngle_;
 
@@ -116,12 +119,10 @@ class SuperstructureController {
 
   double manualRollerPower_;
 
-
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
-  nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
+  nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_;
-  nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_,
-                        closeFlywheelEntry_;
+  nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_;
 
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry intakeWristAngleEntry_;
