@@ -297,7 +297,7 @@ double RobotModel::GetRawRightEncoderValue() {
 	return rightDriveEncoder_->GetIntegratedSensorPosition();
 }
 
-//return feetGetLeftDis
+//return feet
 double RobotModel::GetLeftDistance() {
 	if (isHighGear_){
 		return GetLeftEncoderValue()/HGEAR_ENCODER_TICKS_FOOT;

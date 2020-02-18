@@ -183,13 +183,13 @@ void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, 
             minBackwardThrust_ = leftDrive;
         }
         if (testMode){
-        //std::cout << "minForward: " << minForwardThrust_ << " minBackward: " << minBackwardThrust_ << std::endl;
+        std::cout << "minForward: " << minForwardThrust_ << " minBackward: " << minBackwardThrust_ << std::endl;
         }
     }
-    // else{
-    //     std::cout << "no left friction adjust needed" << std::endl;
-    //     std::cout << "left output:" << leftDrive << " left velocity:" << robot_->GetLeftVelocity() <<std::endl;
-    // }
+    else{
+        std::cout << "no left friction adjust needed" << std::endl;
+        std::cout << "left output:" << leftDrive << " left velocity:" << robot_->GetLeftVelocity() <<std::endl;
+    }
     if (rightDrive != 0.0 && robot_->GetRightEncoderStopped()) {
         if (rightDrive > 0.0) {
             if (!testMode){
@@ -202,9 +202,9 @@ void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, 
             }
         }
     }
-    // else{
-    //     std::cout << "no right friction adjust needed" << std::endl;
-    // }
+    else{
+        std::cout << "no right friction adjust needed" << std::endl;
+    }
 }
 
 DriveController::~DriveController(){}

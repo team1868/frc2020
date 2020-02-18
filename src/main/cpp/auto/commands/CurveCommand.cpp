@@ -32,8 +32,8 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   distancePIDOutput_ = distancePIDOutput;
   isDone_ = false;
 
-  dMaxOutput_ = 0.2; // motor output set to output range
-  initialDMax_ = 0.2; // motor output
+  dMaxOutput_ = 0.1; // motor output set to output range
+  initialDMax_ = 0.1; // motor output
   finalDMax_ = 0.9; // motor output
   maxT_ = 1.0; //secs
 
@@ -108,7 +108,7 @@ void CurveCommand::Init(){
   dPID_->SetSetpoint(direction_*desiredAngle_*desiredRadius_*PI/180.0);//2*PI*desiredRadius_/(360/desiredAngle_));
   //tPID_->SetSetpoint(desiredAngle_);
 
-  dPID_->SetAbsoluteTolerance(3.0/12.0); //this too U DUDE
+  dPID_->SetAbsoluteTolerance(1.0/12.0); //this too U DUDE
   //tPID_->SetAbsoluteTolerance(0.5); //HM TUNE TODODODODODOD
 
   //tPID_->SetContinuous(true);
@@ -153,7 +153,6 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){
   diffCurveTime_ = robot_->GetTime() - initialCurveTime_;
   //printf("direction: %f\n", direction_);
   pidSourceNet_.SetDouble(talonEncoderCurvePIDSource_->PIDGet());
-  timeOut = diffCurveTime_- curveTimeoutSec_;
   //if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
   if(dPID_->OnTarget()) {
     numTimesOnTarget_++;
@@ -161,12 +160,12 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){
     numTimesOnTarget_ = 0;
   }
   
-  if(dPID_->OnTarget() && numTimesOnTarget_ > 6 || timeOut) {
-    printf("%f Original Desired Distance: %f\n"
+  if(dPID_->OnTarget() && numTimesOnTarget_ > 6 ) {
+    printf("difftime: %fs Original Desired Distance: %fft\n"
             "Final NavX Angle from PID Source: %f\n"
             "Final NavX Angle from robot: %f \n"
-            "Final Distance from PID Source: %f\n",
-            robot_->GetTime(), direction_*desiredAngle_*desiredRadius_*PI/180, navXPIDSource_->PIDGet(), robot_->GetNavXYaw(), talonEncoderCurvePIDSource_->PIDGet());
+            "Final Distance from PID Source: %fft\n",
+            diffCurveTime_, direction_*desiredAngle_*desiredRadius_*PI/180, navXPIDSource_->PIDGet(), robot_->GetNavXYaw(), talonEncoderCurvePIDSource_->PIDGet());
     if(turnLeft_){
       printf("Final Distance from robot: %f\n", robot_->GetRightDistance());//robot_->GetLeftDistance()); /fixed inversion
     } else {
@@ -174,9 +173,6 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){
     }
     Reset();
     printf("%f CurveCommand IS DONE \n", robot_->GetTime());
-    if(timeOut) {
-      printf("curve timeout\n");
-    }
   }
   else {
     curPivDistance_ = talonEncoderCurvePIDSource_->PIDGet();
@@ -187,7 +183,12 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){
 
     double dOutput = distancePIDOutput_->GetPIDOutput();
     //double tOutput = anglePIDOutput_->GetPIDOutput();
-
+    double frictionConstant = 0.05;
+    if(dOutput < 0) {
+      dOutput -= frictionConstant;
+    } else{
+      dOutput += frictionConstant;
+    }
 
     double lOutput;
     double rOutput;

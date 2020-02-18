@@ -81,19 +81,18 @@ void DriveStraightCommand::Init() {
 	distancePID_->SetContinuous(false); 
 
 	anglePID_->SetOutputRange(-rMaxOutput_, rMaxOutput_);
-	//distancePID_->SetOutputRange(-dMaxOutput_, dMaxOutput_);
 	distancePID_->SetOutputRange(-initialDMax_, initialDMax_);
-
+	
+	
 	anglePID_->SetAbsoluteTolerance(rTolerance_);
 	distancePID_->SetAbsoluteTolerance(dTolerance_);
 
 	anglePID_->Enable();
 	distancePID_->Enable();
 
-	 // Assuming 5.0 ft / sec from the low gear speed
-	driveTimeoutSec_ = fabs(desiredDistance_ / 3.0)+2.0; //TODO: add physics, also TODO remove +5
+
 	initialDriveTime_ = robot_->GetTime();
-	printf("%f Start chicken tenders drivestraight time driveTimeoutSec is %f\n", initialDriveTime_, driveTimeoutSec_);
+
 
 	numTimesOnTarget_ = 0;
 
@@ -157,15 +156,12 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 
 	lastDistance_ = talonEncoderSource_->PIDGet();
-	if((numTimesOnTarget_ > 5) || (diffDriveTime_ > driveTimeoutSec_) || (numTimesStopped_ > 0)) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
-		if (diffDriveTime_ > driveTimeoutSec_) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
-			printf(" %f DRIVESTRAIGHT TIMED OUT!! :) go get chicken tenders %f\n", robot_->GetTime(), diffDriveTime_);
-		}
-		printf("%f Final Left Distance: %f\n" //encoder values not distances
-				"Final Right Distance: %f\n"
-				"Final Average Distance: %f\n"
-				"Final Drivestraight error: %f\n",
-				robot_->GetTime(), robot_->GetLeftDistance(), robot_->GetRightDistance(),
+	if((numTimesOnTarget_ > 5) || (numTimesStopped_ > 0)) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
+		printf("diff time: %fs Final Left Distance: %fft\n" //encoder values not distances
+				"Final Right Distance: %fft\n"
+				"Final Average Distance: %fft\n"
+				"Final Drivestraight error: %fft\n",
+				diffDriveTime_, robot_->GetLeftDistance(), robot_->GetRightDistance(),
 				talonEncoderSource_->PIDGet(), distancePID_->GetError());
 		Reset();
 
