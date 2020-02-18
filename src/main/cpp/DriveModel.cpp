@@ -12,11 +12,6 @@
 #include "auto/AutoMeasures.h"
 
 
-
-const double MIN_TURNING_X = 0.5;
-const double MIN_TURNING_XY_DIFFERENCE = 1.0;
-static const double MAX_LOW_GEAR_VELOCITY = 8.5;
-
 RobotModel::RobotModel() :
     driverTab_(frc::Shuffleboard::GetTab("Driveteam Control")),
     modeTab_(frc::Shuffleboard::GetTab("Programmer Control")),
@@ -529,19 +524,11 @@ double RobotModel::GetCurrent(int channel) {
 }
 
 void RobotModel::GearShift() {
-   if ((currLeftVelocity_ > MAX_LOW_GEAR_VELOCITY ||
-        currRightVelocity_ > MAX_LOW_GEAR_VELOCITY) || 
-	   (currLeftVelocity_ < -MAX_LOW_GEAR_VELOCITY ||
-        currRightVelocity_ < -MAX_LOW_GEAR_VELOCITY)) {
-            SetHighGear();
-			//printf("High gear: %f ", GetRightVelocity());
-			//printf("%f\n", GetLeftVelocity());
-    }
-	else {
-        SetLowGear();
-		//printf("Low gear: %f ", GetRightVelocity());
-		//printf("%f\n", GetLeftVelocity());
-    }
+	if (fabs(GetLeftVelocity()) > MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) > MAX_LOW_GEAR_VELOCITY){
+		SetHighGear();
+	} else {
+		SetLowGear();
+	}
 }
 
 

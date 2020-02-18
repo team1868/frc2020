@@ -27,7 +27,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     climbWinchUpdatePower_ = 0.55; // fix (extra speed needed to level the power)
     
     desiredFlywheelVelocity_ = 0.0;//7000; // ticks per 0.1 seconds
-    closeFlywheelVelocity_ = 0.55;//5000.0*2048.0/60000.0;//2000; //5000 r/m * 2048 tick/r / (60 s/m * 1000 ms/s)
+    closeFlywheelVelocity_ = 6000;//0.55;//5000.0*2048.0/60000.0;//2000; //5000 r/m * 2048 tick/r / (60 s/m * 1000 ms/s)
     flywheelResetTime_ = 2.0; // fix //why does this exist
     // create talon pid controller
     // fix encoder source
@@ -284,6 +284,7 @@ void SuperstructureController::Update(){
                 robot_->SetClimbWinchRightOutput(0.0);
             }
 
+            WristUpdate();
 
             if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
                 currHandlingState_ = kIntaking;
@@ -309,8 +310,8 @@ void SuperstructureController::Update(){
                     }
                     printf("in close PREPPING -------------\n");
                     desiredFlywheelVelocity_ = closeFlywheelVelocity_;
-                    robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-                    //SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+                    //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+                    SetFlywheelPowerDesired(desiredFlywheelVelocity_);
                     robot_->DisengageFlywheelHood();
                     closePrepping_ = true;
                     farPrepping_ = false;
@@ -321,8 +322,8 @@ void SuperstructureController::Update(){
                         shootPrepStartTime_ = currTime_;
                     }
                     desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
-                    robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-                    //SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
+                    //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+                    SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
                     robot_->EngageFlywheelHood(); //TODO add if distance > x
                     closePrepping_ = false;
                     farPrepping_ = true;
@@ -365,8 +366,8 @@ void SuperstructureController::Update(){
                     break;
                 case kShooting:
                     printf("in kShooting with %f\n", desiredFlywheelVelocity_);
-                    robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-                    //SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+                    //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+                    SetFlywheelPowerDesired(desiredFlywheelVelocity_);
                     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
                     if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
                         robot_->SetElevatorOutput(elevatorSlowPower_);
@@ -466,209 +467,6 @@ void SuperstructureController::Update(){
     currState_ = nextState_;
 }
 
-
-
-
-#if 0
-void SuperstructureController::Update(){
-    
-    currTime_ = robot_->GetTime();//may or may not be necessary
-    RefreshShuffleboard();
-    //winch: automatic or human 
-
-
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchLeftButton)){
-        robot_->SetClimbWinchLeftOutput(climbWinchPower_);
-    } else {
-        robot_->SetClimbWinchLeftOutput(0.0);
-    }
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchRightButton)){
-        robot_->SetClimbWinchRightOutput(climbWinchPower_);
-    }else {
-        robot_->SetClimbWinchRightOutput(0.0);
-    }
-
-    //human override state
-
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
-        currState_ = kControlPanelStage2; // verify
-    }
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelStage2Button)){
-        currState_ = kControlPanelStage3;
-    }
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
-        positiveDirection_ = true;
-        currState_ = kClimbingElevator;
-    } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorDownButton)){
-        positiveDirection_ = false;
-        currState_ = kClimbingElevator;
-    } else {
-        robot_->SetClimberElevatorOutput(0.0);
-    }
-
-    // independent climbing buttons, please move setting output from main
-    /*
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchLeftButton)){
-        robot_->SetClimbWinchLeftOutput(climbWinchPower_);
-    } else {
-        robot_->SetClimbWinchLeftOutput(0.0);
-    }
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchRightButton)){
-        robot_->SetClimbWinchRightOutput(climbWinchPower_);
-    }else {
-        robot_->SetClimbWinchRightOutput(0.0);
-    }*/
-
-    WristUpdate();
-
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
-        currState_ = kIntaking;
-    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && 
-               currTime_ - shootPrepStartTime_ > 1.0){
-        if(currState_!=kShooting){
-            startIndexTime_ = currTime_;
-        }
-        currState_ = kShooting; 
-    } else if(currState_ != kResetting){ //not intaking, shooting, or resetting. so default = index
-        currState_ = kIndexing;
-    }
-    
-    //flywheel control if not shooting
-    if (currState_ != kShooting){
-        if(humanControl_->GetDesired(ControlBoard::Buttons::kShootClosePrepButton)){
-            if(!closePrepping_){
-                shootPrepStartTime_ = currTime_;
-                printf("start close prep shooting\n");
-            }
-            printf("in close PREPPING -------------\n");
-            desiredFlywheelVelocity_ = closeFlywheelVelocity_;
-            robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-            //SetFlywheelPowerDesired(desiredFlywheelVelocity_);
-            robot_->DisengageFlywheelHood();
-            closePrepping_ = true;
-            farPrepping_ = false;
-        } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootFarPrepButton)){
-            printf("in far PREPPING -------------\n");
-            if(!farPrepping_){
-                printf("start far prep shooting\n");
-                shootPrepStartTime_ = currTime_;
-            }
-            desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
-            robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-            //SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
-            robot_->EngageFlywheelHood(); //TODO add if distance > x
-            closePrepping_ = false;
-            farPrepping_ = true;
-        } else {
-            printf("STOPPING FLYWHEEL\n");
-            robot_->SetFlywheelOutput(0.0);
-            robot_->DisengageFlywheelHood();
-        }
-    }    
-
-    bottomSensor_ = robot_->GetElevatorFeederLightSensorStatus();
-    topSensor_ = robot_->GetElevatorLightSensorStatus();
-    
-    if(topSensor_){
-        startElevatorTime_ = currTime_;
-    }
-    if(bottomSensor_){
-        startIndexTime_ = currTime_;
-    }
-
-    tTimeout_ = currTime_-startElevatorTime_ > elevatorTimeout_;
-    bTimeout_ = currTime_-startIndexTime_ > lowerElevatorTimeout_;
-
-    //TODO replace "//robot_->SetArm(bool a);" with if !sensorGood set arm power small in bool a direction
-    //in current code: true is arm down and false is arm up
-    //TODO ADD CLIMBING AND SPINNER SEMIAUTO
-    switch(currState_){
-        case kIndexing:
-            IndexUpdate();
-            printf("in kIndexing\n");
-
-            //robot_->SetIntakeRollersOutput(0.0);
-            currWristState_ = kRaising;
-            //robot_->SetArm(false); TODO IMPLEMENT
-            break;
-        case kIntaking:
-            printf("in kIntaking\n");
-            //robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
-            currWristState_ = kLowering;
-            //robot_->SetArm(true); TODO IMPLEMENT
-            IndexUpdate();
-            break;
-        case kShooting:
-            printf("in kShooting with %f\n", desiredFlywheelVelocity_);
-            robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-            //SetFlywheelPowerDesired(desiredFlywheelVelocity_);
-            //raise elevator if not at speed, OR nothing at top and not timed out at bottom
-            if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
-                robot_->SetElevatorOutput(elevatorSlowPower_);
-            } else {
-                robot_->SetElevatorOutput(0.0);
-            }
-
-            if(!bottomSensor_ && !bTimeout_){
-                robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
-                robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-            } else {
-                robot_->SetIndexFunnelOutput(0.0);
-                robot_->SetElevatorFeederOutput(0.0);
-            }
-
-            if(closePrepping_){
-                robot_->DisengageFlywheelHood();
-            } else {
-                robot_->EngageFlywheelHood();
-            }
-
-            if(tTimeout_ && bTimeout_){
-                nextState_ = kIndexing; //kResetting;
-                //robot_->SetFlywheelOutput(0.0);
-                startResetTime_ = currTime_;
-                robot_->DisengageFlywheelHood();
-                closePrepping_ = false;
-                farPrepping_ = false;
-            }
-
-            //robot_->SetIntakeRollersOutput(0.0);
-            currWristState_ = kRaising;
-            //robot_->SetArm(false); TODO IMPLEMENT
-            break;
-        case kResetting:
-            printf("in kResetting\n");
-            robot_->SetFlywheelOutput(0.0);
-
-            if(!bottomSensor_ && currTime_-startResetTime_ <= resetTimeout_){
-                robot_->SetElevatorOutput(-elevatorFastPower_); //bring down elevator
-            } else {
-                robot_->SetElevatorOutput(0.0);
-                nextState_ = kIndexing;
-            }
-
-            //robot_->SetIntakeRollersOutput(0.0);
-            robot_->SetIndexFunnelOutput(0.0);
-            robot_->SetElevatorFeederOutput(0.0);
-            currWristState_ = kRaising;
-            //robot_->SetArm(false); TODO IMPLEMENT
-            break;
-        default:
-            printf("ERROR: no state in superstructure controller\n");
-            robot_->SetFlywheelOutput(0.0);
-            //robot_->SetIntakeRollersOutput(0.0);
-            robot_->SetIndexFunnelOutput(0.0);
-            robot_->SetElevatorFeederOutput(0.0);
-            currWristState_ = kRaising;
-            //robot_->SetArm(false); TODO IMPLEMENT
-    }
-
-    printf("DESIRED FLYWHEEL VELOCITY %f\n", desiredFlywheelVelocity_);
-    currState_ = nextState_;
-
-}
-#endif
-
 /*
 void SuperstructureController::DisabledUpdate() {
     if (humanControl_ -> GetDesired(ControlBoard::Buttons::kAlignButton)){
@@ -693,12 +491,12 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
 }
 
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
-    return closeFlywheelVelocity_;//0.85; //2000; // fix
+    return closeFlywheelVelocity_ ; // fix
 }
 
 //TODO actually implement
-void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocity) {
-    robot_->SetControlModeVelocity(flywheelVelocity);
+void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRPM) {
+    robot_->SetControlModeVelocity(flywheelVelocityRPM/FALCON_TO_RPM);
 }
 
 bool SuperstructureController::IsFlywheelAtSpeed(){
@@ -871,7 +669,7 @@ void SuperstructureController::RefreshShuffleboard(){
     FlywheelPIDControllerUpdate();
 
     wristPFac_ = wristPEntry_.GetDouble(0.03);
-    flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()/2048.0*60000.0); //rpm
+    flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
     flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity());
     currWristAngle_ = robot_->GetIntakeWristAngle();
 	lastTime_ = currTime_;
