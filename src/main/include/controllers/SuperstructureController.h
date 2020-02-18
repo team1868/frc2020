@@ -12,23 +12,31 @@
 
 class SuperstructureController {
  public:
-
-   enum SuperstructureState {
+  /*
+  enum SuperstructureState {
 		kInit, kShooting, kIndexing, kIntaking, kResetting, 
     kControlPanelStage2, kControlPanelStage3, kClimbingElevator,
     kClimbing
 	};
+  */
+
+  enum SuperstructureState {
+    kControlPanel, kClimbing, kDefaultTeleop
+  };
+
+  enum ClimbingState {
+    kClimbingIdle, kClimbingElevator, kClimbingWinches
+  };
+
+  enum PowerCellHandlingState {
+    kIntaking, kIndexing, kShooting, kResetting
+  };
 
   enum AutoState {
     kAutoInit, kAutoCloseShooting, kAutoFarShooting,
     kAutoIntaking, kAutoIndexing
   };
 
-  enum IndexState {
-    kIndexInit, kLower, kLift, kIndexIdle
-  };
-
-  
    enum WristState {
     kRaising, kLowering
   }; 
@@ -68,10 +76,11 @@ class SuperstructureController {
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
-  uint32_t currState_, nextState_;
   uint32_t currAutoState_, nextAutoState_;
+  uint32_t currState_, nextState_;
+  ClimbingState currClimbingState_;
+  PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
-  IndexState currIndexState_, nextIndexState_;
 
   double currTime_, lastTime_;
   double startResetTime_, resetTimeout_;
@@ -93,9 +102,9 @@ class SuperstructureController {
   double startIndexTime_, startElevatorTime_;
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
-  double climbElevatorUpPower_, climbElevatorDownPower_;
+  double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
   bool positiveDirection_;
-  double climbWinchPower_;
+  double climbWinchPower_, climbWinchUpdatePower_;
   double currRobotAngle_;
 
   double closeTicksPerSecDesired_;
@@ -108,10 +117,11 @@ class SuperstructureController {
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
   double controlPanelPower_;
+  bool controlPanelStage2_, controlPanelStage3_;
 
 
   ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_;
-  nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFFEntry_;
+  nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_;
 
   nt::NetworkTableEntry wristPEntry_;

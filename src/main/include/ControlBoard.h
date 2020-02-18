@@ -18,7 +18,9 @@ class ControlBoard {
 	enum Axes{ kX, kY, kZ, kLT};
   enum Buttons{kHighGearShift, kLowGearShift, kShootingButton, kClimbElevatorUpButton, kClimbElevatorDownButton,
     kAlignButton, kTrenchAlignButton, kControlPanelStage2Button, kControlPanelStage3Button, kIntakeSeriesButton,
-    kIndexSeriesButton, kShootClosePrepButton, kShootFarPrepButton, kClimbWinchRightButton, kClimbWinchLeftButton};
+    kIndexSeriesButton, kShootClosePrepButton, kShootFarPrepButton, kClimbWinchButton,
+    kClimbWinchRightButton, kClimbWinchLeftButton};
+    // remove ClimbWinchRightButton and ClimbWinchLeftButton once auto climbing works
 
   ControlBoard();
   void ReadControls();
