@@ -307,6 +307,8 @@ class RobotModel {
     double targetVelocity_;
 
     double lastVelocTime_, currVelocTime_;
+    double currLeftDistance_, currRightDistance_;
+    double lastLeftDistance_, lastRightDistance_;
 
     // if smth is closer to the side of the opposing player station then subtract that # from the variable 
     double initLineError_ ;      
