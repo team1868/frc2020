@@ -36,6 +36,8 @@ ControlBoard::ControlBoard() {
 	buttons_[kIndexSeriesButton] = new ButtonReader(operatorJoyB_, INDEX_SERIES_BUTTON_PORT);
 	buttons_[kShootClosePrepButton] = new ButtonReader(operatorJoyB_, SHOOT_CLOSE_PREP_BUTTON_PORT);
 	buttons_[kShootFarPrepButton] = new ButtonReader(operatorJoyB_, SHOOT_FAR_PREP_BUTTON_PORT);
+	buttons_[kClimbWinchButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_BUTTON_PORT);
+
 	buttons_[kGearShiftButton] = new ButtonReader(leftJoy_, GEARSHIFT_BUTTON_PORT);
 	buttons_[kClimbWinchLeftButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_RIGHT_BUTTON_PORT);
 	buttons_[kClimbWinchRightButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_LEFT_BUTTON_PORT);

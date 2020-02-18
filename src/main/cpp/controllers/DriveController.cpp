@@ -23,10 +23,10 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 
     minForwardThrust_ = minBackwardThrust_ = 0.0;
 
-    arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+    arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
     thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.0).GetEntry();
     rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.0).GetEntry();
-    anaModeEntry_ = driveLayout_.Add("Ana Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+    anaModeEntry_ = driveLayout_.Add("Ana Mode", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
     printf("end of drive controller constructor\n");
 }
 
