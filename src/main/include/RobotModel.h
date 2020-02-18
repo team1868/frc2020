@@ -278,6 +278,8 @@ class RobotModel {
     double leftDriveOutput_, rightDriveOutput_;
     double lastLeftEncoderValue_, lastRightEncoderValue_;
     double currLeftEncoderValue_, currRightEncoderValue_;
+    double currLeftDistance_, currRightDistance_;
+    double lastLeftDistance_, lastRightDistance_;
     double initialLeftEncoderValue_, initialRightEncoderValue_;
     bool isHighGear_;
 
@@ -305,6 +307,8 @@ class RobotModel {
     double targetVelocity_;
 
     double lastVelocTime_, currVelocTime_;
+    double currLeftDistance_, currRightDistance_;
+    double lastLeftDistance_, lastRightDistance_;
 
     // if smth is closer to the side of the opposing player station then subtract that # from the variable 
     double initLineError_ ;      
