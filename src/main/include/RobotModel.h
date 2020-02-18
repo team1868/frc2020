@@ -278,8 +278,6 @@ class RobotModel {
     double leftDriveOutput_, rightDriveOutput_;
     double lastLeftEncoderValue_, lastRightEncoderValue_;
     double currLeftEncoderValue_, currRightEncoderValue_;
-    double currLeftDistance_, currRightDistance_;
-    double lastLeftDistance_, lastRightDistance_;
     double initialLeftEncoderValue_, initialRightEncoderValue_;
     bool isHighGear_;
 
