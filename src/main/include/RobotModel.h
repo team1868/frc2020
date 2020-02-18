@@ -61,6 +61,9 @@ static const int CTRE_MAG_ENCODER_TICKS = 4096;
 static const int FLYWHEEL_PID_LOOP_ID = 0;
 static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
 
+static const double MIN_TURNING_X = 0.5;
+static const double MIN_TURNING_XY_DIFFERENCE = 1.0;
+static const double MAX_LOW_GEAR_VELOCITY = 8.5;
 
 //color sensor
 static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);

@@ -10,15 +10,10 @@
 #include "ControlBoard.h"
 //#include "auto/PIDSource/PIDOutputSource.h"
 
+static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
+
 class SuperstructureController {
  public:
-  /*
-  enum SuperstructureState {
-		kInit, kShooting, kIndexing, kIntaking, kResetting, 
-    kControlPanelStage2, kControlPanelStage3, kClimbingElevator,
-    kClimbing
-	};
-  */
 
   enum SuperstructureState {
     kControlPanel, kClimbing, kDefaultTeleop
@@ -48,7 +43,7 @@ class SuperstructureController {
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelVelocityDesired();
-  void SetFlywheelPowerDesired(double flywheelVelocity);
+  void SetFlywheelPowerDesired(double flywheelVelocityRPM);
   void WristUpdate();
   void WinchUpdate();
   

@@ -46,6 +46,12 @@ void DriveController::Update(){
     } else {
         TankDrive(leftJoyY, rightJoyY);
     }
+
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kHighGearShift)) {
+        robot_->GearShift();
+    } else {
+        robot_->SetLowGear();
+    }
         
 
 }

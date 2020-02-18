@@ -55,7 +55,7 @@ void MainProgram::RobotPeriodic() {
  * make sure to add them to the chooser code above as well.
  */
 void MainProgram::AutonomousInit() {
-    //robot_->SetHighGear();
+    robot_->SetHighGear();
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
