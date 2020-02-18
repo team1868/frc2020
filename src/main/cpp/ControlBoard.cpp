@@ -38,9 +38,15 @@ ControlBoard::ControlBoard() {
 	buttons_[kShootFarPrepButton] = new ButtonReader(operatorJoyB_, SHOOT_FAR_PREP_BUTTON_PORT);
 	buttons_[kClimbWinchButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_BUTTON_PORT);
 
+	buttons_[kGearShiftButton] = new ButtonReader(leftJoy_, GEARSHIFT_BUTTON_PORT);
 	buttons_[kClimbWinchLeftButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_RIGHT_BUTTON_PORT);
 	buttons_[kClimbWinchRightButton] = new ButtonReader(operatorJoy_, CLIMB_WINCH_LEFT_BUTTON_PORT);
 
+	buttons_[kWristDownButton] = new ButtonReader(operatorJoy_, WRIST_DOWN_BUTTON_PORT);
+    buttons_[kWristUpButton] = new ButtonReader(operatorJoy_, WRIST_UP_BUTTON_PORT);
+    buttons_[kRunRollersButton] = new ButtonReader(operatorJoy_, WRIST_RUN_ROLLERS_BUTTON);
+    buttons_[kReverseRollersButton] = new ButtonReader(operatorJoy_, WRIST_REVERSE_ROLLERS_BUTTON);
+	
 	//create buttons here after creating a option in the Buttons enum
 	//example
 	//buttons_[kYourButton] = new ButtonReader(joystickname, BUTTON_PORT);

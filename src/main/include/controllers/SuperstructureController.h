@@ -119,13 +119,16 @@ class SuperstructureController {
   double controlPanelPower_;
   bool controlPanelStage2_, controlPanelStage3_;
 
+  double manualRollerPower_;
 
-  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_;
+  ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_;
+  nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_,
+                        closeFlywheelEntry_;
 
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry intakeWristAngleEntry_;
-  nt::NetworkTableEntry winchAutoEntry_;
-  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
+  nt::NetworkTableEntry autoWristEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, autoWinchEntry_;
 };

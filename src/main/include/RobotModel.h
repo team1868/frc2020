@@ -258,6 +258,7 @@ class RobotModel {
     WPI_TalonSRX *climberElevatorMotor_;
     Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
+    //Compressor *compressor_;
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
@@ -277,6 +278,8 @@ class RobotModel {
     double leftDriveOutput_, rightDriveOutput_;
     double lastLeftEncoderValue_, lastRightEncoderValue_;
     double currLeftEncoderValue_, currRightEncoderValue_;
+    double currLeftDistance_, currRightDistance_;
+    double lastLeftDistance_, lastRightDistance_;
     double initialLeftEncoderValue_, initialRightEncoderValue_;
     bool isHighGear_;
 
