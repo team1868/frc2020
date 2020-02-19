@@ -65,6 +65,7 @@ static const double MIN_TURNING_X = 0.5;
 static const double MIN_TURNING_XY_DIFFERENCE = 1.0;
 static const double MAX_LOW_GEAR_VELOCITY = 8.5;
 
+
 //color sensor
 static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);
 static constexpr frc::Color kGreenTarget = frc::Color(0.193, 0.555, 0.252);
@@ -205,6 +206,7 @@ class RobotModel {
     void ConfigFlywheelI(double iFac_);
     void ConfigFlywheelD(double dFac_);
     void ConfigFlywheelF(double fFac_);
+    double RatioFlywheel(double value);
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);

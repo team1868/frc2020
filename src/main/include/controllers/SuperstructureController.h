@@ -11,6 +11,8 @@
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
+static const double MAX_FALCON_RPM = 5600.0; // magic number!!!!
+static const double RATIO_BATTERY_VOLTAGE = 12.27;
 
 class SuperstructureController {
  public:
@@ -46,6 +48,7 @@ class SuperstructureController {
   void SetFlywheelPowerDesired(double flywheelVelocityRPM);
   void WristUpdate();
   void WinchUpdate();
+  double RatioFlywheel();
 
   bool IsFlywheelAtSpeed();
 

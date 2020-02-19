@@ -38,18 +38,30 @@ int RobotModel::GetFlywheelMotor1Velocity() {
     // raw sensor units per 100 ms
 }
 
+// remove later
+double RobotModel::RatioFlywheel(double value){
+    /*double ratioFlywheelOutput = 12.43/GetVoltage()*value;
+    if(ratioFlywheelOutput > 1){
+        ratioFlywheelOutput = 1;
+    } else if(ratioFlywheelOutput < -1){
+        ratioFlywheelOutput = -1;
+    }
+    return ratioFlywheelOutput;*/
+    //return GetVoltage()*0.00001421*desiredVelocity_;
+}
+
 // make into one function later whoops
-void RobotModel::ConfigFlywheelP(double pFac_){
-    flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac_);
+void RobotModel::ConfigFlywheelP(double pFac){
+    flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac);
 }
-void RobotModel::ConfigFlywheelI(double iFac_){
-    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, iFac_);
+void RobotModel::ConfigFlywheelI(double iFac){
+    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, iFac);
 }
-void RobotModel::ConfigFlywheelD(double dFac_){
-    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac_);
+void RobotModel::ConfigFlywheelD(double dFac){
+    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac);
 }
-void RobotModel::ConfigFlywheelF(double fFac_){
-    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac_);
+void RobotModel::ConfigFlywheelF(double fFac){
+    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
 }
 
 void RobotModel::EngageFlywheelHood() {

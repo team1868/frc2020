@@ -27,7 +27,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     climbWinchUpdatePower_ = 0.55; // fix (extra speed needed to level the power)
     
     desiredFlywheelVelocity_ = 0.0;//7000; // ticks per 0.1 seconds
-    closeFlywheelVelocity_ = 6000;//0.55;//5000.0*2048.0/60000.0;//2000; //5000 r/m * 2048 tick/r / (60 s/m * 1000 ms/s)
+    closeFlywheelVelocity_ = 3000;//0.55;//5000.0*2048.0/60000.0;//2000; //5000 r/m * 2048 tick/r / (60 s/m * 1000 ms/s)
     flywheelResetTime_ = 2.0; // fix //why does this exist
     // create talon pid controller
     // fix encoder source
@@ -251,13 +251,14 @@ void SuperstructureController::Update(){
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
     CheckClimbDesired();
+    //CheckControlPanelDesired();
 
     switch(currState_){
         case kDefaultTeleop:
             
             // should these be inside or outside power cell handling
-            CheckControlPanelDesired();
-            CheckClimbDesired();
+            CheckControlPanelDesired(); // might have to move out of the DefaultTeleop
+            //CheckClimbDesired();
 
             
             WristUpdate();
@@ -582,13 +583,24 @@ bool SuperstructureController::IndexUpdate(){
 
 void SuperstructureController::FlywheelPIDControllerUpdate() {
 
-    
+    flywheelFFac_ = RatioFlywheel();
+    printf("flywheel fFac %f\n", flywheelFFac_);
     robot_->ConfigFlywheelP(flywheelPFac_);
     robot_->ConfigFlywheelI(flywheelIFac_);
     robot_->ConfigFlywheelD(flywheelDFac_);
+
+    double adjustedVelocity = desiredFlywheelVelocity_/FALCON_TO_RPM;
+    double maxVelocity = RatioFlywheel()/FALCON_TO_RPM;
+    double adjustedValue = (adjustedVelocity/maxVelocity*1023/adjustedVelocity);
+    flywheelFFac_ = adjustedValue;
+    printf("adjustedValue %f\n", adjustedValue);
     robot_->ConfigFlywheelF(flywheelFFac_);
     // closed-loop error maybe?
 
+}
+
+double SuperstructureController::RatioFlywheel(){
+    return MAX_FALCON_RPM*robot_->GetVoltage()/RATIO_BATTERY_VOLTAGE;
 }
 
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
@@ -705,12 +717,12 @@ void SuperstructureController::RefreshShuffleboard(){
     flywheelPFac_ = flywheelPEntry_.GetDouble(0.0);
     flywheelIFac_ = flywheelIEntry_.GetDouble(0.0);
     flywheelDFac_ = flywheelDEntry_.GetDouble(0.0);
-    flywheelFFac_ = flywheelFEntry_.GetDouble(1.0);
+    flywheelFFac_ = flywheelFEntry_.GetDouble(0.0);
     FlywheelPIDControllerUpdate();
 
     wristPFac_ = wristPEntry_.GetDouble(0.03);
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
-    flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity());
+    flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
     currWristAngle_ = robot_->GetIntakeWristAngle();
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
