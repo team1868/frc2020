@@ -75,7 +75,7 @@ RobotModel::RobotModel() :
     compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
 
 	// initializing double solenoid for gear
-	gearSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARDS_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
+	gearSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARDS_SOLENOID_PORT);
 	
 	// initializing solenoid for led light
 	lightSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, LIGHT_SOLENOID_PORT);
@@ -101,6 +101,12 @@ RobotModel::RobotModel() :
     rightSlaveA_->SetInverted(false);
     leftSlaveA_->SetInverted(false);
     leftMaster_->SetInverted(false);
+	rightMaster_->SetNeutralMode(Coast);
+	leftMaster_->SetNeutralMode(Coast);
+	leftSlaveA_->SetNeutralMode(Coast);
+	rightSlaveA_->SetNeutralMode(Coast);
+
+
 
 	ctre::phoenix::motorcontrol::SupplyCurrentLimitConfiguration currentLimitConfig;
 	currentLimitConfig.enable = true;
@@ -317,11 +323,21 @@ double RobotModel::GetRightDistance() {
 }
 
 double RobotModel::GetLeftVelocity() {
-	return (currLeftDistance_ - lastLeftDistance_)/(currVelocTime_ - lastVelocTime_);
+	if (isHighGear_){
+		return -10.0*(leftDriveEncoder_->GetIntegratedSensorVelocity()/HGEAR_ENCODER_TICKS_FOOT);
+	} else{
+		return -10.0*(leftDriveEncoder_->GetIntegratedSensorVelocity()/LGEAR_ENCODER_TICKS_FOOT);
+	}
+	//return (currLeftDistance_ - lastLeftDistance_)/(currVelocTime_ - lastVelocTime_);
 }
  
 double RobotModel::GetRightVelocity() {
-   return (currRightDistance_ - lastLeftDistance_)/(currVelocTime_ - lastVelocTime_);
+   	if (isHighGear_){
+		return 10.0*(rightDriveEncoder_->GetIntegratedSensorVelocity()/HGEAR_ENCODER_TICKS_FOOT);
+	} else{
+		return 10.0*(rightDriveEncoder_->GetIntegratedSensorVelocity()/LGEAR_ENCODER_TICKS_FOOT);
+	}
+   //return (currRightDistance_ - lastRightDistance_)/(currVelocTime_ - lastVelocTime_);
 }
 
 void RobotModel::ResetDriveEncoders() {
@@ -529,11 +545,16 @@ double RobotModel::GetCurrent(int channel) {
 
 void RobotModel::GearShift() {
 	if (fabs(GetLeftVelocity()) > MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) > MAX_LOW_GEAR_VELOCITY){
+		//if(!isHighGear_){
 		SetHighGear();
-	} else {
+		//}
+	} else if(fabs(GetLeftVelocity()) < MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) < MAX_LOW_GEAR_VELOCITY) {
+		//if (isHighGear_){
 		SetLowGear();
+		//}
 	}
 }
+
 
 
 double RobotModel::ModifyCurrent(int channel, double value){
@@ -581,7 +602,7 @@ double RobotModel::ModifyCurrent(int channel, double value){
 
 void RobotModel::SetHighGear(){
 	if (isHighGear_ == false) {
-		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
+		gearSolenoid_ -> Set(false);
 		isHighGear_ = true;
 	}
 	//ResetDriveEncoders();
@@ -589,10 +610,14 @@ void RobotModel::SetHighGear(){
 
 void RobotModel::SetLowGear(){
 	if (isHighGear_ == true) {
-		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
+		gearSolenoid_ -> Set(true);
 		isHighGear_ = false;
 	}
 	//ResetDriveEncoders();
+}
+
+bool RobotModel::IsHighGear(){
+	return isHighGear_;
 }
 
 
@@ -683,17 +708,18 @@ void RobotModel::RefreshShuffleboard(){
 	// flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
 	// flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
 	// flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
-
+	
+	lastLeftEncoderValue_ = currLeftEncoderValue_;
+    lastRightEncoderValue_ = currRightEncoderValue_;
+    currLeftEncoderValue_ = GetLeftEncoderValue();
+    currRightEncoderValue_ = GetRightEncoderValue();
 	lastVelocTime_ = currVelocTime_;
 	currVelocTime_ = GetTime();
 	lastLeftDistance_ = currLeftDistance_;
 	lastRightDistance_ = currRightDistance_;
 	currLeftDistance_ = GetLeftDistance();
 	currRightDistance_ = GetRightDistance();
-    lastLeftEncoderValue_ = currLeftEncoderValue_;
-    lastRightEncoderValue_ = currRightEncoderValue_;
-    currLeftEncoderValue_ = GetLeftEncoderValue();
-    currRightEncoderValue_ = GetRightEncoderValue();
+	//printf("curr left: %f, last left: %f\n", currLeftDistance_, lastLeftDistance_);
 
 	lastLeftVelocity_ = currLeftVelocity_;
 	lastRightVelocity_ = currRightVelocity_;

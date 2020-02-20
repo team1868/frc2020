@@ -63,7 +63,7 @@ static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
 
 static const double MIN_TURNING_X = 0.5;
 static const double MIN_TURNING_XY_DIFFERENCE = 1.0;
-static const double MAX_LOW_GEAR_VELOCITY = 8.5;
+static const double MAX_LOW_GEAR_VELOCITY = 4.0;
 
 
 //color sensor
@@ -144,6 +144,7 @@ class RobotModel {
     void SetHighGear();
     void SetLowGear();
     void GearShift();
+    bool IsHighGear();
 
     //field error
     double SetInitLineError();
@@ -244,7 +245,7 @@ class RobotModel {
     frc::PowerDistributionPanel *pdp_;
     std::string controlPanelGameData_;
     frc::Compressor *compressor_;
-    frc::DoubleSolenoid *gearSolenoid_;
+    frc::Solenoid *gearSolenoid_;
     frc::Solenoid *lightSolenoid_;
 
     AHRS *navX_;
