@@ -63,7 +63,7 @@ class MainProgram : public frc::TimedRobot {
 
 
   //zmq
-  zmq::context_t *context_, *context2_; //context for creating sockets
+  zmq::context_t *context_;//, *context2_; //context for creating sockets
   zmq::socket_t *subscriber_; //socket to receive message from jetson
   zmq::socket_t *publisher_; //socket to send message to jetson
 
