@@ -147,8 +147,8 @@ void MainProgram::TeleopInit() {
 
     std::cout << "before zmq\n" << std::flush;
     //zmq::context_t * 
-    context_ = new zmq::context_t(1); //same context for send + receive zmq
-    context2_ = new zmq::context_t(1);
+    context_ = new zmq::context_t(2); //same context for send + receive zmq
+    //context2_ = new zmq::context_t(1);
     connectRecvZMQ();
     connectSendZMQ();
     std::cout << "end of teleopinit\n" << std::flush;
@@ -325,7 +325,7 @@ void MainProgram::connectSendZMQ() {
     //zmq socket to send message to jetson
     try{
     std::cout << "start connect send zmq\n" << std::flush;
-    publisher_ = new zmq::socket_t(*context2_, ZMQ_PUB);
+    publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
     std::cout << "done connect socket zmq\n" << std::flush;
     if(!isSocketBound_){
         publisher_->bind("tcp://*:5806");
