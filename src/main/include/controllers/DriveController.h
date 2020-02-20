@@ -38,7 +38,7 @@ class DriveController {
     bool arcadeMode_;
 
     frc::ShuffleboardLayout &driveLayout_;
-    nt::NetworkTableEntry arcadeEntry_, thrustSensitivityEntry_, rotateSensitivityEntry_, anaModeEntry_;
+    nt::NetworkTableEntry arcadeEntry_, thrustSensitivityEntry_, rotateSensitivityEntry_, anaModeEntry_, autoShiftEntry_, highGearEntry_;
     
     double thrustSensitivity_, rotateSensitivity_;
     double rightJoystickXLastValue_, rightJoystickXCurrValue_;

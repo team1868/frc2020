@@ -27,6 +27,8 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
     thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.0).GetEntry();
     rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.0).GetEntry();
     anaModeEntry_ = driveLayout_.Add("Ana Mode", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    autoShiftEntry_ = robot_->GetFunctionalityTab().Add("auto shift", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    highGearEntry_ = robot_->GetFunctionalityTab().Add("high gear", robot_->IsHighGear()).GetEntry();
     printf("end of drive controller constructor\n");
 }
 
@@ -47,10 +49,18 @@ void DriveController::Update(){
         TankDrive(leftJoyY, rightJoyY);
     }
 
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
-        robot_->GearShift();
+    if(autoShiftEntry_.GetBoolean(true)){
+        if(humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
+            robot_->GearShift();
+        } else {
+            robot_->SetLowGear();
+        }
     } else {
-        robot_->SetLowGear();
+        if(humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
+            robot_->SetHighGear();
+        } else {
+            robot_->SetLowGear();
+        }
     }
         
 
@@ -60,6 +70,7 @@ void DriveController::RefreshShuffleboard(){
     thrustSensitivity_ = thrustSensitivityEntry_.GetDouble(0.0);
     rotateSensitivity_ = rotateSensitivityEntry_.GetDouble(0.0);
     arcadeMode_ = arcadeEntry_.GetBoolean(true);
+    highGearEntry_.SetBoolean(robot_->IsHighGear());
 }
 
 void DriveController::Reset(){
