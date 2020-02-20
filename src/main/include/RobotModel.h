@@ -275,8 +275,8 @@ class RobotModel {
     frc::AnalogPotentiometer *intakeWristPot_; 
     
     frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_TalonSRX *indexFunnelMotor_;
-    WPI_TalonSRX *elevatorMotor_, *elevatorFeederMotor_;
+    WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_;
+    WPI_VictorSPX *elevatorMotor_;
 
     double navXSpeed_;
     int counter;

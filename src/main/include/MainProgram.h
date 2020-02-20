@@ -63,7 +63,7 @@ class MainProgram : public frc::TimedRobot {
 
 
   //zmq
-  zmq::context_t *context_; //context for creating sockets
+  zmq::context_t *context_, *context2_; //context for creating sockets
   zmq::socket_t *subscriber_; //socket to receive message from jetson
   zmq::socket_t *publisher_; //socket to send message to jetson
 
@@ -72,8 +72,12 @@ class MainProgram : public frc::TimedRobot {
   VelocityPIDOutput *thingO_;
   AnglePIDOutput *thingAO_;
 
+  bool isSocketBound_;
+
   TestMode *testSequence_;
   double currTime_, lastTime_;
+
+  int confl;
   
   NavXPIDSource *tempNavXSource_;
   PivotCommand *tempPivot_;

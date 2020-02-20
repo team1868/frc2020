@@ -72,8 +72,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     
     currTime_ = robot_->GetTime();
     startElevatorTime_ = currTime_;
-    startIndexTime_ = currTime_;
-    startResetTime_ = currTime_;
+    startIndexTime_ = currTime_-lowerElevatorTimeout_-1.0;
+    startResetTime_ = currTime_-elevatorTimeout_-1.0;
 
     // shuffleboard
     flywheelVelocityEntry_ = flywheelPIDLayout_.Add("flywheel velocity", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
@@ -86,8 +86,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     wristPEntry_ = robot_->GetSuperstructureTab().Add("wrist P", 0.0).GetEntry();
 
-    autoWinchEntry_ = manualOverrideLayout_.Add("auto climber", true).GetEntry();
-    autoWristEntry_ = manualOverrideLayout_.Add("auto wrist", true).GetEntry();
+    autoWinchEntry_ = manualOverrideLayout_.Add("auto climber", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    autoWristEntry_ = manualOverrideLayout_.Add("auto wrist", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
 
     slowElevatorEntry_ = powerLayout_.Add("slow elevator", elevatorSlowPower_).GetEntry();
     fastElevatorEntry_ = powerLayout_.Add("fast elevator", elevatorFastPower_).GetEntry();
@@ -109,6 +109,7 @@ void SuperstructureController::Reset() { // might not need this
 	nextState_ = kIndexing;*/
     currState_ = kDefaultTeleop;
     nextState_ = kDefaultTeleop;
+    currHandlingState_ = kIndexing;
     // check whether autostates should be reset here or should 
     currAutoState_ = kAutoInit;
     nextAutoState_ = kAutoIndexing;
@@ -117,7 +118,7 @@ void SuperstructureController::Reset() { // might not need this
 
 void SuperstructureController::WristUpdate(){
     if(!autoWristEntry_.GetBoolean(true)){
-        printf("HERE OISDHAFOSDKJFLASKDHFJ\n");
+        //printf("HERE OISDHAFOSDKJFLASKDHFJ\n");
         // human: decide rollers auto or manual
         if (humanControl_->GetDesired(ControlBoard::Buttons::kWristUpButton)){
             robot_->SetIntakeWristOutput(0.5);
@@ -132,7 +133,7 @@ void SuperstructureController::WristUpdate(){
         if(humanControl_->GetDesired(ControlBoard::Buttons::kReverseRollersButton)){
             robot_->SetIntakeRollersOutput(-0.5);
         } else if(humanControl_->GetDesired(ControlBoard::Buttons::kRunRollersButton)){
-            printf("RUNNING ROLLERS RIGH NOWWWWW at %f\n", manualRollerPower_);
+            //printf("RUNNING ROLLERS RIGH NOWWWWW at %f\n", manualRollerPower_);
             robot_->SetIntakeRollersOutput(manualRollerPower_);
         }else {
             robot_->SetIntakeRollersOutput(0.0);
@@ -151,7 +152,7 @@ void SuperstructureController::WristUpdate(){
                 }
                 break;
             case kLowering:
-                printf("in WRIST kLowering\n");
+                //printf("in WRIST kLowering\n");
                 if(currWristAngle_ < desiredIntakeWristAngle_) {
                     robot_->SetIntakeWristOutput((desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
                 }
@@ -251,13 +252,13 @@ void SuperstructureController::Update(){
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
     CheckClimbDesired();
-    //CheckControlPanelDesired();
+    CheckControlPanelDesired();
 
     switch(currState_){
         case kDefaultTeleop:
             
             // should these be inside or outside power cell handling
-            CheckControlPanelDesired(); // might have to move out of the DefaultTeleop
+            //CheckControlPanelDesired(); // might have to move out of the DefaultTeleop
             //CheckClimbDesired();
 
             
@@ -265,6 +266,7 @@ void SuperstructureController::Update(){
 
             if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
                 currHandlingState_ = kIntaking;
+                //printf("STARTED INTAKING YAY\n");
             } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)/* && 
                     currTime_ - shootPrepStartTime_ > 1.0*/){ //TODO remove this
                 if(currHandlingState_!=kShooting){
@@ -318,6 +320,7 @@ void SuperstructureController::Update(){
             //TODO ADD CLIMBING AND SPINNER SEMIAUTO
             switch(currHandlingState_){
                 case kIntaking:
+                    printf("intaking state\n");
                     Intaking();
                     break;
                 case kIndexing:
@@ -332,7 +335,7 @@ void SuperstructureController::Update(){
                 default:
                     printf("ERROR: no state in Power Cell Handling \n");
             }
-            printf("DESIRED FLYWHEEL VELOCITY %f\n", desiredFlywheelVelocity_);
+            //printf("DESIRED FLYWHEEL VELOCITY %f\n", desiredFlywheelVelocity_);
             currHandlingState_ = nextHandlingState_;
             break;
         case kControlPanel:
@@ -474,7 +477,7 @@ void SuperstructureController::Indexing(){
 }
 
 void SuperstructureController::Shooting() {
-    printf("in kShooting with %f\n", desiredFlywheelVelocity_);
+    printf("in kShooting\n");// with %f\n", desiredFlywheelVelocity_);
     //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
@@ -557,18 +560,18 @@ bool SuperstructureController::IndexUpdate(){
     //control top
     if(!topSensor_ && bottomSensor_){
         //printf("RUNNING TOP ELEVATOR\n");
-        printf("running elevator");
+        //printf("running elevator");
         robot_->SetElevatorOutput(elevatorFastPower_);
     } else {
-        printf("not running elevator");
+        //printf("not running elevator");
         robot_->SetElevatorOutput(0.0);
     }
 
     //control bottom
-    if(!bottomSensor_ && (!bTimeout_ || currState_ == kIntaking)){
+    if(!bottomSensor_ && (!bTimeout_ || currHandlingState_ == kIntaking)){
         robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-        printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");
+        //printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");
     } else {
         robot_->SetIndexFunnelOutput(0.0);
         robot_->SetElevatorFeederOutput(0.0);
@@ -584,7 +587,7 @@ bool SuperstructureController::IndexUpdate(){
 void SuperstructureController::FlywheelPIDControllerUpdate() {
 
     flywheelFFac_ = RatioFlywheel();
-    printf("flywheel fFac %f\n", flywheelFFac_);
+    //printf("flywheel fFac %f\n", flywheelFFac_);
     robot_->ConfigFlywheelP(flywheelPFac_);
     robot_->ConfigFlywheelI(flywheelIFac_);
     robot_->ConfigFlywheelD(flywheelDFac_);
@@ -593,7 +596,7 @@ void SuperstructureController::FlywheelPIDControllerUpdate() {
     double maxVelocity = RatioFlywheel()/FALCON_TO_RPM;
     double adjustedValue = (adjustedVelocity/maxVelocity*1023/adjustedVelocity);
     flywheelFFac_ = adjustedValue;
-    printf("adjustedValue %f\n", adjustedValue);
+    //printf("adjustedValue %f\n", adjustedValue);
     robot_->ConfigFlywheelF(flywheelFFac_);
     // closed-loop error maybe?
 

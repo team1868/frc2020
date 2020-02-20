@@ -104,7 +104,7 @@ void RobotModel::SetIntakeWristOutput(double power) {
 }
 
 void RobotModel::SetIndexFunnelOutput(double power) {
-    indexFunnelMotor_->Set(power);
+    indexFunnelMotor_->Set(-power);
 }
 
 void RobotModel::SetElevatorFeederOutput(double power) {

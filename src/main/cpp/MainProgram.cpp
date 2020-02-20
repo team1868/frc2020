@@ -23,6 +23,8 @@ void MainProgram::RobotInit() {
     robot_->ResetDriveEncoders();
     robot_->SetHighGear();
     aligningTape_ = false;
+
+    isSocketBound_ = false;
     
     autoSequenceEntry_ = robot_->GetModeTab().Add("Auto Test Sequence", "t 0").GetEntry();
     sequence_ = autoSequenceEntry_.GetString("t 0");
@@ -143,9 +145,11 @@ void MainProgram::TeleopInit() {
     aligningTape_ = false;
 
     std::cout << "before zmq\n" << std::flush;
-    zmq::context_t * context_ = new zmq::context_t(1); //same context for send + receive zmq
-    //connectRecvZMQ();
-    //connectSendZMQ();
+    //zmq::context_t * 
+    context_ = new zmq::context_t(1); //same context for send + receive zmq
+    context2_ = new zmq::context_t(1);
+    connectRecvZMQ();
+    connectSendZMQ();
     std::cout << "end of teleopinit\n" << std::flush;
 }
 
@@ -261,6 +265,7 @@ void MainProgram::connectRecvZMQ() {
 		printf("TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
 		std::cerr << exc.what();
 	}
+    std::cout << "reached end of connect recv zmq\n" << std::flush;
 }
 
 string MainProgram::readZMQ() {
@@ -317,10 +322,22 @@ void MainProgram::readAngle(string contents) {
 
 void MainProgram::connectSendZMQ() {
     //zmq socket to send message to jetson
-    publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
-    publisher_->bind("tcp://*:5802");
+    try{
+    std::cout << "start connect send zmq\n" << std::flush;
+    publisher_ = new zmq::socket_t(*context2_, ZMQ_PUB);
+    std::cout << "done connect socket zmq\n" << std::flush;
+    if(!isSocketBound_){
+        publisher_->bind("tcp://*:5806");
+        isSocketBound_ = true;
+    }
     int confl = 1;
+    std::cout << "setting socket zmq\n" << std::flush;
     publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
+    std::cout << "done setting socket zmq\n" << std::flush;
+    } catch (const zmq::error_t &exc) {
+		printf("TRY CATCH FAILED IN ZMQ CONNECT SEND\n");
+		std::cerr << exc.what();
+	}
 
 }
 
