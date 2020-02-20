@@ -275,7 +275,7 @@ bool RobotModel::CollisionDetected() {
 
 	if(GetLeftEncoderStopped() && GetRightEncoderStopped()) {
 		collisionDetected = true;
-		printf("From ENCODER\n");
+		//printf("From ENCODER\n");
 	}
 
 	collisionDetected = false; // For testing drive straight

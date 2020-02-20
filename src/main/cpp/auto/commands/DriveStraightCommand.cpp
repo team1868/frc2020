@@ -141,7 +141,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 // on target
 	if (distancePID_->OnTarget() && fabs(talonEncoderSource_->PIDGet() - lastDistance_) < 0.04 ) {
 		numTimesOnTarget_++;
-		printf("times on target at %f \n", numTimesOnTarget_);
+		printf("times on target at %d \n", numTimesOnTarget_);
 		printf("%f Drivestraight error: %f\n", robot_->GetTime(), distancePID_->GetError());
 	} else {
 		numTimesOnTarget_ = 0;
@@ -156,13 +156,14 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 
 	lastDistance_ = talonEncoderSource_->PIDGet();
-	if((numTimesOnTarget_ > 5) || (numTimesStopped_ > 0)) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
+	if((numTimesOnTarget_ > 5) /*|| (numTimesStopped_ > 0)*/) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
 		printf("diff time: %fs Final Left Distance: %fft\n" //encoder values not distances
 				"Final Right Distance: %fft\n"
 				"Final Average Distance: %fft\n"
 				"Final Drivestraight error: %fft\n",
 				diffDriveTime_, robot_->GetLeftDistance(), robot_->GetRightDistance(),
 				talonEncoderSource_->PIDGet(), distancePID_->GetError());
+		printf("on target: %d\n", numTimesOnTarget_);
 		Reset();
 
 		leftMotorOutput_ = 0.0;
