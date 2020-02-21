@@ -278,7 +278,7 @@ bool RobotModel::CollisionDetected() {
 
 	if(GetLeftEncoderStopped() && GetRightEncoderStopped()) {
 		collisionDetected = true;
-		printf("From ENCODER\n");
+		//printf("From ENCODER\n");
 	}
 
 	collisionDetected = false; // For testing drive straight
@@ -352,6 +352,7 @@ void RobotModel::ResetDriveEncoders() {
 bool RobotModel::GetLeftEncoderStopped() {
 	if (currLeftVelocity_ < STOP_VELOCITY_THRESHOLD && currLeftVelocity_ > -STOP_VELOCITY_THRESHOLD 
 	&& lastLeftVelocity_ < STOP_VELOCITY_THRESHOLD && lastLeftVelocity_ > -STOP_VELOCITY_THRESHOLD) {
+		printf("left encoder is stopped\n");
 		return true;
 	}
 	// if (GetLeftVelocity() < STOP_VELOCITY_THRESHOLD && GetLeftVelocity() > -STOP_VELOCITY_THRESHOLD){
@@ -460,7 +461,7 @@ void RobotModel::UpdateCurrent(int channel) {
 	} else if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE) && lastOver_)){
 		// know compressor is off, because lastOver_ is true
 		// TODO WARNING THIS MIN IS NOT A MIN
-		printf("am stopping too");
+		//printf("am stopping too");
 		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ //sketch, sketch, check this
 			ratioAll_ *= ratioAll_;//-= 0.1;
 		} else if (ratioSuperstructure_ > MIN_RATIO_SUPERSTRUCTURE_CURRENT){

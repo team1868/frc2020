@@ -146,7 +146,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = NULL;
 			} else {
 				printf("radius: %f\n, angle: %f\n, turnleft: %d\n, goForward: %d\n", curveRadius, curveAngle, turnLeft, goForward);
-				if (turnLeft == 0) {
+				if (turnLeft == 0) { //todo change these to bools
 					if (goForward == 0) {
 						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, false, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					} else{
