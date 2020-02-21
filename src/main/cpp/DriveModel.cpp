@@ -120,9 +120,12 @@ RobotModel::RobotModel() :
     rightSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
 
 	// superstructure robot model
+	fortyAmpLimit_ = new StatorCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
+	thirtyAmpLimit_ = new StatorCurrentLimitConfiguration(true, 24.0, 30.0, 0.1);
 	
 	flywheelMotor1_ = new WPI_TalonFX(FLYWHEEL_MOTOR_ONE_ID);
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
+	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
@@ -545,13 +548,9 @@ double RobotModel::GetCurrent(int channel) {
 
 void RobotModel::GearShift() {
 	if (fabs(GetLeftVelocity()) > MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) > MAX_LOW_GEAR_VELOCITY){
-		//if(!isHighGear_){
 		SetHighGear();
-		//}
 	} else if(fabs(GetLeftVelocity()) < MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) < MAX_LOW_GEAR_VELOCITY) {
-		//if (isHighGear_){
 		SetLowGear();
-		//}
 	}
 }
 

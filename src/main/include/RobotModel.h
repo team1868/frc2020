@@ -63,7 +63,7 @@ static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
 
 static const double MIN_TURNING_X = 0.5;
 static const double MIN_TURNING_XY_DIFFERENCE = 1.0;
-static const double MAX_LOW_GEAR_VELOCITY = 4.0;
+static const double MAX_LOW_GEAR_VELOCITY = 7.5;
 
 
 //color sensor
@@ -256,6 +256,9 @@ class RobotModel {
     std::string alignSequence_;
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
+    // superstructure
+    StatorCurrentLimitConfiguration *thirtyAmpLimit_, *fortyAmpLimit_;
+
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
     TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 
     frc::Solenoid *flywheelHoodSolenoid_;
@@ -264,7 +267,6 @@ class RobotModel {
     WPI_VictorSPX *climberElevatorMotor_;
     frc::Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
-    //Compressor *compressor_;
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
