@@ -307,7 +307,7 @@ void SuperstructureController::Update(){
                     closePrepping_ = false;
                     farPrepping_ = true;
                 } else {
-                    printf("STOPPING FLYWHEEL\n");
+                    //printf("STOPPING FLYWHEEL\n");
                     robot_->SetFlywheelOutput(0.0);
                     robot_->DisengageFlywheelHood();
                 }
@@ -470,7 +470,7 @@ void SuperstructureController::Intaking(){
 
 void SuperstructureController::Indexing(){
     IndexUpdate();
-    printf("in kIndexing\n");
+    //printf("in kIndexing\n");
 
     //robot_->SetIntakeRollersOutput(0.0);
     currWristState_ = kRaising;

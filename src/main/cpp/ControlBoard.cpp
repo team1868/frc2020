@@ -99,7 +99,7 @@ void ControlBoard::ReadAllButtons(){
 }
 
 bool ControlBoard::GetDesired(Buttons button){
-	printf("%d", buttons_[button]->IsDown(), "/n");
+	//printf("%d", buttons_[button]->IsDown(), "/n");
 	return buttons_[button]->IsDown();
 }
 

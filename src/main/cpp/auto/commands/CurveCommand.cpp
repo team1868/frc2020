@@ -44,6 +44,7 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
   //tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
   pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+  printf("initialized curve with constructor 1\n");
 }
 
 CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
@@ -54,7 +55,7 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   robot_ = robot;
   desiredRadius_ = desiredRadius;
   desiredAngle_ = abs(desiredAngle);
-  turnLeft_ = desiredAngle_<0;
+  turnLeft_ = desiredAngle_<0; //TODO fix thix, desiredangle will never be negative see line above
   isDone_ = false;
 
   navXPIDSource_ = navXSource;
@@ -69,6 +70,7 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   dErrorNet_ = curveLayout_.Add("Curve dErr", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
   //tErrorNet_ = curveLayout_.Add("Curve tErr", 0.0).GetEntry();
   pidSourceNet_ = curveLayout_.Add("Curve PID Get", 0.0).GetEntry();
+  printf("initialized curve with constructor 2\n");
 }
 
 void CurveCommand::Init(){

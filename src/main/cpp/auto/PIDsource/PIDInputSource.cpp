@@ -65,14 +65,14 @@ double TalonEncoderPIDSource::PIDGet() {
 
 	// FIX THIS TO BE BETTER THANKS
 	if (robot_->GetLeftEncoderStopped()) {
-		//printf("time: %f, left stopped\n", robot_->GetTime());
+		//printf("case1 left stopped\n");
 		averageTalonDistance_ = rightDistance;
 	} else if (robot_->GetRightEncoderStopped()) {
-		//printf("right stopped\n");
+		//printf("case2 right stopped\n");
 		averageTalonDistance_ = leftDistance;
 	} else {
-		//printf("time: %f, no stop\n", robot_->GetTime());
-		averageTalonDistance_= (rightDistance + leftDistance) / 2;
+		//printf("case3 no stop\n");
+		averageTalonDistance_= (rightDistance + leftDistance) / 2.0;
 	}
 	frc::SmartDashboard::PutNumber("Left Distance", leftDistance);
 	frc::SmartDashboard::PutNumber("Right Distance", rightDistance);
