@@ -125,8 +125,10 @@ RobotModel::RobotModel() :
 	
 	flywheelMotor1_ = new WPI_TalonFX(FLYWHEEL_MOTOR_ONE_ID);
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
-	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
+
+	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
+	flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
 
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
@@ -144,6 +146,9 @@ RobotModel::RobotModel() :
 	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
 	climberElevatorMotor_ = new WPI_VictorSPX(CLIMB_ELEVATOR_ID);
+
+	//climberWinchLeftMotor_->
+	//climberWinchRightMotor_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
 
 	climberWinchRightEncoder_ = new frc::Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
 	climberWinchLeftEncoder_ = new frc::Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted

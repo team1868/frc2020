@@ -47,7 +47,6 @@ class SuperstructureController {
   double CalculateFlywheelVelocityDesired();
   void SetFlywheelPowerDesired(double flywheelVelocityRPM);
   void WristUpdate();
-  void WinchUpdate();
   double RatioFlywheel();
 
   bool IsFlywheelAtSpeed();
@@ -105,8 +104,7 @@ class SuperstructureController {
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
-  double climbWinchPower_, climbWinchUpdatePower_;
-  double currRobotAngle_;
+  double climbWinchPower_;
 
   double closeTicksPerSecDesired_;
   double farTicksPerSecDesired_;

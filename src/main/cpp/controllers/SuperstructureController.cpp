@@ -24,7 +24,6 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     climbElevatorDownPower_ = -0.4; // fix
     climbPowerDesired_ = 0.0; // needs to equal 0
     climbWinchPower_ = 0.75; // fix
-    climbWinchUpdatePower_ = 0.55; // fix (extra speed needed to level the power)
     
     desiredFlywheelVelocity_ = 0.0;//7000; // ticks per 0.1 seconds
     closeFlywheelVelocity_ = 3000;//0.55;//5000.0*2048.0/60000.0;//2000; //5000 r/m * 2048 tick/r / (60 s/m * 1000 ms/s)
@@ -369,7 +368,6 @@ void SuperstructureController::Update(){
                     /*
                     robot_->SetClimberElevatorOutput(climbWinchPower_);
                     robot_->SetClimbWinchRightOutput(climbWinchPower_);
-                    WinchUpdate();
                     if(!humanControl_->GetDesired(ControlBoard::Buttons::kClimbWinchButton)) {
                         currClimbingState_ = kClimbingIdle;
                     }*/
@@ -522,35 +520,6 @@ void SuperstructureController::Resetting() {
     robot_->SetElevatorFeederOutput(0.0);
     currWristState_ = kRaising;
     //robot_->SetArm(false); TODO IMPLEMENT
-}
-
-void SuperstructureController::WinchUpdate() {
-    double currRobotAngle_ = (atan(tan(robot_-> GetNavXPitch()) * sin(robot_ -> GetNavXYaw())));
-    double initRightEncoderVal = robot_->GetClimberWinchRightEncoderValue();
-    double initLeftEncoderVal = robot_->GetClimberWinchRightEncoderValue();
-    double ticksPerFt = 256/4.32/12.0; // ticks per rotation / circumference of drum
-
-    if (currRobotAngle_ < 0.0){
-        if(robot_->GetClimberWinchRightEncoderValue() < initRightEncoderVal + (ROBOT_WIDTH*sin(currRobotAngle_)*ticksPerFt)){
-            robot_->SetClimbWinchRightOutput(climbWinchUpdatePower_);
-        }
-        else{
-            robot_->SetClimbWinchRightOutput(0.0);
-        }
-    }
-    else if (currRobotAngle_ > 0.0){
-        if(robot_->GetClimberWinchLeftEncoderValue() < initLeftEncoderVal + (ROBOT_WIDTH*sin(currRobotAngle_)*ticksPerFt)) {
-            robot_->SetClimbWinchLeftOutput(climbWinchUpdatePower_);
-        }
-        else{
-            robot_->SetClimbWinchRightOutput(0.0);
-        }
-    }
-    else{
-        robot_->SetClimbWinchRightOutput(0);
-        robot_->SetClimbWinchLeftOutput(0);
-    }
-
 }
 
 bool SuperstructureController::IndexUpdate(){
