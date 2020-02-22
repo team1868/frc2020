@@ -8,8 +8,12 @@
 #include "auto/commands/profiling/TrapezoidalMotionProfileCommand.h"
 
 TrapezoidalMotionProfileCommand::TrapezoidalMotionProfileCommand() {
-    // TrapezoidalMotionProfile::Constraints constraints{kMaxV, kMaxA};
+    // frc::TrapezoidProfile::State state {10, 10};
+    // frc::TrapezoidProfile::Constraints constraints{kMaxV, kMaxA};
+
+    // frc::TrapezoidProfile *la; = new frc::TrapezoidProfile(constraints, state);
+    // double previousProfiledReference = initialReference;
     // TrapezoidalMotionProfile profile{constraints, unprofiledReference,
     //                              previousProfiledReference};
-    // previousProfiledReference = profile.Calculate(timeSincePreviousUpdate);
+    //previousProfiledReference = profile.Calculate(timeSincePreviousUpdate);
 }

@@ -8,7 +8,7 @@
 #include "../../../include/auto/commands/TrenchAlignTapeCommand.h"
 
 TrenchAlignTapeCommand::TrenchAlignTapeCommand(RobotModel* robot, ControlBoard* humanControl, NavXPIDSource* navXSource, TalonEncoderPIDSource* talonSource, bool driveStraightDesired) : AutoCommand() {
-    printf("constructing align with tape command\n");
+    printf("constructing align with tape command2\n");
 	//this is align tape command for auto for shooting on the target side of trench. robot does not back up before pivot.
     
     context_ = NULL;

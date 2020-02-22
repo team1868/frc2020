@@ -8,6 +8,10 @@
 #include "RobotModel.h"
 using namespace std;
 
+void RobotModel::SetSuperstructureController(SuperstructureController *superstructureController){
+    superstructureController_ = superstructureController;
+}
+
 void RobotModel::SetAutoState(uint32_t state) {
     state_ = state;
 }

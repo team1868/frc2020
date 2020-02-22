@@ -4,3 +4,20 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
+
+#pragma once
+#include "auto/AutoCommand.h"
+#include "controllers/SuperstructureController.h"
+
+class ShootingCommand : public AutoCommand{
+ public:
+  ShootingCommand(RobotModel * robot);
+  void Init();
+  void Update(double currTimeSec, double deltaTimeSec);
+  bool IsDone();
+  void Reset();
+  virtual ~ShootingCommand();
+ private:
+  bool isDone_;
+  RobotModel * robot_;
+};

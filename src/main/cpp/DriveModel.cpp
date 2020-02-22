@@ -418,6 +418,20 @@ double RobotModel::GetNavXYaw() {
 	return navX_->GetYaw();
 }
 
+
+void RobotModel::SetPrepping(){
+	superstructureController_->SetPreppingState();
+}
+void RobotModel::SetShooting(){
+	superstructureController_->SetShootingState();
+}
+void RobotModel::SetIntaking(){
+	superstructureController_->SetIntakingState();
+}
+void RobotModel::SetIndexing(){
+	superstructureController_->SetIndexingState();
+}
+
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);
 	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over, TODO change for super

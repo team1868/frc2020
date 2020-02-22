@@ -177,13 +177,37 @@ void SuperstructureController::WristUpdate(){
     }
 }
 
+void SuperstructureController::UpdatePrep(bool isAuto){
+    if (!isAuto){
+        UpdateButtons(); //moved button/state code into that function B)
+    } else {
+        if(farPrepping_){ //farPrepping_ biconditional kPrepping :(((((
+            desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
+            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+            robot_->DisengageFlywheelHood(); //TODO add if distance > x
+            closePrepping_ = false;
+            farPrepping_ = true;
+        }
+        else{
+            desiredFlywheelVelocity_=0.0;
+            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+            robot_->DisengageFlywheelHood(); //TODO add if distance > x
+        }
 
+        //SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
+
+        //MOVED FLYWHEEL VELOCITY SETTING TO SetPreppingState()
+    }
+}
 // START OF NEW STATE MACHINE!! - DO NOT TOUCH PLS
-void SuperstructureController::Update(){
+void SuperstructureController::Update(bool isAuto){
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
-    CheckClimbDesired();
-    CheckControlPanelDesired();
+    if (!isAuto){
+        CheckClimbDesired();
+        CheckControlPanelDesired();
+    }
+    
 
     switch(currState_){
         case kDefaultTeleop:
@@ -192,7 +216,7 @@ void SuperstructureController::Update(){
             //CheckControlPanelDesired(); // might have to move out of the DefaultTeleop
             //CheckClimbDesired();
 
-            
+            UpdatePrep(isAuto);
             WristUpdate();
 
             UpdateButtons();   
@@ -488,6 +512,39 @@ bool SuperstructureController::IndexUpdate(){
     } else {
         return false;
     }
+}
+
+void SuperstructureController::SetShootingState(){
+    if(currState_!=kShooting){ 
+        startIndexTime_ = currTime_;
+        printf("start Shooting\n");
+    }
+    desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
+    robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+    currState_ = kShooting;
+    
+
+}
+void SuperstructureController::SetIndexingState(){
+    currState_ = kIndexing;
+    printf("start Indexing\n");
+}
+void SuperstructureController::SetIntakingState(){
+    currState_ = kIntaking;
+    printf("start Intaking\n");
+
+}
+void SuperstructureController::SetPreppingState(){ //starts warming up shooter B)
+    if (currState_ != kShooting){
+        if(!farPrepping_){ 
+            shootPrepStartTime_ = robot_->GetTime(); //TODO FIX
+            printf("start Prepping\n");
+        }
+        robot_->EngageFlywheelHood();
+        farPrepping_ = true;
+        closePrepping_ = false;
+    }
+    
 }
 
 void SuperstructureController::FlywheelPIDControllerUpdate() {

@@ -41,7 +41,9 @@ class MainProgram : public frc::TimedRobot {
   void TestPeriodic() override;
   void connectRecvZMQ();
   string readZMQ();
-  void readAngle(string contents);
+  // void readDetected(string contents);
+  bool readAll(string contents);
+  // void readDistance(string contents);
   void connectSendZMQ();
   void sendZMQ();
 

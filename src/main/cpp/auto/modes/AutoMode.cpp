@@ -70,6 +70,7 @@ void AutoMode::QueueFromString(string autoSequence) {
 		iss.clear(); //might be this?
 }
 
+//TODO ERROR MUST HAVE A COMMAND AFTER ANY SUPERSTRUCTURE COMMAND OR CRASH
 AutoCommand* AutoMode::GetStringCommand(char command) {
 		AutoCommand* tempCommand = NULL;
 		AutoCommand* commandA = NULL;
@@ -171,13 +172,45 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 		// 		tempCommand = new WaitingCommand(waitTime);
 		// 	}
 		// 	break;
+		case 's': //shooting
+			printf("starting shooting\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new ShootingCommand(robot_);
+			}
+			break;
+		case 'b': //prepping
+			printf("starting prepping\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new PreppingCommand(robot_);
+			}
+			break;
+		case 'i': //intaking
+			printf("starting intaking\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new IntakingCommand(robot_);
+			}
+			break;
+		case 'n': //indexing
+			printf("starting indexing\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new IndexingCommand(robot_);
+			}
+			break;
 		default:	// When it's not listed, don't do anything :)
 			printf("Unexpected character %c detected. Terminating queue", command);
 			firstCommand_ = NULL;
 			currentCommand_ = NULL;
 			tempCommand = NULL;
 			breakDesired_ = true;
-			break;
+			//break;
 		}
 
 		printf("Loaded a command\n");
