@@ -147,7 +147,7 @@ void SuperstructureController::WristUpdate(){
                 // might not need lowering if we have an idle
                 robot_->SetIntakeRollersOutput(0.0);
                 if(currWristAngle_ > 0.0) {
-                    robot_->SetIntakeWristOutput((0.0-currWristAngle_)*wristPFac_); // check if potentiometer returns angle
+                    robot_->SetIntakeWristOutput((0.0-currWristAngle_)*wristPFac_); 
                 }
                 else{
                     robot_->SetIntakeWristOutput(0.0);

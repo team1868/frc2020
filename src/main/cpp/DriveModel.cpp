@@ -158,7 +158,6 @@ RobotModel::RobotModel() :
 	intakeWristMotor_->ConfigSupplyCurrentLimit(*thirtyAmpSRXLimit_);
 	intakeWristMotor_->ConfigFactoryDefault();
 	intakeWristMotor_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0);
-	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
 
 

@@ -92,7 +92,6 @@ static const int WRIST_REVERSE_ROLLERS_BUTTON            = 6;
 
 // SENSORS
 static const int GYRO_PORT                               = 1; // ANALOG IO
-static const int INTAKE_WRIST_POT_PORT                   = 0; // ANALOG PORT
 
 // DIO
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 0;//3
