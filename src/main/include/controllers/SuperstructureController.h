@@ -40,13 +40,13 @@ class SuperstructureController {
 
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
   void Update();
-  void AutoUpdate();
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelVelocityDesired();
   void SetFlywheelPowerDesired(double flywheelVelocityRPM);
   void WristUpdate();
+  void UpdateButtons();
   double RatioFlywheel();
 
   bool IsFlywheelAtSpeed();

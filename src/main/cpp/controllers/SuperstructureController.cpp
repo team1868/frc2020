@@ -177,77 +177,6 @@ void SuperstructureController::WristUpdate(){
     }
 }
 
-void SuperstructureController::AutoUpdate(){
-    RefreshShuffleboard();
-    // auto states 
-    switch(currAutoState_){
-        case kAutoInit:
-            break;
-        case kAutoIndexing:
-            IndexUpdate();
-            break;
-        case kAutoIntaking:
-            IndexUpdate();
-            break;
-        case kAutoCloseShooting: // fix for auto, there is no next state or kresetting
-            desiredFlywheelVelocity_ = closeFlywheelVelocity_;
-            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
-            /*
-            if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
-                robot_->SetElevatorOutput(elevatorSlowPower_);
-            } else {
-                robot_->SetElevatorOutput(0.0);
-            }
-
-            if(!bottomSensor_ && !bTimeout_){
-                robot_->SetIndexFunnelOutput(indexFunnelPower_);
-                robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-            } else {
-                robot_->SetIndexFunnelOutput(0.0);
-                robot_->SetElevatorFeederOutput(0.0);
-            }
-
-            if(tTimeout_ && bTimeout_){
-                nextState_ = kResetting;
-                startResetTime_ = currTime_;
-            }
-
-            robot_->SetIntakeRollersOutput(0.0);
-            currWristState_ = kRaising;
-            //robot_->SetArm(false); ^ implemented above - test*/
-            break;
-        case kAutoFarShooting:
-            desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
-            SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
-            robot_->EngageFlywheelHood(); // hood implemented
-            /*if((IsFlywheelAtSpeed() || !topSensor_) && !tTimeout_){
-                robot_->SetElevatorOutput(elevatorSlowPower_);
-            } else {
-
-                robot_->SetElevatorOutput(0.0);
-            }
-
-            if(!bottomSensor_ && !bTimeout_){
-                robot_->SetIndexFunnelOutput(indexFunnelPower_);
-                robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-            } else {
-                robot_->SetIndexFunnelOutput(0.0);
-                robot_->SetElevatorFeederOutput(0.0);
-            }
-
-            if(tTimeout_ && bTimeout_){
-                nextState_ = kResetting;
-                startResetTime_ = currTime_;
-            }
-
-            robot_->SetIntakeRollersOutput(0.0);
-            currWristState_ = kRaising;
-            //robot_->SetArm(false); ^ implemented above*/
-            break;
-        default:
-            printf("ERROR: no state in auto update \n");
-    }
-}
 
 // START OF NEW STATE MACHINE!! - DO NOT TOUCH PLS
 void SuperstructureController::Update(){
@@ -266,54 +195,7 @@ void SuperstructureController::Update(){
             
             WristUpdate();
 
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
-                currHandlingState_ = kIntaking;
-                //printf("STARTED INTAKING YAY\n");
-            } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)/* && 
-                    currTime_ - shootPrepStartTime_ > 1.0*/){ //TODO remove this
-                if(currHandlingState_!=kShooting){
-                    startIndexTime_ = currTime_;
-                }
-                currHandlingState_ = kShooting; 
-            } else if(/*!humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && */
-                    currHandlingState_ == kShooting){ //shooting to decide not to shoot
-                currHandlingState_ = kResetting;
-            } else if(currHandlingState_ != kResetting){ //not intaking, shooting, or resetting, only option is indexing or prepping (also includes indexing)
-                currHandlingState_ = kIndexing;
-            }
-
-            //flywheel control if not shooting
-            if (currHandlingState_ != kShooting){
-                if(humanControl_->GetDesired(ControlBoard::Buttons::kShootClosePrepButton)){
-                    if(!closePrepping_){
-                        shootPrepStartTime_ = currTime_;
-                        printf("start close prep shooting\n");
-                    }
-                    printf("in close PREPPING -------------\n");
-                    desiredFlywheelVelocity_ = closeFlywheelVelocity_;
-                    //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-                    SetFlywheelPowerDesired(desiredFlywheelVelocity_);
-                    robot_->DisengageFlywheelHood();
-                    closePrepping_ = true;
-                    farPrepping_ = false;
-                } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootFarPrepButton)){
-                    printf("in far PREPPING -------------\n");
-                    if(!farPrepping_){
-                        printf("start far prep shooting\n");
-                        shootPrepStartTime_ = currTime_;
-                    }
-                    desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
-                    //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
-                    SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
-                    robot_->EngageFlywheelHood(); //TODO add if distance > x
-                    closePrepping_ = false;
-                    farPrepping_ = true;
-                } else {
-                    //printf("STOPPING FLYWHEEL\n");
-                    robot_->SetFlywheelOutput(0.0);
-                    robot_->DisengageFlywheelHood();
-                }
-            }    
+            UpdateButtons();   
 
             IndexPrep();
 
@@ -389,6 +271,58 @@ void SuperstructureController::Update(){
 
     }
     currState_ = nextState_;
+}
+
+void SuperstructureController::UpdateButtons(){
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
+        currHandlingState_ = kIntaking;
+        //printf("STARTED INTAKING YAY\n");
+    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)/* && 
+            currTime_ - shootPrepStartTime_ > 1.0*/){ //TODO remove this
+        if(currHandlingState_!=kShooting){
+            startIndexTime_ = currTime_;
+        }
+        currHandlingState_ = kShooting; 
+    } else if(/*!humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && */
+            currHandlingState_ == kShooting){ //shooting to decide not to shoot
+        currHandlingState_ = kResetting;
+    } else if(currHandlingState_ != kResetting){ //not intaking, shooting, or resetting, only option is indexing or prepping (also includes indexing)
+        currHandlingState_ = kIndexing;
+    }
+
+    //flywheel control if not shooting
+    if (currHandlingState_ != kShooting){
+        if(humanControl_->GetDesired(ControlBoard::Buttons::kShootClosePrepButton)){
+            if(!closePrepping_){
+                shootPrepStartTime_ = currTime_;
+                printf("start close prep shooting\n");
+            }
+            printf("in close PREPPING -------------\n");
+            desiredFlywheelVelocity_ = closeFlywheelVelocity_;
+            //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+            robot_->DisengageFlywheelHood();
+            closePrepping_ = true;
+            farPrepping_ = false;
+        } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootFarPrepButton)){
+            printf("in far PREPPING -------------\n");
+            if(!farPrepping_){
+                printf("start far prep shooting\n");
+                shootPrepStartTime_ = currTime_;
+            }
+            desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
+            //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+            SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
+            robot_->EngageFlywheelHood(); //TODO add if distance > x
+            closePrepping_ = false;
+            farPrepping_ = true;
+        } else {
+            //printf("STOPPING FLYWHEEL\n");
+            robot_->SetFlywheelOutput(0.0);
+            robot_->DisengageFlywheelHood();
+        }
+    } 
+
 }
 
 void SuperstructureController::CheckControlPanelDesired(){
