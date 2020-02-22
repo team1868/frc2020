@@ -522,18 +522,64 @@ void SuperstructureController::SetShootingState(){
     desiredFlywheelVelocity_ = CalculateFlywheelVelocityDesired();
     robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
     currState_ = kShooting;
+
+    //CODE TAKEN FROM TELEOP SHOOTING, COULD BE BAD
+    if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
+        robot_->SetElevatorOutput(elevatorSlowPower_);
+    } else {
+        robot_->SetElevatorOutput(0.0);
+    }
+
+    if(!bottomSensor_ && !bTimeout_){
+        //robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
+        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    } else {
+        robot_->SetIndexFunnelOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
+    }
+
+    if(tTimeout_ && bTimeout_){ //stopping shooting i guess D:
+        desiredFlywheelVelocity_=0.0;
+        robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
+    }
+
+    //robot_->SetIntakeRollersOutput(0.0);
+    currWristState_ = kRaising;
+    //robot_->SetArm(false); TODO IMPLEMENT
     
 
 }
 void SuperstructureController::SetIndexingState(){
     currState_ = kIndexing;
     printf("start Indexing\n");
+
+    //FROM TELEOP INDEXUPDATE()  
+    if(!topSensor_ && bottomSensor_){
+        //printf("RUNNING TOP ELEVATOR\n");
+        //printf("running elevator");
+        robot_->SetElevatorOutput(elevatorFastPower_);
+    } else {
+        //printf("not running elevator");
+        robot_->SetElevatorOutput(0.0);
+    }
+
+    //control bottom
+    if(!bottomSensor_ && (!bTimeout_ || currHandlingState_ == kIntaking)){
+        robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
+        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+        //printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");
+    } else {
+        robot_->SetIndexFunnelOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
+    }
 }
 void SuperstructureController::SetIntakingState(){
-    currState_ = kIntaking;
+    currState_ = kIntaking; 
     printf("start Intaking\n");
+    currWristState_ = kLowering;
 
 }
+
 void SuperstructureController::SetPreppingState(){ //starts warming up shooter B)
     if (currState_ != kShooting){
         if(!farPrepping_){ 
@@ -579,18 +625,22 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRP
 }
 
 bool SuperstructureController::IsFlywheelAtSpeed(){
-    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredFlywheelVelocity_-150 && 
+    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredFlywheelVelocity_-0 && 
         robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredFlywheelVelocity_+150){
         numTimeAtSpeed_++;
         if (numTimeAtSpeed_ >= 3){
             atTargetSpeed_ = true;
+            //return true;
         }
         else{
             atTargetSpeed_ = false;
+            //return false;
         }
     } 
     numTimeAtSpeed_ = 0;
+    atTargetSpeed_ = false;
     return true;
+    //return false;
 }
 
 //TODO actually implement
