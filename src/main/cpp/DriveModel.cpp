@@ -124,7 +124,6 @@ RobotModel::RobotModel() :
 	fortyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
 	thirtyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 24.0, 30.0, 0.1);
 	
-	
 	flywheelMotor1_ = new WPI_TalonFX(FLYWHEEL_MOTOR_ONE_ID);
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
@@ -704,6 +703,16 @@ void RobotModel::CreateNavX(){
 
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
+}
+
+void RobotModel::TestFalcons() {
+	SetDriveValues(0.5, 0.5);
+	frc::Wait(1.0);
+	if(GetLeftEncoderValue() != 0) printf("Left encoder works");
+	else printf("!!!!! Left encoder does not work!!!!!");
+	if(GetRightEncoderValue() != 0) printf("Right encoder works");
+	else printf("!!!!! Right encoder does not work!!!!!");
+	SetDriveValues(0.0, 0.0);
 }
 
 
