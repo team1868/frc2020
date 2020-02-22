@@ -11,7 +11,7 @@
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
-static const double MAX_FALCON_RPM = 5600.0; // magic number!!!!
+static const double MAX_FALCON_RPM = 6000.0; // magic number!!!!
 static const double RATIO_BATTERY_VOLTAGE = 12.27;
 
 class SuperstructureController {
@@ -39,15 +39,22 @@ class SuperstructureController {
   }; 
 
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
-  void Update();
-  void AutoUpdate();
+  void Update(bool isAuto);
+  void UpdatePrep(bool isAuto);
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelVelocityDesired();
   void SetFlywheelPowerDesired(double flywheelVelocityRPM);
   void WristUpdate();
+  void UpdateButtons();
   double RatioFlywheel();
+  
+  void SetShootingState();
+  void SetIntakingState();
+  void SetPreppingState();
+  void SetIndexingState();
+  
 
   bool IsFlywheelAtSpeed();
 
@@ -90,9 +97,6 @@ class SuperstructureController {
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
   double desiredFlywheelVelocity_, closeFlywheelVelocity_;
-  frc::PIDController *flywheelPID_;
-  SuperstructurePIDOutput *flywheelPIDOutput_;
-  TalonFXPIDSource *flywheelPIDSource_;
 
   double wristPFac_;
   double desiredIntakeWristAngle_;
@@ -110,7 +114,9 @@ class SuperstructureController {
   double farTicksPerSecDesired_;
 
   double shootPrepStartTime_;
+  int numTimeAtSpeed_;
   bool closePrepping_, farPrepping_;
+  bool atTargetSpeed_;
 
   int controlPanelCounter_;
   double initialControlPanelTime_;
@@ -122,8 +128,8 @@ class SuperstructureController {
 
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
-  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_;
-  nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_;
+  nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_, flywheelMotorOutputEntry_;
+  nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
 
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry intakeWristAngleEntry_;

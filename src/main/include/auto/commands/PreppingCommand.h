@@ -9,15 +9,17 @@
 #include "auto/AutoCommand.h"
 #include "controllers/SuperstructureController.h"
 
-class ShootingCommand : public AutoCommand{
+
+class PreppingCommand : public AutoCommand {
  public:
-  ShootingCommand(RobotModel * robot);
+  PreppingCommand(RobotModel * robot);
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();
   void Reset();
-  virtual ~ShootingCommand();
+  virtual ~PreppingCommand();
  private:
   bool isDone_;
   RobotModel * robot_;
+
 };

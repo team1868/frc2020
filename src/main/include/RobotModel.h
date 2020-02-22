@@ -22,6 +22,7 @@
 #include "Ports2020.h"
 #include "ControlBoard.h"
 #include <frc/AnalogPotentiometer.h>
+#include "controllers/SuperstructureController.h"
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -78,7 +79,7 @@ static constexpr frc::Color GREEN = frc::Color(0.197, 0.561, 0.240); //0.177, 0.
 static constexpr frc::Color RED = frc::Color(0.561, 0.232, 0.114); //0.478, 0.369, 0.153
 static constexpr frc::Color YELLOW = frc::Color(0.361, 0.524, 0.113); //0.322, 0.880, 0.128
 
-
+class SuperstructureController;
 class RobotModel {
   public:
     enum Wheels {kLeftWheels, kRightWheels, kAllWheels};
@@ -89,6 +90,8 @@ class RobotModel {
     frc::ShuffleboardTab& GetPIDTab();
     frc::ShuffleboardTab& GetAutoOffsetTab();
     frc::ShuffleboardTab& GetSuperstructureTab();
+
+    void SetSuperstructureController(SuperstructureController *superstructureControllers);
     
 
     // drive robot model
@@ -102,6 +105,11 @@ class RobotModel {
     double GetRightEncoderValue();
     double GetRawLeftEncoderValue();
     double GetRawRightEncoderValue();
+
+    void SetIndexing();
+    void SetIntaking();
+    void SetShooting();
+    void SetPrepping();
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();
@@ -208,6 +216,7 @@ class RobotModel {
     void ConfigFlywheelD(double dFac_);
     void ConfigFlywheelF(double fFac_);
     double RatioFlywheel(double value);
+    double FlywheelMotorOutput();
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
@@ -240,6 +249,7 @@ class RobotModel {
   private:
 
     ControlBoard *humanControl_;
+    SuperstructureController *superstructureController_;
 
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
@@ -257,7 +267,8 @@ class RobotModel {
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     // superstructure
-    StatorCurrentLimitConfiguration *thirtyAmpLimit_, *fortyAmpLimit_;
+    StatorCurrentLimitConfiguration *fortyAmpFXLimit_;
+    SupplyCurrentLimitConfiguration *thirtyAmpSRXLimit_, *fortyAmpSRXLimit_;
 
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
     TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 

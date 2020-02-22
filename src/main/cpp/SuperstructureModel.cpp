@@ -8,6 +8,10 @@
 #include "RobotModel.h"
 using namespace std;
 
+void RobotModel::SetSuperstructureController(SuperstructureController *superstructureController){
+    superstructureController_ = superstructureController;
+}
+
 void RobotModel::SetAutoState(uint32_t state) {
     state_ = state;
 }
@@ -52,6 +56,7 @@ double RobotModel::RatioFlywheel(double value){
 
 // make into one function later whoops
 void RobotModel::ConfigFlywheelP(double pFac){
+    //printf("pFac %f\n", pFac);
     flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac);
 }
 void RobotModel::ConfigFlywheelI(double iFac){
@@ -62,6 +67,10 @@ void RobotModel::ConfigFlywheelD(double dFac){
 }
 void RobotModel::ConfigFlywheelF(double fFac){
     flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
+}
+
+double RobotModel::FlywheelMotorOutput(){
+    flywheelMotor1_->GetMotorOutputPercent();
 }
 
 void RobotModel::EngageFlywheelHood() {
