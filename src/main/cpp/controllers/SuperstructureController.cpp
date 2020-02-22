@@ -522,18 +522,22 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRP
 }
 
 bool SuperstructureController::IsFlywheelAtSpeed(){
-    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredFlywheelVelocity_-150 && 
+    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredFlywheelVelocity_-0 && 
         robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredFlywheelVelocity_+150){
         numTimeAtSpeed_++;
         if (numTimeAtSpeed_ >= 3){
             atTargetSpeed_ = true;
+            //return true;
         }
         else{
             atTargetSpeed_ = false;
+            //return false;
         }
     } 
     numTimeAtSpeed_ = 0;
+    atTargetSpeed_ = false;
     return true;
+    //return false;
 }
 
 //TODO actually implement
