@@ -73,19 +73,3 @@ double PivotPIDTalonOutput::GetOutput() {
 
 PivotPIDTalonOutput::~PivotPIDTalonOutput(){
 }
-
-SuperstructurePIDOutput::SuperstructurePIDOutput() {
-	pidOutput_ = 0.0;
-}
-
-void SuperstructurePIDOutput::PIDWrite(double output) {
-	pidOutput_ = output;
-}
-
-double SuperstructurePIDOutput::GetPIDOutput() {
-	return pidOutput_;
-}
-
-SuperstructurePIDOutput::~SuperstructurePIDOutput() {
-
-}

@@ -208,6 +208,7 @@ class RobotModel {
     void ConfigFlywheelD(double dFac_);
     void ConfigFlywheelF(double fFac_);
     double RatioFlywheel(double value);
+    double FlywheelMotorOutput();
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
@@ -257,7 +258,8 @@ class RobotModel {
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
     // superstructure
-    StatorCurrentLimitConfiguration *thirtyAmpLimit_, *fortyAmpLimit_;
+    StatorCurrentLimitConfiguration *fortyAmpFXLimit_;
+    SupplyCurrentLimitConfiguration *thirtyAmpSRXLimit_, *fortyAmpSRXLimit_;
 
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
     TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 

@@ -85,34 +85,6 @@ TalonEncoderPIDSource::~TalonEncoderPIDSource() {
 
 }
 
-
-
-TalonFXPIDSource::TalonFXPIDSource(RobotModel* robot) {
-	robot_ = robot;
-	averageTalonFXDistance_ = 0.0;
-
-}
-
-double TalonFXPIDSource::PIDGet() {
-	
-	double flywheel1Distance = robot_->GetFlywheel1EncoderValue();
-	double flywheel2Distance = robot_->GetFlywheel2EncoderValue();
-
-	// FIX THIS TO BE BETTER THANKS
-	averageTalonFXDistance_ = flywheel1Distance;
-
-	frc::SmartDashboard::PutNumber("Flywheel 1 Distance", flywheel1Distance);
-	frc::SmartDashboard::PutNumber("Flywheel 2 Distance", flywheel2Distance);
-	frc::SmartDashboard::PutNumber("Average Distance", averageTalonFXDistance_);
-	return averageTalonFXDistance_;
-
-}
-
-TalonFXPIDSource::~TalonFXPIDSource() {
-
-}
-
-
 VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
 	robot_ = robot;
 	lastTime_ = robot_->GetTime();

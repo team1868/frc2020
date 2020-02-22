@@ -120,15 +120,17 @@ RobotModel::RobotModel() :
     rightSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
 
 	// superstructure robot model
-	fortyAmpLimit_ = new StatorCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
-	thirtyAmpLimit_ = new StatorCurrentLimitConfiguration(true, 24.0, 30.0, 0.1);
+	fortyAmpFXLimit_ = new StatorCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
+	fortyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
+	thirtyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 24.0, 30.0, 0.1);
+	
 	
 	flywheelMotor1_ = new WPI_TalonFX(FLYWHEEL_MOTOR_ONE_ID);
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
-	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
-	flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
+	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
 
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
@@ -147,14 +149,14 @@ RobotModel::RobotModel() :
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
 	climberElevatorMotor_ = new WPI_VictorSPX(CLIMB_ELEVATOR_ID);
 
-	//climberWinchLeftMotor_->
-	//climberWinchRightMotor_->ConfigStatorCurrentLimit(*fortyAmpLimit_);
+	// make climber elevator motors srx and put current limits
 
 	climberWinchRightEncoder_ = new frc::Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
 	climberWinchLeftEncoder_ = new frc::Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
+	intakeWristMotor_->ConfigSupplyCurrentLimit(*thirtyAmpSRXLimit_);
 	intakeWristMotor_->ConfigFactoryDefault();
 	intakeWristMotor_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0);
 	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);

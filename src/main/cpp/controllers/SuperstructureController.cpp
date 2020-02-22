@@ -39,8 +39,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     elevatorSlowPower_ = 0.4; //fix
     elevatorFastPower_ = 1.0; //fix
     indexFunnelPower_ = 0.2; // fix
-    lowerElevatorTimeout_ = 4.0; //fix
-    elevatorTimeout_ = 4.0;
+    lowerElevatorTimeout_ = 2.0; //fix
+    elevatorTimeout_ = 2.0;
     //lastBottomStatus_ = false;
     manualRollerPower_ = 0.5;
 
@@ -55,6 +55,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     closePrepping_ = false;
     farPrepping_ = false;
+    atTargetSpeed_ = false;
 
     currTime_ = robot_->GetTime();
     shootPrepStartTime_ = currTime_;
@@ -76,7 +77,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     // shuffleboard
     flywheelVelocityEntry_ = flywheelPIDLayout_.Add("flywheel velocity", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
-    flywheelVelocityErrorEntry_ = flywheelPIDLayout_.Add("flywheel error", 0.0).GetEntry();
+    flywheelVelocityErrorEntry_ = flywheelPIDLayout_.Add("flywheel error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     
     flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.0).GetEntry();
     flywheelIEntry_ = flywheelPIDLayout_.Add("flywheel I", 0.0).GetEntry();
@@ -93,6 +94,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     funnelEntry_ = powerLayout_.Add("funnel", indexFunnelPower_).GetEntry();
     rollerManualEntry_ = powerLayout_.Add("manual rollers", manualRollerPower_).GetEntry();
     closeFlywheelEntry_ = powerLayout_.Add("close flywheel", closeFlywheelVelocity_).GetEntry();
+    targetSpeedEntry_ = flywheelPIDLayout_.Add("target speed", atTargetSpeed_).GetEntry();
+    flywheelMotorOutputEntry_ = flywheelPIDLayout_.Add("flywheel motor output", robot_->FlywheelMotorOutput()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
     //TODO make timeout
 
@@ -585,10 +588,18 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRP
 }
 
 bool SuperstructureController::IsFlywheelAtSpeed(){
-    //if(robot_->GetFlywheelMotor1Velocity() > desiredFlywheelVelocity_-50 && robot_->GetFlywheelMotor1Velocity() < desiredFlywheelVelocity_+50){
-        return true; // random threshold value, change as desired
-    //}
-    //return false;
+    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredFlywheelVelocity_-150 && 
+        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredFlywheelVelocity_+150){
+        numTimeAtSpeed_++;
+        if (numTimeAtSpeed_ >= 3){
+            atTargetSpeed_ = true;
+        }
+        else{
+            atTargetSpeed_ = false;
+        }
+    } 
+    numTimeAtSpeed_ = 0;
+    return true;
 }
 
 //TODO actually implement
@@ -685,6 +696,7 @@ void SuperstructureController::RefreshShuffleboard(){
 
     elevatorBottomLightSensorEntry_.SetBoolean(robot_->GetElevatorFeederLightSensorStatus());
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
+    targetSpeedEntry_.SetBoolean(atTargetSpeed_);
 
     flywheelPFac_ = flywheelPEntry_.GetDouble(0.0);
     flywheelIFac_ = flywheelIEntry_.GetDouble(0.0);
@@ -695,6 +707,7 @@ void SuperstructureController::RefreshShuffleboard(){
     wristPFac_ = wristPEntry_.GetDouble(0.03);
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
     flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
+    flywheelMotorOutputEntry_.SetDouble(robot_->FlywheelMotorOutput());
     currWristAngle_ = robot_->GetIntakeWristAngle();
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
@@ -712,8 +725,4 @@ SuperstructureController::~SuperstructureController() {
     wristPEntry_.Delete();
     elevatorBottomLightSensorEntry_.Delete();
     elevatorTopLightSensorEntry_.Delete();
-    if (flywheelPID_ != NULL) {
-        flywheelPID_->Disable();
-        delete flywheelPID_;
-    } 
 }
