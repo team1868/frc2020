@@ -7,6 +7,8 @@
 
 #pragma once
 #include <frc/trajectory/TrapezoidProfile.h>
+//#include <frc/trajectory/>
+#include <frc/trajectory/Trajectory.h>
 
 class TrapezoidalMotionProfileCommand {
  public:
