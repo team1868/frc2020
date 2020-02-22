@@ -39,7 +39,8 @@ class SuperstructureController {
   }; 
 
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
-  void Update();
+  void Update(bool isAuto);
+  void UpdatePrep(bool isAuto);
   void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
@@ -48,6 +49,12 @@ class SuperstructureController {
   void WristUpdate();
   void UpdateButtons();
   double RatioFlywheel();
+  
+  void SetShootingState();
+  void SetIntakingState();
+  void SetPreppingState();
+  void SetIndexingState();
+  
 
   bool IsFlywheelAtSpeed();
 

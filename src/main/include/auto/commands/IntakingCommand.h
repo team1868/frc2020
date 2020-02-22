@@ -6,17 +6,19 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
+#include "RobotModel.h"
 #include "auto/AutoCommand.h"
 #include "controllers/SuperstructureController.h"
 
-class ShootingCommand : public AutoCommand{
+
+class IntakingCommand : public AutoCommand {
  public:
-  ShootingCommand(RobotModel * robot);
+  IntakingCommand(RobotModel * robot);
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();
   void Reset();
-  virtual ~ShootingCommand();
+  virtual ~IntakingCommand();
  private:
   bool isDone_;
   RobotModel * robot_;

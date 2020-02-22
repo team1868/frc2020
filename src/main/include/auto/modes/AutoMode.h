@@ -8,7 +8,6 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
-#include "controllers/SuperstructureController.h" // this could be why the code is crashing lmao
 #include "../commands/CurveCommand.h"
 #include "auto/commands/DriveStraightCommand.h"
 #include "auto/commands/PivotCommand.h"
@@ -16,6 +15,11 @@
 #include "auto/PIDSource/PIDInputSource.h"
 #include "auto/commands/PointCommand.h"
 #include "auto/PIDSource/PIDOutputSource.h"
+#include "auto/commands/ShootingCommand.h"
+#include "auto/commands/IndexingCommand.h"
+#include "auto/commands/IntakingCommand.h"
+#include "auto/commands/PreppingCommand.h"
+
 
 class AutoMode {
   public:
