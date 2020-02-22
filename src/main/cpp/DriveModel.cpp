@@ -705,16 +705,6 @@ NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
 }
 
-void RobotModel::TestFalcons() {
-	SetDriveValues(0.5, 0.5);
-	frc::Wait(1.0);
-	if(GetLeftEncoderValue() != 0) printf("Left encoder works");
-	else printf("!!!!! Left encoder does not work!!!!!");
-	if(GetRightEncoderValue() != 0) printf("Right encoder works");
-	else printf("!!!!! Right encoder does not work!!!!!");
-	SetDriveValues(0.0, 0.0);
-}
-
 
 void RobotModel::RefreshShuffleboard(){
 
