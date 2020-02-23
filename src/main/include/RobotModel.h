@@ -63,6 +63,7 @@ static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
 static const double MIN_TURNING_X = 0.5;
 static const double MIN_TURNING_XY_DIFFERENCE = 1.0;
 static const double MAX_LOW_GEAR_VELOCITY = 7.5;
+static const double TICKS_TO_WRIST_DEGREES = 360.0/4096*18/34; //0.04653
 
 
 //color sensor
