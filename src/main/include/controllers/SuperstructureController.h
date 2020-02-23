@@ -49,8 +49,10 @@ class SuperstructureController {
   void WristUpdate();
   void UpdateButtons();
   double RatioFlywheel();
+  // double GetStopDetectionTime();
+  // void SetStopDetectionTimeDefault();
   
-  void SetShootingState(double autoVelocity);
+  bool SetShootingState(double autoVelocity);
   void SetIntakingState();
   void SetPreppingState(double desiredVelocity);
   void SetIndexingState();
@@ -58,7 +60,6 @@ class SuperstructureController {
 
   bool IsFlywheelAtSpeed();
 
-  bool IndexUpdate();
 
   double CalculateIntakeRollersPower();
 
@@ -73,10 +74,11 @@ class SuperstructureController {
   ~SuperstructureController();
 
  private:
+  void IndexUpdate();
   void IndexPrep();
   void Intaking();
   void Indexing();
-  void Shooting();
+  bool Shooting();
   void Resetting();
   void UndoElevator();
   void CheckControlPanelDesired();
@@ -115,7 +117,7 @@ class SuperstructureController {
   double closeTicksPerSecDesired_;
   double farTicksPerSecDesired_;
 
-  double shootPrepStartTime_;
+  double shootPrepStartTime_, stopDetectionTime_;
   int numTimeAtSpeed_;
   bool closePrepping_, farPrepping_;
   bool atTargetSpeed_;
@@ -127,6 +129,8 @@ class SuperstructureController {
   bool controlPanelStage2_, controlPanelStage3_;
 
   double manualRollerPower_;
+
+  
 
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;

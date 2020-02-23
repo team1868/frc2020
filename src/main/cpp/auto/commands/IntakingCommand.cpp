@@ -19,7 +19,7 @@ void IntakingCommand::Init(){
 }
 
 void IntakingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetIntaking();
+    robot_->SetIntaking(); //true is wrist up
     isDone_ = true;
 }
 

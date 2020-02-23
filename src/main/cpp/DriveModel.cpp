@@ -425,8 +425,8 @@ double RobotModel::GetNavXYaw() {
 void RobotModel::SetPrepping(double desiredVelocity){
 	superstructureController_->SetPreppingState(desiredVelocity);
 }
-void RobotModel::SetShooting(double autoVelocity){
-	superstructureController_->SetShootingState(autoVelocity);
+bool RobotModel::SetShooting(double autoVelocity){
+	return superstructureController_->SetShootingState(autoVelocity);
 }
 void RobotModel::SetIntaking(){
 	superstructureController_->SetIntakingState();
@@ -434,6 +434,14 @@ void RobotModel::SetIntaking(){
 void RobotModel::SetIndexing(){
 	superstructureController_->SetIndexingState();
 }
+
+// double RobotModel::GetStopDetectionTime(){
+// 	return superstructureController_->GetStopDetectionTime();
+// }
+
+// void RobotModel::SetStopDetectionTimeDefault(){
+// 	superstructureController_->SetStopDetectionTimeDefault();
+// }
 
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);

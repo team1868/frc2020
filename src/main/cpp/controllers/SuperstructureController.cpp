@@ -28,6 +28,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     desiredFlywheelVelocity_ = 0.0;//7000; // ticks per 0.1 seconds
     closeFlywheelVelocity_ = 3550;//0.55;//5000.0*2048.0/60000.0;//2000; //5000 r/m * 2048 tick/r / (60 s/m * 1000 ms/s)
     flywheelResetTime_ = 2.0; // fix //why does this exist
+    stopDetectionTime_ = 0.0;
     // create talon pid controller
     // fix encoder source
     std::cout << "start flywheel encoder creation" << std::endl << std::flush;
@@ -141,6 +142,8 @@ void SuperstructureController::WristUpdate(){
         }
     } else {
         printf("inside auto wrist\n");
+        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA, currWristState: ");
+        std::cout << currWristState_ << std::endl;
         //currWristAngle_ = robot_->GetIntakeWristAngle(); // might not need?
         switch (currWristState_){
             case kRaising:
@@ -166,6 +169,7 @@ void SuperstructureController::WristUpdate(){
                     robot_->SetIntakeWristOutput(0.0);
                 }
                 if(currWristAngle_ > desiredIntakeWristAngle_ - 20.0){ //within acceptable range
+                    printf("we are in range B)\n");
                     robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
                 }
                 else{
@@ -442,7 +446,7 @@ void SuperstructureController::Indexing(){
     currWristState_ = kRaising;
 }
 
-void SuperstructureController::Shooting() {
+bool SuperstructureController::Shooting() {
     printf("in kShooting\n");// with %f\n", desiredFlywheelVelocity_);
     //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
@@ -461,14 +465,19 @@ void SuperstructureController::Shooting() {
         robot_->SetElevatorFeederOutput(0.0);
     }
 
+    currWristState_ = kRaising;
+
     if(tTimeout_ && bTimeout_){
         nextHandlingState_ = kIndexing; //kResetting;
         //robot_->SetFlywheelOutput(0.0);
         startResetTime_ = currTime_;
+        return true;
+    } else {
+        return false;
     }
 
     //robot_->SetIntakeRollersOutput(0.0);
-    currWristState_ = kRaising;
+    
     //robot_->SetArm(false); 
 }
 
@@ -497,7 +506,7 @@ void SuperstructureController::UndoElevator(){
     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
 }
-bool SuperstructureController::IndexUpdate(){
+void SuperstructureController::IndexUpdate(){
 
     //printf("top sensor %f and bottom sensor %f\n", topSensor_, bottomSensor_);
 
@@ -521,14 +530,23 @@ bool SuperstructureController::IndexUpdate(){
         robot_->SetElevatorFeederOutput(0.0);
     }
 
-    if((topSensor_ && bottomSensor_) || !bTimeout_){
-        return true;
-    } else {
-        return false;
-    }
+    // if((topSensor_ && bottomSensor_) || !bTimeout_){
+    //     return true;
+    // } else {
+    //     return false;
+    // }
 }
 
-void SuperstructureController::SetShootingState(double autoVelocity){
+// double SuperstructureController::GetStopDetectionTime(){
+//     return stopDetectionTime_;
+// }
+
+// void SuperstructureController::SetStopDetectionTimeDefault(){
+//     stopDetectionTime_ = 0.0;
+// }
+
+bool SuperstructureController::SetShootingState(double autoVelocity){
+    currWristState_ = kRaising; //resetting whatever intake did
     //printf("falcon velocity %f", robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
     if(currHandlingState_!=kShooting){ 
         startIndexTime_ = currTime_;
@@ -561,12 +579,15 @@ void SuperstructureController::SetShootingState(double autoVelocity){
             robot_->SetIndexFunnelOutput(0.0);
             robot_->SetElevatorFeederOutput(0.0);
         }
-
-        if(tTimeout_ && bTimeout_){ //stopping shooting i guess D:
-            desiredFlywheelVelocity_ = 0.0;
-            SetFlywheelPowerDesired(desiredFlywheelVelocity_);
-            robot_->SetFlywheelOutput(0.0);
+        //we have stopDetectionTime_ < 0.001 because we don't want to keep setting it to currTime_ (if we do that we'll never stop shooting)
+        if(tTimeout_ && bTimeout_ && stopDetectionTime_ < 0.001){ //stopping shooting i guess D:
+            stopDetectionTime_ = robot_->GetTime();
         }
+
+        if(robot_->GetTime() >= stopDetectionTime_ + 2.0){
+            return true;
+        }
+        return false;
 
         //robot_->SetIntakeRollersOutput(0.0);
         currWristState_ = kRaising;
@@ -575,6 +596,7 @@ void SuperstructureController::SetShootingState(double autoVelocity){
 
 }
 void SuperstructureController::SetIndexingState(){
+    currWristState_ = kRaising; //resetting whatever intake did
     currHandlingState_ = kIndexing;
     printf("start Indexing\n");
 
@@ -601,14 +623,16 @@ void SuperstructureController::SetIndexingState(){
     
 }
 void SuperstructureController::SetIntakingState(){
+    currWristState_ = kLowering;
     currHandlingState_ = kIntaking; 
     printf("start Intaking\n");
-    currWristState_ = kLowering;
+    
 
 }
 
 
 void SuperstructureController::SetPreppingState(double desiredVelocity){ //starts warming up shooter B)
+    currWristState_ = kRaising; //resetting whatever intake did
     //if (currHandlingState_ != kShooting){
         if(!farPrepping_){ 
             shootPrepStartTime_ = robot_->GetTime(); //TODO FIX
@@ -621,6 +645,8 @@ void SuperstructureController::SetPreppingState(double desiredVelocity){ //start
         SetFlywheelPowerDesired(desiredFlywheelVelocity_);
     //}
 }
+
+
 
 void SuperstructureController::FlywheelPIDControllerUpdate() {
 
@@ -672,7 +698,7 @@ bool SuperstructureController::IsFlywheelAtSpeed(){
     //return false;
 }
 
-//TODO actually implement
+//TODO pkease pleasd please
 double SuperstructureController::CalculateIntakeRollersPower() { 
     /*double power = abs(robot_->GetDrivePower())*2;
     if (power <= 1)
@@ -740,7 +766,7 @@ void SuperstructureController::ControlPanelStage3(double power) {
                 ControlPanelFinalSpin();
                 break;
             default :
-                printf("this data is corrupt");
+                printf("this data is BAD BOIZ");
                 break;
         }
     } else {

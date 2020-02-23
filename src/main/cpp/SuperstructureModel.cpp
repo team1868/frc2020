@@ -194,6 +194,7 @@ std::string RobotModel::GetControlPanelGameData() {
 
 //should return degrees
 double RobotModel::GetIntakeWristAngle(){
+    std::cout << (360.0/4096)*intakeWristMotor_->GetSelectedSensorPosition() << " " << intakeWristMotor_->GetSelectedSensorPosition() << std::endl;
     return (360.0/4096)*intakeWristMotor_->GetSelectedSensorPosition();
 }
 

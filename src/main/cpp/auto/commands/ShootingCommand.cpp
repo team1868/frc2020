@@ -22,11 +22,14 @@ void ShootingCommand::Init(){
 }
 
 void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetShooting(autoVelocity_);
-    if(robot_->GetTime()>= startShootingTime_+4.0){
+    isDone_ = robot_->SetShooting(autoVelocity_);
+    // if(robot_->GetTime() > robot_->GetStopDetectionTime() + 2.0){
+    //     isDone_ = true;z
+    // }
+    if(isDone_ == true){ //when shooting stops 
         printf("done shooting\n");
-        isDone_ = true;
         robot_->SetFlywheelOutput(0.0);
+        robot_->SetIndexing(); //index after shoot
     }
 }
 
