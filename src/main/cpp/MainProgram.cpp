@@ -162,7 +162,7 @@ void MainProgram::TeleopPeriodic() {
     //std::cout << "before superstructure\n" << std::flush;
     superstructureController_->Update(false);
     //std::cout << "updated drive and superstructure\n" << std::flush;
-    //\superstructureController_->WristUpdate();
+    //superstructureController_->WristUpdate();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
     

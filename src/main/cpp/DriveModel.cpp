@@ -159,7 +159,8 @@ RobotModel::RobotModel() :
 	intakeWristMotor_->ConfigFactoryDefault();
 	intakeWristMotor_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
-
+	intakeWristMotor_->SetSelectedSensorPosition(0); //arm up
+	resetWristAngle_ = false;
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
@@ -225,6 +226,7 @@ RobotModel::RobotModel() :
 	rColorEntry_ = GetFunctionalityTab().Add("red", 0.0).GetEntry();
 	gColorEntry_ = GetFunctionalityTab().Add("green", 0.0).GetEntry();
 	bColorEntry_ = GetFunctionalityTab().Add("blue", 0.0).GetEntry();
+	resetWristAngleEntry_ = GetSuperstructureTab().Add("reset wrist angle", false).WithWidget(frc::BuiltInWidgets::kToggleButton).GetEntry();
 
 	initLineErrorEntry_ = GetAutoOffsetTab().Add("initiation line distance", 0.0).GetEntry(); 
 	trenchDistErrorEntry_ = GetAutoOffsetTab().Add("trench distance", 0.0).GetEntry(); 
@@ -760,6 +762,10 @@ void RobotModel::RefreshShuffleboard(){
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
+	resetWristAngle_ = resetWristAngleEntry_.GetBoolean(false);
+	if (resetWristAngle_) {
+		intakeWristMotor_->SetSelectedSensorPosition(0);
+	}
 
 
 	initLineError_ = initLineErrorEntry_.GetDouble(0.0);
@@ -825,4 +831,9 @@ RobotModel::~RobotModel(){
     ratioAllEntry_.Delete();
 	ratioDriveEntry_.Delete();
 	ratioSuperstructureEntry_.Delete();
+
+	bColorEntry_.Delete();
+	rColorEntry_.Delete();
+	gColorEntry_.Delete();
+	resetWristAngleEntry_.Delete();
 }

@@ -44,14 +44,14 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     //lastBottomStatus_ = false;
     manualRollerPower_ = 0.5;
 
-    wristPFac_ = 0.03;
+    wristPFac_ = 0.002; //was 0.03
 
     controlPanelPower_ = 0.5; // fix
     controlPanelCounter_ = 0;
     controlPanelStage2_ = false;
     controlPanelStage3_ = false;
 
-    desiredIntakeWristAngle_ = 110.0; // fix later :) probably wrong, ask mech
+    desiredIntakeWristAngle_ = 227.0; //down
 
     closePrepping_ = false;
     farPrepping_ = false;
@@ -119,17 +119,19 @@ void SuperstructureController::Reset() { // might not need this
 }
 
 void SuperstructureController::WristUpdate(){
+    printf("wrist update\n");
     if(!autoWristEntry_.GetBoolean(true)){
         //printf("HERE OISDHAFOSDKJFLASKDHFJ\n");
         // human: decide rollers auto or manual
         if (humanControl_->GetDesired(ControlBoard::Buttons::kWristUpButton)){
-            robot_->SetIntakeWristOutput(0.5);
+            robot_->SetIntakeWristOutput(-0.5);
+            //printf("wrist up\n");
         }
         else if (humanControl_->GetDesired(ControlBoard::Buttons::kWristDownButton)){
-            robot_->SetIntakeWristOutput(-0.5);
+            robot_->SetIntakeWristOutput(0.5);
+            //printf("wrist down\n");
         }
         else{
-            robot_->SetIntakeWristOutput(0.0);
             robot_->SetIntakeWristOutput(0.0);
         }
         if(humanControl_->GetDesired(ControlBoard::Buttons::kReverseRollersButton)){
@@ -218,7 +220,7 @@ void SuperstructureController::Update(bool isAuto){
 
             UpdatePrep(isAuto);
             WristUpdate();
-
+            //printf("default teleop\n");
             UpdateButtons();   
 
             IndexPrep();
@@ -462,7 +464,7 @@ void SuperstructureController::Shooting() {
 
     //robot_->SetIntakeRollersOutput(0.0);
     currWristState_ = kRaising;
-    //robot_->SetArm(false); TODO IMPLEMENT
+    //robot_->SetArm(false); 
 }
 
 void SuperstructureController::Resetting() {
@@ -745,11 +747,13 @@ void SuperstructureController::RefreshShuffleboard(){
     flywheelFFac_ = flywheelFEntry_.GetDouble(0.0);
     FlywheelPIDControllerUpdate();
 
-    wristPFac_ = wristPEntry_.GetDouble(0.03);
+    wristPFac_ = wristPEntry_.GetDouble(0.002); //was 0.03
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
     flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
     flywheelMotorOutputEntry_.SetDouble(robot_->FlywheelMotorOutput());
     currWristAngle_ = robot_->GetIntakeWristAngle();
+    //printf("wrist angle: %f\n", currWristAngle_);
+    intakeWristAngleEntry_.SetDouble(currWristAngle_);
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
 }
