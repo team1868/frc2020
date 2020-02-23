@@ -296,6 +296,7 @@ class RobotModel {
     double currLeftEncoderValue_, currRightEncoderValue_;
     double initialLeftEncoderValue_, initialRightEncoderValue_;
     bool isHighGear_;
+    bool resetWristAngle_;
 
     double currLeftVelocity_ , currRightVelocity_;
     double lastLeftVelocity_, lastRightVelocity_;
@@ -363,6 +364,7 @@ class RobotModel {
     nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_; //tPFacNet_, tIFacNet_,tDFacNet_;
     nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
+    nt::NetworkTableEntry resetWristAngleEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
     nt::NetworkTableEntry initLineErrorEntry_, trenchDistErrorEntry_, trenchWidthErrorEntry_, trenchLengthErrorEntry_, targetZDistErrorEntry_, targetZHeightErrorEntry_, loadingDDistErrorEntry_, playerSt2MidErrorEntry_, initLineSlantEntry_;
 };

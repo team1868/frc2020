@@ -162,16 +162,16 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				}
 			}
 			break;
-		// case 's':
-		// 	printf("Wait Command\n");
-		// 	double waitTime;
-		// 	iss >> waitTime;
-		// 	if (IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		tempCommand = new WaitingCommand(waitTime);
-		// 	}
-		// 	break;
+		case 'w':
+			printf("Wait Command\n");
+			double waitTime;
+			iss >> waitTime;
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new WaitingCommand(waitTime);
+			}
+			break;
 		case 's': //shooting
 			printf("starting shooting\n");
 			double autoVelocity;

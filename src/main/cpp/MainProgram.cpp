@@ -162,7 +162,7 @@ void MainProgram::TeleopPeriodic() {
     //std::cout << "before superstructure\n" << std::flush;
     superstructureController_->Update(false);
     //std::cout << "updated drive and superstructure\n" << std::flush;
-    //\superstructureController_->WristUpdate();
+    //superstructureController_->WristUpdate();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
     
@@ -259,7 +259,7 @@ void MainProgram::ResetControllers() {
 
 void MainProgram::connectRecvZMQ() {
     //connect to zmq socket to receive from jetson
-    /*try {
+    try {
 		printf("in try connect to jetson\n");
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
         //change to dynamic jetson address
@@ -272,12 +272,12 @@ void MainProgram::connectRecvZMQ() {
     } catch(const zmq::error_t &exc) {
 		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
 		std::cerr << exc.what();
-	}*/
+	}
     std::cout << "reached end of connect recv zmq\n" << std::flush;
 }
 
 string MainProgram::readZMQ() {
-    try {
+    /*try {
 		printf("in try connect to jetson in readZMQ\n");
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
         //change to dynamic jetson address
@@ -291,7 +291,7 @@ string MainProgram::readZMQ() {
 		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
 		std::cerr << exc.what();
 	}
-    
+    */
     printf("starting read from jetson\n");
 	string contents = s_recv(*subscriber_);
 	printf("contents from jetson: %s \n", contents.c_str());
