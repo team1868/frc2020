@@ -73,6 +73,24 @@ double RobotModel::FlywheelMotorOutput(){
     flywheelMotor1_->GetMotorOutputPercent();
 }
 
+bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){
+    double value = GetFlywheelMotor1Velocity()*FALCON_TO_RPM;
+    printf("falcon velocity %f\n", value);
+    //printf("desiredVelocity %f\n", desiredVelocity);
+    if(GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredVelocity&& 
+    GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredVelocity+150.0){
+        numTimeAtSpeed_++;
+        if (numTimeAtSpeed_ >= 1){ //3){ 
+            printf("FLYWHEEL IS AT SPEED");
+            return true;
+        }
+        //numTimeAtSpeed_ = 0;
+        return false;
+    }
+    numTimeAtSpeed_ = 0;
+    return false;
+}
+
 void RobotModel::EngageFlywheelHood() {
     flywheelHoodSolenoid_->Set(true);
 }

@@ -7,20 +7,26 @@
 
 #include "auto/commands/PreppingCommand.h"
 
-PreppingCommand::PreppingCommand(RobotModel * robot) : AutoCommand() {
+PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity) : AutoCommand() {
     printf("prepping command\n");
     robot_ = robot;
     isDone_ = false;
-
+    desiredVelocity_ = desiredVelocity;
 }
 
 void PreppingCommand::Init(){
     isDone_ = false;
+    startTime_ = robot_->GetTime();
+    robot_->SetPrepping(desiredVelocity_);
 }
 
 void PreppingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetPrepping();
-    isDone_ = true;
+    //robot_->SetPrepping(desiredVelocity_);
+    if(robot_->IsAutoFlywheelAtSpeed(desiredVelocity_)){
+        printf("flywheel is at speed \n");
+        isDone_ = true;
+    }
+    //isDone_ = true;
 }
 
 bool PreppingCommand::IsDone(){

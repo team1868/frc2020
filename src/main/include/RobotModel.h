@@ -21,7 +21,6 @@
 #include "auto/PIDsource/PIDOutputSource.h"
 #include "Ports2020.h"
 #include "ControlBoard.h"
-#include <frc/AnalogPotentiometer.h>
 #include "controllers/SuperstructureController.h"
 #define PI 3.141592
 
@@ -52,7 +51,6 @@ static double LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER =  0.0;
 static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
 static const double ROBOT_WIDTH = 28.5/12; //ft
 // superstructure
-static const double INTAKE_POT_OFFSET = 0.0;
 static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
 static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
@@ -108,8 +106,8 @@ class RobotModel {
 
     void SetIndexing();
     void SetIntaking();
-    void SetShooting();
-    void SetPrepping();
+    void SetShooting(double autoVelocity);
+    void SetPrepping(double desiredVelocity);
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();
@@ -217,6 +215,7 @@ class RobotModel {
     void ConfigFlywheelF(double fFac_);
     double RatioFlywheel(double value);
     double FlywheelMotorOutput();
+    bool IsAutoFlywheelAtSpeed(double desiredVelocity);
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
@@ -226,7 +225,6 @@ class RobotModel {
     double GetClimberWinchLeftEncoderValue(); 
     void SetIntakeWristOutput(double power);
     void SetIntakeRollersOutput(double power);
-    double GetIntakeWristPotValue();
     
     double GetIntakeWristAngle();
     
@@ -286,7 +284,6 @@ class RobotModel {
 
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
-    frc::AnalogPotentiometer *intakeWristPot_; 
     
     frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
     WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_;
@@ -311,6 +308,7 @@ class RobotModel {
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
    
     uint32_t state_;
+    int numTimeAtSpeed_;
     double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
     double intakeRollersCurrent_, intakeWristCurrent_, IndexFunnelCurrent_, elevatorFeederCurrent_, elevatorCurrent_;
     double compressorCurrent_, roboRIOCurrent_;

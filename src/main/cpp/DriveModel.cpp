@@ -120,7 +120,7 @@ RobotModel::RobotModel() :
     rightSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
 
 	// superstructure robot model
-	fortyAmpFXLimit_ = new StatorCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
+	fortyAmpFXLimit_ = new StatorCurrentLimitConfiguration(true, 32.0, 80.0, 0.5);
 	fortyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
 	thirtyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 24.0, 30.0, 0.1);
 	
@@ -128,8 +128,8 @@ RobotModel::RobotModel() :
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
-	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
-	flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	//flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	//flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
 
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
@@ -138,6 +138,8 @@ RobotModel::RobotModel() :
 	flywheelMotor1_->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor);
 	flywheelMotor1_->ConfigPeakOutputForward(1);
 	flywheelMotor1_->ConfigPeakOutputReverse(-1);
+
+	numTimeAtSpeed_ = 0;
 
 	std::cout << "start flywheel encoder creation" << std::endl << std::flush;
     flywheelEncoder1_ = &flywheelMotor1_->GetSensorCollection();
@@ -158,7 +160,6 @@ RobotModel::RobotModel() :
 	intakeWristMotor_->ConfigSupplyCurrentLimit(*thirtyAmpSRXLimit_);
 	intakeWristMotor_->ConfigFactoryDefault();
 	intakeWristMotor_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0);
-	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
 
 
@@ -419,11 +420,11 @@ double RobotModel::GetNavXYaw() {
 }
 
 
-void RobotModel::SetPrepping(){
-	superstructureController_->SetPreppingState();
+void RobotModel::SetPrepping(double desiredVelocity){
+	superstructureController_->SetPreppingState(desiredVelocity);
 }
-void RobotModel::SetShooting(){
-	superstructureController_->SetShootingState();
+void RobotModel::SetShooting(double autoVelocity){
+	superstructureController_->SetShootingState(autoVelocity);
 }
 void RobotModel::SetIntaking(){
 	superstructureController_->SetIntakingState();

@@ -69,7 +69,7 @@ void MainProgram::AutonomousInit() {
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
     //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    robot_->SetTestSequence("b s");// c 4.0 90.0 1 1");
+    robot_->SetTestSequence("b 3560.0 s 3560.0");// c 4.0 90.0 1 1");
     
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 

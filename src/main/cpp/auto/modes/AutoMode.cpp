@@ -174,18 +174,22 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 		// 	break;
 		case 's': //shooting
 			printf("starting shooting\n");
+			double autoVelocity;
+			iss >> autoVelocity;
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new ShootingCommand(robot_);
+				tempCommand = new ShootingCommand(robot_, autoVelocity);
 			}
 			break;
 		case 'b': //prepping
 			printf("starting prepping\n");
+			double desiredVelocity;
+			iss >> desiredVelocity;
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new PreppingCommand(robot_);
+				tempCommand = new PreppingCommand(robot_, desiredVelocity);
 			}
 			break;
 		case 'i': //intaking

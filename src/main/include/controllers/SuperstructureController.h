@@ -50,9 +50,9 @@ class SuperstructureController {
   void UpdateButtons();
   double RatioFlywheel();
   
-  void SetShootingState();
+  void SetShootingState(double autoVelocity);
   void SetIntakingState();
-  void SetPreppingState();
+  void SetPreppingState(double desiredVelocity);
   void SetIndexingState();
   
 
@@ -85,7 +85,7 @@ class SuperstructureController {
   ControlBoard *humanControl_;
   
   uint32_t currAutoState_, nextAutoState_;
-  uint32_t currState_, nextState_;
+  SuperstructureState currState_, nextState_;
   ClimbingState currClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;

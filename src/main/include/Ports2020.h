@@ -77,7 +77,7 @@ static const int ALIGN_TAPE_BUTTON_PORT                  = 1;
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT           = 5;
 static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT       = 1;//2;
 static const int CONTROL_PANEL_STAGE_3_BUTTON_PORT       = 1; 
-static const int INTAKE_SERIES_BUTTON_PORT               = 2;
+static const int INTAKE_SERIES_BUTTON_PORT               = 2;      
 static const int INDEX_SERIES_BUTTON_PORT                = 3;
 static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 4; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 5; //random
@@ -92,7 +92,6 @@ static const int WRIST_REVERSE_ROLLERS_BUTTON            = 6;
 
 // SENSORS
 static const int GYRO_PORT                               = 1; // ANALOG IO
-static const int INTAKE_WRIST_POT_PORT                   = 0; // ANALOG PORT
 
 // DIO
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 0;//3
