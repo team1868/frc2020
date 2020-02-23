@@ -16,7 +16,6 @@ PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity) : A
 
 void PreppingCommand::Init(){
     isDone_ = false;
-    startTime_ = robot_->GetTime();
     robot_->SetPrepping(desiredVelocity_);
 }
 

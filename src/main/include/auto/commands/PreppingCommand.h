@@ -21,5 +21,5 @@ class PreppingCommand : public AutoCommand {
  private:
   bool isDone_;
   RobotModel * robot_;
-  double desiredVelocity_, startTime_;
+  double desiredVelocity_;
 };

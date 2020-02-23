@@ -51,7 +51,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     controlPanelStage2_ = false;
     controlPanelStage3_ = false;
 
-    desiredIntakeWristAngle_ = 227.0; //down
+    desiredIntakeWristAngle_ = 237.0; //down
 
     closePrepping_ = false;
     farPrepping_ = false;
