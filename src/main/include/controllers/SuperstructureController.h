@@ -26,7 +26,7 @@ class SuperstructureController {
   };
 
   enum PowerCellHandlingState {
-    kIntaking, kIndexing, kShooting, kResetting
+    kIntaking, kIndexing, kShooting, kResetting, kUndoElevator
   };
 
   enum AutoState {
@@ -78,8 +78,10 @@ class SuperstructureController {
   void Indexing();
   void Shooting();
   void Resetting();
+  void UndoElevator();
   void CheckControlPanelDesired();
   void CheckClimbDesired();
+  void CheckElevatorUndoDesired();
 
   RobotModel *robot_;
   ControlBoard *humanControl_;

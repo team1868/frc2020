@@ -75,13 +75,12 @@ static const int CLIMB_ELEVATOR_DOWN_BUTTON_PORT         = 4;
 static const int ALIGN_TAPE_BUTTON_PORT                  = 1;
 
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT           = 5;
-static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT       = 1;//2;
-static const int CONTROL_PANEL_STAGE_3_BUTTON_PORT       = 1; 
+static const int CONTROL_PANEL_STAGE_2_BUTTON_PORT       = 51;//2;
+static const int CONTROL_PANEL_STAGE_3_BUTTON_PORT       = 52; 
 static const int INTAKE_SERIES_BUTTON_PORT               = 2;      
 static const int INDEX_SERIES_BUTTON_PORT                = 3;
 static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 4; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 5; //random
-static const int CLIMB_WINCH_BUTTON_PORT                 = 50;
 static const int CLIMB_WINCH_RIGHT_BUTTON_PORT           = 6;
 static const int CLIMB_WINCH_LEFT_BUTTON_PORT            = 7;
 static const int GEARSHIFT_BUTTON_PORT                   = 3; //random
@@ -89,6 +88,7 @@ static const int WRIST_DOWN_BUTTON_PORT                  = 11;
 static const int WRIST_UP_BUTTON_PORT                    = 8;
 static const int WRIST_RUN_ROLLERS_BUTTON                = 7;
 static const int WRIST_REVERSE_ROLLERS_BUTTON            = 6;
+static const int OH_SHIT_UNDO_ELEVATOR_BUTTON_PORT       = 1; // fix port
 
 // SENSORS
 static const int GYRO_PORT                               = 1; // ANALOG IO

@@ -127,6 +127,11 @@ void RobotModel::SetIntakeRollersOutput(double power) {
 }
 
 void RobotModel::SetIntakeWristOutput(double power) {
+    if(power > 1.0){
+        power = 1.0;
+    } else if (power < -1.0) {
+        power = -1.0;
+    }
     intakeWristMotor_->Set(power);
 }
 
