@@ -100,6 +100,7 @@ class SuperstructureController {
   double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
+  double autoArmPower_;
   double desiredFlywheelVelocity_, closeFlywheelVelocity_;
 
   double wristPFac_;
@@ -141,6 +142,6 @@ class SuperstructureController {
 
   nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry intakeWristAngleEntry_;
-  nt::NetworkTableEntry autoWristEntry_;
+  nt::NetworkTableEntry autoWristEntry_, autoArmPowerEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, autoWinchEntry_;
 };
