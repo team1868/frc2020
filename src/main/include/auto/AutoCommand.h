@@ -14,7 +14,6 @@
 #include <iostream>
 #include <networktables/NetworkTableEntry.h>
 
-using namespace std;
 
 class AutoCommand {
 public:

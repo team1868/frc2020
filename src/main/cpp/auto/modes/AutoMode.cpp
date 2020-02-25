@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "auto/modes/AutoMode.h"
+using namespace std;
 
 AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");

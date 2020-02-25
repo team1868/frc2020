@@ -12,6 +12,7 @@
 #include <string>
 
 #include <frc/smartdashboard/SmartDashboard.h>
+using namespace std;
 
 void MainProgram::RobotInit() {
     robot_ = new RobotModel();

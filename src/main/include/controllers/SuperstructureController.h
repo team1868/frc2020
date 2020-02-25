@@ -8,6 +8,7 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
+using namespace std;
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
@@ -129,6 +130,8 @@ class SuperstructureController {
 
   double manualRollerPower_;
   bool shootingIsDone_;
+
+  double distanceToTarget_;
   
 
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;

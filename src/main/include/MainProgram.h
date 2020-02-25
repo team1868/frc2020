@@ -25,6 +25,8 @@
 #include "auto/modes/TestMode.h"
 #include "auto/commands/profiling/MotionProfileTestCommand.h"
 
+using namespace std;
+
 //TODO remove this
 #include "auto/PIDsource/PIDInputSource.h"
 

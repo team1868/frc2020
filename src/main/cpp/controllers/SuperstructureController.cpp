@@ -451,6 +451,7 @@ bool SuperstructureController::Shooting() {
     printf("in kShooting\n");// with %f\n", desiredFlywheelVelocity_);
     //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+    std::cout << "velocity " << robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM << std::endl;
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
     if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
         robot_->SetElevatorOutput(elevatorSlowPower_);
@@ -544,6 +545,10 @@ bool SuperstructureController::GetShootingIsDone(){
 }
 
 void SuperstructureController::SetShootingState(double autoVelocity){
+    //robot_->SetLight(true);
+    //distanceToTarget_ = robot_->GetDistance();
+    //desiredFlywheelVelocity_ = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
+    //desiredFlywheelVelocity_=autoVelocity;
     currWristState_ = kRaising; //resetting whatever intake did
     currHandlingState_ = kShooting;
     printf("start Shooting");
@@ -560,6 +565,11 @@ void SuperstructureController::SetIntakingState(){
 }
 
 void SuperstructureController::SetPreppingState(double desiredVelocity){ //starts warming up shooter B)
+    //robot_->SetLight(true);
+    //distanceToTarget_ = robot_->GetDistance();
+
+    //desiredVelocity = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
+    //std::cout << "distance " << distanceToTarget_ << " velocity " << desiredVelocity << std::endl;
     currWristState_ = kRaising; //resetting whatever intake did
     if(!farPrepping_){ 
         shootPrepStartTime_ = robot_->GetTime(); //TODO FIX
