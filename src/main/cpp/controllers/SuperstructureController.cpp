@@ -52,7 +52,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     controlPanelStage2_ = false;
     controlPanelStage3_ = false;
 
-    desiredIntakeWristAngle_ = 125.0; //down 237.0*18/34
+    desiredIntakeWristAngle_ = 237.0-5.0; //down
 
     closePrepping_ = false;
     farPrepping_ = false;
@@ -119,7 +119,7 @@ void SuperstructureController::Reset() { // might not need this
 }
 
 void SuperstructureController::WristUpdate(){
-    printf("wrist update\n");
+    //printf("wrist update\n");
     if(!autoWristEntry_.GetBoolean(true)){
         //printf("HERE OISDHAFOSDKJFLASKDHFJ\n");
         // human: decide rollers auto or manual
@@ -151,11 +151,9 @@ void SuperstructureController::WristUpdate(){
             case kRaising:
                 // might not need lowering if we have an idle
                 robot_->SetIntakeRollersOutput(0.0);
-                //printf("raising, pfac: %f, desired angle: %f, current angle %f\n", wristPFac_, 0.0, currWristAngle_);
-                if(currWristAngle_ > 0.0) {
-                    double power = (0.0-currWristAngle_)*wristPFac_;
-                    //printf("power: %f\n", power);
-                    robot_->SetIntakeWristOutput((0.0-currWristAngle_)*wristPFac_); 
+                printf("current wrist angle %f\n", currWristAngle_);
+                if(currWristAngle_ > 5.0) {
+                    robot_->SetIntakeWristOutput(-0.2);//(0.0-currWristAngle_)*wristPFac_); 
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
                 else{
@@ -165,9 +163,7 @@ void SuperstructureController::WristUpdate(){
             case kLowering:
                 //printf("lowering, pfac: %f, desired angle: %f, current angle %f\n", wristPFac_, desiredIntakeWristAngle_, currWristAngle_);
                 if(currWristAngle_ < desiredIntakeWristAngle_) {
-                    double power = (desiredIntakeWristAngle_-currWristAngle_)*wristPFac_;
-                    //printf("power: %f\n", power);
-                    robot_->SetIntakeWristOutput(power);
+                    robot_->SetIntakeWristOutput(0.2);//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
                     //robot_->SetIntakeWristOutput(0.5);
                 }
                 else{
