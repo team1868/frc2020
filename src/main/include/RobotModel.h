@@ -109,6 +109,9 @@ class RobotModel {
     void SetIntaking();
     void SetShooting(double autoVelocity);
     void SetPrepping(double desiredVelocity);
+
+    bool GetShootingIsDone();
+    // void SetStopDetectionTimeDefault();
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();

@@ -16,10 +16,11 @@ PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity) : A
 
 void PreppingCommand::Init(){
     isDone_ = false;
-    robot_->SetPrepping(desiredVelocity_);
+
 }
 
 void PreppingCommand::Update(double currTimeSec, double deltaTimeSec){
+    robot_->SetPrepping(desiredVelocity_);
     //robot_->SetPrepping(desiredVelocity_);
     if(robot_->IsAutoFlywheelAtSpeed(desiredVelocity_)){
         printf("flywheel is at speed \n");

@@ -435,6 +435,12 @@ void RobotModel::SetIndexing(){
 	superstructureController_->SetIndexingState();
 }
 
+bool RobotModel::GetShootingIsDone(){
+	return superstructureController_->GetShootingIsDone();
+}
+
+
+
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);
 	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over, TODO change for super

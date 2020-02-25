@@ -8,6 +8,7 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
+using namespace std;
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
@@ -49,6 +50,7 @@ class SuperstructureController {
   void WristUpdate();
   void UpdateButtons();
   double RatioFlywheel();
+  bool GetShootingIsDone();
   
   void SetShootingState(double autoVelocity);
   void SetIntakingState();
@@ -58,7 +60,6 @@ class SuperstructureController {
 
   bool IsFlywheelAtSpeed();
 
-  bool IndexUpdate();
 
   double CalculateIntakeRollersPower();
 
@@ -73,10 +74,11 @@ class SuperstructureController {
   ~SuperstructureController();
 
  private:
+  void IndexUpdate();
   void IndexPrep();
   void Intaking();
   void Indexing();
-  void Shooting();
+  bool Shooting();
   void Resetting();
   void UndoElevator();
   void CheckControlPanelDesired();
@@ -116,7 +118,7 @@ class SuperstructureController {
   double closeTicksPerSecDesired_;
   double farTicksPerSecDesired_;
 
-  double shootPrepStartTime_;
+  double shootPrepStartTime_, stopDetectionTime_;
   int numTimeAtSpeed_;
   bool closePrepping_, farPrepping_;
   bool atTargetSpeed_;
@@ -128,6 +130,10 @@ class SuperstructureController {
   bool controlPanelStage2_, controlPanelStage3_;
 
   double manualRollerPower_;
+  bool shootingIsDone_;
+
+  double distanceToTarget_;
+  
 
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;

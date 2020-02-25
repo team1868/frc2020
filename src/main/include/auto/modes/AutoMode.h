@@ -20,6 +20,8 @@
 #include "auto/commands/IntakingCommand.h"
 #include "auto/commands/PreppingCommand.h"
 
+using namespace std;
+
 
 class AutoMode {
   public:

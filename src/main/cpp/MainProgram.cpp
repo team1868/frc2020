@@ -12,6 +12,7 @@
 #include <string>
 
 #include <frc/smartdashboard/SmartDashboard.h>
+using namespace std;
 
 void MainProgram::RobotInit() {
     robot_ = new RobotModel();
@@ -134,6 +135,7 @@ void MainProgram::AutonomousInit() {
 
 void MainProgram::AutonomousPeriodic() {
     robot_->RefreshShuffleboard();
+    superstructureController_->Update(true);
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
     // }
@@ -155,6 +157,7 @@ void MainProgram::DisabledInit() {
 }
 
 void MainProgram::TeleopInit() {
+    superstructureController_->Reset();
     std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();
 
@@ -399,7 +402,7 @@ void MainProgram::connectSendZMQ() {
         std::cout << "start connect send zmq\n" << std::flush;
         //std::cout << "done connect socket zmq\n" << std::flush;
         if(!isSocketBound_){
-            publisher_->bind("tcp://*:5806");
+            publisher_->bind("tcp://*:5807");
             isSocketBound_ = true;
         }
         int confl = 1;
