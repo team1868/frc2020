@@ -45,7 +45,7 @@ class MainProgram : public frc::TimedRobot {
   bool readAll(string contents);
   // void readDistance(string contents);
   void connectSendZMQ();
-  void sendZMQ();
+  void sendZMQ(bool lowExposure);
 
   void ResetControllers();
 
@@ -55,12 +55,13 @@ class MainProgram : public frc::TimedRobot {
   DriveController *driveController_;
   ControlBoard *humanControl_;
   TalonEncoderPIDSource *talonEncoderSource_;
-  NavXPIDSource *navX_;
+  NavXPIDSource *navXSource_;
 
   double matchTime_;
 
   bool aligningTape_;
-  AlignTapeCommand *alignTapeCommand;
+  PivotCommand *alignTapeCommand;
+  //AlignTapeCommand *alignTapeCommand;
   TrenchAlignTapeCommand *trenchAlignTapeCommand;
 
 

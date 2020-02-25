@@ -51,7 +51,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     controlPanelStage2_ = false;
     controlPanelStage3_ = false;
 
-    desiredIntakeWristAngle_ = 237.0; //down
+    desiredIntakeWristAngle_ = 237.0-5.0; //down
 
     closePrepping_ = false;
     farPrepping_ = false;
@@ -116,7 +116,7 @@ void SuperstructureController::Reset() { // might not need this
 }
 
 void SuperstructureController::WristUpdate(){
-    printf("wrist update\n");
+    //printf("wrist update\n");
     if(!autoWristEntry_.GetBoolean(true)){
         //printf("HERE OISDHAFOSDKJFLASKDHFJ\n");
         // human: decide rollers auto or manual
@@ -147,8 +147,8 @@ void SuperstructureController::WristUpdate(){
                 // might not need lowering if we have an idle
                 robot_->SetIntakeRollersOutput(0.0);
                 printf("current wrist angle %f\n", currWristAngle_);
-                if(currWristAngle_ > 0.0) {
-                    robot_->SetIntakeWristOutput((0.0-currWristAngle_)*wristPFac_); 
+                if(currWristAngle_ > 5.0) {
+                    robot_->SetIntakeWristOutput(-0.2);//(0.0-currWristAngle_)*wristPFac_); 
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
                 else{
@@ -159,7 +159,7 @@ void SuperstructureController::WristUpdate(){
                 //printf("in WRIST kLowering\n");
                 printf("current wrist angle %f\n", currWristAngle_);
                 if(currWristAngle_ < desiredIntakeWristAngle_) {
-                    robot_->SetIntakeWristOutput((desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
+                    robot_->SetIntakeWristOutput(0.2);//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
                     //robot_->SetIntakeWristOutput(0.5);
                 }
                 else{

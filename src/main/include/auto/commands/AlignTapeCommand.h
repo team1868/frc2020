@@ -27,7 +27,9 @@
 
 class AlignTapeCommand : public AutoCommand {
 public:
-    AlignTapeCommand(RobotModel* robot, ControlBoard* humanControl, NavXPIDSource* navXSource, TalonEncoderPIDSource* talonSource, bool driveStraightDesired);
+    AlignTapeCommand(RobotModel* robot, ControlBoard* humanControl,
+                    NavXPIDSource* navXSource, TalonEncoderPIDSource* talonSource,
+                    bool driveStraightDesired, double desiredRelativeAngle);
     virtual ~AlignTapeCommand();
 
     void Init();
@@ -40,24 +42,24 @@ public:
     void ReadFromJetson();
 
 private:
-    zmq::context_t *context_;
-	  zmq::socket_t *subscriber_;
+    // zmq::context_t *context_;
+	// zmq::socket_t *subscriber_;
 
     RobotModel* robot_;
     ControlBoard* humanControl_;
     NavXPIDSource* navXSource_;
-    TalonEncoderPIDSource* talonSource_;
+    //TalonEncoderPIDSource* talonSource_;
     AnglePIDOutput* anglePIDOutput_;
-    DistancePIDOutput* distancePIDOutput_;
+    //DistancePIDOutput* distancePIDOutput_;
 
     PivotCommand* pivotCommand_;
-    DriveStraightCommand* driveStraightCommand_;
+    //DriveStraightCommand* driveStraightCommand_;
     AlignMode *alignSequence_;
     string stringSequence_;
 
     // TODO the below is for after a pretty good dead reckon, and would work for curve command
     double desiredDeltaAngle_;
-    double desiredDistance_;
+    //double desiredDistance_;
 
     //enum AlignState{ kPivotInit, kPivotUpdate, kDriveInit, kDriveUpdate};
     enum AlignState{ kInit, kUpdate};
