@@ -52,7 +52,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     controlPanelStage2_ = false;
     controlPanelStage3_ = false;
 
-    desiredIntakeWristAngle_ = 237.0-5.0; //down
+    desiredIntakeWristAngle_ = 237.0; //down
 
     closePrepping_ = false;
     farPrepping_ = false;
@@ -158,15 +158,15 @@ void SuperstructureController::WristUpdate(){
                 }
                 break;
             case kLowering:
-                //printf("lowering, pfac: %f, desired angle: %f, current angle %f\n", wristPFac_, desiredIntakeWristAngle_, currWristAngle_);
-                if(currWristAngle_ < desiredIntakeWristAngle_) {
+                printf("lowering, pfac: %f, desired angle: %f, current angle %f\n", wristPFac_, desiredIntakeWristAngle_, currWristAngle_);
+                if(currWristAngle_ < desiredIntakeWristAngle_-45.0) {
                     robot_->SetIntakeWristOutput(autoArmPower_);//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
                     //robot_->SetIntakeWristOutput(0.5);
                 } else{
                     robot_->SetIntakeWristOutput(0.0);
-                    //printf("lower");
+                    printf("LOWERED, not running wrist\n");
                 }
-                if(currWristAngle_ > desiredIntakeWristAngle_ - 20.0){ //within acceptable range
+                if(currWristAngle_ > desiredIntakeWristAngle_ - 45.0){ //within acceptable range, ~740 degrees in sensor is 90 degrees on wrist
                     robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
                 }
                 else{
