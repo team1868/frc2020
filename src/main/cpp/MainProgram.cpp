@@ -135,6 +135,7 @@ void MainProgram::AutonomousInit() {
 
 void MainProgram::AutonomousPeriodic() {
     robot_->RefreshShuffleboard();
+    superstructureController_->Update(true);
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
     // }
@@ -156,6 +157,7 @@ void MainProgram::DisabledInit() {
 }
 
 void MainProgram::TeleopInit() {
+    superstructureController_->Reset();
     std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();
 
