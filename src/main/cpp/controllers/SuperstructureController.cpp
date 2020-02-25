@@ -43,6 +43,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     elevatorTimeout_ = 2.0;
     //lastBottomStatus_ = false;
     manualRollerPower_ = 0.5;
+    autoArmPower_ = 0.2;
 
     wristPFac_ = 0.006;
 
@@ -93,6 +94,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     funnelEntry_ = powerLayout_.Add("funnel", indexFunnelPower_).GetEntry();
     rollerManualEntry_ = powerLayout_.Add("manual rollers", manualRollerPower_).GetEntry();
     closeFlywheelEntry_ = powerLayout_.Add("close flywheel", closeFlywheelVelocity_).GetEntry();
+    autoArmPowerEntry_ = powerLayout_.Add("arm in auto", autoArmPower_).GetEntry();
     targetSpeedEntry_ = flywheelPIDLayout_.Add("target speed", atTargetSpeed_).GetEntry();
     flywheelMotorOutputEntry_ = flywheelPIDLayout_.Add("flywheel motor output", robot_->FlywheelMotorOutput()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
@@ -140,15 +142,15 @@ void SuperstructureController::WristUpdate(){
             robot_->SetIntakeRollersOutput(0.0);
         }
     } else {
-        printf("inside auto wrist\n");
-        //currWristAngle_ = robot_->GetIntakeWristAngle(); // might not need?
+        //("inside auto wrist in mode %d\n", currWristState_);
+        currWristAngle_ = robot_->GetIntakeWristAngle(); // might not need?
         switch (currWristState_){
             case kRaising:
                 // might not need lowering if we have an idle
                 robot_->SetIntakeRollersOutput(0.0);
-                printf("current wrist angle %f\n", currWristAngle_);
+                //printf("current wrist angle %f\n", currWristAngle_);
                 if(currWristAngle_ > 5.0) {
-                    robot_->SetIntakeWristOutput(-0.2);//(0.0-currWristAngle_)*wristPFac_); 
+                    robot_->SetIntakeWristOutput(-autoArmPower_);//(0.0-currWristAngle_)*wristPFac_); 
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
                 else{
@@ -158,11 +160,11 @@ void SuperstructureController::WristUpdate(){
             case kLowering:
                 //printf("lowering, pfac: %f, desired angle: %f, current angle %f\n", wristPFac_, desiredIntakeWristAngle_, currWristAngle_);
                 if(currWristAngle_ < desiredIntakeWristAngle_) {
-                    robot_->SetIntakeWristOutput(0.2);//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
+                    robot_->SetIntakeWristOutput(autoArmPower_);//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
                     //robot_->SetIntakeWristOutput(0.5);
-                }
-                else{
+                } else{
                     robot_->SetIntakeWristOutput(0.0);
+                    //printf("lower");
                 }
                 if(currWristAngle_ > desiredIntakeWristAngle_ - 20.0){ //within acceptable range
                     robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
@@ -762,6 +764,7 @@ void SuperstructureController::RefreshShuffleboard(){
     elevatorFastPower_ = fastElevatorEntry_.GetDouble(elevatorFastPower_);
     elevatorSlowPower_ = slowElevatorEntry_.GetDouble(elevatorSlowPower_);
     indexFunnelPower_ = funnelEntry_.GetDouble(indexFunnelPower_);
+    autoArmPower_ = autoArmPowerEntry_.GetDouble(autoArmPower_);
 
     elevatorBottomLightSensorEntry_.SetBoolean(robot_->GetElevatorFeederLightSensorStatus());
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
