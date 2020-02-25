@@ -171,7 +171,7 @@ void PivotCommand::Reset() {
 
 // update time variables
 void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible source of error TODO reset encoders
-	printf("Updating pivotcommand \n");
+	//printf("Updating pivotcommand \n");
 
 	// calculate time difference
 	double timeDiff = robot_->GetTime() - pivotCommandStartTime_;

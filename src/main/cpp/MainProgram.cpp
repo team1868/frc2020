@@ -32,10 +32,14 @@ void MainProgram::RobotInit() {
     sequence_ = autoSequenceEntry_.GetString("t 0");
     printf("I am alive.\n");
 
-    context_ = new zmq::context_t(2); //same context for send + receive zmq
-    publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
-    subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-
+    //context_ = new zmq::context_t(2); //same context for send + receive zmq
+    //publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
+    //subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
+    //connectRecvZMQ();
+    //connectSendZMQ();
+    context_ = nullptr; //same context for send + receive zmq
+    publisher_ = nullptr;
+    subscriber_ = nullptr;
     printf("done with zmq init\n");
 }
 
@@ -73,6 +77,14 @@ void MainProgram::AutonomousInit() {
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
 
+    //zmq
+    if (context_ == nullptr) {
+        context_ = new zmq::context_t(2); //same context for send + receive zmq
+        publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
+        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
+        connectRecvZMQ();
+        connectSendZMQ();
+    }
 
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
@@ -155,8 +167,14 @@ void MainProgram::TeleopInit() {
     std::cout << "before zmq\n" << std::flush;
     //zmq::context_t * 
     //context2_ = new zmq::context_t(1);
-    connectRecvZMQ();
-    connectSendZMQ();
+    
+    if (context_ == nullptr) {
+        context_ = new zmq::context_t(2); //same context for send + receive zmq
+        publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
+        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
+        connectRecvZMQ();
+        connectSendZMQ();
+    }
     std::cout << "end of teleopinit\n" << std::flush;
 }
 
@@ -166,9 +184,14 @@ void MainProgram::TeleopPeriodic() {
     humanControl_->ReadControls();
         //align tapes not at trench (like auto)
     //std::cout << "checking tape align\n" << std::flush;
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
+        robot_->SetLight(true);
+    } else {
+        robot_->SetLight(false);
+    }
     if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
         std::cout << "READY TO START ZMQ READ\n" << std::flush;
-        robot_->SetLight(true);
+        //robot_->SetLight(true);
         
         sendZMQ(true); //tell jetson to turn exposure down
 
@@ -176,11 +199,12 @@ void MainProgram::TeleopPeriodic() {
         if(!readAll(temp)){
             printf("done with reading, creating aligning command");
             aligningTape_ = true;
-            if(navXSource_!=nullptr){
+            if(navXSource_!=nullptr){ //prevent memory leak from last run of auto align
                 delete navXSource_;
             }
-            navXSource_ = new NavXPIDSource(robot_);
-            alignTapeCommand = new PivotCommand(robot_, robot_->GetDeltaAngle()+robot_->GetNavXYaw(), true, navXSource_);
+            navXSource_ = new NavXPIDSource(robot_); //create navX source
+            printf("\nTURNING TO %f angle\n\n", robot_->GetDeltaAngle());
+            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()-robot_->GetDeltaAngle(), true, navXSource_);
             //alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false, robot_->GetDeltaAngle(), robot_->GetDistance()); //nav, talon variables don't exist yet
             printf("created aligning command");
             alignTapeCommand->Init();
@@ -189,35 +213,25 @@ void MainProgram::TeleopPeriodic() {
         } else {
             printf("exited jetson align, nothing read\n");
         }
-        robot_->SetLight(false);
+        //robot_->SetLight(false);
     } else if (aligningTape_){
         // printf("in part align tape :))\n");
-        /*
-        //humanControl_->ReadControls();
-        //autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
-        //autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
-        if(autoJoyVal_ != 0.0 || aCommand == NULL){ //TODO mild sketch, check deadbands more
-            printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband or aCommand is NULL %d\n\n", autoJoyVal_, aCommand==NULL);
-            delete aCommand;
-            aCommand = NULL;
-            aligningTape_ = false;
-        } else */
-        std::cout << "AM I NULL ALIGN??" << (alignTapeCommand==NULL) << std::endl << std::flush;
-        if(!alignTapeCommand->IsDone()){
-            alignTapeCommand->Update(currTime_, currTime_-lastTime_); //(currTimeSec_, deltaTimeSec_); - variables don't exist yet
-            printf("updated align tape command\n");
-            return;
-
-        } else { //isDone() is true
+        autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
+        autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
+        //std::cout << "AM I NULL ALIGN??" << (alignTapeCommand==NULL) << std::endl << std::flush;
+        if(fabs(autoJoyVal_) < 0.05 || alignTapeCommand==nullptr || alignTapeCommand->IsDone()){
             robot_->SetLight(false);
             delete alignTapeCommand;
             alignTapeCommand = NULL;
             aligningTape_ = false;
             printf("destroyed align tape command\n");
+        } else {
+            alignTapeCommand->Update(currTime_, currTime_-lastTime_);
+            printf("updated align tape command\n");
+            return;
+
         }
-    }// else {
-       // sendZMQ(false);
-    //}
+    }
 
     driveController_->Update();
     //std::cout << "before superstructure\n" << std::flush;
@@ -383,16 +397,16 @@ bool MainProgram::readAll(string contents) {
 void MainProgram::connectSendZMQ() {
     //zmq socket to send message to jetson
     try{
-    std::cout << "start connect send zmq\n" << std::flush;
-    std::cout << "done connect socket zmq\n" << std::flush;
-    if(!isSocketBound_){
-        publisher_->bind("tcp://*:5806");
-        isSocketBound_ = true;
-    }
-    int confl = 1;
-    std::cout << "setting socket zmq\n" << std::flush;
-    publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-    std::cout << "done setting socket zmq\n" << std::flush;
+        std::cout << "start connect send zmq\n" << std::flush;
+        //std::cout << "done connect socket zmq\n" << std::flush;
+        if(!isSocketBound_){
+            publisher_->bind("tcp://*:5806");
+            isSocketBound_ = true;
+        }
+        int confl = 1;
+        std::cout << "setting socket zmq\n" << std::flush;
+        publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
+        std::cout << "done setting socket zmq\n" << std::flush;
     } catch (const zmq::error_t &exc) {
 		printf("TRY CATCH FAILED IN ZMQ CONNECT SEND\n");
 		std::cerr << exc.what();
@@ -405,8 +419,8 @@ void MainProgram::sendZMQ(bool lowExposure) {
     string message = to_string(lowExposure);
     std::cout << message << std::endl;
     //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
-    zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
-    std::cout << "done sending to zmq" << std::endl;
+    int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
+    std::cout << sent << " done sending to zmq" << std::endl;
 }
 
 

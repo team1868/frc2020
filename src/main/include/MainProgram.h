@@ -81,6 +81,7 @@ class MainProgram : public frc::TimedRobot {
 
   TestMode *testSequence_;
   double currTime_, lastTime_;
+  double autoJoyVal_;
 
   int confl;
   
