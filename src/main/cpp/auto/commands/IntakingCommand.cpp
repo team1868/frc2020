@@ -16,6 +16,7 @@ IntakingCommand::IntakingCommand(RobotModel * robot) : AutoCommand() {
 
 void IntakingCommand::Init(){
     isDone_ = false;
+
 }
 
 void IntakingCommand::Update(double currTimeSec, double deltaTimeSec){

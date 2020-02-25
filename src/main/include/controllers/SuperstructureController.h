@@ -49,10 +49,9 @@ class SuperstructureController {
   void WristUpdate();
   void UpdateButtons();
   double RatioFlywheel();
-  // double GetStopDetectionTime();
-  // void SetStopDetectionTimeDefault();
+  bool GetShootingIsDone();
   
-  bool SetShootingState(double autoVelocity);
+  void SetShootingState(double autoVelocity);
   void SetIntakingState();
   void SetPreppingState(double desiredVelocity);
   void SetIndexingState();
@@ -129,7 +128,7 @@ class SuperstructureController {
   bool controlPanelStage2_, controlPanelStage3_;
 
   double manualRollerPower_;
-
+  bool shootingIsDone_;
   
 
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;

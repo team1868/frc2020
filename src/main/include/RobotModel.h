@@ -107,10 +107,10 @@ class RobotModel {
 
     void SetIndexing();
     void SetIntaking();
-    bool SetShooting(double autoVelocity);
+    void SetShooting(double autoVelocity);
     void SetPrepping(double desiredVelocity);
 
-    // double GetStopDetectionTime();
+    bool GetShootingIsDone();
     // void SetStopDetectionTimeDefault();
     
     void ResetDriveEncoders();

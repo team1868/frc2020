@@ -19,14 +19,16 @@ void ShootingCommand::Init(){
     isDone_ = false;
     startShootingTime_ = robot_->GetTime();
     printf("time starting\n");
+
 }
 
 void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
-    isDone_ = robot_->SetShooting(autoVelocity_);
+    robot_->SetShooting(autoVelocity_);
     // if(robot_->GetTime() > robot_->GetStopDetectionTime() + 2.0){
     //     isDone_ = true;z
     // }
-    if(isDone_ == true){ //when shooting stops 
+    isDone_ = robot_->GetShootingIsDone();
+    if(isDone_){ //when shooting stops 
         printf("done shooting\n");
         robot_->SetFlywheelOutput(0.0);
         robot_->SetIndexing(); //index after shoot
