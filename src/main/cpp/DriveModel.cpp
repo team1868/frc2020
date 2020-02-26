@@ -9,7 +9,6 @@
 #include "RobotModel.h"
 #include "ControlBoard.h"
 #include "controllers/DriveController.h"
-#include "auto/AutoMeasures.h"
 
 
 RobotModel::RobotModel() :
@@ -241,6 +240,14 @@ RobotModel::RobotModel() :
 	loadingDDistErrorEntry_ = GetAutoOffsetTab().Add("loading dock", 0.0).GetEntry(); 
 	playerSt2MidErrorEntry_ = GetAutoOffsetTab().Add("player station midpoint", 0.0).GetEntry(); 
 	initLineSlantEntry_ = GetAutoOffsetTab().Add("initiation line slant", 0.0).GetEntry(); 
+
+	GetAutoOffsetTab().Add("Auto Sequence Choices", autoSendableChooser_).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+	autoSendableChooser_.SetDefaultOption("0 blank", "t 0.0 d 0.0");
+	autoSendableChooser_.AddOption("1: Target Zone", GetChosenSequence1());
+	autoSendableChooser_.AddOption("2: Loading Bay", GetChosenSequence2());
+	autoSendableChooser_.AddOption("3: Mid-Trench", GetChosenSequence3());
+	autoSendableChooser_.AddOption("4: Mid-Player Station", GetChosenSequence4());
+
 	std::cout<< "end of drive model constructor" << std::endl;
 }
 
