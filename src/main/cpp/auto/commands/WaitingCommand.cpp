@@ -19,6 +19,7 @@ void WaitingCommand::Init() {
 
 void WaitingCommand::Update(double currTimeSec, double deltaTimeSec) {
 	isDone_ = (timer_->Get() >= waitTimeSec_);
+	std::cout << isDone_ << waitTimeSec_ << std::endl;
 	if(isDone_) {
 		printf("done waiting %f", currTimeSec);
 	}

@@ -110,6 +110,7 @@ class RobotModel {
     void SetShooting(double autoVelocity);
     void SetPrepping(double desiredVelocity);
 
+    // bool GetWaitingIsDone();
     bool GetShootingIsDone();
     // void SetStopDetectionTimeDefault();
     

@@ -51,6 +51,7 @@ class SuperstructureController {
   void UpdateButtons();
   double RatioFlywheel();
   bool GetShootingIsDone();
+  // bool GetWaitingIsDone();
   
   void SetShootingState(double autoVelocity);
   void SetIntakingState();
@@ -133,6 +134,7 @@ class SuperstructureController {
   bool shootingIsDone_;
 
   double distanceToTarget_;
+  bool tempIsAuto_;
   
 
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;

@@ -439,7 +439,9 @@ bool RobotModel::GetShootingIsDone(){
 	return superstructureController_->GetShootingIsDone();
 }
 
-
+// bool RobotModel::GetWaitingIsDone(){
+// 	return superstructureController_->GetWaitingIsDone();
+// }
 
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);

@@ -16,6 +16,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     powerLayout_(robot->GetSuperstructureTab().GetLayout("power control", "List Layout").WithPosition(3, 0))
     {
     
+    tempIsAuto_ = false;
     robot_ = robot;
     humanControl_ = humanControl; 
 
@@ -223,6 +224,7 @@ void SuperstructureController::Update(bool isAuto){
     switch(currState_){
         case kDefaultTeleop:
             
+            
             // should these be inside or outside power cell handling
             //CheckControlPanelDesired(); // might have to move out of the DefaultTeleop
             //CheckClimbDesired();
@@ -263,6 +265,7 @@ void SuperstructureController::Update(bool isAuto){
             }
             //printf("DESIRED FLYWHEEL VELOCITY %f\n", desiredFlywheelVelocity_);
             currHandlingState_ = nextHandlingState_;
+            
             break;
         case kControlPanel:
             printf("control panel state \n");
@@ -438,13 +441,14 @@ void SuperstructureController::IndexPrep(){
 }
 
 void SuperstructureController::Intaking(){
-    printf("in kIntaking\n");
+    printf("kIntaking\n");
     //robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
     currWristState_ = kLowering;
     IndexUpdate();
 }
 
 void SuperstructureController::Indexing(){
+    std::cout << "kIndexing" << std::endl;
     IndexUpdate();
     //printf("in kIndexing\n");
 
@@ -453,6 +457,7 @@ void SuperstructureController::Indexing(){
 }
 
 bool SuperstructureController::Shooting() {
+    std::cout << "kShooting" << std::endl;
     //printf("in kShooting AAAAAAAAAAAAAAAA NOTICE ME !!! !! AAAA\n");// with %f\n", desiredFlywheelVelocity_);
     //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
@@ -475,14 +480,18 @@ bool SuperstructureController::Shooting() {
     currWristState_ = kRaising;
 
     //we have stopDetectionTime_ < 0.001 because we don't want to keep setting it to currTime_ (if we do that we'll never stop shooting)
-    if(tTimeout_ && bTimeout_ && stopDetectionTime_ < 0.001){ //stopping shooting i guess D:
+    
+    if(tempIsAuto_){
+        if(tTimeout_ && bTimeout_ && stopDetectionTime_ < 0.001){ //stopping shooting i guess D:
         stopDetectionTime_ = robot_->GetTime();
         std::cout << "stop detecting " << stopDetectionTime_ << std::endl;
-    }
+        }
 
-    if(robot_->GetTime() >= stopDetectionTime_ + 2.0 && stopDetectionTime_ > 0.001){
-        return true;
-    }
+        if(robot_->GetTime() >= stopDetectionTime_ + 1.0 && stopDetectionTime_ > 0.001){
+            return true;
+        }
+        return false;
+        }
     return false;
 
     //robot_->SetIntakeRollersOutput(0.0);
@@ -516,6 +525,7 @@ void SuperstructureController::UndoElevator(){
     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
 }
 void SuperstructureController::IndexUpdate(){
+    //printf("i n t a k i n g ?");
 
     //printf("top sensor %f and bottom sensor %f\n", topSensor_, bottomSensor_);
 
@@ -550,7 +560,16 @@ bool SuperstructureController::GetShootingIsDone(){
     return shootingIsDone_;
 }
 
+// bool SuperstructureController::GetWaitingIsDone(){
+//     if(topSensor_){
+//         std::cout << "ball in top of elevator" << std::endl;
+//         return true;
+//     }
+//     return false;
+// }
+
 void SuperstructureController::SetShootingState(double autoVelocity){
+    tempIsAuto_ = true;
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
     //desiredFlywheelVelocity_ = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
@@ -560,11 +579,13 @@ void SuperstructureController::SetShootingState(double autoVelocity){
     printf("start Shooting\n");
 }
 void SuperstructureController::SetIndexingState(){
+    tempIsAuto_ = true;
     currWristState_ = kRaising; //resetting whatever intake did
     currHandlingState_ = kIndexing;
     printf("start Indexing");
 }
 void SuperstructureController::SetIntakingState(){
+    tempIsAuto_ = true;
     currWristState_ = kLowering;
     currHandlingState_ = kIntaking; 
     printf("start Intaking\n");
@@ -573,7 +594,7 @@ void SuperstructureController::SetIntakingState(){
 void SuperstructureController::SetPreppingState(double desiredVelocity){ //starts warming up shooter B)
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
-
+    tempIsAuto_ = true;
     //desiredVelocity = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
     std::cout <<  "velocity " << robot_->GetFlywheelMotor1Velocity() << std::endl;
     currWristState_ = kRaising; //resetting whatever intake did
