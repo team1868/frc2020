@@ -44,9 +44,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     elevatorTimeout_ = 2.0;
     //lastBottomStatus_ = false;
     manualRollerPower_ = 0.5;
-    autoArmPower_ = 0.3;
-
-    wristPFac_ = 0.006;
+    autoArmDownP_ = 0.07;
+    autoArmUpP_ = 0.1;
 
     controlPanelPower_ = 0.5; // fix
     controlPanelCounter_ = 0;
@@ -85,17 +84,16 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelDEntry_ = flywheelPIDLayout_.Add("flywheel D", 0.0).GetEntry();
     flywheelFEntry_ = flywheelPIDLayout_.Add("flywheel FF", 1.0).GetEntry();
 
-    wristPEntry_ = robot_->GetSuperstructureTab().Add("wrist P", 0.006).GetEntry();
-
     autoWinchEntry_ = manualOverrideLayout_.Add("auto climber", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
-    autoWristEntry_ = manualOverrideLayout_.Add("auto wrist", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    autoWristEntry_ = manualOverrideLayout_.Add("auto wrist", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
 
     slowElevatorEntry_ = powerLayout_.Add("slow elevator", elevatorSlowPower_).GetEntry();
     fastElevatorEntry_ = powerLayout_.Add("fast elevator", elevatorFastPower_).GetEntry();
     funnelEntry_ = powerLayout_.Add("funnel", indexFunnelPower_).GetEntry();
     rollerManualEntry_ = powerLayout_.Add("manual rollers", manualRollerPower_).GetEntry();
     closeFlywheelEntry_ = powerLayout_.Add("close flywheel", closeFlywheelVelocity_).GetEntry();
-    autoArmPowerEntry_ = powerLayout_.Add("arm in auto", autoArmPower_).GetEntry();
+    autoArmDownPEntry_ = robot_->GetPIDTab().Add("arm down p", autoArmDownP_).GetEntry();
+    autoArmUpPEntry_ = robot_->GetPIDTab().Add("arm up p", autoArmUpP_).GetEntry();
     targetSpeedEntry_ = flywheelPIDLayout_.Add("target speed", atTargetSpeed_).GetEntry();
     flywheelMotorOutputEntry_ = flywheelPIDLayout_.Add("flywheel motor output", robot_->FlywheelMotorOutput()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
@@ -153,7 +151,7 @@ void SuperstructureController::WristUpdate(){
                 robot_->SetIntakeRollersOutput(0.0);
                 //printf("current wrist angle %f\n", currWristAngle_);
                 if(currWristAngle_ > 10.0) {
-                    robot_->SetIntakeWristOutput(-autoArmPower_);//(0.0-currWristAngle_)*wristPFac_); 
+                    robot_->SetIntakeWristOutput(autoArmUpP_*(0.0-currWristAngle_));//(0.0-currWristAngle_)*wristPFac_); 
                     //printf("DONE LOLS\n");
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
@@ -164,7 +162,7 @@ void SuperstructureController::WristUpdate(){
             case kLowering:
                 //printf("lowering, pfac: %f, desired angle: %f, current angle %f\n", wristPFac_, desiredIntakeWristAngle_, currWristAngle_);
                 if(currWristAngle_ < desiredIntakeWristAngle_-45.0) {
-                    robot_->SetIntakeWristOutput(autoArmPower_);//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
+                    robot_->SetIntakeWristOutput(autoArmDownP_*(desiredIntakeWristAngle_-currWristAngle_));//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
                     //robot_->SetIntakeWristOutput(0.5);
                 } else{
                     robot_->SetIntakeWristOutput(0.0);
@@ -732,7 +730,8 @@ void SuperstructureController::RefreshShuffleboard(){
     elevatorFastPower_ = fastElevatorEntry_.GetDouble(elevatorFastPower_);
     elevatorSlowPower_ = slowElevatorEntry_.GetDouble(elevatorSlowPower_);
     indexFunnelPower_ = funnelEntry_.GetDouble(indexFunnelPower_);
-    autoArmPower_ = autoArmPowerEntry_.GetDouble(autoArmPower_);
+    autoArmUpP_ = autoArmUpPEntry_.GetDouble(autoArmUpP_);
+    autoArmDownP_ = autoArmDownPEntry_.GetDouble(autoArmDownP_);
 
     elevatorBottomLightSensorEntry_.SetBoolean(robot_->GetElevatorFeederLightSensorStatus());
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
@@ -744,7 +743,6 @@ void SuperstructureController::RefreshShuffleboard(){
     flywheelFFac_ = flywheelFEntry_.GetDouble(0.0);
     FlywheelPIDControllerUpdate();
 
-    wristPFac_ = wristPEntry_.GetDouble(0.006); //was 0.03
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
     flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
     flywheelMotorOutputEntry_.SetDouble(robot_->FlywheelMotorOutput());
