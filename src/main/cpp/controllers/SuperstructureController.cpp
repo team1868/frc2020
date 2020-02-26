@@ -102,8 +102,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     //TODO make timeout
 
 
-    elevatorTopLightSensorEntry_ = sensorsLayout_.Add("bottom elevator", false).GetEntry();
-    elevatorBottomLightSensorEntry_ = sensorsLayout_.Add("top elevator", false).GetEntry();
+    elevatorTopLightSensorEntry_ = sensorsLayout_.Add("top elevator", false).GetEntry();
+    elevatorBottomLightSensorEntry_ = sensorsLayout_.Add("bottom elevator", false).GetEntry();
     intakeWristAngleEntry_ = sensorsLayout_.Add("intake wrist angle", 0.0).GetEntry();
     printf("end of superstructure controller constructor\n");
 

@@ -128,8 +128,10 @@ RobotModel::RobotModel() :
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
-	//flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
-	//flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+
+
 
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
@@ -137,7 +139,7 @@ RobotModel::RobotModel() :
 
 	flywheelMotor1_->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor);
 	flywheelMotor1_->ConfigPeakOutputForward(1);
-	flywheelMotor1_->ConfigPeakOutputReverse(-1);
+	flywheelMotor1_->ConfigPeakOutputReverse(0);
 
 	numTimeAtSpeed_ = 0;
 
