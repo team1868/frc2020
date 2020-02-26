@@ -119,7 +119,7 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
 
     MaxSpeedAdjustment(leftOutput, rightOutput);
     FrictionAdjustment(leftOutput, rightOutput, true);
-    robot_->GearShift();
+    //robot_->GearShift();
     
     robot_->SetDriveValues(leftOutput, rightOutput);
     //printf("Left Output: %f, Right Output: %f", leftOutput, rightOutput);

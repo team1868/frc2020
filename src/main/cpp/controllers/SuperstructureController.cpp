@@ -154,6 +154,7 @@ void SuperstructureController::WristUpdate(){
                 //printf("current wrist angle %f\n", currWristAngle_);
                 if(currWristAngle_ > 5.0) {
                     robot_->SetIntakeWristOutput(-autoArmPower_);//(0.0-currWristAngle_)*wristPFac_); 
+                    printf("DONE LOLS\n");
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
                 else{
@@ -169,7 +170,7 @@ void SuperstructureController::WristUpdate(){
                     robot_->SetIntakeWristOutput(0.0);
                     printf("LOWERED, not running wrist\n");
                 }
-                if(currWristAngle_ > desiredIntakeWristAngle_ - 45.0-20.0){ //within acceptable range, ~740 degrees in sensor is 90 degrees on wrist
+                if(currWristAngle_ > desiredIntakeWristAngle_ - 45.0 - 40.0){ //within acceptable range, ~740 degrees in sensor is 90 degrees on wrist
                     robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
                 }
                 else{
