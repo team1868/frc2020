@@ -762,7 +762,6 @@ SuperstructureController::~SuperstructureController() {
     autoWinchEntry_.Delete();
     flywheelVelocityErrorEntry_.Delete();
     flywheelVelocityEntry_.Delete();
-    wristPEntry_.Delete();
     elevatorBottomLightSensorEntry_.Delete();
     elevatorTopLightSensorEntry_.Delete();
 }
