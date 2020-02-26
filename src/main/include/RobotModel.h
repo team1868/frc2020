@@ -168,6 +168,12 @@ class RobotModel {
     double SetPlayerSt2MidError(); //Player Station 2, midpoint distnance error
     double SetInitLineSlant(); //initiation line is slanted
 
+    void CheckAllianceColor();
+    std::string GetChosenSequence();
+    std::string GetChosenSequence1();
+    std::string GetChosenSequence2();
+    std::string GetChosenSequence3();
+    std::string GetChosenSequence4();
     
     //for align tape - in drive model
     void SetDeltaAngle(double angle);
@@ -330,24 +336,33 @@ class RobotModel {
     double lastVelocTime_, currVelocTime_;
     double currLeftDistance_, currRightDistance_; 
     double lastLeftDistance_, lastRightDistance_; 
-    // if smth is closer to the side of the opposing player station then subtract that # from the variable 
-    double initLineError_ ;      
+    
+    // choosing strings
+    std::string chosenSequence_;
+    std::string testSequence1_;
+    std::string testSequence2_;
+    std::string testSequence3_;
+    std::string testSequence4_;
+
+    // if smth is closer to the side of the opposing player station then subtract that # from the variable
+    double initLineError_ ;
     double trenchDistError_;
     double trenchWidthError_;
     double trenchLengthError_;
-    double targetZDistError_;
-    double loadingDDistError_;
-    double playerSt2MidError_; // add positive number if it's more to the left than expected 
+    double targetZDistError_; // + if TZ is wider than supposed to be
+    double loadingDDistError_; // + if LD is wider than supposed to be
+    double playerSt2MidError_; // add positive number if it's more to the left than expected aka closer to LD
 
     // Distance of Initiation Line To...
-    double distInitLineToPS_; 
+    double distInitLineToPS_;
     double distInitLinetoTrench_;
     double distInitLinetoTZ_;
+    double distInitLinetoLB_;
     double distSidewaysTZToMidTrench; // InitLineAlignedWithTZToInitLineAlignedWithMidTrench
     double distSidewaysLBToMidTrench_; //InitLineAlignedWithLBToInitLineAlignedWithMidTrench_
-    double distInitLinetoCP_; // should = distInitLinetoTrench + trenchLength_        
+    double distInitLinetoCP_; // should = distInitLinetoTrench + trenchLength_
     double distInitLineAlignedWithPSToMidTrench_;
-    double distSidewaysPSToMidTrench_; 
+    double distSidewaysPSToMidTrench_;
 
     // Trench
     double trenchWidth_;
@@ -355,7 +370,29 @@ class RobotModel {
 
     double distCenterLBtoCenterTZ_;
     double distSidewaysMidPSToMidTrench_; //distInitLineAlignedWithMidPSToInitLineAlignedWithMidTrench_
-    
+    double distSidewaysTZToMidTrench_;
+    double distMidPSToMidTZ_;
+
+    // Auto Sequence Variables (in the strings)
+    std::string strTrenchLength_;
+
+    // Sequence 1
+    double angleA1_,distA1_,distB1_;
+    std::string strAngleA1_,strDistA1_,strDistB1_;
+
+    //Sequence 2
+    double angleA2_,angleB2_,angleC2_,distA2_,distB2_;
+    std::string strAngleA2_,strAngleB2_,strAngleC2_,strDistA2_,strDistB2_;
+
+    // Sequence 3
+    double angleA3_,distA3_;
+    std::string strAngleA3_,strDistA3_;
+
+    // Sequence 4
+    double angleA4_,angleB4_,angleC4_,distA4_,distB4_;
+    std::string strAngleA4_,strAngleB4_,strAngleC4_,strDistA4_,strDistB4_;
+
+
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
@@ -372,4 +409,6 @@ class RobotModel {
     nt::NetworkTableEntry resetWristAngleEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
     nt::NetworkTableEntry initLineErrorEntry_, trenchDistErrorEntry_, trenchWidthErrorEntry_, trenchLengthErrorEntry_, targetZDistErrorEntry_, targetZHeightErrorEntry_, loadingDDistErrorEntry_, playerSt2MidErrorEntry_, initLineSlantEntry_;
+    frc::SendableChooser<std::string> autoSendableChooser_;
+
 };

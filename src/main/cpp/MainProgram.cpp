@@ -76,6 +76,7 @@ void MainProgram::AutonomousInit() {
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
+    robot_->SetTestSequence(robot_->GetChosenSequence());
 
     //zmq
     if (context_ == nullptr) {

@@ -101,10 +101,9 @@ class SuperstructureController {
   double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
-  double autoArmPower_;
+  double autoArmDownP_, autoArmUpP_;
   double desiredFlywheelVelocity_, closeFlywheelVelocity_;
 
-  double wristPFac_;
   double desiredIntakeWristAngle_;
   double currWristAngle_, lastWristAngle_;
 
@@ -136,14 +135,12 @@ class SuperstructureController {
   double distanceToTarget_;
   bool tempIsAuto_;
   
-
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_, flywheelMotorOutputEntry_;
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
 
-  nt::NetworkTableEntry wristPEntry_;
   nt::NetworkTableEntry intakeWristAngleEntry_;
-  nt::NetworkTableEntry autoWristEntry_, autoArmPowerEntry_;
+  nt::NetworkTableEntry autoWristEntry_, autoArmDownPEntry_, autoArmUpPEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, autoWinchEntry_;
 };
