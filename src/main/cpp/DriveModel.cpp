@@ -11,7 +11,6 @@
 #include "controllers/DriveController.h"
 
 
-
 RobotModel::RobotModel() :
     driverTab_(frc::Shuffleboard::GetTab("Driveteam Control")),
     modeTab_(frc::Shuffleboard::GetTab("Programmer Control")),
