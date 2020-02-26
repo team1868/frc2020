@@ -5,7 +5,6 @@ extern "C"{
 }
 
 const static int NUM_WAYPTS = 2;
-using namespace std;
 
 int main(){
     Waypoint pts[NUM_WAYPTS];

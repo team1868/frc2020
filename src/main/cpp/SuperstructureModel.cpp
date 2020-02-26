@@ -8,6 +8,10 @@
 #include "RobotModel.h"
 using namespace std;
 
+void RobotModel::SetSuperstructureController(SuperstructureController *superstructureController){
+    superstructureController_ = superstructureController;
+}
+
 void RobotModel::SetAutoState(uint32_t state) {
     state_ = state;
 }
@@ -38,18 +42,53 @@ int RobotModel::GetFlywheelMotor1Velocity() {
     // raw sensor units per 100 ms
 }
 
+// remove later
+double RobotModel::RatioFlywheel(double value){
+    /*double ratioFlywheelOutput = 12.43/GetVoltage()*value;
+    if(ratioFlywheelOutput > 1){
+        ratioFlywheelOutput = 1;
+    } else if(ratioFlywheelOutput < -1){
+        ratioFlywheelOutput = -1;
+    }
+    return ratioFlywheelOutput;*/
+    //return GetVoltage()*0.00001421*desiredVelocity_;
+}
+
 // make into one function later whoops
-void RobotModel::ConfigFlywheelP(double pFac_){
-    flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+void RobotModel::ConfigFlywheelP(double pFac){
+    //printf("pFac %f\n", pFac);
+    flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac);
 }
-void RobotModel::ConfigFlywheelI(double iFac_){
-    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+void RobotModel::ConfigFlywheelI(double iFac){
+    flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, iFac);
 }
-void RobotModel::ConfigFlywheelD(double dFac_){
-    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+void RobotModel::ConfigFlywheelD(double dFac){
+    flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac);
 }
-void RobotModel::ConfigFlywheelF(double fFac_){
-    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, 0.0, FLYWHEEL_PID_TIMEOUT);
+void RobotModel::ConfigFlywheelF(double fFac){
+    flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
+}
+
+double RobotModel::FlywheelMotorOutput(){
+    flywheelMotor1_->GetMotorOutputPercent();
+}
+
+bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){
+    double value = GetFlywheelMotor1Velocity()*FALCON_TO_RPM;
+    printf("falcon velocity %f\n", value);
+    //printf("desiredVelocity %f\n", desiredVelocity);
+    if(GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredVelocity&& 
+    GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredVelocity+150.0){
+        numTimeAtSpeed_++;
+        if (numTimeAtSpeed_ >= 1){ //3){ 
+            printf("FLYWHEEL IS AT SPEED");
+            return true;
+        }
+        //numTimeAtSpeed_ = 0;
+        return false;
+    }
+    numTimeAtSpeed_ = 0;
+    return false;
 }
 
 void RobotModel::EngageFlywheelHood() {
@@ -65,7 +104,7 @@ void RobotModel::SetClimbWinchLeftOutput(double power){
 }
 
 void RobotModel::SetClimbWinchRightOutput(double power){
-    climberWinchRightMotor_->Set(power);
+    climberWinchRightMotor_->Set(-power);
 }
 
 double RobotModel::GetClimberWinchRightEncoderValue(){
@@ -84,15 +123,20 @@ void RobotModel::SetControlPanelOutput(double power){
 }
 
 void RobotModel::SetIntakeRollersOutput(double power) {
-    intakeRollersMotor_->Set(-power);
+    intakeRollersMotor_->Set(power);
 }
 
 void RobotModel::SetIntakeWristOutput(double power) {
+    if(power > 1.0){
+        power = 1.0;
+    } else if (power < -1.0) {
+        power = -1.0;
+    }
     intakeWristMotor_->Set(power);
 }
 
 void RobotModel::SetIndexFunnelOutput(double power) {
-    indexFunnelMotor_->Set(power);
+    indexFunnelMotor_->Set(-power);
 }
 
 void RobotModel::SetElevatorFeederOutput(double power) {
@@ -150,7 +194,7 @@ std::string RobotModel::GetControlPanelGameData() {
 
 //should return degrees
 double RobotModel::GetIntakeWristAngle(){
-    return (360.0/4096)*intakeWristMotor_->GetSelectedSensorPosition();
+    return TICKS_TO_WRIST_DEGREES*intakeWristMotor_->GetSelectedSensorPosition();
 }
 
 bool RobotModel::GetElevatorFeederLightSensorStatus() {

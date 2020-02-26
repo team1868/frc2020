@@ -35,7 +35,7 @@ class CurveCommand : public AutoCommand {
   TalonEncoderCurvePIDSource *talonEncoderCurvePIDSource_;
   AnglePIDOutput *anglePIDOutput_;
   DistancePIDOutput *distancePIDOutput_;
-  PIDController *dPID_; //*tPID_
+  frc::PIDController *dPID_; //*tPID_
 
   double dPFac_, dIFac_, dDFac_;
   //double tPFac_, tIFac_, tDFac_;

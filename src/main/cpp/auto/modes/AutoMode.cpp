@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "auto/modes/AutoMode.h"
+using namespace std;
 
 AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");
@@ -70,6 +71,7 @@ void AutoMode::QueueFromString(string autoSequence) {
 		iss.clear(); //might be this?
 }
 
+//TODO ERROR MUST HAVE A COMMAND AFTER ANY SUPERSTRUCTURE COMMAND OR CRASH
 AutoCommand* AutoMode::GetStringCommand(char command) {
 		AutoCommand* tempCommand = NULL;
 		AutoCommand* commandA = NULL;
@@ -146,7 +148,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = NULL;
 			} else {
 				printf("radius: %f\n, angle: %f\n, turnleft: %d\n, goForward: %d\n", curveRadius, curveAngle, turnLeft, goForward);
-				if (turnLeft == 0) {
+				if (turnLeft == 0) { //todo change these to bools
 					if (goForward == 0) {
 						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, false, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					} else{
@@ -161,23 +163,59 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				}
 			}
 			break;
-		// case 's':
-		// 	printf("Wait Command\n");
-		// 	double waitTime;
-		// 	iss >> waitTime;
-		// 	if (IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		tempCommand = new WaitingCommand(waitTime);
-		// 	}
-		// 	break;
+		case 'w':
+			printf("Wait Command\n");
+			double waitTime;
+			iss >> waitTime;
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new WaitingCommand(waitTime);
+			}
+			break;
+		case 's': //shooting
+			printf("starting shooting\n");
+			double autoVelocity;
+			iss >> autoVelocity;
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new ShootingCommand(robot_, autoVelocity);
+			}
+			break;
+		case 'b': //prepping
+			printf("starting prepping\n");
+			double desiredVelocity;
+			iss >> desiredVelocity;
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new PreppingCommand(robot_, desiredVelocity);
+			}
+			break;
+		case 'i': //intaking
+			printf("starting intaking\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new IntakingCommand(robot_);
+			}
+			break;
+		case 'n': //indexing
+			printf("starting indexing\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new IndexingCommand(robot_);
+			}
+			break;
 		default:	// When it's not listed, don't do anything :)
 			printf("Unexpected character %c detected. Terminating queue", command);
 			firstCommand_ = NULL;
 			currentCommand_ = NULL;
 			tempCommand = NULL;
 			breakDesired_ = true;
-			break;
+			//break;
 		}
 
 		printf("Loaded a command\n");

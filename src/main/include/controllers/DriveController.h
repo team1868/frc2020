@@ -11,7 +11,7 @@
 #include "ControlBoard.h"
 
 static const double DEADBAND_MAX = 0.1;
-static const double STATIC_FRICTION_DRIVE = 0.06; //NEED TO CALIBRATE //this is nova with 4 dumbbells
+static const double STATIC_FRICTION_DRIVE = 0.07; //NEED TO CALIBRATE 
 
 class DriveController {
   public:
@@ -37,8 +37,8 @@ class DriveController {
 	  ControlBoard *humanControl_;
     bool arcadeMode_;
 
-    ShuffleboardLayout &driveLayout_;
-    nt::NetworkTableEntry arcadeEntry_, thrustSensitivityEntry_, rotateSensitivityEntry_, anaModeEntry_;
+    frc::ShuffleboardLayout &driveLayout_;
+    nt::NetworkTableEntry arcadeEntry_, thrustSensitivityEntry_, rotateSensitivityEntry_, anaModeEntry_, autoShiftEntry_, highGearEntry_;
     
     double thrustSensitivity_, rotateSensitivity_;
     double rightJoystickXLastValue_, rightJoystickXCurrValue_;

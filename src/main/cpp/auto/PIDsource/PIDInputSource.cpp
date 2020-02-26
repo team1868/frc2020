@@ -21,7 +21,7 @@ double NavXPIDSource::PIDGet() {
 //	CalculateAccumulatedYaw();
 	accumulatedYaw_ = robot_->GetNavXYaw();
 //	accumulatedYaw_ = robot_->GetNavXYaw();
-	SmartDashboard::PutNumber("Accumulated Yawwwww", accumulatedYaw_);
+	frc::SmartDashboard::PutNumber("Accumulated Yawwwww", accumulatedYaw_);
 	return accumulatedYaw_;
 }
 
@@ -65,15 +65,18 @@ double TalonEncoderPIDSource::PIDGet() {
 
 	// FIX THIS TO BE BETTER THANKS
 	if (robot_->GetLeftEncoderStopped()) {
+		//printf("case1 left stopped\n");
 		averageTalonDistance_ = rightDistance;
 	} else if (robot_->GetRightEncoderStopped()) {
+		//printf("case2 right stopped\n");
 		averageTalonDistance_ = leftDistance;
 	} else {
-		averageTalonDistance_= (rightDistance + leftDistance) / 2;
+		//printf("case3 no stop\n");
+		averageTalonDistance_= (rightDistance + leftDistance) / 2.0;
 	}
-	SmartDashboard::PutNumber("Left Distance", leftDistance);
-	SmartDashboard::PutNumber("Right Distance", rightDistance);
-	SmartDashboard::PutNumber("Average Distance", averageTalonDistance_);
+	frc::SmartDashboard::PutNumber("Left Distance", leftDistance);
+	frc::SmartDashboard::PutNumber("Right Distance", rightDistance);
+	frc::SmartDashboard::PutNumber("Average Distance", averageTalonDistance_);
 	return averageTalonDistance_;
 
 }
@@ -81,34 +84,6 @@ double TalonEncoderPIDSource::PIDGet() {
 TalonEncoderPIDSource::~TalonEncoderPIDSource() {
 
 }
-
-
-
-TalonFXPIDSource::TalonFXPIDSource(RobotModel* robot) {
-	robot_ = robot;
-	averageTalonFXDistance_ = 0.0;
-
-}
-
-double TalonFXPIDSource::PIDGet() {
-	
-	double flywheel1Distance = robot_->GetFlywheel1EncoderValue();
-	double flywheel2Distance = robot_->GetFlywheel2EncoderValue();
-
-	// FIX THIS TO BE BETTER THANKS
-	averageTalonFXDistance_ = flywheel1Distance;
-
-	SmartDashboard::PutNumber("Flywheel 1 Distance", flywheel1Distance);
-	SmartDashboard::PutNumber("Flywheel 2 Distance", flywheel2Distance);
-	SmartDashboard::PutNumber("Average Distance", averageTalonFXDistance_);
-	return averageTalonFXDistance_;
-
-}
-
-TalonFXPIDSource::~TalonFXPIDSource() {
-
-}
-
 
 VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
 	robot_ = robot;

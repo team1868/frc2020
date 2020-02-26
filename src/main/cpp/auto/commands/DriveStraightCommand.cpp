@@ -19,12 +19,12 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
 	
-	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
-	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 	desiredAngleEntry_ = driveStraightLayout_.Add("Desired Angle", 0.0).GetEntry();
 	desiredTotalFeetEntry_ = driveStraightLayout_.Add("Desired Total Feet", 0.0).GetEntry();
-	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
-	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 	aPIDOutputEntry_ = driveStraightLayout_.Add("Angle PID Output", 0.0).GetEntry();
 	dPIDOutputEntry_ = driveStraightLayout_.Add("Distance PID Output", 0.0).GetEntry();
 	
@@ -58,8 +58,8 @@ void DriveStraightCommand::Init() {
 
 	GetPIDValues();
 	// Setting up PID vals
-	anglePID_ = new PIDController(rPFac_, rIFac_, rDFac_, navXSource_, anglePIDOutput_);
-	distancePID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderSource_, distancePIDOutput_);
+	anglePID_ = new frc::PIDController(rPFac_, rIFac_, rDFac_, navXSource_, anglePIDOutput_);
+	distancePID_ = new frc::PIDController(dPFac_, dIFac_, dDFac_, talonEncoderSource_, distancePIDOutput_);
 
 	// absolute angle
 	if (!isAbsoluteAngle_) {
@@ -81,19 +81,18 @@ void DriveStraightCommand::Init() {
 	distancePID_->SetContinuous(false); 
 
 	anglePID_->SetOutputRange(-rMaxOutput_, rMaxOutput_);
-	//distancePID_->SetOutputRange(-dMaxOutput_, dMaxOutput_);
 	distancePID_->SetOutputRange(-initialDMax_, initialDMax_);
-
+	
+	
 	anglePID_->SetAbsoluteTolerance(rTolerance_);
 	distancePID_->SetAbsoluteTolerance(dTolerance_);
 
 	anglePID_->Enable();
 	distancePID_->Enable();
 
-	 // Assuming 5.0 ft / sec from the low gear speed
-	driveTimeoutSec_ = fabs(desiredDistance_ / 3.0)+2.0; //TODO: add physics, also TODO remove +5
+
 	initialDriveTime_ = robot_->GetTime();
-	printf("%f Start chicken tenders drivestraight time driveTimeoutSec is %f\n", initialDriveTime_, driveTimeoutSec_);
+
 
 	numTimesOnTarget_ = 0;
 
@@ -142,7 +141,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 // on target
 	if (distancePID_->OnTarget() && fabs(talonEncoderSource_->PIDGet() - lastDistance_) < 0.04 ) {
 		numTimesOnTarget_++;
-		printf("times on target at %f \n", numTimesOnTarget_);
+		printf("times on target at %d \n", numTimesOnTarget_);
 		printf("%f Drivestraight error: %f\n", robot_->GetTime(), distancePID_->GetError());
 	} else {
 		numTimesOnTarget_ = 0;
@@ -157,16 +156,14 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 
 	lastDistance_ = talonEncoderSource_->PIDGet();
-	if((numTimesOnTarget_ > 5) || (diffDriveTime_ > driveTimeoutSec_) || (numTimesStopped_ > 0)) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
-		if (diffDriveTime_ > driveTimeoutSec_) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
-			printf(" %f DRIVESTRAIGHT TIMED OUT!! :) go get chicken tenders %f\n", robot_->GetTime(), diffDriveTime_);
-		}
-		printf("%f Final Left Distance: %f\n" //encoder values not distances
-				"Final Right Distance: %f\n"
-				"Final Average Distance: %f\n"
-				"Final Drivestraight error: %f\n",
-				robot_->GetTime(), robot_->GetLeftDistance(), robot_->GetRightDistance(),
+	if((numTimesOnTarget_ > 5) /*|| (numTimesStopped_ > 0)*/) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
+		printf("diff time: %fs Final Left Distance: %fft\n" //encoder values not distances
+				"Final Right Distance: %fft\n"
+				"Final Average Distance: %fft\n"
+				"Final Drivestraight error: %fft\n",
+				diffDriveTime_, robot_->GetLeftDistance(), robot_->GetRightDistance(),
 				talonEncoderSource_->PIDGet(), distancePID_->GetError());
+		printf("on target: %d\n", numTimesOnTarget_);
 		Reset();
 
 		leftMotorOutput_ = 0.0;

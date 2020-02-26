@@ -21,7 +21,7 @@
 #include "auto/PIDsource/PIDOutputSource.h"
 #include "Ports2020.h"
 #include "ControlBoard.h"
-#include <frc/AnalogPotentiometer.h>
+#include "controllers/SuperstructureController.h"
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -34,7 +34,7 @@ static const double ENCODER_TICKS = 2048.0; //ticks per motor rotation
 static const double HGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*HIGH_GEAR_RATIO/(WHEEL_DIAMETER*PI); //ticks per ft
 static const double LGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*LOW_GEAR_RATIO/(WHEEL_DIAMETER*PI); // ticks per ft
 //static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
-static const double STOP_VELOCITY_THRESHOLD = 50.0; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
+static const double STOP_VELOCITY_THRESHOLD = 0.01; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX
 static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
@@ -51,7 +51,6 @@ static double LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER =  0.0;
 static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
 static const double ROBOT_WIDTH = 28.5/12; //ft
 // superstructure
-static const double INTAKE_POT_OFFSET = 0.0;
 static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
 static constexpr auto I2CPORT = frc::I2C::Port::kOnboard;
@@ -60,6 +59,11 @@ static const int CTRE_MAG_ENCODER_TICKS = 4096;
 
 static const int FLYWHEEL_PID_LOOP_ID = 0;
 static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
+
+static const double MIN_TURNING_X = 0.5;
+static const double MIN_TURNING_XY_DIFFERENCE = 1.0;
+static const double MAX_LOW_GEAR_VELOCITY = 7.5;
+static const double TICKS_TO_WRIST_DEGREES = 360.0/4096*18/34; //0.04653
 
 
 //color sensor
@@ -74,7 +78,7 @@ static constexpr frc::Color GREEN = frc::Color(0.197, 0.561, 0.240); //0.177, 0.
 static constexpr frc::Color RED = frc::Color(0.561, 0.232, 0.114); //0.478, 0.369, 0.153
 static constexpr frc::Color YELLOW = frc::Color(0.361, 0.524, 0.113); //0.322, 0.880, 0.128
 
-
+class SuperstructureController;
 class RobotModel {
   public:
     enum Wheels {kLeftWheels, kRightWheels, kAllWheels};
@@ -85,6 +89,8 @@ class RobotModel {
     frc::ShuffleboardTab& GetPIDTab();
     frc::ShuffleboardTab& GetAutoOffsetTab();
     frc::ShuffleboardTab& GetSuperstructureTab();
+
+    void SetSuperstructureController(SuperstructureController *superstructureControllers);
     
 
     // drive robot model
@@ -98,6 +104,14 @@ class RobotModel {
     double GetRightEncoderValue();
     double GetRawLeftEncoderValue();
     double GetRawRightEncoderValue();
+
+    void SetIndexing();
+    void SetIntaking();
+    void SetShooting(double autoVelocity);
+    void SetPrepping(double desiredVelocity);
+
+    bool GetShootingIsDone();
+    // void SetStopDetectionTimeDefault();
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();
@@ -140,6 +154,7 @@ class RobotModel {
     void SetHighGear();
     void SetLowGear();
     void GearShift();
+    bool IsHighGear();
 
     //field error
     double SetInitLineError();
@@ -152,6 +167,12 @@ class RobotModel {
     double SetPlayerSt2MidError(); //Player Station 2, midpoint distnance error
     double SetInitLineSlant(); //initiation line is slanted
 
+    void CheckAllianceColor();
+    std::string GetChosenSequence();
+    std::string GetChosenSequence1();
+    std::string GetChosenSequence2();
+    std::string GetChosenSequence3();
+    std::string GetChosenSequence4();
     
     //for align tape - in drive model
     void SetDeltaAngle(double angle);
@@ -202,6 +223,9 @@ class RobotModel {
     void ConfigFlywheelI(double iFac_);
     void ConfigFlywheelD(double dFac_);
     void ConfigFlywheelF(double fFac_);
+    double RatioFlywheel(double value);
+    double FlywheelMotorOutput();
+    bool IsAutoFlywheelAtSpeed(double desiredVelocity);
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
@@ -211,7 +235,6 @@ class RobotModel {
     double GetClimberWinchLeftEncoderValue(); 
     void SetIntakeWristOutput(double power);
     void SetIntakeRollersOutput(double power);
-    double GetIntakeWristPotValue();
     
     double GetIntakeWristAngle();
     
@@ -234,12 +257,13 @@ class RobotModel {
   private:
 
     ControlBoard *humanControl_;
+    SuperstructureController *superstructureController_;
 
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
     std::string controlPanelGameData_;
     frc::Compressor *compressor_;
-    frc::DoubleSolenoid *gearSolenoid_;
+    frc::Solenoid *gearSolenoid_;
     frc::Solenoid *lightSolenoid_;
 
     AHRS *navX_;
@@ -250,15 +274,18 @@ class RobotModel {
     std::string alignSequence_;
     WPI_TalonFX *leftMaster_, *rightMaster_, *leftSlaveA_, *rightSlaveA_;
     
+    // superstructure
+    StatorCurrentLimitConfiguration *fortyAmpFXLimit_;
+    SupplyCurrentLimitConfiguration *thirtyAmpSRXLimit_, *fortyAmpSRXLimit_;
+
     WPI_TalonFX *flywheelMotor1_, *flywheelMotor2_;
     TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 
-    Solenoid *flywheelHoodSolenoid_;
+    frc::Solenoid *flywheelHoodSolenoid_;
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
-    WPI_TalonSRX *climberElevatorMotor_;
-    Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
+    WPI_VictorSPX *climberElevatorMotor_;
+    frc::Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
-    //Compressor *compressor_;
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
     frc::Color detectedColor_, matchedColor_;
@@ -267,11 +294,10 @@ class RobotModel {
 
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
-    AnalogPotentiometer *intakeWristPot_; 
     
-    DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_TalonSRX *indexFunnelMotor_;
-    WPI_TalonSRX *elevatorMotor_, *elevatorFeederMotor_;
+    frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
+    WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_;
+    WPI_VictorSPX *elevatorMotor_;
 
     double navXSpeed_;
     int counter;
@@ -280,6 +306,7 @@ class RobotModel {
     double currLeftEncoderValue_, currRightEncoderValue_;
     double initialLeftEncoderValue_, initialRightEncoderValue_;
     bool isHighGear_;
+    bool resetWristAngle_;
 
     double currLeftVelocity_ , currRightVelocity_;
     double lastLeftVelocity_, lastRightVelocity_;
@@ -292,6 +319,7 @@ class RobotModel {
     double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_;
    
     uint32_t state_;
+    int numTimeAtSpeed_;
     double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
     double intakeRollersCurrent_, intakeWristCurrent_, IndexFunnelCurrent_, elevatorFeederCurrent_, elevatorCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
@@ -305,25 +333,35 @@ class RobotModel {
     double targetVelocity_;
 
     double lastVelocTime_, currVelocTime_;
+    double currLeftDistance_, currRightDistance_; 
+    double lastLeftDistance_, lastRightDistance_; 
+    
+    // choosing strings
+    std::string chosenSequence_;
+    std::string testSequence1_;
+    std::string testSequence2_;
+    std::string testSequence3_;
+    std::string testSequence4_;
 
-    // if smth is closer to the side of the opposing player station then subtract that # from the variable 
-    double initLineError_ ;      
+    // if smth is closer to the side of the opposing player station then subtract that # from the variable
+    double initLineError_ ;
     double trenchDistError_;
     double trenchWidthError_;
     double trenchLengthError_;
-    double targetZDistError_;
-    double loadingDDistError_;
-    double playerSt2MidError_; // add positive number if it's more to the left than expected 
+    double targetZDistError_; // + if TZ is wider than supposed to be
+    double loadingDDistError_; // + if LD is wider than supposed to be
+    double playerSt2MidError_; // add positive number if it's more to the left than expected aka closer to LD
 
     // Distance of Initiation Line To...
-    double distInitLineToPS_; 
+    double distInitLineToPS_;
     double distInitLinetoTrench_;
     double distInitLinetoTZ_;
+    double distInitLinetoLB_;
     double distSidewaysTZToMidTrench; // InitLineAlignedWithTZToInitLineAlignedWithMidTrench
     double distSidewaysLBToMidTrench_; //InitLineAlignedWithLBToInitLineAlignedWithMidTrench_
-    double distInitLinetoCP_; // should = distInitLinetoTrench + trenchLength_        
+    double distInitLinetoCP_; // should = distInitLinetoTrench + trenchLength_
     double distInitLineAlignedWithPSToMidTrench_;
-    double distSidewaysPSToMidTrench_; 
+    double distSidewaysPSToMidTrench_;
 
     // Trench
     double trenchWidth_;
@@ -331,7 +369,29 @@ class RobotModel {
 
     double distCenterLBtoCenterTZ_;
     double distSidewaysMidPSToMidTrench_; //distInitLineAlignedWithMidPSToInitLineAlignedWithMidTrench_
-    
+    double distSidewaysTZToMidTrench_;
+    double distMidPSToMidTZ_;
+
+    // Auto Sequence Variables (in the strings)
+    std::string strTrenchLength_;
+
+    // Sequence 1
+    double angleA1_,distA1_,distB1_;
+    std::string strAngleA1_,strDistA1_,strDistB1_;
+
+    //Sequence 2
+    double angleA2_,angleB2_,angleC2_,distA2_,distB2_;
+    std::string strAngleA2_,strAngleB2_,strAngleC2_,strDistA2_,strDistB2_;
+
+    // Sequence 3
+    double angleA3_,distA3_;
+    std::string strAngleA3_,strDistA3_;
+
+    // Sequence 4
+    double angleA4_,angleB4_,angleC4_,distA4_,distB4_;
+    std::string strAngleA4_,strAngleB4_,strAngleC4_,strDistA4_,strDistB4_;
+
+
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;
@@ -345,6 +405,9 @@ class RobotModel {
     nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_; //tPFacNet_, tIFacNet_,tDFacNet_;
     nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
+    nt::NetworkTableEntry resetWristAngleEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
     nt::NetworkTableEntry initLineErrorEntry_, trenchDistErrorEntry_, trenchWidthErrorEntry_, trenchLengthErrorEntry_, targetZDistErrorEntry_, targetZHeightErrorEntry_, loadingDDistErrorEntry_, playerSt2MidErrorEntry_, initLineSlantEntry_;
+    frc::SendableChooser<std::string> autoSendableChooser_;
+
 };

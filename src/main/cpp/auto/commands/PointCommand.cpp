@@ -15,7 +15,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	leftDriveEntry_ = pointLayout_.Add("Left Drive Output", 0.0).GetEntry();
 	rightDriveEntry_ = pointLayout_.Add("Right Drive Output", 0.0).GetEntry();
-	pointErrorEntry_ = pointLayout_.Add("Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	pointErrorEntry_ = pointLayout_.Add("Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
     navXSource_ = navXSource;
 
@@ -51,7 +51,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	talonOutput_ = new PivotPIDTalonOutput(robot_);
 
 	// initialize time variables
-	pointCommandStartTime_ = robot_->GetTime();
+	pointCommandStartTime_ =  robot_->GetTime();
 	pointTimeoutSec_ = 5.0;//0.0; //note edited from last year
 
 	// retrieve pid values from user //moved to shuffleboard model
@@ -61,7 +61,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pointTimeoutSec_ / 90.0;
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
-	pointPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pointPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = 3.0;//1.0;
@@ -127,7 +127,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	dFac_ = robot_->GetPointD();
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pointTimeoutSec_ / 90.0;
-	pointPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pointPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = tolerance;//3.0;
@@ -214,10 +214,10 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	}
 	//printf("On target %d times\n",numTimesOnTarget_);
 	if ((pointPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
-		printf("%f Final NavX Angle from PID Source: %f\n"
+		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
 				"%f Angle NavX Error %f\n",
-				robot_->GetTime(), navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
+				timeDiff, navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
 					pointPID_->GetError());
 		Reset();
 		isDone_ = true;

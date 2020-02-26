@@ -9,13 +9,8 @@
 #include "RobotModel.h"
 #include "ControlBoard.h"
 #include "controllers/DriveController.h"
-#include "auto/AutoMeasures.h"
 
 
-
-const double MIN_TURNING_X = 0.5;
-const double MIN_TURNING_XY_DIFFERENCE = 1.0;
-static const double MAX_LOW_GEAR_VELOCITY = 8.5;
 
 RobotModel::RobotModel() :
     driverTab_(frc::Shuffleboard::GetTab("Driveteam Control")),
@@ -45,8 +40,10 @@ RobotModel::RobotModel() :
 
     leftDriveOutput_ = rightDriveOutput_ = 0.0;
 	counter = 0;
-	currLeftVelocity_ , currRightVelocity_ = 0.0;
-	lastLeftVelocity_, lastRightVelocity_ = 0.0;
+	currLeftVelocity_ = currRightVelocity_ = 0.0;
+	lastLeftVelocity_ = lastRightVelocity_ = 0.0;
+	currLeftDistance_ = currRightDistance_ = 0.0;
+	lastLeftDistance_ = lastRightDistance_ = 0.0;
     lastLeftEncoderValue_ = lastRightEncoderValue_ = 0.0;
     currLeftEncoderValue_ = currRightEncoderValue_ = 0.0;
     initialLeftEncoderValue_ = initialRightEncoderValue_ = 0.0;
@@ -57,8 +54,8 @@ RobotModel::RobotModel() :
     timer_->Start();
     // Initializing NavX
     navXSpeed_ = 200;
-    navX_ = new AHRS(SPI::kMXP, navXSpeed_);
-    Wait(1.0); // NavX takes a second to calibrate
+    navX_ = new AHRS(frc::SPI::kMXP, navXSpeed_);
+    frc::Wait(1.0); // NavX takes a second to calibrate
     // initializing pdp
     pdp_ = new frc::PowerDistributionPanel();
 
@@ -78,7 +75,7 @@ RobotModel::RobotModel() :
     compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
 
 	// initializing double solenoid for gear
-	gearSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARDS_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
+	gearSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARDS_SOLENOID_PORT);
 	
 	// initializing solenoid for led light
 	lightSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, LIGHT_SOLENOID_PORT);
@@ -104,6 +101,12 @@ RobotModel::RobotModel() :
     rightSlaveA_->SetInverted(false);
     leftSlaveA_->SetInverted(false);
     leftMaster_->SetInverted(false);
+	rightMaster_->SetNeutralMode(Coast);
+	leftMaster_->SetNeutralMode(Coast);
+	leftSlaveA_->SetNeutralMode(Coast);
+	rightSlaveA_->SetNeutralMode(Coast);
+
+
 
 	ctre::phoenix::motorcontrol::SupplyCurrentLimitConfiguration currentLimitConfig;
 	currentLimitConfig.enable = true;
@@ -117,14 +120,26 @@ RobotModel::RobotModel() :
     rightSlaveA_->ConfigSupplyCurrentLimit(currentLimitConfig);
 
 	// superstructure robot model
+	fortyAmpFXLimit_ = new StatorCurrentLimitConfiguration(true, 32.0, 80.0, 0.5);
+	fortyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 32.0, 40.0, 0.1);
+	thirtyAmpSRXLimit_ = new SupplyCurrentLimitConfiguration(true, 24.0, 30.0, 0.1);
 	
 	flywheelMotor1_ = new WPI_TalonFX(FLYWHEEL_MOTOR_ONE_ID);
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
+	//flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	//flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
+
+	flywheelMotor1_->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor);
+	flywheelMotor1_->ConfigPeakOutputForward(1);
+	flywheelMotor1_->ConfigPeakOutputReverse(-1);
+
+	numTimeAtSpeed_ = 0;
 
 	std::cout << "start flywheel encoder creation" << std::endl << std::flush;
     flywheelEncoder1_ = &flywheelMotor1_->GetSensorCollection();
@@ -133,24 +148,27 @@ RobotModel::RobotModel() :
 
 	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
-	climberElevatorMotor_ = new WPI_TalonSRX(CLIMB_ELEVATOR_ID);
+	climberElevatorMotor_ = new WPI_VictorSPX(CLIMB_ELEVATOR_ID);
 
-	climberWinchRightEncoder_ = new Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
-	climberWinchLeftEncoder_ = new Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted
+	// make climber elevator motors srx and put current limits
+
+	climberWinchRightEncoder_ = new frc::Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
+	climberWinchLeftEncoder_ = new frc::Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
+	intakeWristMotor_->ConfigSupplyCurrentLimit(*thirtyAmpSRXLimit_);
 	intakeWristMotor_->ConfigFactoryDefault();
 	intakeWristMotor_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0);
-	intakeWristPot_ = new frc::AnalogPotentiometer(INTAKE_WRIST_POT_PORT, 340.0, INTAKE_POT_OFFSET);
 	leftDriveOutput_ = rightDriveOutput_ = 0;
-
+	intakeWristMotor_->SetSelectedSensorPosition(0); //arm up
+	resetWristAngle_ = false;
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
-	elevatorMotor_ = new WPI_TalonSRX(ELEVATOR_MOTOR_ID);
+	elevatorMotor_ = new WPI_VictorSPX(ELEVATOR_MOTOR_ID);
 	
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
@@ -183,7 +201,7 @@ RobotModel::RobotModel() :
 	// flywheelMotor1_->ConfigNominalOutputReverse(0, kTimeoutMs);
 	// flywheelMotor1_->ConfigPeakOutputForward(1, kTimeoutMs);
 	// flywheelMotor1_->ConfigPeakOutputReverse(-1, kTimeoutMs);
-	
+
 
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_BROWNOUT_VOLTAGE).GetEntry();
@@ -210,6 +228,7 @@ RobotModel::RobotModel() :
 	rColorEntry_ = GetFunctionalityTab().Add("red", 0.0).GetEntry();
 	gColorEntry_ = GetFunctionalityTab().Add("green", 0.0).GetEntry();
 	bColorEntry_ = GetFunctionalityTab().Add("blue", 0.0).GetEntry();
+	resetWristAngleEntry_ = GetSuperstructureTab().Add("reset wrist angle", false).WithWidget(frc::BuiltInWidgets::kToggleButton).GetEntry();
 
 	initLineErrorEntry_ = GetAutoOffsetTab().Add("initiation line distance", 0.0).GetEntry(); 
 	trenchDistErrorEntry_ = GetAutoOffsetTab().Add("trench distance", 0.0).GetEntry(); 
@@ -220,6 +239,14 @@ RobotModel::RobotModel() :
 	loadingDDistErrorEntry_ = GetAutoOffsetTab().Add("loading dock", 0.0).GetEntry(); 
 	playerSt2MidErrorEntry_ = GetAutoOffsetTab().Add("player station midpoint", 0.0).GetEntry(); 
 	initLineSlantEntry_ = GetAutoOffsetTab().Add("initiation line slant", 0.0).GetEntry(); 
+
+	GetAutoOffsetTab().Add("Auto Sequence Choices", autoSendableChooser_).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+	autoSendableChooser_.SetDefaultOption("0 blank", "t 0.0 d 0.0");
+	autoSendableChooser_.AddOption("1: Target Zone", GetChosenSequence1());
+	autoSendableChooser_.AddOption("2: Loading Bay", GetChosenSequence2());
+	autoSendableChooser_.AddOption("3: Mid-Trench", GetChosenSequence3());
+	autoSendableChooser_.AddOption("4: Mid-Player Station", GetChosenSequence4());
+
 	std::cout<< "end of drive model constructor" << std::endl;
 }
 
@@ -268,7 +295,7 @@ bool RobotModel::CollisionDetected() {
 
 	if(GetLeftEncoderStopped() && GetRightEncoderStopped()) {
 		collisionDetected = true;
-		printf("From ENCODER\n");
+		//printf("From ENCODER\n");
 	}
 
 	collisionDetected = false; // For testing drive straight
@@ -316,23 +343,33 @@ double RobotModel::GetRightDistance() {
 }
 
 double RobotModel::GetLeftVelocity() {
-    return -10*leftDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
+	if (isHighGear_){
+		return -10.0*(leftDriveEncoder_->GetIntegratedSensorVelocity()/HGEAR_ENCODER_TICKS_FOOT);
+	} else{
+		return -10.0*(leftDriveEncoder_->GetIntegratedSensorVelocity()/LGEAR_ENCODER_TICKS_FOOT);
+	}
+	//return (currLeftDistance_ - lastLeftDistance_)/(currVelocTime_ - lastVelocTime_);
 }
-
+ 
 double RobotModel::GetRightVelocity() {
-    return 10*rightDriveEncoder_-> GetIntegratedSensorVelocity();   //TICKS PER SEC
+   	if (isHighGear_){
+		return 10.0*(rightDriveEncoder_->GetIntegratedSensorVelocity()/HGEAR_ENCODER_TICKS_FOOT);
+	} else{
+		return 10.0*(rightDriveEncoder_->GetIntegratedSensorVelocity()/LGEAR_ENCODER_TICKS_FOOT);
+	}
+   //return (currRightDistance_ - lastRightDistance_)/(currVelocTime_ - lastVelocTime_);
 }
 
 void RobotModel::ResetDriveEncoders() {
 	//read curr encoder values and store as initial encoder values
 	initialLeftEncoderValue_ = GetRawLeftEncoderValue();
 	initialRightEncoderValue_ = GetRawRightEncoderValue();
-	printf("initial left: %f, initial right: %f\n", initialLeftEncoderValue_, initialRightEncoderValue_);
 }
 
 bool RobotModel::GetLeftEncoderStopped() {
 	if (currLeftVelocity_ < STOP_VELOCITY_THRESHOLD && currLeftVelocity_ > -STOP_VELOCITY_THRESHOLD 
 	&& lastLeftVelocity_ < STOP_VELOCITY_THRESHOLD && lastLeftVelocity_ > -STOP_VELOCITY_THRESHOLD) {
+		printf("left encoder is stopped\n");
 		return true;
 	}
 	// if (GetLeftVelocity() < STOP_VELOCITY_THRESHOLD && GetLeftVelocity() > -STOP_VELOCITY_THRESHOLD){
@@ -392,6 +429,26 @@ double RobotModel::GetNavXYaw() {
 	return navX_->GetYaw();
 }
 
+
+void RobotModel::SetPrepping(double desiredVelocity){
+	superstructureController_->SetPreppingState(desiredVelocity);
+}
+void RobotModel::SetShooting(double autoVelocity){
+	superstructureController_->SetShootingState(autoVelocity);
+}
+void RobotModel::SetIntaking(){
+	superstructureController_->SetIntakingState();
+}
+void RobotModel::SetIndexing(){
+	superstructureController_->SetIndexingState();
+}
+
+bool RobotModel::GetShootingIsDone(){
+	return superstructureController_->GetShootingIsDone();
+}
+
+
+
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);
 	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over, TODO change for super
@@ -441,7 +498,7 @@ void RobotModel::UpdateCurrent(int channel) {
 	} else if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE) && lastOver_)){
 		// know compressor is off, because lastOver_ is true
 		// TODO WARNING THIS MIN IS NOT A MIN
-		printf("am stopping too");
+		//printf("am stopping too");
 		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ //sketch, sketch, check this
 			ratioAll_ *= ratioAll_;//-= 0.1;
 		} else if (ratioSuperstructure_ > MIN_RATIO_SUPERSTRUCTURE_CURRENT){
@@ -528,36 +585,13 @@ double RobotModel::GetCurrent(int channel) {
 }
 
 void RobotModel::GearShift() {
-   //assuming arcade:
-           if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
-               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) 
-			   && isHighGear_== true) {
-               	SetHighGear();
-           }
-		   else if ((humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kX) >= MIN_TURNING_X ||
-               humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) <= MIN_TURNING_X * -1) && isHighGear_ == false) {
-               	SetLowGear();
-           }
-           //assuming tank:
-           /* if ((abs(humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY))
-           - humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY))
-           >= MIN_TURNING_XY_DIFFERENCE) {
-               robot_->SetLowGear();
-           } */
-           else if ((GetLeftVelocity() < -MAX_LOW_GEAR_VELOCITY &&
-                   GetRightVelocity() > MAX_LOW_GEAR_VELOCITY) || 
-				   (-GetLeftVelocity() > MAX_LOW_GEAR_VELOCITY &&
-                   -GetRightVelocity() < -MAX_LOW_GEAR_VELOCITY)) {
-               SetHighGear();
-			   //printf("High gear: %f ", GetRightVelocity());
-			   //printf("%f\n", GetLeftVelocity());
-           }
-           else {
-               SetLowGear();
-			   //printf("Low gear: %f ", GetRightVelocity());
-			   //printf("%f\n", GetLeftVelocity());
-           }
+	if (fabs(GetLeftVelocity()) > MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) > MAX_LOW_GEAR_VELOCITY){
+		SetHighGear();
+	} else if(fabs(GetLeftVelocity()) < MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) < MAX_LOW_GEAR_VELOCITY) {
+		SetLowGear();
+	}
 }
+
 
 
 double RobotModel::ModifyCurrent(int channel, double value){
@@ -605,7 +639,7 @@ double RobotModel::ModifyCurrent(int channel, double value){
 
 void RobotModel::SetHighGear(){
 	if (isHighGear_ == false) {
-		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kForward);
+		gearSolenoid_ -> Set(false);
 		isHighGear_ = true;
 	}
 	//ResetDriveEncoders();
@@ -613,10 +647,14 @@ void RobotModel::SetHighGear(){
 
 void RobotModel::SetLowGear(){
 	if (isHighGear_ == true) {
-		gearSolenoid_ -> Set(frc::DoubleSolenoid::Value::kReverse);
+		gearSolenoid_ -> Set(true);
 		isHighGear_ = false;
 	}
 	//ResetDriveEncoders();
+}
+
+bool RobotModel::IsHighGear(){
+	return isHighGear_;
 }
 
 
@@ -707,13 +745,18 @@ void RobotModel::RefreshShuffleboard(){
 	// flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
 	// flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
 	// flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
-
-	lastVelocTime_ = currVelocTime_;
-	currVelocTime_ = GetTime();
-    lastLeftEncoderValue_ = currLeftEncoderValue_;
+	
+	lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;
     currLeftEncoderValue_ = GetLeftEncoderValue();
     currRightEncoderValue_ = GetRightEncoderValue();
+	lastVelocTime_ = currVelocTime_;
+	currVelocTime_ = GetTime();
+	lastLeftDistance_ = currLeftDistance_;
+	lastRightDistance_ = currRightDistance_;
+	currLeftDistance_ = GetLeftDistance();
+	currRightDistance_ = GetRightDistance();
+	//printf("curr left: %f, last left: %f\n", currLeftDistance_, lastLeftDistance_);
 
 	lastLeftVelocity_ = currLeftVelocity_;
 	lastRightVelocity_ = currRightVelocity_;
@@ -735,6 +778,11 @@ void RobotModel::RefreshShuffleboard(){
 	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
+	resetWristAngle_ = resetWristAngleEntry_.GetBoolean(false);
+	if (resetWristAngle_) {
+		//printf("reset wrist angle\n");
+		intakeWristMotor_->SetSelectedSensorPosition(0);
+	}
 
 
 	initLineError_ = initLineErrorEntry_.GetDouble(0.0);
@@ -800,4 +848,9 @@ RobotModel::~RobotModel(){
     ratioAllEntry_.Delete();
 	ratioDriveEntry_.Delete();
 	ratioSuperstructureEntry_.Delete();
+
+	bColorEntry_.Delete();
+	rColorEntry_.Delete();
+	gColorEntry_.Delete();
+	resetWristAngleEntry_.Delete();
 }

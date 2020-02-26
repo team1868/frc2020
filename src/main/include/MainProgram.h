@@ -25,6 +25,8 @@
 #include "auto/modes/TestMode.h"
 #include "auto/commands/profiling/MotionProfileTestCommand.h"
 
+using namespace std;
+
 //TODO remove this
 #include "auto/PIDsource/PIDInputSource.h"
 
@@ -41,9 +43,11 @@ class MainProgram : public frc::TimedRobot {
   void TestPeriodic() override;
   void connectRecvZMQ();
   string readZMQ();
-  void readAngle(string contents);
+  // void readDetected(string contents);
+  bool readAll(string contents);
+  // void readDistance(string contents);
   void connectSendZMQ();
-  void sendZMQ();
+  void sendZMQ(bool lowExposure);
 
   void ResetControllers();
 
@@ -53,17 +57,18 @@ class MainProgram : public frc::TimedRobot {
   DriveController *driveController_;
   ControlBoard *humanControl_;
   TalonEncoderPIDSource *talonEncoderSource_;
-  NavXPIDSource *navX_;
+  NavXPIDSource *navXSource_;
 
   double matchTime_;
 
   bool aligningTape_;
-  AlignTapeCommand *alignTapeCommand;
+  PivotCommand *alignTapeCommand;
+  //AlignTapeCommand *alignTapeCommand;
   TrenchAlignTapeCommand *trenchAlignTapeCommand;
 
 
   //zmq
-  zmq::context_t *context_; //context for creating sockets
+  zmq::context_t *context_;//, *context2_; //context for creating sockets
   zmq::socket_t *subscriber_; //socket to receive message from jetson
   zmq::socket_t *publisher_; //socket to send message to jetson
 
@@ -72,8 +77,13 @@ class MainProgram : public frc::TimedRobot {
   VelocityPIDOutput *thingO_;
   AnglePIDOutput *thingAO_;
 
+  bool isSocketBound_;
+
   TestMode *testSequence_;
   double currTime_, lastTime_;
+  double autoJoyVal_;
+
+  int confl;
   
   NavXPIDSource *tempNavXSource_;
   PivotCommand *tempPivot_;

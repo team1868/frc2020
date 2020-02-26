@@ -15,7 +15,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	leftDriveEntry_ = pivotLayout_.Add("Left Drive Output", 0.0).GetEntry();
 	rightDriveEntry_ = pivotLayout_.Add("Right Drive Output", 0.0).GetEntry();
-	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).WithWidget(BuiltInWidgets::kGraph).GetEntry();
+	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
     navXSource_ = navXSource;
 
@@ -51,7 +51,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
-	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pivotPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = 3.0;//1.0;
@@ -101,7 +101,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	dFac_ = robot_->GetPivotD();
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
-	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+	pivotPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
 	tolerance_ = tolerance;//3.0;
@@ -171,7 +171,7 @@ void PivotCommand::Reset() {
 
 // update time variables
 void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible source of error TODO reset encoders
-	printf("Updating pivotcommand \n");
+	//printf("Updating pivotcommand \n");
 
 	// calculate time difference
 	double timeDiff = robot_->GetTime() - pivotCommandStartTime_;
@@ -186,11 +186,11 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	}
 	printf("On target %d times\n",numTimesOnTarget_);
 	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
-		printf("%f Final NavX Angle from PID Source: %f\n"
+		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
 				"%f Angle NavX Error %f\n",
-				robot_->GetTime(), navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
-					pivotPID_->GetError());
+				timeDiff, navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
+				pivotPID_->GetError());
 		Reset();
 		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);

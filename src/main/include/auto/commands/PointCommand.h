@@ -75,7 +75,7 @@ private:
 	int numTimesOnTarget_;
 
 	RobotModel *robot_;
-	PIDController *pointPID_;
+	frc::PIDController *pointPID_;
 	NavXPIDSource * navXSource_;
 	PivotPIDTalonOutput *talonOutput_;
 

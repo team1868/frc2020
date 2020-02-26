@@ -23,10 +23,12 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 
     minForwardThrust_ = minBackwardThrust_ = 0.0;
 
-    arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-    thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.0).GetEntry();
-    rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.0).GetEntry();
-    anaModeEntry_ = driveLayout_.Add("Ana Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+    arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.5).GetEntry();
+    rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.75).GetEntry();
+    anaModeEntry_ = driveLayout_.Add("Ana Mode", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    autoShiftEntry_ = robot_->GetFunctionalityTab().Add("auto shift", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    highGearEntry_ = robot_->GetFunctionalityTab().Add("high gear", robot_->IsHighGear()).GetEntry();
     printf("end of drive controller constructor\n");
 }
 
@@ -46,6 +48,20 @@ void DriveController::Update(){
     } else {
         TankDrive(leftJoyY, rightJoyY);
     }
+
+    if(autoShiftEntry_.GetBoolean(true)){
+        if(humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
+            robot_->GearShift();
+        } else {
+            robot_->SetLowGear();
+        }
+    } else {
+        if(humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
+            robot_->SetHighGear();
+        } else {
+            robot_->SetLowGear();
+        }
+    }
         
 
 }
@@ -54,6 +70,7 @@ void DriveController::RefreshShuffleboard(){
     thrustSensitivity_ = thrustSensitivityEntry_.GetDouble(0.0);
     rotateSensitivity_ = rotateSensitivityEntry_.GetDouble(0.0);
     arcadeMode_ = arcadeEntry_.GetBoolean(true);
+    highGearEntry_.SetBoolean(robot_->IsHighGear());
 }
 
 void DriveController::Reset(){
@@ -102,7 +119,7 @@ void DriveController::ArcadeDrive(double thrust, double rotate, double thrustSen
 
     MaxSpeedAdjustment(leftOutput, rightOutput);
     FrictionAdjustment(leftOutput, rightOutput, true);
-    robot_->GearShift();
+    //robot_->GearShift();
     
     robot_->SetDriveValues(leftOutput, rightOutput);
     //printf("Left Output: %f, Right Output: %f", leftOutput, rightOutput);
@@ -115,7 +132,7 @@ double DriveController::GetCubicAdjustment(double value, double adjustmentConsta
 double DriveController::GetRotateVelocityAdjustment(double value){
     rightJoystickXLastValue_ = rightJoystickXCurrValue_;
     rightJoystickXCurrValue_ = value;
-    double time = 60/50;
+    double time = 60.0/50;
     return abs(rightJoystickXCurrValue_-rightJoystickXLastValue_)/time;
 }
 

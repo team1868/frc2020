@@ -37,31 +37,6 @@ private:
 	double pidOutput_;
 };
 
-class SuperstructurePIDOutput : public frc::PIDOutput {
-public:
-	/**
-	 * Initializes pidOutput_ to 0
-	 */
-	SuperstructurePIDOutput();
-	/**
-	 * Gets output from PID loop and assigns it to pidOutput_
-	 */
-	void PIDWrite(double output);
-	/**
-	 * @return pidOutput_
-	 */
-	double GetPIDOutput();
-	/**
-	 * Destructor
-	 */
-	virtual ~SuperstructurePIDOutput();
-private:
-	/**
-	 * Output from PID loop
-	 */
-	double pidOutput_;
-};
-
 class DistancePIDOutput : public frc::PIDOutput {
 public:
 	/**
