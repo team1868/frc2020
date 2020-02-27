@@ -224,7 +224,8 @@ class RobotModel {
     void ConfigFlywheelD(double dFac_);
     void ConfigFlywheelF(double fFac_);
     double RatioFlywheel(double value);
-    double FlywheelMotorOutput();
+    double FlywheelMotor1Output();
+    double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
     
     void SetClimbWinchLeftOutput(double power);

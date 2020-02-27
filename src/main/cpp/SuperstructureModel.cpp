@@ -67,10 +67,15 @@ void RobotModel::ConfigFlywheelD(double dFac){
 }
 void RobotModel::ConfigFlywheelF(double fFac){
     flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
+    //printf("pid ff: %f\n", fFac);
 }
 
-double RobotModel::FlywheelMotorOutput(){
+double RobotModel::FlywheelMotor1Output(){
     flywheelMotor1_->GetMotorOutputPercent();
+}
+
+double RobotModel::FlywheelMotor2Output(){
+    flywheelMotor2_->GetMotorOutputPercent();
 }
 
 bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){

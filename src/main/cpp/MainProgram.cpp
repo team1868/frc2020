@@ -77,6 +77,7 @@ void MainProgram::AutonomousInit() {
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
     robot_->SetTestSequence(robot_->GetChosenSequence());
+    superstructureController_->Reset();
 
     //zmq
     if (context_ == nullptr) {
@@ -189,14 +190,16 @@ void MainProgram::TeleopPeriodic() {
     //std::cout << "checking tape align\n" << std::flush;
     if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
         robot_->SetLight(true);
+        sendZMQ(true);
     } else {
         robot_->SetLight(false);
+        sendZMQ(false);
     }
     if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
         std::cout << "READY TO START ZMQ READ\n" << std::flush;
         //robot_->SetLight(true);
         
-        sendZMQ(true); //tell jetson to turn exposure down
+        //sendZMQ(true); //tell jetson to turn exposure down
 
         string temp = readZMQ();
         if(!readAll(temp)){
@@ -218,6 +221,7 @@ void MainProgram::TeleopPeriodic() {
         }
         //robot_->SetLight(false);
     } else if (aligningTape_){
+        //sendZMQ(true);
         // printf("in part align tape :))\n");
         autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
         autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
@@ -234,7 +238,9 @@ void MainProgram::TeleopPeriodic() {
             return;
 
         }
-    }
+    }// else {
+       // sendZMQ(false);
+    //}
 
     driveController_->Update();
     //std::cout << "before superstructure\n" << std::flush;

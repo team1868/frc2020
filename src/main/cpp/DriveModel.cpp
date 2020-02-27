@@ -127,8 +127,8 @@ RobotModel::RobotModel() :
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
-	flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
-	flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	//flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
+	//flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
 
 
 
