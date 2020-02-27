@@ -104,23 +104,12 @@ void RobotModel::DisengageFlywheelHood() {
     flywheelHoodSolenoid_->Set(false);
 }
 
-void RobotModel::SetClimbWinchLeftOutput(double power){
-    climberWinchLeftMotor_->Set(power);
+void RobotModel::SetRightClimberElevatorOutput(double power){
+    climberRightElevatorMotor_->Set(power);
 }
 
-void RobotModel::SetClimbWinchRightOutput(double power){
-    climberWinchRightMotor_->Set(-power);
-}
-
-double RobotModel::GetClimberWinchRightEncoderValue(){
-    return climberWinchRightEncoder_->Get();
-}
-double RobotModel::GetClimberWinchLeftEncoderValue(){
-    return climberWinchLeftEncoder_->Get();
-}
-
-void RobotModel::SetClimberElevatorOutput(double power){
-    climberElevatorMotor_->Set(power);
+void RobotModel::SetLeftClimberElevatorOutput(double power){
+    climberLeftElevatorMotor_->Set(power);
 }
 
 void RobotModel::SetControlPanelOutput(double power){

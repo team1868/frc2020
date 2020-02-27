@@ -53,7 +53,7 @@ strTrenchLength_ = to_string(trenchLength_);
 
 
 std::string RobotModel::GetChosenSequence() {
-return chosenSequence_;
+    return autoSendableChooser_.GetSelected();
 }
 std::string RobotModel::GetChosenSequence1() {
 CheckAllianceColor();
@@ -65,7 +65,6 @@ distB1_ = trenchLength_ /12 - 0.5;
 strDistB1_ = to_string(distB1_);
 
 testSequence1_ = "t " + strAngleA1_ + " d " + strDistA1_ + " t 0.0 d -" + strDistB1_ + " d " + strDistB1_ + " t " + strAngleA1_ + " d " + strDistA1_ + " t 0.0";
-chosenSequence_ = testSequence1_;
 return testSequence1_;
 }
 std::string RobotModel::GetChosenSequence2() {
@@ -83,7 +82,6 @@ distB2_ = sqrt(distSidewaysTZToMidTrench_ * distSidewaysTZToMidTrench_ + distIni
 strDistB2_ = to_string(distB2_);
 
 testSequence2_ = "t " + strAngleA2_ + " t " + strAngleB2_ + " d " + strDistA2_ + " t 0.0 " + " d -" + strTrenchLength_ + " d " + strTrenchLength_ + " t -" + strAngleC2_ + " d " + strDistB2_;
-chosenSequence_ = testSequence2_;
 return testSequence2_;
 }
 std::string RobotModel::GetChosenSequence3() {
@@ -94,7 +92,6 @@ strAngleA3_ = to_string(angleA3_);
 distA3_ = (trenchLength_ + distInitLinetoTrench_)/ 12;
 strDistA3_ = to_string(distA3_);
 testSequence3_ = "t -" + strAngleA3_ + " t 0.0 d -" + strDistA3_ + " d " + strDistA3_ + " t -" + strAngleA3_;
-chosenSequence_ = testSequence3_;
 return testSequence3_;
 }
 std::string RobotModel::GetChosenSequence4() {
@@ -112,6 +109,5 @@ distB4_ = sqrt(distSidewaysTZToMidTrench_ * distSidewaysTZToMidTrench_ + distIni
 strDistB4_ = to_string(distB4_);
 
 testSequence4_ = "t " + strAngleA4_ + " t -" + strAngleB4_ + " d -" + strDistA4_ + " t 0.0 d -" + strTrenchLength_ + " d " + strTrenchLength_ + " t -" + strAngleA4_ + " d " + strDistB4_ + " t 0.0";
-chosenSequence_ = testSequence4_;
 return testSequence4_;
 }
