@@ -46,7 +46,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     //lastBottomStatus_ = false;
     manualRollerPower_ = 0.5;
     autoArmDownP_ = 0.07;
-    autoArmUpP_ = 0.1;
+    autoArmUpP_ = 0.15;
 
     controlPanelPower_ = 0.5; // fix
     controlPanelCounter_ = 0;
@@ -585,11 +585,12 @@ void SuperstructureController::SetIndexingState(){
 void SuperstructureController::SetIntakingState(){
     tempIsAuto_ = true;
     currWristState_ = kLowering;
-    currHandlingState_ = kIntaking; 
+    currHandlingState_ = kIntaking;
     printf("start Intaking\n");
 }
 
 void SuperstructureController::SetPreppingState(double desiredVelocity){ //starts warming up shooter B)
+    std::cout << "prepping" << std::endl;
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
     tempIsAuto_ = true;
@@ -783,7 +784,7 @@ SuperstructureController::~SuperstructureController() {
     autoWinchEntry_.Delete();
     flywheelVelocityErrorEntry_.Delete();
     flywheelVelocityEntry_.Delete();
-    wristPEntry_.Delete();
+    //wristPEntry_.Delete();
     elevatorBottomLightSensorEntry_.Delete();
     elevatorTopLightSensorEntry_.Delete();
 }
