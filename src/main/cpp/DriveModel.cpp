@@ -130,13 +130,15 @@ RobotModel::RobotModel() :
 	//flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
 	//flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
 
+
+
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
 	flywheelMotor1_->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor);
 	flywheelMotor1_->ConfigPeakOutputForward(1);
-	flywheelMotor1_->ConfigPeakOutputReverse(-1);
+	flywheelMotor1_->ConfigPeakOutputReverse(0);
 
 	numTimeAtSpeed_ = 0;
 
@@ -439,6 +441,7 @@ void RobotModel::SetIntaking(){
 	superstructureController_->SetIntakingState();
 }
 void RobotModel::SetIndexing(){
+	printf("HERAJDSFLKDFLKDSJFALKDJF RNRNRNR\n\n\n");
 	superstructureController_->SetIndexingState();
 }
 

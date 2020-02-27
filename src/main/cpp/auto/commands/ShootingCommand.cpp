@@ -33,7 +33,7 @@ void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
         printf("done shooting\n");
         robot_->SetFlywheelOutput(0.0);
         robot_->DisengageFlywheelHood();
-        robot_->SetIndexing(); //index after shoot
+        //robot_->SetIndexing(); //index after shoot
         //robot_->SetLight(false);
     }
 }

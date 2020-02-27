@@ -77,6 +77,7 @@ void MainProgram::AutonomousInit() {
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
     robot_->SetTestSequence(robot_->GetChosenSequence());
+    superstructureController_->Reset();
 
     //zmq
     if (context_ == nullptr) {
@@ -92,7 +93,7 @@ void MainProgram::AutonomousInit() {
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
     //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    robot_->SetTestSequence("i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
+    robot_->SetTestSequence("i w 4.0 b 3560.0 s 3560.0 n n");// c 4.0 90.0 1 1");
     //s 3560.0 
     
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
@@ -137,7 +138,6 @@ void MainProgram::AutonomousInit() {
 
 void MainProgram::AutonomousPeriodic() {
     robot_->RefreshShuffleboard();
-    superstructureController_->Update(true);
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
     // }
@@ -151,7 +151,12 @@ void MainProgram::AutonomousPeriodic() {
     // }
     if(!testSequence_->IsDone()){
         testSequence_->Update(currTime_, currTime_-lastTime_);
-    }
+    } 
+    // else {
+    //     printf("In auto but sequence done\n");
+    //     superstructureController_->SetIndexingState();
+    // }e
+    superstructureController_->Update(true);
 }
 
 void MainProgram::DisabledInit() {
@@ -190,14 +195,17 @@ void MainProgram::TeleopPeriodic() {
     //std::cout << "checking tape align\n" << std::flush;
     if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
         robot_->SetLight(true);
+        printf("light on");
+        sendZMQ(true);
     } else {
         robot_->SetLight(false);
+        sendZMQ(false);
     }
     if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
         std::cout << "READY TO START ZMQ READ\n" << std::flush;
         //robot_->SetLight(true);
         
-        sendZMQ(true); //tell jetson to turn exposure down
+        //sendZMQ(true); //tell jetson to turn exposure down
 
         string temp = readZMQ();
         if(!readAll(temp)){
@@ -219,6 +227,7 @@ void MainProgram::TeleopPeriodic() {
         }
         //robot_->SetLight(false);
     } else if (aligningTape_){
+        //sendZMQ(true);
         // printf("in part align tape :))\n");
         autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
         autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
@@ -235,7 +244,9 @@ void MainProgram::TeleopPeriodic() {
             return;
 
         }
-    }
+    }// else {
+       // sendZMQ(false);
+    //}
 
     driveController_->Update();
     //std::cout << "before superstructure\n" << std::flush;
@@ -421,10 +432,10 @@ void MainProgram::connectSendZMQ() {
 void MainProgram::sendZMQ(bool lowExposure) {
     //string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
     string message = to_string(lowExposure);
-    std::cout << message << std::endl;
+    //std::cout << message << std::endl;
     //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
     int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
-    std::cout << sent << " done sending to zmq" << std::endl;
+    //std::cout << sent << " done sending to zmq" << std::endl;
 }
 
 
