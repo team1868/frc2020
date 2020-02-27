@@ -28,10 +28,7 @@ ControlBoard::ControlBoard() {
 	buttons_[kAlignButton] = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	buttons_[kTrenchAlignButton] = new ButtonReader(rightJoy_, TRENCH_ALIGN_TAPE_BUTTON_PORT);
 	buttons_[kShootingButton] = new ButtonReader(operatorJoy_, SHOOTING_BUTTON_PORT);
-	buttons_[kClimbElevatorUpButton] = new ButtonReader(operatorJoy_, CLIMB_ELEVATOR_UP_BUTTON_PORT);
-	buttons_[kClimbElevatorDownButton] = new ButtonReader(operatorJoy_, CLIMB_ELEVATOR_DOWN_BUTTON_PORT);
-	buttons_[kControlPanelStage2Button] = new ButtonReader(operatorJoy_, CONTROL_PANEL_STAGE_2_BUTTON_PORT);
-	buttons_[kControlPanelStage3Button] = new ButtonReader(operatorJoyB_, CONTROL_PANEL_STAGE_3_BUTTON_PORT);
+	buttons_[kControlPanelButton] = new ButtonReader(operatorJoy_, CONTROL_PANEL_BUTTON_PORT);
 	buttons_[kIntakeSeriesButton] = new ButtonReader(operatorJoyB_, INTAKE_SERIES_BUTTON_PORT);
 	buttons_[kIndexSeriesButton] = new ButtonReader(operatorJoyB_, INDEX_SERIES_BUTTON_PORT);
 	buttons_[kShootClosePrepButton] = new ButtonReader(operatorJoyB_, SHOOT_CLOSE_PREP_BUTTON_PORT);
@@ -39,8 +36,11 @@ ControlBoard::ControlBoard() {
 	buttons_[kUndoElevatorButton] = new ButtonReader(operatorJoy_, OH_SHIT_UNDO_ELEVATOR_BUTTON_PORT);
 
 	buttons_[kGearShiftButton] = new ButtonReader(leftJoy_, GEARSHIFT_BUTTON_PORT);
-	buttons_[kClimbWinchLeftButton] = new ButtonReader(operatorJoyB_, CLIMB_WINCH_RIGHT_BUTTON_PORT);
-	buttons_[kClimbWinchRightButton] = new ButtonReader(operatorJoyB_, CLIMB_WINCH_LEFT_BUTTON_PORT);
+
+	buttons_[kClimbRightElevatorUpButton] = new ButtonReader(operatorJoy_, CLIMB_RIGHT_ELEVATOR_UP_BUTTON_PORT);
+	buttons_[kClimbRightElevatorDownButton] = new ButtonReader(operatorJoy_, CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT);
+	buttons_[kClimbLeftElevatorUpButton] = new ButtonReader(operatorJoy_, CLIMB_LEFT_ELEVATOR_UP_BUTTON_PORT);
+	buttons_[kClimbLeftElevatorDownButton] = new ButtonReader(operatorJoy_, CLIMB_LEFT_ELEVATOR_DOWN_BUTTON_PORT);
 
 	buttons_[kWristDownButton] = new ButtonReader(operatorJoy_, WRIST_DOWN_BUTTON_PORT);
     buttons_[kWristUpButton] = new ButtonReader(operatorJoy_, WRIST_UP_BUTTON_PORT);

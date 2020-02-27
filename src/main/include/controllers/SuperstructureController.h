@@ -67,6 +67,7 @@ class SuperstructureController {
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
   void ControlPanelFinalSpin();
+  std::string GetControlPanelColor();
   void Reset();
 
 
@@ -112,7 +113,6 @@ class SuperstructureController {
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
-  double climbWinchPower_;
 
   double closeTicksPerSecDesired_;
   double farTicksPerSecDesired_;
@@ -140,5 +140,6 @@ class SuperstructureController {
 
   nt::NetworkTableEntry intakeWristAngleEntry_;
   nt::NetworkTableEntry autoWristEntry_, autoArmDownPEntry_, autoArmUpPEntry_;
-  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, autoWinchEntry_;
+  nt::NetworkTableEntry controlPanelColorEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

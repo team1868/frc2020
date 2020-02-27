@@ -228,12 +228,9 @@ class RobotModel {
     double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
     
-    void SetClimbWinchLeftOutput(double power);
-    void SetClimbWinchRightOutput(double power);
-    void SetClimberElevatorOutput(double power);
+    void SetRightClimberElevatorOutput(double power);
+    void SetLeftClimberElevatorOutput(double power);
 
-    double GetClimberWinchRightEncoderValue();
-    double GetClimberWinchLeftEncoderValue(); 
     void SetIntakeWristOutput(double power);
     void SetIntakeRollersOutput(double power);
     
@@ -283,9 +280,7 @@ class RobotModel {
     TalonFXSensorCollection *flywheelEncoder1_, *flywheelEncoder2_; 
     frc::Solenoid *flywheelHoodSolenoid_;
 
-    WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
-    WPI_VictorSPX *climberElevatorMotor_;
-    frc::Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
+    WPI_TalonSRX *climberRightElevatorMotor_, *climberLeftElevatorMotor_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
@@ -392,6 +387,9 @@ class RobotModel {
     double angleA4_,angleB4_,angleC4_,distA4_,distB4_;
     std::string strAngleA4_,strAngleB4_,strAngleC4_,strDistA4_,strDistB4_;
 
+    // input sequence
+    std::string autoInputSequence_;
+
 
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
@@ -409,6 +407,7 @@ class RobotModel {
     nt::NetworkTableEntry resetWristAngleEntry_;
     nt::NetworkTableEntry leftCurrentEntry_, rightCurrentEntry_;
     nt::NetworkTableEntry initLineErrorEntry_, trenchDistErrorEntry_, trenchWidthErrorEntry_, trenchLengthErrorEntry_, targetZDistErrorEntry_, targetZHeightErrorEntry_, loadingDDistErrorEntry_, playerSt2MidErrorEntry_, initLineSlantEntry_;
+    nt::NetworkTableEntry autoSequenceEntry_;
     frc::SendableChooser<std::string> autoSendableChooser_;
 
 };
