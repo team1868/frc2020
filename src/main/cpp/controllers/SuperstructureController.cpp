@@ -204,7 +204,7 @@ void SuperstructureController::UpdatePrep(bool isAuto){
 }
 // START OF NEW STATE MACHINE!! - DO NOT TOUCH PLS
 void SuperstructureController::Update(bool isAuto){
-    std::cout << "CURRENT STATE: " << currHandlingState_ << std::endl;
+    //std::cout << "CURRENT STATE: " << currHandlingState_ << std::endl;
     //printf("UPDATING \n");
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
@@ -324,7 +324,7 @@ void SuperstructureController::UpdateButtons(){
     }
 
     PowerCellHandlingState previousState = nextHandlingState_; //TODO ERROR bad naming, keep the same type for same name
-    printf("-----saved last handling state!-----\n");
+    //printf("-----saved last handling state!-----\n");
     if(humanControl_->GetDesired(ControlBoard::Buttons::kUndoElevatorButton)){
         printf("elevator is being undone\n");
         nextHandlingState_ = kUndoElevator;
@@ -529,7 +529,7 @@ void SuperstructureController::UndoElevator(){
     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
 }
 void SuperstructureController::IndexUpdate(){
-    std::cout << "in indexupdate" << std::endl << std::flush;
+    //std::cout << "in indexupdate" << std::endl << std::flush;
     //printf("i n t a k i n g ?");
 
     //printf("top sensor %f and bottom sensor %f\n", topSensor_, bottomSensor_);
@@ -550,11 +550,11 @@ void SuperstructureController::IndexUpdate(){
         robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         //printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");
-        std::cout << "intake stuffs, if in kindexing B)" <<std::endl << std::flush;
+        //std::cout << "intake stuffs, if in kindexing B)" <<std::endl << std::flush;
     } else {
         robot_->SetIndexFunnelOutput(0.0);
         robot_->SetElevatorFeederOutput(0.0);
-        std::cout << "stopping indexing" << std::endl << std::flush;          
+        //std::cout << "stopping indexing" << std::endl << std::flush;          
     }
 
     // if((topSensor_ && bottomSensor_) || !bTimeout_){
