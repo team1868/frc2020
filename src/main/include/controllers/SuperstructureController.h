@@ -61,8 +61,6 @@ class SuperstructureController {
   bool IsFlywheelAtSpeed();
 
 
-  double CalculateIntakeRollersPower();
-
 
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
@@ -101,11 +99,12 @@ class SuperstructureController {
   double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
-  double autoArmDownP_, autoArmUpP_;
+  double autoWristDownP_, autoWristUpP_;
   double desiredFlywheelVelocity_, closeFlywheelVelocity_;
 
   double desiredIntakeWristAngle_;
   double currWristAngle_, lastWristAngle_;
+  double intakeRollersPower_;
 
   double lowerElevatorTimeout_, elevatorTimeout_;
   double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, indexFunnelPower_;
@@ -139,7 +138,7 @@ class SuperstructureController {
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
 
   nt::NetworkTableEntry intakeWristAngleEntry_;
-  nt::NetworkTableEntry autoWristEntry_, autoArmDownPEntry_, autoArmUpPEntry_;
+  nt::NetworkTableEntry autoWristEntry_, autoWristDownPEntry_, autoWristUpPEntry_;
   nt::NetworkTableEntry controlPanelColorEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };
