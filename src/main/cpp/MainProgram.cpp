@@ -93,7 +93,7 @@ void MainProgram::AutonomousInit() {
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
     //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    //robot_->SetTestSequence("b 3560.0 s 3560.0");// c 4.0 90.0 1 1");
+    robot_->SetTestSequence("b 3560.0 s 3560.0");// c 4.0 90.0 1 1");
     
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
@@ -137,7 +137,6 @@ void MainProgram::AutonomousInit() {
 
 void MainProgram::AutonomousPeriodic() {
     robot_->RefreshShuffleboard();
-    superstructureController_->Update(true);
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
     // }
@@ -151,7 +150,12 @@ void MainProgram::AutonomousPeriodic() {
     // }
     if(!testSequence_->IsDone()){
         testSequence_->Update(currTime_, currTime_-lastTime_);
-    }
+    } 
+    // else {
+    //     printf("In auto but sequence done\n");
+    //     superstructureController_->SetIndexingState();
+    // }e
+    superstructureController_->Update(true);
 }
 
 void MainProgram::DisabledInit() {
@@ -190,6 +194,7 @@ void MainProgram::TeleopPeriodic() {
     //std::cout << "checking tape align\n" << std::flush;
     if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
         robot_->SetLight(true);
+        printf("light on");
         sendZMQ(true);
     } else {
         robot_->SetLight(false);
@@ -426,10 +431,10 @@ void MainProgram::connectSendZMQ() {
 void MainProgram::sendZMQ(bool lowExposure) {
     //string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
     string message = to_string(lowExposure);
-    std::cout << message << std::endl;
+    //std::cout << message << std::endl;
     //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
     int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
-    std::cout << sent << " done sending to zmq" << std::endl;
+    //std::cout << sent << " done sending to zmq" << std::endl;
 }
 
 

@@ -12,8 +12,10 @@ using namespace std;
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
-static const double MAX_FALCON_RPM = 6000.0; // magic number!!!!
-static const double RATIO_BATTERY_VOLTAGE = 12.27;
+//static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
+static const double MAX_FALCON_RPM = 5800.0;
+static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
+//static const double RATIO_BATTERY_VOLTAGE = 12.72;
 
 class SuperstructureController {
  public:
@@ -23,16 +25,11 @@ class SuperstructureController {
   };
 
   enum ClimbingState {
-    kClimbingIdle, kClimbingElevator, kClimbingWinches
+    kClimbingIdle, kClimbingElevator
   };
 
   enum PowerCellHandlingState {
     kIntaking, kIndexing, kShooting, kResetting, kUndoElevator
-  };
-
-  enum AutoState {
-    kAutoInit, kAutoCloseShooting, kAutoFarShooting,
-    kAutoIntaking, kAutoIndexing
   };
 
    enum WristState {
@@ -51,6 +48,7 @@ class SuperstructureController {
   void UpdateButtons();
   double RatioFlywheel();
   bool GetShootingIsDone();
+  // bool GetWaitingIsDone();
   
   void SetShootingState(double autoVelocity);
   void SetIntakingState();
@@ -87,7 +85,6 @@ class SuperstructureController {
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
-  uint32_t currAutoState_, nextAutoState_;
   SuperstructureState currState_, nextState_;
   ClimbingState currClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
@@ -131,6 +128,7 @@ class SuperstructureController {
   bool shootingIsDone_;
 
   double distanceToTarget_;
+  bool tempIsAuto_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
@@ -139,6 +137,6 @@ class SuperstructureController {
 
   nt::NetworkTableEntry intakeWristAngleEntry_;
   nt::NetworkTableEntry autoWristEntry_, autoWristDownPEntry_, autoWristUpPEntry_;
-  nt::NetworkTableEntry controlPanelColorEntry_;
+  nt::NetworkTableEntry controlPanelColorEntry_, flywheelMotor1CurrentEntry_, flywheelMotor2CurrentEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

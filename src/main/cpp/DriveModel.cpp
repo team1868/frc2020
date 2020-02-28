@@ -438,6 +438,7 @@ void RobotModel::SetIntaking(){
 	superstructureController_->SetIntakingState();
 }
 void RobotModel::SetIndexing(){
+	printf("HERAJDSFLKDFLKDSJFALKDJF RNRNRNR\n\n\n");
 	superstructureController_->SetIndexingState();
 }
 
@@ -445,7 +446,9 @@ bool RobotModel::GetShootingIsDone(){
 	return superstructureController_->GetShootingIsDone();
 }
 
-
+// bool RobotModel::GetWaitingIsDone(){
+// 	return superstructureController_->GetWaitingIsDone();
+// }
 
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);

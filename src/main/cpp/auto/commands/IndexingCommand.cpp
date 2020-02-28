@@ -16,11 +16,12 @@ IndexingCommand::IndexingCommand(RobotModel * robot) : AutoCommand() {
 
 void IndexingCommand::Init(){
     isDone_ = false;
+    robot_->SetIndexing();
 }
 
 void IndexingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetIndexing();
     isDone_ = true;
+    robot_->SetIndexing();
 }
 
 bool IndexingCommand::IsDone(){

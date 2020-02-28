@@ -16,11 +16,11 @@ IntakingCommand::IntakingCommand(RobotModel * robot) : AutoCommand() {
 
 void IntakingCommand::Init(){
     isDone_ = false;
+    robot_->SetIntaking(); //true is wrist up
 
 }
 
 void IntakingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetIntaking(); //true is wrist up
     isDone_ = true;
 }
 
