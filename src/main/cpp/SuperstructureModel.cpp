@@ -6,7 +6,6 @@
 /*----------------------------------------------------------------------------*/
 
 #include "RobotModel.h"
-using namespace std;
 
 void RobotModel::SetSuperstructureController(SuperstructureController *superstructureController){
     superstructureController_ = superstructureController;

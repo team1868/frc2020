@@ -8,7 +8,7 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
-using namespace std;
+//using namespace std;
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
@@ -55,6 +55,7 @@ class SuperstructureController {
   void SetPreppingState(double desiredVelocity);
   void SetIndexingState();
   
+  void SetIsAuto(bool isAuto);
 
   bool IsFlywheelAtSpeed();
 
@@ -75,7 +76,7 @@ class SuperstructureController {
   void IndexPrep();
   void Intaking();
   void Indexing();
-  bool Shooting();
+  bool Shooting(bool isAuto);
   void Resetting();
   void UndoElevator();
   void CheckControlPanelDesired();
@@ -128,7 +129,7 @@ class SuperstructureController {
   bool shootingIsDone_;
 
   double distanceToTarget_;
-  bool tempIsAuto_;
+  bool isAuto_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;

@@ -1,13 +1,12 @@
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* Open Source Software - may be modified and shared by FRC teams. Tb      code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "controllers/SuperstructureController.h"
 #include <math.h>
-using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
     flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 0)),
@@ -16,7 +15,6 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     powerLayout_(robot->GetSuperstructureTab().GetLayout("power control", "List Layout").WithPosition(3, 0))
     {
     
-    tempIsAuto_ = false;
     robot_ = robot;
     humanControl_ = humanControl; 
 
@@ -62,6 +60,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     currState_ = kDefaultTeleop;
     nextState_ = kDefaultTeleop;
     currWristState_ = kRaising;
+    nextWristState_ = kRaising;
+    currHandlingState_ = kIndexing;
+    nextHandlingState_ = kIndexing;
     
     currTime_ = robot_->GetTime();
     startElevatorTime_ = currTime_;
@@ -110,7 +111,9 @@ void SuperstructureController::Reset() { // might not need this
     currState_ = kDefaultTeleop;
     nextState_ = kDefaultTeleop;
     currHandlingState_ = kIndexing;
+    nextHandlingState_ = kIndexing;
     currWristState_ = kRaising;
+    nextWristState_ = kRaising;
 
     flywheelPFac_ = flywheelPEntry_.GetDouble(11.0);
     flywheelIFac_ = flywheelIEntry_.GetDouble(0.0);
@@ -179,7 +182,8 @@ void SuperstructureController::WristUpdate(){
                 printf("ERROR: no state in wrist controller \n");
                 robot_->SetIntakeWristOutput(0.0);
                 robot_->SetIntakeRollersOutput(0.0);
-            }
+        }
+        currWristState_ = nextWristState_;
 
     }
 }
@@ -187,13 +191,12 @@ void SuperstructureController::WristUpdate(){
 void SuperstructureController::UpdatePrep(bool isAuto){
     if (!isAuto){
         UpdateButtons(); //moved button/state code into that function B)
-    }  else if(!farPrepping_){ //farPrepping_ biconditional kPrepping :(((((
+    }  else if(!farPrepping_ && !closePrepping_){ //farPrepping_ biconditional kPrepping :(((((
         desiredFlywheelVelocity_ = 0.0;
         SetFlywheelPowerDesired(0.0);//desiredFlywheelVelocity_);
         robot_->SetFlywheelOutput(0.0);
         robot_->DisengageFlywheelHood(); //TODO add if distance > x
     }
-
         //SetFlywheelPowerDesired(desiredFlywheelVelocity_); //TODO INTEGRATE VISION
 
         //MOVED FLYWHEEL VELOCITY SETTING TO SetPreppingState()
@@ -201,6 +204,7 @@ void SuperstructureController::UpdatePrep(bool isAuto){
 }
 // START OF NEW STATE MACHINE!! - DO NOT TOUCH PLS
 void SuperstructureController::Update(bool isAuto){
+    std::cout << "CURRENT STATE: " << currHandlingState_ << std::endl;
     //printf("UPDATING \n");
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
@@ -241,7 +245,7 @@ void SuperstructureController::Update(bool isAuto){
                     break;
                 case kShooting:
                     //std::cout << "we in kShooting B)" << std::endl;
-                    shootingIsDone_ = Shooting();
+                    shootingIsDone_ = Shooting(isAuto_);
                     break;
                 case kResetting:
                     Resetting();
@@ -296,6 +300,7 @@ void SuperstructureController::Update(bool isAuto){
             robot_->SetIndexFunnelOutput(0.0);
             robot_->SetElevatorFeederOutput(0.0);
             currWristState_ = kRaising;
+            nextWristState_ = kRaising;
 
     }
     currState_ = nextState_;
@@ -303,31 +308,32 @@ void SuperstructureController::Update(bool isAuto){
 
 void SuperstructureController::UpdateButtons(){
     if(humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){
-        currHandlingState_ = kIntaking;
+        nextHandlingState_ = kIntaking;
         //printf("STARTED INTAKING YAY\n");
     } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)/* && 
             currTime_ - shootPrepStartTime_ > 1.0*/){ //TODO remove this
-        if(currHandlingState_!=kShooting){
+        if(nextHandlingState_!=kShooting){
             startIndexTime_ = currTime_;
         }
-        currHandlingState_ = kShooting; 
+        nextHandlingState_ = kShooting; 
     } else if(/*!humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton) && */
-            currHandlingState_ == kShooting){ //shooting to decide not to shoot
-        currHandlingState_ = kResetting;
-    } else if(currHandlingState_ != kResetting){ //not intaking, shooting, or resetting, only option is indexing or prepping (also includes indexing)
-        currHandlingState_ = kIndexing;
+            nextHandlingState_ == kShooting){ //shooting to decide not to shoot
+        nextHandlingState_ = kResetting;
+    } else if(nextHandlingState_ != kResetting){ //not intaking, shooting, or resetting, only option is indexing or prepping (also includes indexing)
+        nextHandlingState_ = kIndexing;
     }
 
-    PowerCellHandlingState previousState = currHandlingState_;
+    PowerCellHandlingState previousState = nextHandlingState_; //TODO ERROR bad naming, keep the same type for same name
+    printf("-----saved last handling state!-----\n");
     if(humanControl_->GetDesired(ControlBoard::Buttons::kUndoElevatorButton)){
         printf("elevator is being undone\n");
-        currHandlingState_ = kUndoElevator;
-    } else if(currHandlingState_ == kUndoElevator && !humanControl_->GetDesired(ControlBoard::Buttons::kUndoElevatorButton)) {
-        currHandlingState_ = previousState;
+        nextHandlingState_ = kUndoElevator;
+    } else if(nextHandlingState_ == kUndoElevator && !humanControl_->GetDesired(ControlBoard::Buttons::kUndoElevatorButton)) {
+        nextHandlingState_ = previousState;
     }
 
     //flywheel control if not shooting
-    if (currHandlingState_ != kShooting){
+    if (nextHandlingState_ != kShooting){
         if(humanControl_->GetDesired(ControlBoard::Buttons::kShootClosePrepButton)){
             if(!closePrepping_){
                 shootPrepStartTime_ = currTime_;
@@ -440,20 +446,20 @@ void SuperstructureController::IndexPrep(){
 void SuperstructureController::Intaking(){
     printf("kIntaking\n");
     //robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
-    currWristState_ = kLowering;
+    nextWristState_ = kLowering;
     IndexUpdate();
 }
 
 void SuperstructureController::Indexing(){
-    std::cout << "kIndexing" << std::endl;
+    std::cout << "kIndexing B)))))))))" << std::endl << std::flush;
     IndexUpdate();
     //printf("in kIndexing\n");
 
     //robot_->SetIntakeRollersOutput(0.0);
-    currWristState_ = kRaising;
+    nextWristState_ = kRaising;
 }
 
-bool SuperstructureController::Shooting() {
+bool SuperstructureController::Shooting(bool isAuto) {
     std::cout << "kShooting" << std::endl;
     //printf("in kShooting AAAAAAAAAAAAAAAA NOTICE ME !!! !! AAAA\n");// with %f\n", desiredFlywheelVelocity_);
     //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
@@ -474,11 +480,10 @@ bool SuperstructureController::Shooting() {
         robot_->SetElevatorFeederOutput(0.0);
     }
 
-    currWristState_ = kRaising;
+    nextWristState_ = kRaising;
 
     //we have stopDetectionTime_ < 0.001 because we don't want to keep setting it to currTime_ (if we do that we'll never stop shooting)
     
-    //if(tempIsAuto_){
     if(tTimeout_ && bTimeout_/* && stopDetectionTime_ < 0.001*/){ //stopping shooting i guess D:
         // stopDetectionTime_ = robot_->GetTime();
         // std::cout << "stop detecting " << stopDetectionTime_ << std::endl;
@@ -514,7 +519,7 @@ void SuperstructureController::Resetting() {
     //robot_->SetIntakeRollersOutput(0.0);
     robot_->SetIndexFunnelOutput(0.0);
     robot_->SetElevatorFeederOutput(0.0);
-    currWristState_ = kRaising;
+    nextWristState_ = kRaising;
     //robot_->SetArm(false); TODO IMPLEMENT
 }
 
@@ -524,6 +529,7 @@ void SuperstructureController::UndoElevator(){
     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
 }
 void SuperstructureController::IndexUpdate(){
+    std::cout << "in indexupdate" << std::endl << std::flush;
     //printf("i n t a k i n g ?");
 
     //printf("top sensor %f and bottom sensor %f\n", topSensor_, bottomSensor_);
@@ -533,6 +539,7 @@ void SuperstructureController::IndexUpdate(){
         //printf("RUNNING TOP ELEVATOR\n");
         //printf("running elevator");
         robot_->SetElevatorOutput(elevatorFastPower_);
+        std::cout << "making elevator go" << std::endl << std::flush;
     } else {
         //printf("not running elevator");
         robot_->SetElevatorOutput(0.0);
@@ -543,9 +550,11 @@ void SuperstructureController::IndexUpdate(){
         robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         //printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");
+        std::cout << "intake stuffs, if in kindexing B)" <<std::endl << std::flush;
     } else {
         robot_->SetIndexFunnelOutput(0.0);
         robot_->SetElevatorFeederOutput(0.0);
+        std::cout << "stopping indexing" << std::endl << std::flush;          
     }
 
     // if((topSensor_ && bottomSensor_) || !bTimeout_){
@@ -568,36 +577,36 @@ bool SuperstructureController::GetShootingIsDone(){
 // }
 
 void SuperstructureController::SetShootingState(double autoVelocity){
-    tempIsAuto_ = true;
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
     //desiredFlywheelVelocity_ = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
-    //desiredFlywheelVelocity_=autoVelocity;
-    currWristState_ = kRaising; //resetting whatever intake did
-    currHandlingState_ = kShooting;
+    desiredFlywheelVelocity_=autoVelocity;
+    SetFlywheelPowerDesired(desiredFlywheelVelocity_);
+    nextWristState_ = kRaising; //resetting whatever intake did
+    nextHandlingState_ = kShooting;
+
     printf("start Shooting\n");
 }
 void SuperstructureController::SetIndexingState(){
-    tempIsAuto_ = true;
-    currWristState_ = kRaising; //resetting whatever intake did
-    currHandlingState_ = kIndexing;
+    std::cout << "setting index state" << std::endl  << std::flush;
+    nextWristState_ = kRaising; //resetting whatever intake did
+    nextHandlingState_ = kIndexing;
     printf("start Indexing-----------I AM HERE ALKDJFLAKSDJFLSAKDJFLAKSJDF-\n");
 }
 void SuperstructureController::SetIntakingState(){
-    tempIsAuto_ = true;
-    currWristState_ = kLowering;
-    currHandlingState_ = kIntaking;
+    printf("WE ARE IN THE INTAKING STATE IN SPC.CPP THANK U :D\n");
+    nextWristState_ = kLowering;
+    nextHandlingState_ = kIntaking;
     printf("start Intaking\n");
 }
 
 void SuperstructureController::SetPreppingState(double desiredVelocity){ //starts warming up shooter B)
-    std::cout << "prepping" << std::endl;
+    std::cout << "prepping SDJFSKLDFJ)(WEFJLKJFLSKDJF)(SEFJSKLFJSDLKFJ" << std::endl;
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
-    tempIsAuto_ = true;
     //desiredVelocity = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
     std::cout <<  "velocity " << robot_->GetFlywheelMotor1Velocity() << std::endl;
-    currWristState_ = kRaising; //resetting whatever intake did
+    nextWristState_ = kRaising; //resetting whatever intake did
     if(!farPrepping_){ 
         shootPrepStartTime_ = robot_->GetTime(); //TODO FIX
         printf("start Prepping\n");

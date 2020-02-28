@@ -438,7 +438,7 @@ void RobotModel::SetIntaking(){
 	superstructureController_->SetIntakingState();
 }
 void RobotModel::SetIndexing(){
-	printf("HERAJDSFLKDFLKDSJFALKDJF RNRNRNR\n\n\n");
+	std::cout << "HERAJDSFLKDFLKDSJFALKDJF RNRNRNR" << std::endl  << std::flush;
 	superstructureController_->SetIndexingState();
 }
 

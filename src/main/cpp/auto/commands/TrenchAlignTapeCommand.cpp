@@ -79,7 +79,7 @@ void TrenchAlignTapeCommand::Init() {
 }
 
 void TrenchAlignTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
-	printf("in align with tape update()");
+	printf("in align with tape update()\n");
     double lastDesiredAngle = desiredDeltaAngle_;
 	double lastDesiredDistance = desiredDistance_;
 
@@ -104,7 +104,7 @@ void TrenchAlignTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 		printf("vision done at: %f\n", robot_->GetTime() - initTimeVision_);
 		printf("ANGLE turning FOR PIVOT COMMAND: %f, abs angle turning to is %f (includes orig angle)\n", desiredDeltaAngle_, robot_->GetNavXYaw()+desiredDeltaAngle_);
 
-		string angle = to_string(desiredDeltaAngle_);
+		std::string angle = std::to_string(desiredDeltaAngle_);
 		stringSequence_ = "d -2 t " + angle;
 		//robot_->SetAlignSequence(stringSequence_);
 		

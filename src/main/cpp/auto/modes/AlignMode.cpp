@@ -13,7 +13,7 @@ AlignMode::AlignMode(RobotModel *robot, ControlBoard *controlBoard) : AutoMode(r
 }
 
 void AlignMode::CreateQueue(AutoMode::AutoPositions pos) {
-    string alignSequence = robot_->GetAlignSequence();
+    std::string alignSequence = robot_->GetAlignSequence();
     QueueFromString(alignSequence);
 }
 

@@ -25,8 +25,6 @@
 #include "auto/modes/TestMode.h"
 #include "auto/commands/profiling/MotionProfileTestCommand.h"
 
-using namespace std;
-
 //TODO remove this
 #include "auto/PIDsource/PIDInputSource.h"
 
@@ -41,13 +39,13 @@ class MainProgram : public frc::TimedRobot {
   void TeleopPeriodic() override;
   //void DisabledPeriodic() override;
   void TestPeriodic() override;
-  void connectRecvZMQ();
-  string readZMQ();
+  void ConnectRecvZMQ();
+  std::string ReadZMQ();
   // void readDetected(string contents);
-  bool readAll(string contents);
+  bool ReadAll(std::string contents);
   // void readDistance(string contents);
-  void connectSendZMQ();
-  void sendZMQ(bool lowExposure);
+  void ConnectSendZMQ();
+  void SendZMQ(bool lowExposure);
 
   void ResetControllers();
 
@@ -88,6 +86,6 @@ class MainProgram : public frc::TimedRobot {
   NavXPIDSource *tempNavXSource_;
   PivotCommand *tempPivot_;
 
-  string sequence_;
+  std::string sequence_;
   nt::NetworkTableEntry autoSequenceEntry_;
 };
