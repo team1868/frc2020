@@ -1,13 +1,12 @@
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* Open Source Software - may be modified and shared by FRC teams. Tb      code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "controllers/SuperstructureController.h"
 #include <math.h>
-using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
     flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 0)),
@@ -201,7 +200,7 @@ void SuperstructureController::WristUpdate(){
 void SuperstructureController::UpdatePrep(bool isAuto){
     if (!isAuto){
         UpdateButtons(); //moved button/state code into that function B)
-    }  else if(!farPrepping_ && !closePrepping){ //farPrepping_ biconditional kPrepping :(((((
+    }  else if(!farPrepping_ && !closePrepping_){ //farPrepping_ biconditional kPrepping :(((((
         desiredFlywheelVelocity_ = 0.0;
         SetFlywheelPowerDesired(0.0);//desiredFlywheelVelocity_);
         robot_->SetFlywheelOutput(0.0);
@@ -580,9 +579,11 @@ void SuperstructureController::SetShootingState(double autoVelocity){
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
     //desiredFlywheelVelocity_ = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
-    //desiredFlywheelVelocity_=autoVelocity;
+    desiredFlywheelVelocity_=autoVelocity;
+    SetFlywheelPowerDesired(desiredFlywheelVelocity_);
     nextWristState_ = kRaising; //resetting whatever intake did
     nextHandlingState_ = kShooting;
+
     printf("start Shooting\n");
 }
 void SuperstructureController::SetIndexingState(){

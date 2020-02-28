@@ -8,7 +8,7 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
-using namespace std;
+//using namespace std;
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
@@ -81,7 +81,7 @@ class SuperstructureController {
   void IndexPrep();
   void Intaking();
   void Indexing();
-  bool Shooting();
+  bool Shooting(bool isAuto);
   void Resetting();
   void UndoElevator();
   void CheckControlPanelDesired();
