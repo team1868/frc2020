@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "auto/modes/AutoMode.h"
-using namespace std;
+//using namespace std;
 
 AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");
@@ -26,12 +26,12 @@ AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
 	printf("Done constructing AutoMode\n");
 }
 
-void AutoMode::QueueFromString(string autoSequence) {
+void AutoMode::QueueFromString(std::string autoSequence) {
     firstCommand_ = NULL;
 		currentCommand_ = NULL;
 		AutoCommand *lastCommand = NULL;
 		iss.str (autoSequence);
-		cout << string ("autosequence ") + autoSequence << endl;
+		std::cout << std::string ("autosequence ") + autoSequence << std::endl;
 		breakDesired_ = false;
 		currAngle_ = 0.0;//robot_->GetNavXYaw();
 

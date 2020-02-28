@@ -12,7 +12,7 @@ TestMode::TestMode(RobotModel *robot, ControlBoard *controlBoard) : AutoMode(rob
 }
 
 void TestMode::CreateQueue(AutoMode::AutoPositions pos) {
-    string testSequence = robot_->GetTestSequence();
+    std::string testSequence = robot_->GetTestSequence();
     QueueFromString(testSequence);
 }
 

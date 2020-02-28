@@ -41,7 +41,7 @@ public:
 
 private:
     zmq::context_t *context_;
-	  zmq::socket_t *subscriber_;
+	zmq::socket_t *subscriber_;
 
     RobotModel* robot_;
     ControlBoard* humanControl_;
@@ -53,7 +53,7 @@ private:
     PivotCommand* pivotCommand_;
     DriveStraightCommand* driveStraightCommand_;
     AlignMode *alignSequence_;
-    string stringSequence_;
+    std::string stringSequence_;
 
     // TODO the below is for after a pretty good dead reckon, and would work for curve command
     double desiredDeltaAngle_;

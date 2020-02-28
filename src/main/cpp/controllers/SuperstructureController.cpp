@@ -7,7 +7,7 @@
 
 #include "controllers/SuperstructureController.h"
 #include <math.h>
-using namespace std;
+//using namespace std;
 
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
     flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 0)),
@@ -188,8 +188,7 @@ void SuperstructureController::WristUpdate(){
                 printf("ERROR: no state in wrist controller \n");
                 robot_->SetIntakeWristOutput(0.0);
                 robot_->SetIntakeRollersOutput(0.0);
-            }
-
+        }
     }
 }
 

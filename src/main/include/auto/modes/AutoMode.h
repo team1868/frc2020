@@ -20,8 +20,6 @@
 #include "auto/commands/IntakingCommand.h"
 #include "auto/commands/PreppingCommand.h"
 
-using namespace std;
-
 
 class AutoMode {
   public:
@@ -33,7 +31,7 @@ class AutoMode {
 
     virtual void CreateQueue(AutoMode::AutoPositions pos) {};
 
-    void QueueFromString(string autoSequence);
+    void QueueFromString(std::string autoSequence);
 
     AutoCommand* GetStringCommand(char command);
 
@@ -62,7 +60,7 @@ class AutoMode {
 	  AnglePIDOutput *angleOutput_;
 	  DistancePIDOutput *distanceOutput_;
 
-	  istringstream iss;
+	  std::istringstream iss;
 	  bool breakDesired_;
 	  double currAngle_;
 };

@@ -12,7 +12,6 @@
 #include <string>
 
 #include <frc/smartdashboard/SmartDashboard.h>
-using namespace std;
 
 void MainProgram::RobotInit() {
     robot_ = new RobotModel();
@@ -29,7 +28,7 @@ void MainProgram::RobotInit() {
     isSocketBound_ = false;
     
     autoSequenceEntry_ = robot_->GetModeTab().Add("Auto Test Sequence", "t 0").GetEntry();
-    sequence_ = autoSequenceEntry_.GetString("t 0");
+    sequence_ = autoSequenceEntry_.GetString("t 0"); //TODO ERROR move this to auto init
     printf("I am alive.\n");
 
     //context_ = new zmq::context_t(2); //same context for send + receive zmq
@@ -84,8 +83,8 @@ void MainProgram::AutonomousInit() {
         context_ = new zmq::context_t(2); //same context for send + receive zmq
         publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        connectRecvZMQ();
-        connectSendZMQ();
+        ConnectRecvZMQ();
+        ConnectSendZMQ();
     }
 
     //robot_->SetTestSequence("c 1.0 90.0 0");
@@ -180,8 +179,8 @@ void MainProgram::TeleopInit() {
         context_ = new zmq::context_t(2); //same context for send + receive zmq
         publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        connectRecvZMQ();
-        connectSendZMQ();
+        ConnectRecvZMQ();
+        ConnectSendZMQ();
     }
     std::cout << "end of teleopinit\n" << std::flush;
 }
@@ -195,10 +194,10 @@ void MainProgram::TeleopPeriodic() {
     if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
         robot_->SetLight(true);
         printf("light on");
-        sendZMQ(true);
+        SendZMQ(true);
     } else {
         robot_->SetLight(false);
-        sendZMQ(false);
+        SendZMQ(false);
     }
     if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
         std::cout << "READY TO START ZMQ READ\n" << std::flush;
@@ -206,8 +205,8 @@ void MainProgram::TeleopPeriodic() {
         
         //sendZMQ(true); //tell jetson to turn exposure down
 
-        string temp = readZMQ();
-        if(!readAll(temp)){
+        std::string temp = ReadZMQ();
+        if(!ReadAll(temp)){
             printf("done with reading, creating aligning command");
             aligningTape_ = true;
             if(navXSource_!=nullptr){ //prevent memory leak from last run of auto align
@@ -306,7 +305,7 @@ void MainProgram::ResetControllers() {
     superstructureController_->Reset();
 }
 
-void MainProgram::connectRecvZMQ() {
+void MainProgram::ConnectRecvZMQ() {
     //connect to zmq socket to receive from jetson
     try {
 		printf("in try connect to jetson\n");
@@ -324,7 +323,7 @@ void MainProgram::connectRecvZMQ() {
     std::cout << "reached end of connect recv zmq\n" << std::flush;
 }
 
-string MainProgram::readZMQ() {
+std::string MainProgram::ReadZMQ() {
     /*try {
 		printf("in try connect to jetson in readZMQ\n");
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
@@ -341,7 +340,7 @@ string MainProgram::readZMQ() {
 	}
     */
     printf("starting read from jetson\n");
-	string contents = s_recv(*subscriber_);
+	std::string contents = s_recv(*subscriber_);
 	printf("contents from jetson: %s \n", contents.c_str());
     return contents;
 }
@@ -354,15 +353,15 @@ string MainProgram::readZMQ() {
 
 // }
 
-bool MainProgram::readAll(string contents) {
+bool MainProgram::ReadAll(std::string contents) {
     printf("ready to read from jetson\n");
     
-    stringstream ss(contents); //split string contents into a vector
-	vector<string> result;
+    std::stringstream ss(contents); //split string contents into a vector
+	std::vector<std::string> result;
     bool abort;
 
 	while(ss.good()) {
-		string substr;
+		std::string substr;
 		getline( ss, substr, ' ' );
 		if (substr == "") {
 			continue;
@@ -408,7 +407,7 @@ bool MainProgram::readAll(string contents) {
 
 }
 
-void MainProgram::connectSendZMQ() {
+void MainProgram::ConnectSendZMQ() {
     //zmq socket to send message to jetson
     try{
         std::cout << "start connect send zmq\n" << std::flush;
@@ -428,9 +427,9 @@ void MainProgram::connectSendZMQ() {
 
 }
 
-void MainProgram::sendZMQ(bool lowExposure) {
+void MainProgram::SendZMQ(bool lowExposure) {
     //string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
-    string message = to_string(lowExposure);
+    std::string message = std::to_string(lowExposure);
     //std::cout << message << std::endl;
     //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
     int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
