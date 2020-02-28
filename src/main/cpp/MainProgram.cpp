@@ -72,6 +72,7 @@ void MainProgram::RobotPeriodic() {
  * make sure to add them to the chooser code above as well.
  */
 void MainProgram::AutonomousInit() {
+    superstructureController_->SetIsAuto(true);
     robot_->SetHighGear();
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
@@ -93,7 +94,7 @@ void MainProgram::AutonomousInit() {
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
     //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    robot_->SetTestSequence("b 3560.0 s 3560.0");// c 4.0 90.0 1 1");
+    robot_->SetTestSequence("i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
     
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
@@ -150,11 +151,10 @@ void MainProgram::AutonomousPeriodic() {
     // }
     if(!testSequence_->IsDone()){
         testSequence_->Update(currTime_, currTime_-lastTime_);
-    } 
-    // else {
-    //     printf("In auto but sequence done\n");
-    //     superstructureController_->SetIndexingState();
-    // }e
+    } else {
+        printf("In auto but sequence done\n");
+        superstructureController_->SetIndexingState();
+    }
     superstructureController_->Update(true);
 }
 
@@ -163,6 +163,7 @@ void MainProgram::DisabledInit() {
 }
 
 void MainProgram::TeleopInit() {
+    superstructureController_->SetIsAuto(false);
     superstructureController_->Reset();
     std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();

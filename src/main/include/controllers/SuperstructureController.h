@@ -58,6 +58,7 @@ class SuperstructureController {
   void SetPreppingState(double desiredVelocity);
   void SetIndexingState();
   
+  void SetIsAuto(bool isAuto);
 
   bool IsFlywheelAtSpeed();
 
@@ -133,7 +134,7 @@ class SuperstructureController {
   bool shootingIsDone_;
 
   double distanceToTarget_;
-  bool tempIsAuto_;
+  bool isAuto_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
