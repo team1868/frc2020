@@ -329,7 +329,7 @@ void MainProgram::ConnectRecvZMQ() {
         int confl = 1;
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
+        subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
     } catch(const zmq::error_t &exc) {
 		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
 		std::cerr << exc.what();
@@ -354,8 +354,8 @@ std::string MainProgram::ReadZMQ() {
 	}
     */
     printf("starting read from jetson\n");
+	//std::string contents = s_recv(*subscriber_);
 	std::string contents = s_recv(*subscriber_);
-	printf("contents from jetson: %s \n", contents.c_str());
     return contents;
 }
 

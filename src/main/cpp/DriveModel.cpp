@@ -163,8 +163,6 @@ RobotModel::RobotModel() :
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
-	climberRightElevatorMotor_ = new WPI_TalonSRX(CLIMB_RIGHT_ELEVATOR_ID);
-	climberLeftElevatorMotor_ = new WPI_TalonSRX(CLIMB_LEFT_ELEVATOR_ID);
 
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
