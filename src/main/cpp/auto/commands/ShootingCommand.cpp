@@ -19,11 +19,10 @@ void ShootingCommand::Init(){
     isDone_ = false;
     startShootingTime_ = robot_->GetTime();
     std::cout << "time starting " << startShootingTime_ << std::endl;
-
+    robot_->SetShooting(autoVelocity_);
 }
 
 void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetShooting(autoVelocity_);
     //std::cout << "update :D" << std::endl;
     // if(robot_->GetTime() > robot_->GetStopDetectionTime() + 2.0){
     //     isDone_ = true;z

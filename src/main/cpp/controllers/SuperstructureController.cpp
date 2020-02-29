@@ -447,7 +447,11 @@ void SuperstructureController::Intaking(){
     printf("kIntaking\n");
     //robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
     nextWristState_ = kLowering;
-    SetFlywheelPowerDesired(0.0);
+    if(!farPrepping_ && !closePrepping_){
+        SetFlywheelPowerDesired(0.0);
+        robot_->SetFlywheelOutput(0.0);
+    }
+    
     IndexUpdate();
 }
 
@@ -455,7 +459,10 @@ void SuperstructureController::Indexing(){
     //std::cout << "kIndexing B)))))))))" << std::endl << std::flush;
     IndexUpdate();
     //printf("in kIndexing\n");
-
+    if(!farPrepping_ && !closePrepping_){
+        SetFlywheelPowerDesired(0.0);
+        robot_->SetFlywheelOutput(0.0);
+    }
     //robot_->SetIntakeRollersOutput(0.0);
     nextWristState_ = kRaising;
 }
@@ -625,7 +632,7 @@ void SuperstructureController::SetPreppingState(double desiredVelocity){ //start
     closePrepping_ = false;
     desiredFlywheelVelocity_ = desiredVelocity;
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
-
+    std::cout << "supposedly set flywheelpowerdesired to " << desiredFlywheelVelocity_ <<std::endl;
 }
 
 
