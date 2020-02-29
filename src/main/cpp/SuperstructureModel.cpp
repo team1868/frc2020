@@ -119,7 +119,6 @@ void RobotModel::SetLeftClimberElevatorOutput(double power){
     climberLeftElevatorMotor_->Set(power);
 }
 
-
 bool RobotModel::GetRightLimitSwitch(){
     return (limitSwitchRight_->Get());
 }
@@ -133,7 +132,7 @@ void RobotModel::SetControlPanelOutput(double power){
 }
 
 void RobotModel::SetIntakeRollersOutput(double power) {
-    intakeRollersMotor_->Set(power);
+    intakeRollersMotor_->Set(-power); // needs to be negative for comp bot
 }
 
 void RobotModel::SetIntakeWristOutput(double power) {
@@ -150,7 +149,7 @@ void RobotModel::SetIndexFunnelOutput(double power) {
 }
 
 void RobotModel::SetElevatorFeederOutput(double power) {
-    elevatorFeederMotor_->Set(power);
+    elevatorFeederMotor_->Set(-power); // needs to be negative for comp bot
     //elevatorMotor_->Set(power);
 }
 

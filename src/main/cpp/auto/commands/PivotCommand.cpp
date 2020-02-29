@@ -204,6 +204,7 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		output *= 0.5;
 //		double output = 0.0;
 		// adjust motor values according to PID
+
 		robot_->SetDriveValues(RobotModel::kLeftWheels, output);
 		robot_->SetDriveValues(RobotModel::kRightWheels, -output);
 		//robot_->SetDriveValues(output, output); //NOTE: NO STATIC FRICTION

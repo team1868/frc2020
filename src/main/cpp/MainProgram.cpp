@@ -24,6 +24,9 @@ void MainProgram::RobotInit() {
     robot_->ResetDriveEncoders();
     robot_->SetHighGear();
     aligningTape_ = false;
+    currJetsonAngle_ = 0.0;
+    lastJetsonAngle_ = 0.0;
+    jetsonAngleTolerance_ = 3.0;
 
     isSocketBound_ = false;
     
@@ -71,6 +74,8 @@ void MainProgram::RobotPeriodic() {
  * make sure to add them to the chooser code above as well.
  */
 void MainProgram::AutonomousInit() {
+    //TODO add test sequence sets
+
     //superstructureController_->SetIsAuto(true);
     robot_->SetHighGear();
     robot_->ResetDriveEncoders();
@@ -200,23 +205,30 @@ void MainProgram::TeleopPeriodic() {
         robot_->SetLight(false);
         SendZMQ(false);
     }
-    if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kAlignButton)){
+    if (!aligningTape_ && humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
         std::cout << "READY TO START ZMQ READ\n" << std::flush;
         //robot_->SetLight(true);
         
         //sendZMQ(true); //tell jetson to turn exposure down
 
         std::string temp = ReadZMQ();
-        if(!ReadAll(temp)){
+        bool hasContents = !ReadAll(temp);
+        lastJetsonAngle_ = currJetsonAngle_;
+        currJetsonAngle_ = robot_->GetDeltaAngle();
+        printf("last jetson angle is %f and curr jetson angle is %f\n", lastJetsonAngle_, currJetsonAngle_);
+        if(hasContents && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_){
             printf("done with reading, creating aligning command");
             aligningTape_ = true;
             if(navXSource_!=nullptr){ //prevent memory leak from last run of auto align
                 delete navXSource_;
             }
+            if(alignTapeCommand!=nullptr){
+                delete alignTapeCommand;
+            }
             navXSource_ = new NavXPIDSource(robot_); //create navX source
-            printf("\nTURNING TO %f angle\n\n", robot_->GetDeltaAngle());
-            printf("current angle is %f and angle to turn to is %f\n", robot_->GetNavXYaw(), robot_->GetNavXYaw()-robot_->GetDeltaAngle());
-            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()-robot_->GetDeltaAngle(), true, navXSource_, 2.0);
+            printf("\nTURNING TO %f angle\n\n", currJetsonAngle_);
+            printf("current angle is %f and angle to turn to is %f\n", robot_->GetNavXYaw(), robot_->GetNavXYaw()-currJetsonAngle_);
+            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()-currJetsonAngle_, true, navXSource_, 2.0);
             //alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false, robot_->GetDeltaAngle(), robot_->GetDistance()); //nav, talon variables don't exist yet
             printf("created aligning command");
             alignTapeCommand->Init();
@@ -317,7 +329,7 @@ void MainProgram::ConnectRecvZMQ() {
         int confl = 1;
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
+        subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
     } catch(const zmq::error_t &exc) {
 		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
 		std::cerr << exc.what();
@@ -342,8 +354,8 @@ std::string MainProgram::ReadZMQ() {
 	}
     */
     printf("starting read from jetson\n");
+	//std::string contents = s_recv(*subscriber_);
 	std::string contents = s_recv(*subscriber_);
-	printf("contents from jetson: %s \n", contents.c_str());
     return contents;
 }
 
@@ -371,25 +383,26 @@ bool MainProgram::ReadAll(std::string contents) {
 		result.push_back( substr );
 	}
 	
-	if(!contents.empty() && result.size() > 1) {
-        robot_->SetDeltaAngle( stod(result.at(0)) );
-		robot_->SetDistance( stod(result.at(1)) );
-        abort = false;
-	} else {
-		abort = true;
-		printf("contents empty in alignwithtape\n");
-	}
+	// if(!contents.empty() && result.size() > 1) {
+    //     robot_->SetDeltaAngle( stod(result.at(0)) );
+	// 	robot_->SetDistance( stod(result.at(1)) );
+    //     abort = false;
+	// } else {
+	// 	abort = true;
+	// 	printf("contents empty in alignwithtape\n");
+	// }
 
     //jetson string is hasTarget, angle (deg from center), raw distance (ft)
-	if(result.size() > 1) {
+	if(result.size() > 2) {
         printf("received values\n"); //TODO MAYBE ERROR CHECK ZMQ SEND ON JETSON SIDE
         double angle = stod(result.at(1));
         double distance = stod(result.at(2));
         printf("jetson set angle is %f and set distance is %f\n", angle, distance);
 		robot_->SetDeltaAngle(angle);
 		robot_->SetDistance(distance);//1.6;
+        abort = false;
 	} else {
-		//abort_ = true;
+		abort = true;
 		robot_->SetDeltaAngle(0.0);
 		robot_->SetDistance(0.0);
         printf("returning because nothing received\n");

@@ -161,10 +161,12 @@ RobotModel::RobotModel() :
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
-	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
-    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
+	//indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID); // practice bot
+    //elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID); // practice bot
+	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID); // comp bot
+    elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID); // com76 p bot
 	elevatorMotor_ = new WPI_VictorSPX(ELEVATOR_MOTOR_ID);
-	
+
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
@@ -213,8 +215,14 @@ RobotModel::RobotModel() :
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
 	voltageEntry_ = GetModeTab().Add("Battery Voltage", 12.5).GetEntry();
 
+	climberRightLimitSwitchEntry_ = GetFunctionalityTab().Add("Right Limit Switch", limitSwitchRight).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry();
+	climberLeftLimitSwitchEntry_ = GetFunctionalityTab().Add("Left Limit Switch", limitSwitchLeft).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry(); 
+
 	leftCurrentEntry_ = GetFunctionalityTab().Add("Left Master Current", 0.0).GetEntry();
 	rightCurrentEntry_ = GetFunctionalityTab().Add("Right Master Current", 0.0).GetEntry();
+
+
+
 
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();

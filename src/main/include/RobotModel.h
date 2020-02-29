@@ -22,7 +22,7 @@
 #include "Ports2020.h"
 #include "ControlBoard.h"
 #include "controllers/SuperstructureController.h"
-//#include <DigitalInput.h>
+#include <math.h>
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -229,6 +229,7 @@ class RobotModel {
     double FlywheelMotor1Output();
     double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
+
     double GetFlywheelMotor1Current();
     double GetFlywheelMotor2Current();
     
@@ -295,11 +296,15 @@ class RobotModel {
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
 
+    // LIMIT SWITCH
+    frc::DigitalInput *limitSwitchRight, *limitSwitchLeft;
+
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
     
     frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_;
+    //WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot
+    WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_; // comp bot
     WPI_VictorSPX *elevatorMotor_;
 
     double navXSpeed_;
@@ -404,6 +409,8 @@ class RobotModel {
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
+    nt::NetworkTableEntry climberRightLimitSwitchEntry_, climberLeftLimitSwitchEntry_; 
+  
 
 
     frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;

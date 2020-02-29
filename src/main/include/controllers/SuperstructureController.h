@@ -12,10 +12,10 @@
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
-static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
-//static const double MAX_FALCON_RPM = 5800.0;
-static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
-//static const double RATIO_BATTERY_VOLTAGE = 12.72;
+//static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
+static const double MAX_FALCON_RPM = 5800.0;
+//static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
+static const double RATIO_BATTERY_VOLTAGE = 12.72;
 
 class SuperstructureController {
  public:
@@ -25,7 +25,7 @@ class SuperstructureController {
   };
 
   enum PowerCellHandlingState {
-    kIntaking, kIndexing, kShooting, kResetting, kUndoElevator
+    kIntaking, kIndexing, kShooting, kResetting, kUndoElevator, kManualFunnelFeederElevator
   };
 
    enum WristState {
@@ -44,6 +44,7 @@ class SuperstructureController {
   void UpdateButtons();
   double RatioFlywheel();
   bool GetShootingIsDone();
+
   // bool GetWaitingIsDone();
   
   void SetShootingState(double autoVelocity);
@@ -62,7 +63,7 @@ class SuperstructureController {
   void ControlPanelFinalSpin();
   std::string GetControlPanelColor();
   void Reset();
-
+  void Climbing();
 
 
   ~SuperstructureController();
@@ -75,6 +76,7 @@ class SuperstructureController {
   bool Shooting(bool isAuto);
   void Resetting();
   void UndoElevator();
+  void ManualFunnelFeederElevator();
   void CheckControlPanelDesired();
   void CheckClimbDesired();
   void CheckElevatorUndoDesired();
