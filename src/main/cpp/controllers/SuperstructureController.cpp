@@ -482,14 +482,18 @@ bool SuperstructureController::Shooting(bool isAuto) {
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
     if(robot_->IsAutoFlywheelAtSpeed(desiredFlywheelVelocity_) || (!topSensor_ && !bTimeout_)){
         robot_->SetElevatorOutput(elevatorSlowPower_);
-    } else {                                                                                                
+        std::cout << "WE RUNNING ELEVATOR" << std::endl;
+    } else {                   
+        std::cout << "stop elevator" << std::endl;                                                                           
         robot_->SetElevatorOutput(0.0);
     }
 
     if(!bottomSensor_ && !bTimeout_){
+        std::cout << "nothing in bot sensor, not time out tho" << std::endl;
         //robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
     } else {
+        std::cout << "stopping index" << std::endl;
         robot_->SetIndexFunnelOutput(0.0);
         robot_->SetElevatorFeederOutput(0.0);
     }
@@ -501,7 +505,9 @@ bool SuperstructureController::Shooting(bool isAuto) {
     if(tTimeout_ && bTimeout_/* && stopDetectionTime_ < 0.001*/){ //stopping shooting i guess D:
         // stopDetectionTime_ = robot_->GetTime();
         // std::cout << "stop detecting " << stopDetectionTime_ << std::endl;
+        std::cout << "top n bot time out, shooting done" << std::endl;
         return true;
+        
     }
     return false;
 
@@ -623,6 +629,7 @@ void SuperstructureController::SetPreppingState(double desiredVelocity){ //start
     //std::cout <<  "velocity " << robot_->GetFlywheelMotor1Velocity() << std::endl;
     nextWristState_ = kRaising; //resetting whatever intake did
     if(!farPrepping_){ 
+        std::cout << "STARTING PREPPING 4 FIRST TIME" << std::endl;
         shootPrepStartTime_ = robot_->GetTime(); //TODO FIX
         printf("start Prepping\n");
     }
