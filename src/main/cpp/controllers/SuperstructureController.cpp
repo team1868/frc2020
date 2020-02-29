@@ -283,18 +283,7 @@ void SuperstructureController::Update(bool isAuto){
             break;
         case kClimbing:
             printf("in climbing state \n");
-            switch(currClimbingState_){
-                case kClimbingIdle:
-                    ClimberStuff();
-                    printf("climbing mechanisms are idle \n");
-                    break;
-                case kClimbingElevator: //don't know if necessary, remove???
-                    ClimberStuff();
-                    printf("in kClimbing");
-                    break;
-                default:
-                    printf("ERROR: no state in climbing \n");
-            }
+            Climbing();
             break;
         default:
             printf("ERROR: no state in superstructure controller\n");
@@ -389,53 +378,35 @@ void SuperstructureController::CheckControlPanelDesired(){
 //THIS IS THE ONE YOU'RE USING ADITI 
 
 
-void SuperstructureController::ClimberStuff(){
+void SuperstructureController::Climbing(){
     if (!humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
     !humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton) &&
     !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
     !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-        currClimbingState_ = kClimbingIdle;
+        //nextClimbingState_ = kClimbingIdle;
         nextState_ = kDefaultTeleop; // verify that it should be next state
+        nextHandlingState_ = kIndexing;
+        return;
     }
 
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton)){
-        if (!robot_->GetRightLimitSwitch()){ //
-            //right motor only???
-            robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
-            nextClimbingState_ = kClimbingElevator;
-            //nextState_ = kClimbing;
-        }
-        else {
-            //RIGHT MOTOR ONLY
-            robot_->SetRightClimberElevatorOutput(0.0);
-        }
-    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
-        robot_->SetRightClimberElevatorOutput(climbElevatorDownPower_);
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) && !robot_->GetRightLimitSwitch()){
+        robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
         nextClimbingState_ = kClimbingElevator;
-        //nextState_ = kClimbing;
+    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
+        robot_->SetRightClimberElevatorOutput(-climbElevatorDownPower_);
+        nextClimbingState_ = kClimbingElevator;
     } else {
         robot_->SetRightClimberElevatorOutput(0.0);
-        nextHandlingState_ = kIndexing; 
-
     }
 
-    if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton)){
-        if (!robot_->GetLeftLimitSwitch()){
-                    //left motor only supp0sedly 
-            robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
-            nextClimbingState_ = kClimbingElevator;
-            //nextState_ = kClimbing;
-        }
-        else {
-            robot_->SetLeftClimberElevatorOutput(0.0);
-        }
-    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-        robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
+    if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) && !robot_->GetLeftLimitSwitch()){
+        robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
         nextClimbingState_ = kClimbingElevator;
-        //nextState_ = kClimbing;
+    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
+        robot_->SetLeftClimberElevatorOutput(-climbElevatorDownPower_);
+        nextClimbingState_ = kClimbingElevator;
     } else {
         robot_->SetLeftClimberElevatorOutput(0.0);
-        nextHandlingState_ = kIndexing; 
     }
 
     
@@ -540,11 +511,9 @@ bool SuperstructureController::Shooting(bool isAuto) {
     //std::cout << "velocity " << robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM << std::endl;
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
     if(robot_->IsAutoFlywheelAtSpeed(desiredFlywheelVelocity_) || (!topSensor_ && !bTimeout_)){
-        robot_->SetLeftClimberElevatorOutput(elevatorSlowPower_);
-        robot_->SetRightClimberElevatorOutput(elevatorSlowPower_);
+        robot_->SetElevatorOutput(elevatorSlowPower_);
     } else {                                                                                                
-        robot_->SetRightClimberElevatorOutput(0);
-        robot_->SetLeftClimberElevatorOutput(0);
+        robot_->SetElevatorOutput(0.0);
     }
 
     if(!bottomSensor_ && !bTimeout_){
@@ -585,11 +554,9 @@ void SuperstructureController::Resetting() {
     robot_->SetFlywheelOutput(0.0);
 
     if(!bottomSensor_ && currTime_-startResetTime_ <= resetTimeout_){
-        robot_->SetRightClimberElevatorOutput(-elevatorFastPower_); //bring down elevator
-        robot_->SetLeftClimberElevatorOutput(-elevatorFastPower_);
+        robot_->SetElevatorOutput(-elevatorFastPower_); //bring down elevator
     } else {
-        robot_->SetRightClimberElevatorOutput(0.0);
-        robot_->SetLeftClimberElevatorOutput(0.0);
+        robot_->SetElevatorOutput(0.0);
         nextHandlingState_ = kIndexing;
     }
 
@@ -601,8 +568,7 @@ void SuperstructureController::Resetting() {
 }
 
 void SuperstructureController::UndoElevator(){
-    robot_->SetRightClimberElevatorOutput(-elevatorSlowPower_);
-    robot_->SetLeftClimberElevatorOutput(-elevatorSlowPower_);
+    robot_->SetElevatorOutput(-elevatorSlowPower_);
     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
 }
@@ -621,8 +587,7 @@ void SuperstructureController::IndexUpdate(){
         //std::cout << "making elevator go" << std::endl << std::flush;
     } else {
         //printf("not running elevator");
-        robot_->SetRightClimberElevatorOutput(0.0);
-        robot_->SetLeftClimberElevatorOutput(0.0);
+        robot_->SetElevatorOutput(0.0);
     }
 
     //control bottom

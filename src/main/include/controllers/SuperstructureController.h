@@ -67,7 +67,7 @@ class SuperstructureController {
   void ControlPanelFinalSpin();
   std::string GetControlPanelColor();
   void Reset();
-  void ClimberStuff();
+  void Climbing();
 
 
   ~SuperstructureController();

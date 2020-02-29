@@ -37,8 +37,8 @@ ControlBoard::ControlBoard() {
 
 	buttons_[kGearShiftButton] = new ButtonReader(leftJoy_, GEARSHIFT_BUTTON_PORT);
 
-	buttons_[kClimbRightElevatorUpButton] = new ButtonReader(operatorJoy_, CLIMB_RIGHT_ELEVATOR_UP_BUTTON_PORT);
-	buttons_[kClimbRightElevatorDownButton] = new ButtonReader(operatorJoy_, CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT);
+	buttons_[kClimbRightElevatorUpButton] = new ButtonReader(operatorJoyB_, CLIMB_RIGHT_ELEVATOR_UP_BUTTON_PORT);
+	buttons_[kClimbRightElevatorDownButton] = new ButtonReader(operatorJoyB_, CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT);
 	buttons_[kClimbLeftElevatorUpButton] = new ButtonReader(operatorJoy_, CLIMB_LEFT_ELEVATOR_UP_BUTTON_PORT);
 	buttons_[kClimbLeftElevatorDownButton] = new ButtonReader(operatorJoy_, CLIMB_LEFT_ELEVATOR_DOWN_BUTTON_PORT);
 
