@@ -93,6 +93,7 @@ class RobotModel {
 
     void SetSuperstructureController(SuperstructureController *superstructureControllers);
     
+    void ShootingAutoInit();
 
     // drive robot model
     void SetDriveValues(double left, double right);

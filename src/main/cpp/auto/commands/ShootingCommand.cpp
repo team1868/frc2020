@@ -19,20 +19,20 @@ void ShootingCommand::Init(){
     isDone_ = false;
     startShootingTime_ = robot_->GetTime();
     std::cout << "time starting " << startShootingTime_ << std::endl;
-
+    robot_->SetShooting(autoVelocity_);
+    robot_->ShootingAutoInit();
 }
 
 void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetShooting(autoVelocity_);
-    //std::cout << "update :D" << std::endl;
+    std::cout << "update :D" << std::endl;
     // if(robot_->GetTime() > robot_->GetStopDetectionTime() + 2.0){
     //     isDone_ = true;z
     // }
     isDone_ = robot_->GetShootingIsDone();
     if(isDone_){ //when shooting stops 
-        printf("done shooting\n");
-        robot_->SetFlywheelOutput(0.0);
-        robot_->DisengageFlywheelHood();
+        printf("DONE SHOOTING IN AUTO\n");
+        robot_->SetControlModeVelocity(0.0);
+        //robot_->DisengageFlywheelHood();
         //robot_->SetIndexing(); //index after shoot
         //robot_->SetLight(false);
     }

@@ -20,12 +20,15 @@ void PreppingCommand::Init(){
 }
 
 void PreppingCommand::Update(double currTimeSec, double deltaTimeSec){
+    
+    printf("STILL PREPPING\n");
     robot_->SetPrepping(desiredVelocity_);
     //robot_->SetPrepping(desiredVelocity_);
-    if(robot_->IsAutoFlywheelAtSpeed(desiredVelocity_)){
-        printf("flywheel is at speed \n");
-        isDone_ = true;
+    isDone_ = robot_->IsAutoFlywheelAtSpeed(desiredVelocity_);
+    if(isDone_){
+        printf("AM DONE PREPPING\n");
     }
+
     //isDone_ = true;
 }
 

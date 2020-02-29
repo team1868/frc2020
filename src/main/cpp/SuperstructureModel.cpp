@@ -7,6 +7,10 @@
 
 #include "RobotModel.h"
 
+void RobotModel::ShootingAutoInit(){
+    superstructureController_->AutoInit();
+}
+
 void RobotModel::SetSuperstructureController(SuperstructureController *superstructureController){
     superstructureController_ = superstructureController;
 }
@@ -65,7 +69,7 @@ void RobotModel::ConfigFlywheelD(double dFac){
     flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac);
 }
 void RobotModel::ConfigFlywheelF(double fFac){
-    printf("pid ff: %f\n", fFac);
+    //printf("pid ff: %f\n", fFac);
     flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
 }
 
@@ -78,21 +82,22 @@ double RobotModel::FlywheelMotor2Output(){
 }
 
 bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){
-    double value = GetFlywheelMotor1Velocity()*FALCON_TO_RPM;
-    printf("falcon velocity %f\n", value);
-    //printf("desiredVelocity %f\n", desiredVelocity);
-    if(GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredVelocity&& 
-    GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredVelocity+150.0){
-        numTimeAtSpeed_++;
-        if (numTimeAtSpeed_ >= 1){ //3){ 
-            printf("FLYWHEEL IS AT SPEED");
-            return true;
-        }
-        //numTimeAtSpeed_ = 0;
-        return false;
-    }
-    numTimeAtSpeed_ = 0;
-    return false;
+    // double value = GetFlywheelMotor1Velocity()*FALCON_TO_RPM;
+    // //printf("falcon velocity %f\n", value);
+    // //printf("desiredVelocity %f\n", desiredVelocity);
+    // if(GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredVelocity&& 
+    // GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredVelocity+150.0){
+    //     numTimeAtSpeed_++;
+    //     if (numTimeAtSpeed_ >= 1){ //3){ 
+    //         //printf("FLYWHEEL IS AT SPEED");
+    //         return true;
+    //     }
+    //     //numTimeAtSpeed_ = 0;
+    //     return false;
+    // }
+    // numTimeAtSpeed_ = 0;
+    // return false;
+    return superstructureController_->IsFlywheelAtSpeed(desiredVelocity);
 }
 
 double RobotModel::GetFlywheelMotor1Current(){
@@ -108,6 +113,7 @@ void RobotModel::EngageFlywheelHood() {
 }
 
 void RobotModel::DisengageFlywheelHood() {
+    std::cout << "disengaging flywheel hood" << std::endl;
     flywheelHoodSolenoid_->Set(false);
 }
 
@@ -149,11 +155,12 @@ void RobotModel::SetIndexFunnelOutput(double power) {
 }
 
 void RobotModel::SetElevatorFeederOutput(double power) {
-    elevatorFeederMotor_->Set(-power); // needs to be negative for comp bot
+    elevatorFeederMotor_->Set(-power);
     //elevatorMotor_->Set(power);
 }
 
 void RobotModel::SetElevatorOutput(double power) {
+    //std::cout << "elevator should be running B)" << std::endl;
     elevatorMotor_->Set(power);
     //elevatorFeederMotor_->Set(power);
 }
