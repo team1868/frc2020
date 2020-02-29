@@ -88,7 +88,7 @@ class SuperstructureController {
   ControlBoard *humanControl_;
   
   SuperstructureState currState_, nextState_;
-  ClimbingState currClimbingState_;
+  ClimbingState currClimbingState_, nextClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
 

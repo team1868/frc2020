@@ -63,6 +63,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     nextWristState_ = kRaising;
     currHandlingState_ = kIndexing;
     nextHandlingState_ = kIndexing;
+    currClimbingState_ = kClimbingIdle;
+    nextClimbingState_ = kClimbingIdle; 
     
     currTime_ = robot_->GetTime();
     startElevatorTime_ = currTime_;
@@ -280,23 +282,15 @@ void SuperstructureController::Update(bool isAuto){
             }
             break;
         case kClimbing:
-            printf("climbing state \n");
+            printf("in climbing state \n");
             switch(currClimbingState_){
                 case kClimbingIdle:
-                    robot_->SetRightClimberElevatorOutput(0.0);
-                    robot_->SetLeftClimberElevatorOutput(0.0);
+                    ClimberStuff();
                     printf("climbing mechanisms are idle \n");
                     break;
-                case kClimbingElevator:
-                    robot_->SetRightClimberElevatorOutput(climbPowerDesired_);
-                    robot_->SetLeftClimberElevatorOutput(climbPowerDesired_);
-                    if(!humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
-                    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton) &&
-                    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
-                    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-                        currClimbingState_ = kClimbingIdle;
-                        nextState_ = kDefaultTeleop; // verify that it should be next state
-                    }
+                case kClimbingElevator: //don't know if necessary, remove???
+                    ClimberStuff();
+                    printf("in kClimbing");
                     break;
                 default:
                     printf("ERROR: no state in climbing \n");
@@ -396,42 +390,55 @@ void SuperstructureController::CheckControlPanelDesired(){
 
 
 void SuperstructureController::ClimberStuff(){
-    if(humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton)){
-        if (robot_->GetRightLimitSwitch()){ //
+    if (!humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
+    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton) &&
+    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
+    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
+        currClimbingState_ = kClimbingIdle;
+        nextState_ = kDefaultTeleop; // verify that it should be next state
+    }
+
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton)){
+        if (!robot_->GetRightLimitSwitch()){ //
             //right motor only???
             robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
-            currClimbingState_ = kClimbingElevator;
-            currState_ = kClimbing;
+            nextClimbingState_ = kClimbingElevator;
+            //nextState_ = kClimbing;
         }
         else {
             //RIGHT MOTOR ONLY
-            robot_->SetRightClimberElevatorOutput(0);
-        }}
-    else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton)){
-        if (robot_->GetLeftLimitSwitch()){
-                    //left motor only supp0sedly 
-            robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
-            currClimbingState_ = kClimbingElevator;
-            currState_ = kClimbing;
+            robot_->SetRightClimberElevatorOutput(0.0);
         }
-        else {
-            robot_->SetLeftClimberElevatorOutput(0);
-        }}
-    else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
+    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
         robot_->SetRightClimberElevatorOutput(climbElevatorDownPower_);
-        currClimbingState_ = kClimbingElevator;
-        currState_ = kClimbing;
-    }
-    else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-        robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
-        currClimbingState_ = kClimbingElevator;
-        currState_ = kClimbing;
-    }
-    else {
+        nextClimbingState_ = kClimbingElevator;
+        //nextState_ = kClimbing;
+    } else {
         robot_->SetRightClimberElevatorOutput(0.0);
-        robot_->SetLeftClimberElevatorOutput(0.0);
+        nextHandlingState_ = kIndexing; 
 
     }
+
+    if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton)){
+        if (!robot_->GetLeftLimitSwitch()){
+                    //left motor only supp0sedly 
+            robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
+            nextClimbingState_ = kClimbingElevator;
+            //nextState_ = kClimbing;
+        }
+        else {
+            robot_->SetLeftClimberElevatorOutput(0.0);
+        }
+    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
+        robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
+        nextClimbingState_ = kClimbingElevator;
+        //nextState_ = kClimbing;
+    } else {
+        robot_->SetLeftClimberElevatorOutput(0.0);
+        nextHandlingState_ = kIndexing; 
+    }
+
+    
 }
 
 
