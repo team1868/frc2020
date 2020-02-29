@@ -299,7 +299,7 @@ class RobotModel {
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
 
-    // LIMIT SWITCH STFUFF
+    // LIMIT SWITCH
     frc::DigitalInput *limitSwitchRight, *limitSwitchLeft;
 
     WPI_VictorSPX *intakeRollersMotor_;

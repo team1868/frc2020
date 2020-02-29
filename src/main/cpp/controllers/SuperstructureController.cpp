@@ -63,8 +63,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     nextWristState_ = kRaising;
     currHandlingState_ = kIndexing;
     nextHandlingState_ = kIndexing;
-    currClimbingState_ = kClimbingIdle;
-    nextClimbingState_ = kClimbingIdle; 
+    //currClimbingState_ = kClimbingIdle;
+    //nextClimbingState_ = kClimbingIdle; 
     
     currTime_ = robot_->GetTime();
     startElevatorTime_ = currTime_;
@@ -375,15 +375,11 @@ void SuperstructureController::CheckControlPanelDesired(){
     }*/
 }
 
-//THIS IS THE ONE YOU'RE USING ADITI 
-
-
 void SuperstructureController::Climbing(){
     if (!humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
     !humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton) &&
     !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
     !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-        //nextClimbingState_ = kClimbingIdle;
         nextState_ = kDefaultTeleop; // verify that it should be next state
         nextHandlingState_ = kIndexing;
         return;
@@ -391,29 +387,22 @@ void SuperstructureController::Climbing(){
 
     if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) && !robot_->GetRightLimitSwitch()){
         robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
-        nextClimbingState_ = kClimbingElevator;
-    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
-        robot_->SetRightClimberElevatorOutput(-climbElevatorDownPower_);
-        nextClimbingState_ = kClimbingElevator;
+    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
+        robot_->SetRightClimberElevatorOutput(climbElevatorDownPower_);
     } else {
         robot_->SetRightClimberElevatorOutput(0.0);
     }
 
-    if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) && !robot_->GetLeftLimitSwitch()){
+    if (humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) && !robot_->GetLeftLimitSwitch()){
         robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
-        nextClimbingState_ = kClimbingElevator;
-    } else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-        robot_->SetLeftClimberElevatorOutput(-climbElevatorDownPower_);
-        nextClimbingState_ = kClimbingElevator;
+    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
+        robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
     } else {
         robot_->SetLeftClimberElevatorOutput(0.0);
     }
 
     
 }
-
-
-
 
 
 /*
@@ -582,7 +571,6 @@ void SuperstructureController::IndexUpdate(){
     if(!topSensor_ && bottomSensor_){
         //printf("RUNNING TOP ELEVATOR\n");
         //printf("running elevator");
-        // INCORRECT??
         robot_->SetElevatorOutput(elevatorFastPower_);
         //std::cout << "making elevator go" << std::endl << std::flush;
     } else {

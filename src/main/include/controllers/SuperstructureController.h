@@ -24,9 +24,9 @@ class SuperstructureController {
     kControlPanel, kClimbing, kDefaultTeleop
   };
 
-  enum ClimbingState {
-    kClimbingIdle, kClimbingElevator
-  };
+  // enum ClimbingState {
+  //   kClimbingIdle, kClimbingElevator
+  // };
 
   enum PowerCellHandlingState {
     kIntaking, kIndexing, kShooting, kResetting, kUndoElevator
@@ -88,7 +88,7 @@ class SuperstructureController {
   ControlBoard *humanControl_;
   
   SuperstructureState currState_, nextState_;
-  ClimbingState currClimbingState_, nextClimbingState_;
+  //ClimbingState currClimbingState_, nextClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
 
