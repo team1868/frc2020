@@ -119,8 +119,12 @@ double RobotModel::GetClimberWinchLeftEncoderValue(){
     return climberWinchLeftEncoder_->Get();
 }
 
-void RobotModel::SetClimberElevatorOutput(double power){
-    climberElevatorMotor_->Set(power);
+void RobotModel::SetClimberElevatorRightOutput(double power){
+    climberElevatorMotorRight_->Set(power);
+}
+
+void RobotModel::SetClimberElevatorLeftOutput(double power){
+    climberElevatorMotorLeft_->Set(power);
 }
 
 void RobotModel::SetControlPanelOutput(double power){
@@ -149,8 +153,13 @@ void RobotModel::SetElevatorFeederOutput(double power) {
     //elevatorMotor_->Set(power);
 }
 
-void RobotModel::SetElevatorOutput(double power) {
-    elevatorMotor_->Set(power);
+void RobotModel::SetElevatorRightOutput(double power) {
+    climberElevatorMotorRight_->Set(power);
+    //elevatorFeederMotor_->Set(power);
+}
+
+void RobotModel::SetElevatorLeftOutput(double power) {
+    climberElevatorMotorLeft_->Set(power);
     //elevatorFeederMotor_->Set(power);
 }
 
@@ -170,6 +179,15 @@ void RobotModel::GetColorFromSensor() {
     // cout<<"red "<<detectedColor_.red<<endl;
     // cout<<"green "<<detectedColor_.green<<endl;
     // cout<<"blue "<<detectedColor_.blue<<endl;
+}
+
+
+bool RobotModel::GetRightLimitSwitch() {
+    return(limitSwitchRight->Get());
+}
+
+bool RobotModel::GetLeftLimitSwitch() {
+    return(limitSwitchLeft->Get());
 }
 
 std::string RobotModel::MatchColor() {

@@ -97,6 +97,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelMotor1OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 1 output", robot_->FlywheelMotor1Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor2OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 2 output", robot_->FlywheelMotor2Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
+    climbElevatorUpPowerEntry_ = GetFunctionalityTab().Add("Elevator Up Pwoer", 0.5).GetEntry();
+	climbElevatorDownPowerEntry_ = GetFunctionalityTab().Add("Elevator Down Power", -0.4).GetEntry();
+
     //TODO make timeout
 
 
@@ -219,12 +222,12 @@ void SuperstructureController::Update(bool isAuto){
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
     if (!isAuto){
-        CheckClimbDesired();
+        // CheckClimbDesired();
         CheckControlPanelDesired();
     }
     
 
-    switch(currState_){
+    switch(currState_){ 
         case kDefaultTeleop:
             
             // should these be inside or outside power cell handling
@@ -283,13 +286,13 @@ void SuperstructureController::Update(bool isAuto){
             printf("climbing state \n");
             switch(currClimbingState_){
                 case kClimbingIdle:
-                    robot_->SetClimberElevatorOutput(0.0);
-                    robot_->SetClimbWinchLeftOutput(0.0);
-                    robot_->SetClimbWinchRightOutput(0.0);
+                    robot_->SetClimberElevatorRightOutput(0.0);
+                    robot_->SetClimberElevatorLeftOutput(0.0);
                     printf("climbing mechanisms are idle \n");
                     break;
                 case kClimbingElevator:
-                    robot_->SetClimberElevatorOutput(climbPowerDesired_);
+                    robot_->SetClimberElevatorRightOutput(climbPowerDesired_);
+                    robot_->SetClimberElevatorLeftOutput(climbPowerDesired_);
                     if(!humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)||!humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorDownButton)){
                         currClimbingState_ = kClimbingIdle;
                         nextState_ = kDefaultTeleop; // verify that it should be next state
@@ -391,6 +394,50 @@ void SuperstructureController::CheckControlPanelDesired(){
     }
 }
 
+//THIS IS THE ONE YOU'RE USING ADITI 
+
+
+void SuperstructureController::ClimberStuff(){
+    if(humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
+        if (robot_->GetRightLimitSwitch()){ //
+            //right motor only???
+            robot_->SetClimberElevatorRightOutput(climbElevatorUpPower_);
+            currClimbingState_ = kClimbingElevator;
+            currState_ = kClimbing;
+        }
+        else {
+            //RIGHT MOTOR ONLY
+            robot_->SetClimberElevatorRightOutput(0);
+        }
+        if (robot_->GetLeftLimitSwitch()){
+            //left motor only supp0sedly 
+            robot_->SetClimberElevatorLeftOutput(climbElevatorUpPower_);
+            currClimbingState_ = kClimbingElevator;
+            currState_ = kClimbing;
+        }
+        else {
+            //Left MOTOR ONLY
+            robot_->SetClimberElevatorLeftOutput(0);
+        }
+    }
+    else if (humanControl_ ->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
+        robot_->SetClimberElevatorRightOutput(climbElevatorDownPower_);
+        robot_->SetClimberElevatorLeftOutput(climbElevatorDownPower_);
+        currClimbingState_ = kClimbingElevator;
+        currState_ = kClimbing;
+    }
+    else {
+        robot_->SetClimberElevatorRightOutput(0.0);
+        robot_->SetClimberElevatorLeftOutput(0.0);
+
+    }
+}
+
+
+
+
+
+/*
 void SuperstructureController::CheckClimbDesired(){
     if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbElevatorUpButton)){
         climbPowerDesired_ = climbElevatorDownPower_;
@@ -414,6 +461,7 @@ void SuperstructureController::CheckClimbDesired(){
         robot_->SetClimbWinchRightOutput(0.0);
     }
 }
+*/
 
 /*
 void SuperstructureController::DisabledUpdate() {
@@ -463,9 +511,11 @@ bool SuperstructureController::Shooting() {
     //std::cout << "velocity " << robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM << std::endl;
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
     if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
-        robot_->SetElevatorOutput(elevatorSlowPower_);
+        robot_->SetClimberElevatorRightOutput(elevatorSlowPower_);
+        robot_->SetClimberElevatorLeftOutput(elevatorSlowPower_);
     } else {                                                                                                
-        robot_->SetElevatorOutput(0.0);
+        robot_->SetClimberElevatorRightOutput(0);
+        robot_->SetClimberElevatorLeftOutput(0);
     }
 
     if(!bottomSensor_ && !bTimeout_){
@@ -501,9 +551,11 @@ void SuperstructureController::Resetting() {
     robot_->SetFlywheelOutput(0.0);
 
     if(!bottomSensor_ && currTime_-startResetTime_ <= resetTimeout_){
-        robot_->SetElevatorOutput(-elevatorFastPower_); //bring down elevator
+        robot_->SetClimberElevatorRightOutput(-elevatorFastPower_); //bring down elevator
+        robot_->SetClimberElevatorLeftOutput(-elevatorFastPower_);
     } else {
-        robot_->SetElevatorOutput(0.0);
+        robot_->SetClimberElevatorRightOutput(0.0);
+        robot_->SetClimberElevatorLeftOutput(0.0);
         nextHandlingState_ = kIndexing;
     }
 
@@ -515,7 +567,8 @@ void SuperstructureController::Resetting() {
 }
 
 void SuperstructureController::UndoElevator(){
-    robot_->SetElevatorOutput(-elevatorSlowPower_);
+    robot_->SetClimberElevatorRightOutput(-elevatorSlowPower_);
+    robot_->SetClimberElevatorLeftOutput(-elevatorSlowPower_);
     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
 }
@@ -527,10 +580,13 @@ void SuperstructureController::IndexUpdate(){
     if(!topSensor_ && bottomSensor_){
         //printf("RUNNING TOP ELEVATOR\n");
         //printf("running elevator");
-        robot_->SetElevatorOutput(elevatorFastPower_);
+        robot_->SetClimberElevatorRightOutput(elevatorFastPower_);
+        robot_->SetClimberElevatorLeftOutput(elevatorFastPower_);
+
     } else {
         //printf("not running elevator");
-        robot_->SetElevatorOutput(0.0);
+        robot_->SetClimberElevatorRightOutput(0.0);
+        robot_->SetClimberElevatorLeftOutput(0.0);
     }
 
     //control bottom
@@ -744,6 +800,10 @@ void SuperstructureController::RefreshShuffleboard(){
     autoArmUpP_ = autoArmUpPEntry_.GetDouble(autoArmUpP_);
     autoArmDownP_ = autoArmDownPEntry_.GetDouble(autoArmDownP_);
 
+    elevatorUpP_ = climbElevatorUpPowerEntry_.GetDouble(elevatorUpP_);
+    elevatorDownP_ = climbElevatorDownPowerEntry_.GetDouble(elevatorDownP_);
+    
+    
     elevatorBottomLightSensorEntry_.SetBoolean(robot_->GetElevatorFeederLightSensorStatus());
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
     targetSpeedEntry_.SetBoolean(atTargetSpeed_);

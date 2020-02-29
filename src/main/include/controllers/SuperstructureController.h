@@ -51,6 +51,7 @@ class SuperstructureController {
   void UpdateButtons();
   double RatioFlywheel();
   bool GetShootingIsDone();
+
   
   void SetShootingState(double autoVelocity);
   void SetIntakingState();
@@ -68,7 +69,7 @@ class SuperstructureController {
   void ControlPanelStage3(double power);
   void ControlPanelFinalSpin();
   void Reset();
-
+  void ClimberStuff();
 
 
   ~SuperstructureController();
@@ -82,7 +83,7 @@ class SuperstructureController {
   void Resetting();
   void UndoElevator();
   void CheckControlPanelDesired();
-  void CheckClimbDesired();
+  // void CheckClimbDesired();
   void CheckElevatorUndoDesired();
 
   RobotModel *robot_;

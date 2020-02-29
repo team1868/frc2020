@@ -22,6 +22,7 @@
 #include "Ports2020.h"
 #include "ControlBoard.h"
 #include "controllers/SuperstructureController.h"
+#include <math.h>
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -227,10 +228,15 @@ class RobotModel {
     double FlywheelMotor1Output();
     double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
+
+    bool GetRightLimitSwitch();
+    bool GetLeftLimitSwitch();
     
     void SetClimbWinchLeftOutput(double power);
     void SetClimbWinchRightOutput(double power);
-    void SetClimberElevatorOutput(double power);
+    void SetClimberElevatorRightOutput(double power);
+    void SetClimberElevatorLeftOutput(double power);
+
 
     double GetClimberWinchRightEncoderValue();
     double GetClimberWinchLeftEncoderValue(); 
@@ -244,7 +250,8 @@ class RobotModel {
 
     void SetIndexFunnelOutput(double power);
     void SetElevatorFeederOutput(double power);
-    void SetElevatorOutput(double power);
+    void SetElevatorRightOutput(double power);
+    void SetElevatorLeftOutput(double power);
     
     void SetLight(bool setLight);
 
@@ -284,7 +291,8 @@ class RobotModel {
     frc::Solenoid *flywheelHoodSolenoid_;
 
     WPI_VictorSPX *climberWinchLeftMotor_, *climberWinchRightMotor_; // motor 1 - left, motor 2 - right
-    WPI_VictorSPX *climberElevatorMotor_;
+    WPI_VictorSPX *climberElevatorMotorRight_, *climberElevatorMotorLeft_;
+
     frc::Encoder* climberWinchRightEncoder_, *climberWinchLeftEncoder_;
     
     WPI_VictorSPX *controlPanelMotor_;
@@ -292,6 +300,9 @@ class RobotModel {
     frc::Color detectedColor_, matchedColor_;
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
+
+    // LIMIT SWITCH STFUFF
+    frc::DigitalInput *limitSwitchRight, *limitSwitchLeft;
 
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
@@ -399,6 +410,8 @@ class RobotModel {
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
+    nt::NetworkTableEntry climberRightLimitSwitch_, climberLeftLimitSwitch_; 
+  
 
 
     frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;

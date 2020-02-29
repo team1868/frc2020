@@ -23,9 +23,10 @@ static const int LEFT_DRIVE_SLAVE_A_ID                   = 3;
 // Superstructure Motors
 static const int FLYWHEEL_MOTOR_ONE_ID                   = 20; 
 static const int FLYWHEEL_MOTOR_TWO_ID                   = 21;  
-static const int CLIMB_WINCH_LEFT_MOTOR_ID               = 7; 
+static const int CLIMB_WINCH_LEFT_MOTOR_ID               = 7;    
 static const int CLIMB_WINCH_RIGHT_MOTOR_ID              = 6;  
-static const int CLIMB_ELEVATOR_ID                       = 9; 
+static const int CLIMB_ELEVATOR_LEFT_ID                  = 9; 
+static const int CLIMB_ELEVATOR_RIGHT_ID                 = 10; //PLEASE FIND THIS PORT ADITI
 static const int CONTROL_PANEL_MOTOR_ID                  = 14; // probably 11
 static const int INTAKE_ROLLERS_MOTOR_ID                 = 10; 
 static const int INTAKE_WRIST_MOTOR_ID                   = 12; 
@@ -88,7 +89,11 @@ static const int WRIST_DOWN_BUTTON_PORT                  = 11;
 static const int WRIST_UP_BUTTON_PORT                    = 8;
 static const int WRIST_RUN_ROLLERS_BUTTON                = 7;
 static const int WRIST_REVERSE_ROLLERS_BUTTON            = 6;
-static const int OH_SHIT_UNDO_ELEVATOR_BUTTON_PORT       = 1; // fix port
+static const int UNDO_ELEVATOR_BUTTON_PORT               = 1; // fix port
+
+
+
+
 
 // SENSORS
 static const int GYRO_PORT                               = 1; // ANALOG IO

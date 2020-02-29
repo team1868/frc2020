@@ -11,7 +11,7 @@
 using namespace std;
 
 void RobotModel::CheckAllianceColor(){
-if(frc::DriverStation::GetInstance().GetAlliance() == DriverStation::kRed){
+if(frc::DriverStation::GetInstance().GetAlliance() == frc::DriverStation::kRed){
 initLineError_ *= -1;
 trenchDistError_ *= -1;
 trenchWidthError_ *= -1;

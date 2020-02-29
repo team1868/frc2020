@@ -149,7 +149,9 @@ RobotModel::RobotModel() :
 
 	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
 	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
-	climberElevatorMotor_ = new WPI_VictorSPX(CLIMB_ELEVATOR_ID);
+	climberElevatorMotorRight_ = new WPI_VictorSPX(CLIMB_ELEVATOR_RIGHT_ID);
+	climberElevatorMotorLeft_ = new WPI_VictorSPX(CLIMB_ELEVATOR_LEFT_ID);
+
 
 	// make climber elevator motors srx and put current limits
 
@@ -169,11 +171,18 @@ RobotModel::RobotModel() :
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
-	elevatorMotor_ = new WPI_VictorSPX(ELEVATOR_MOTOR_ID);
-	
+	climberElevatorMotorRight_ = new WPI_VictorSPX(CLIMB_ELEVATOR_RIGHT_ID);
+	climberElevatorMotorLeft_ = new WPI_VictorSPX(CLIMB_ELEVATOR_LEFT_ID);
+
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
+	// new aditi code
+
+	limitSwitchRight = new frc::DigitalInput(2);
+	limitSwitchLeft = new frc::DigitalInput(3);
+
+
 	colorMatcher_.AddColorMatch(kBlueTarget);
 	colorMatcher_.AddColorMatch(kGreenTarget);
 	colorMatcher_.AddColorMatch(kRedTarget);
@@ -214,8 +223,14 @@ RobotModel::RobotModel() :
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
 	voltageEntry_ = GetModeTab().Add("Battery Voltage", 12.5).GetEntry();
 
+	climberRightLimitSwitch_ = GetFunctionalityTab().Add("Right Limit Switch", limitSwitchRight).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry();
+	climberLeftLimitSwitch_ = GetFunctionalityTab().Add("Left Limit Switch", limitSwitchLeft).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry(); 
+
 	leftCurrentEntry_ = GetFunctionalityTab().Add("Left Master Current", 0.0).GetEntry();
 	rightCurrentEntry_ = GetFunctionalityTab().Add("Right Master Current", 0.0).GetEntry();
+
+
+
 
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
