@@ -22,6 +22,7 @@
 #include "Ports2020.h"
 #include "ControlBoard.h"
 #include "controllers/SuperstructureController.h"
+//#include <DigitalInput.h>
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -233,6 +234,8 @@ class RobotModel {
     
     void SetRightClimberElevatorOutput(double power);
     void SetLeftClimberElevatorOutput(double power);
+    bool GetRightLimitSwitch();
+    bool GetLeftLimitSwitch();
 
     void SetIntakeWristOutput(double power);
     void SetIntakeRollersOutput(double power);
@@ -284,6 +287,7 @@ class RobotModel {
     frc::Solenoid *flywheelHoodSolenoid_;
 
     WPI_TalonSRX *climberRightElevatorMotor_, *climberLeftElevatorMotor_;
+    frc::DigitalInput *limitSwitchRight_, *limitSwitchLeft_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;

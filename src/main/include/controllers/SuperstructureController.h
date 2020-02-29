@@ -12,8 +12,8 @@
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
-//static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
-static const double MAX_FALCON_RPM = 5800.0;
+static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
+//static const double MAX_FALCON_RPM = 5800.0;
 static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
 //static const double RATIO_BATTERY_VOLTAGE = 12.72;
 
@@ -22,10 +22,6 @@ class SuperstructureController {
 
   enum SuperstructureState {
     kControlPanel, kClimbing, kDefaultTeleop
-  };
-
-  enum ClimbingState {
-    kClimbingIdle, kClimbingElevator
   };
 
   enum PowerCellHandlingState {
@@ -87,7 +83,6 @@ class SuperstructureController {
   ControlBoard *humanControl_;
   
   SuperstructureState currState_, nextState_;
-  ClimbingState currClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
 

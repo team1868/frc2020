@@ -270,25 +270,35 @@ void SuperstructureController::Update(bool isAuto){
             break;
         case kClimbing:
             printf("climbing state \n");
-            switch(currClimbingState_){
-                case kClimbingIdle:
+            if(!robot_->GetRightLimitSwitch()){
+                if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton)){
+                    robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
+                } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
+                    robot_->SetRightClimberElevatorOutput(climbElevatorDownPower_);
+                } else{
                     robot_->SetRightClimberElevatorOutput(0.0);
+                }   
+            } else {
+                robot_->SetRightClimberElevatorOutput(0.0);
+            }
+
+            if(!robot_->GetLeftLimitSwitch()){
+                if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton)){
+                    robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
+                } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
+                    robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
+                } else{
                     robot_->SetLeftClimberElevatorOutput(0.0);
-                    printf("climbing mechanisms are idle \n");
-                    break;
-                case kClimbingElevator:
-                    robot_->SetRightClimberElevatorOutput(climbPowerDesired_);
-                    robot_->SetLeftClimberElevatorOutput(climbPowerDesired_);
-                    if(!humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
-                    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton) &&
-                    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
-                    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-                        currClimbingState_ = kClimbingIdle;
-                        nextState_ = kDefaultTeleop; // verify that it should be next state
-                    }
-                    break;
-                default:
-                    printf("ERROR: no state in climbing \n");
+                }
+            } else {
+                robot_->SetLeftClimberElevatorOutput(0.0);
+            }
+            
+            if(!humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
+            !humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton) &&
+            !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
+            !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
+                nextState_ = kDefaultTeleop; // verify that it should be next state
             }
             break;
         default:
@@ -374,7 +384,7 @@ void SuperstructureController::CheckControlPanelDesired(){
     if(humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelButton)){
         controlPanelStage2_ = true;
         controlPanelStage3_ = false;
-        currState_ = kControlPanel; // would this be currState_ or nextState_
+        nextState_ = kControlPanel; // would this be currState_ or nextState_
     } /*else if(!humanControl_->GetDesired(ControlBoard::Buttons::kControlPanelButton)){
         currState_ = previousState;
         robot_->SetControlPanelOutput(0.0);
@@ -383,37 +393,11 @@ void SuperstructureController::CheckControlPanelDesired(){
 
 void SuperstructureController::CheckClimbDesired(){
     SuperstructureState previousState = currState_;
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton)){
-        climbPowerDesired_ = climbElevatorDownPower_;
-        currClimbingState_ = kClimbingElevator;
-        currState_ = kClimbing;
-    } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
-        climbPowerDesired_ = climbElevatorUpPower_;
-        currClimbingState_ = kClimbingElevator;
-        currState_ = kClimbing;
-    } else{
-        robot_->SetRightClimberElevatorOutput(0.0);
-    }
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton)){
-        climbPowerDesired_ = climbElevatorDownPower_;
-        currClimbingState_ = kClimbingElevator;
-        currState_ = kClimbing;
-    } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-        climbPowerDesired_ = climbElevatorUpPower_;
-        currClimbingState_ = kClimbingElevator;
-        currState_ = kClimbing;
-    } else{
-        robot_->SetLeftClimberElevatorOutput(0.0);
-    }
-
-    // might need to move to the state machine
-    if(!humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
-    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
-        robot_->SetRightClimberElevatorOutput(0.0);
-    }
-    if(!humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
-    !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-        robot_->SetLeftClimberElevatorOutput(0.0);
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) ||
+    humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton) ||
+    humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) ||
+    humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)) {
+        nextState_ = kClimbing;
     }
 }
 
@@ -660,22 +644,22 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRP
 }
 
 bool SuperstructureController::IsFlywheelAtSpeed(){
-    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredFlywheelVelocity_ && 
-        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredFlywheelVelocity_+150.0){
+    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredFlywheelVelocity_ /*&& 
+        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredFlywheelVelocity_+150.0*/){
         numTimeAtSpeed_++;
-        if (numTimeAtSpeed_ >= 1){
+        if (numTimeAtSpeed_ >= 3){
             atTargetSpeed_ = true;
-            return true;
+            //return true;
         }
         else{
             atTargetSpeed_ = false;
-            return false;
+            //return false;
         }
     } 
     numTimeAtSpeed_ = 0;
     atTargetSpeed_ = false;
-    //return true;
-    return false;
+    return true;
+    //return false;
 }
 
 std::string SuperstructureController::GetControlPanelColor() {

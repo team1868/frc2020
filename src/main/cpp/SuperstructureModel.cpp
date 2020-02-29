@@ -65,8 +65,8 @@ void RobotModel::ConfigFlywheelD(double dFac){
     flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac);
 }
 void RobotModel::ConfigFlywheelF(double fFac){
+    printf("pid ff: %f\n", fFac);
     flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
-    //printf("pid ff: %f\n", fFac);
 }
 
 double RobotModel::FlywheelMotor1Output(){
@@ -119,6 +119,15 @@ void RobotModel::SetLeftClimberElevatorOutput(double power){
     climberLeftElevatorMotor_->Set(power);
 }
 
+
+bool RobotModel::GetRightLimitSwitch(){
+    return (limitSwitchRight_->Get());
+}
+
+bool RobotModel::GetLeftLimitSwitch(){
+    return (limitSwitchLeft_->Get());
+}
+
 void RobotModel::SetControlPanelOutput(double power){
     controlPanelMotor_->Set(power);
 }
@@ -167,6 +176,7 @@ void RobotModel::GetColorFromSensor() {
     // cout<<"green "<<detectedColor_.green<<endl;
     // cout<<"blue "<<detectedColor_.blue<<endl;
 }
+
 
 std::string RobotModel::MatchColor() {
     colorConfidence_ = 0.9;

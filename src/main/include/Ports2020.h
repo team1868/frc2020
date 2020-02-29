@@ -94,5 +94,7 @@ static const int GYRO_PORT                               = 1; // ANALOG IO
 // DIO
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 0;//3
 static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 1;//1
+static const int LEFT_CLIMB_LIMIT_SWITCH_PORT            = 2;
+static const int RIGHT_CLIMB_LIMIT_SWITCH_PORT           = 3;
 
 

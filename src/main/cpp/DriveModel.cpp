@@ -168,6 +168,11 @@ RobotModel::RobotModel() :
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
+
+	limitSwitchRight_ = new frc::DigitalInput(RIGHT_CLIMB_LIMIT_SWITCH_PORT);
+	limitSwitchLeft_ = new frc::DigitalInput(LEFT_CLIMB_LIMIT_SWITCH_PORT);
+	
+
 	colorMatcher_.AddColorMatch(kBlueTarget);
 	colorMatcher_.AddColorMatch(kGreenTarget);
 	colorMatcher_.AddColorMatch(kRedTarget);
