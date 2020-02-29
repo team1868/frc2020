@@ -200,7 +200,7 @@ void SuperstructureController::WristUpdate(){
 void SuperstructureController::UpdatePrep(bool isAuto){
     if (!isAuto){
         UpdateButtons(); //moved button/state code into that function B)
-    }  else if(!farPrepping_ && !closePrepping_){ //farPrepping_ biconditional kPrepping :(((((
+    }  else if(!farPrepping_ && !closePrepping_ && currHandlingState_ != kShooting){ //farPrepping_ biconditional kPrepping :(((((
         desiredFlywheelVelocity_ = 0.0;
         SetFlywheelPowerDesired(0.0);//desiredFlywheelVelocity_);
         robot_->SetFlywheelOutput(0.0);
@@ -446,6 +446,7 @@ void SuperstructureController::Intaking(){
     printf("kIntaking\n");
     //robot_->SetIntakeRollersOutput(CalculateIntakeRollersPower());
     nextWristState_ = kLowering;
+    SetFlywheelPowerDesired(0.0);
     IndexUpdate();
 }
 
@@ -460,6 +461,12 @@ void SuperstructureController::Indexing(){
 
 bool SuperstructureController::Shooting(bool isAuto) {
     std::cout << "kShooting" << std::endl;
+    // if(farShooting_){
+    //     robot_->EngageFlywheelHood();
+    // }
+    // else {
+    //     robot_->DisengageFlywheelHood();
+    // }
     //printf("in kShooting AAAAAAAAAAAAAAAA NOTICE ME !!! !! AAAA\n");// with %f\n", desiredFlywheelVelocity_);
     //robot_->SetFlywheelOutput(desiredFlywheelVelocity_);
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
@@ -583,6 +590,7 @@ void SuperstructureController::SetShootingState(double autoVelocity){
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
     nextWristState_ = kRaising; //resetting whatever intake did
     nextHandlingState_ = kShooting;
+    robot_->EngageFlywheelHood();
 
     printf("start Shooting\n");
 }
@@ -604,13 +612,14 @@ void SuperstructureController::SetPreppingState(double desiredVelocity){ //start
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
     //desiredVelocity = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
-    std::cout <<  "velocity " << robot_->GetFlywheelMotor1Velocity() << std::endl;
+    //std::cout <<  "velocity " << robot_->GetFlywheelMotor1Velocity() << std::endl;
     nextWristState_ = kRaising; //resetting whatever intake did
     if(!farPrepping_){ 
         shootPrepStartTime_ = robot_->GetTime(); //TODO FIX
         printf("start Prepping\n");
     }
     robot_->EngageFlywheelHood();
+    std::cout << "flywheel hood ENGAGED" << std::endl;
     farPrepping_ = true;
     closePrepping_ = false;
     desiredFlywheelVelocity_ = desiredVelocity;
