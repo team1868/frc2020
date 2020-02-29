@@ -147,16 +147,8 @@ RobotModel::RobotModel() :
     flywheelEncoder2_ = &flywheelMotor2_->GetSensorCollection();
     std::cout << "end flywheel encoder creation" << std::endl << std::flush;
 
-	climberWinchLeftMotor_ = new WPI_VictorSPX(CLIMB_WINCH_LEFT_MOTOR_ID);
-	climberWinchRightMotor_ = new WPI_VictorSPX(CLIMB_WINCH_RIGHT_MOTOR_ID);
-	climberElevatorMotorRight_ = new WPI_VictorSPX(CLIMB_ELEVATOR_RIGHT_ID);
-	climberElevatorMotorLeft_ = new WPI_VictorSPX(CLIMB_ELEVATOR_LEFT_ID);
-
-
-	// make climber elevator motors srx and put current limits
-
-	climberWinchRightEncoder_ = new frc::Encoder(CLIMBER_WINCH_RIGHT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_RIGHT_ENCODER_B_PWM_PORT, false);
-	climberWinchLeftEncoder_ = new frc::Encoder(CLIMBER_WINCH_LEFT_ENCODER_A_PWM_PORT, CLIMBER_WINCH_LEFT_ENCODER_B_PWM_PORT, true); // verify that it must be inverted
+	climberRightElevatorMotor_ = new WPI_TalonSRX(CLIMB_RIGHT_ELEVATOR_ID);
+	climberLeftElevatorMotor_ = new WPI_TalonSRX(CLIMB_LEFT_ELEVATOR_ID);
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
@@ -171,8 +163,8 @@ RobotModel::RobotModel() :
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
 	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
-	climberElevatorMotorRight_ = new WPI_VictorSPX(CLIMB_ELEVATOR_RIGHT_ID);
-	climberElevatorMotorLeft_ = new WPI_VictorSPX(CLIMB_ELEVATOR_LEFT_ID);
+	climberRightElevatorMotor_ = new WPI_TalonSRX(CLIMB_RIGHT_ELEVATOR_ID);
+	climberLeftElevatorMotor_ = new WPI_TalonSRX(CLIMB_LEFT_ELEVATOR_ID);
 
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
@@ -255,13 +247,16 @@ RobotModel::RobotModel() :
 	loadingDDistErrorEntry_ = GetAutoOffsetTab().Add("loading dock", 0.0).GetEntry(); 
 	playerSt2MidErrorEntry_ = GetAutoOffsetTab().Add("player station midpoint", 0.0).GetEntry(); 
 	initLineSlantEntry_ = GetAutoOffsetTab().Add("initiation line slant", 0.0).GetEntry(); 
+	autoSequenceEntry_ = GetAutoOffsetTab().Add("input auto sequence", "").GetEntry();
+	autoInputSequence_ = autoSequenceEntry_.GetString("");
 
-	GetAutoOffsetTab().Add("Auto Sequence Choices", autoSendableChooser_).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+	GetDriverTab().Add("Auto Sequence Choices", autoSendableChooser_).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
 	autoSendableChooser_.SetDefaultOption("0 blank", "t 0.0 d 0.0");
 	autoSendableChooser_.AddOption("1: Target Zone", GetChosenSequence1());
 	autoSendableChooser_.AddOption("2: Loading Bay", GetChosenSequence2());
 	autoSendableChooser_.AddOption("3: Mid-Trench", GetChosenSequence3());
 	autoSendableChooser_.AddOption("4: Mid-Player Station", GetChosenSequence4());
+	autoSendableChooser_.AddOption("5: other", autoInputSequence_);
 
 	std::cout<< "end of drive model constructor" << std::endl;
 }
@@ -456,6 +451,7 @@ void RobotModel::SetIntaking(){
 	superstructureController_->SetIntakingState();
 }
 void RobotModel::SetIndexing(){
+	std::cout << "HERAJDSFLKDFLKDSJFALKDJF RNRNRNR" << std::endl  << std::flush;
 	superstructureController_->SetIndexingState();
 }
 
@@ -463,7 +459,9 @@ bool RobotModel::GetShootingIsDone(){
 	return superstructureController_->GetShootingIsDone();
 }
 
-
+// bool RobotModel::GetWaitingIsDone(){
+// 	return superstructureController_->GetWaitingIsDone();
+// }
 
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);
@@ -869,4 +867,5 @@ RobotModel::~RobotModel(){
 	rColorEntry_.Delete();
 	gColorEntry_.Delete();
 	resetWristAngleEntry_.Delete();
+	autoSequenceEntry_.Delete();
 }

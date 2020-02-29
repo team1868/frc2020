@@ -7,18 +7,23 @@
 
 #include "auto/commands/WaitingCommand.h"
 
-WaitingCommand::WaitingCommand(double myWaitTimeSec) : AutoCommand() {
+WaitingCommand::WaitingCommand(RobotModel *robot, double myWaitTimeSec) : AutoCommand() {
 	waitTimeSec_ = myWaitTimeSec;
-	timer_ = new frc::Timer();
+	robot_ = robot;
+	startTime_ = -1.0;
+	// timer_ = new frc::Timer();
 	isDone_ = false;
 }
 
 void WaitingCommand::Init() {
-	timer_->Start();
+	startTime_ = robot_->GetTime();
+	//timer_->Start();
 }
 
 void WaitingCommand::Update(double currTimeSec, double deltaTimeSec) {
-	isDone_ = (timer_->Get() >= waitTimeSec_);
+	// isDone_ = (timer_->Get() >= waitTimeSec_);
+	// std::cout << isDone_ << waitTimeSec_ << std::endl;
+	isDone_ = currTimeSec - startTime_ >= waitTimeSec_;
 	if(isDone_) {
 		printf("done waiting %f", currTimeSec);
 	}

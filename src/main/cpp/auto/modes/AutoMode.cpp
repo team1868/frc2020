@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "auto/modes/AutoMode.h"
-using namespace std;
+//using namespace std;
 
 AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");
@@ -26,12 +26,12 @@ AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
 	printf("Done constructing AutoMode\n");
 }
 
-void AutoMode::QueueFromString(string autoSequence) {
+void AutoMode::QueueFromString(std::string autoSequence) {
     firstCommand_ = NULL;
 		currentCommand_ = NULL;
 		AutoCommand *lastCommand = NULL;
 		iss.str (autoSequence);
-		cout << string ("autosequence ") + autoSequence << endl;
+		std::cout << std::string ("autosequence ") + autoSequence << std::endl;
 		breakDesired_ = false;
 		currAngle_ = 0.0;//robot_->GetNavXYaw();
 
@@ -170,7 +170,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			if (IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new WaitingCommand(waitTime);
+				tempCommand = new WaitingCommand(robot_, waitTime);
 			}
 			break;
 		case 's': //shooting
@@ -207,6 +207,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = NULL;
 			} else {
 				tempCommand = new IndexingCommand(robot_);
+				std::cout << "making new indexing command" << std::endl;
 			}
 			break;
 		default:	// When it's not listed, don't do anything :)
@@ -256,6 +257,10 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
                 //					DO_PERIODIC(1, printf("Command start at: %f \n", currTimeSec));
                 currentCommand_->Init();
                 printf("Initializing current commmand\n");
+				IndexingCommand *tempthing = dynamic_cast<IndexingCommand*>(currentCommand_);
+				if(tempthing==NULL){
+					printf("THIS IS NOT A INDEXING COMMAND\n");
+				}
 				printf("AM I DONE???? %d\n", currentCommand_->IsDone());
             } else {
 				printf("currentCommand_ is null\n");

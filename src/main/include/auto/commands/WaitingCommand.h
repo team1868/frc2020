@@ -15,7 +15,7 @@ public:
 	/**
 	 * Assigns the waitTimeSec and creates the timer
 	 */
-	WaitingCommand(double myWaitTimeSec);
+	WaitingCommand(RobotModel *robot, double myWaitTimeSec);
 
 	/**
 	 * Destructor
@@ -40,6 +40,8 @@ public:
 	void Reset();
 private:
 	double waitTimeSec_;
-	frc::Timer *timer_;
+	double startTime_;
+	RobotModel * robot_;
+	//frc::Timer *timer_;
 	bool isDone_;
 };

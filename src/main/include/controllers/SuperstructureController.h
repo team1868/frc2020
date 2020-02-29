@@ -8,12 +8,14 @@
 #pragma once
 #include "RobotModel.h"
 #include "ControlBoard.h"
-using namespace std;
+//using namespace std;
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
-static const double MAX_FALCON_RPM = 6000.0; // magic number!!!!
-static const double RATIO_BATTERY_VOLTAGE = 12.27;
+//static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
+static const double MAX_FALCON_RPM = 5800.0;
+static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
+//static const double RATIO_BATTERY_VOLTAGE = 12.72;
 
 class SuperstructureController {
  public:
@@ -23,16 +25,11 @@ class SuperstructureController {
   };
 
   enum ClimbingState {
-    kClimbingIdle, kClimbingElevator, kClimbingWinches
+    kClimbingIdle, kClimbingElevator
   };
 
   enum PowerCellHandlingState {
     kIntaking, kIndexing, kShooting, kResetting, kUndoElevator
-  };
-
-  enum AutoState {
-    kAutoInit, kAutoCloseShooting, kAutoFarShooting,
-    kAutoIntaking, kAutoIndexing
   };
 
    enum WristState {
@@ -52,22 +49,23 @@ class SuperstructureController {
   double RatioFlywheel();
   bool GetShootingIsDone();
 
+  // bool GetWaitingIsDone();
   
   void SetShootingState(double autoVelocity);
   void SetIntakingState();
   void SetPreppingState(double desiredVelocity);
   void SetIndexingState();
   
+  void SetIsAuto(bool isAuto);
 
   bool IsFlywheelAtSpeed();
 
-
-  double CalculateIntakeRollersPower();
 
 
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
   void ControlPanelFinalSpin();
+  std::string GetControlPanelColor();
   void Reset();
   void ClimberStuff();
 
@@ -79,7 +77,7 @@ class SuperstructureController {
   void IndexPrep();
   void Intaking();
   void Indexing();
-  bool Shooting();
+  bool Shooting(bool isAuto);
   void Resetting();
   void UndoElevator();
   void CheckControlPanelDesired();
@@ -89,7 +87,6 @@ class SuperstructureController {
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
-  uint32_t currAutoState_, nextAutoState_;
   SuperstructureState currState_, nextState_;
   ClimbingState currClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
@@ -101,11 +98,12 @@ class SuperstructureController {
   double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
-  double autoArmDownP_, autoArmUpP_;
+  double autoWristDownP_, autoWristUpP_;
   double desiredFlywheelVelocity_, closeFlywheelVelocity_;
 
   double desiredIntakeWristAngle_;
   double currWristAngle_, lastWristAngle_;
+  double intakeRollersPower_;
 
   double lowerElevatorTimeout_, elevatorTimeout_;
   double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, indexFunnelPower_;
@@ -113,7 +111,6 @@ class SuperstructureController {
   bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
-  double climbWinchPower_;
 
   double closeTicksPerSecDesired_;
   double farTicksPerSecDesired_;
@@ -133,6 +130,7 @@ class SuperstructureController {
   bool shootingIsDone_;
 
   double distanceToTarget_;
+  bool isAuto_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
@@ -140,6 +138,7 @@ class SuperstructureController {
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
 
   nt::NetworkTableEntry intakeWristAngleEntry_;
-  nt::NetworkTableEntry autoWristEntry_, autoArmDownPEntry_, autoArmUpPEntry_;
-  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, autoWinchEntry_;
+  nt::NetworkTableEntry autoWristEntry_, autoWristDownPEntry_, autoWristUpPEntry_;
+  nt::NetworkTableEntry controlPanelColorEntry_, flywheelMotor1CurrentEntry_, flywheelMotor2CurrentEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 };

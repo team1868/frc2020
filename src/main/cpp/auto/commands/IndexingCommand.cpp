@@ -15,15 +15,19 @@ IndexingCommand::IndexingCommand(RobotModel * robot) : AutoCommand() {
 }
 
 void IndexingCommand::Init(){
+    std::cout << "initialize index" << std::endl  << std::flush;
     isDone_ = false;
+    //robot_->SetIndexing();
 }
 
 void IndexingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetIndexing();
+    std::cout << "updating index" << std::endl << std::flush;
     isDone_ = true;
+    robot_->SetIndexing();
 }
 
 bool IndexingCommand::IsDone(){
+    printf("checking if done\n");
     return isDone_;
 }
 

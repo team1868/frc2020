@@ -6,7 +6,6 @@
 /*----------------------------------------------------------------------------*/
 
 #include "RobotModel.h"
-using namespace std;
 
 void RobotModel::SetSuperstructureController(SuperstructureController *superstructureController){
     superstructureController_ = superstructureController;
@@ -96,6 +95,14 @@ bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){
     return false;
 }
 
+double RobotModel::GetFlywheelMotor1Current(){
+    return flywheelMotor1_->GetSupplyCurrent();
+}
+
+double RobotModel::GetFlywheelMotor2Current(){
+    return flywheelMotor2_->GetSupplyCurrent();
+}
+
 void RobotModel::EngageFlywheelHood() {
     flywheelHoodSolenoid_->Set(true);
 }
@@ -104,28 +111,15 @@ void RobotModel::DisengageFlywheelHood() {
     flywheelHoodSolenoid_->Set(false);
 }
 
-void RobotModel::SetClimbWinchLeftOutput(double power){
-    climberWinchLeftMotor_->Set(power);
+void RobotModel::SetRightClimberElevatorOutput(double power){
+    climberRightElevatorMotor_->Set(power);
 }
 
-void RobotModel::SetClimbWinchRightOutput(double power){
-    climberWinchRightMotor_->Set(-power);
+void RobotModel::SetLeftClimberElevatorOutput(double power){
+    climberLeftElevatorMotor_->Set(power);
 }
 
-double RobotModel::GetClimberWinchRightEncoderValue(){
-    return climberWinchRightEncoder_->Get();
-}
-double RobotModel::GetClimberWinchLeftEncoderValue(){
-    return climberWinchLeftEncoder_->Get();
-}
 
-void RobotModel::SetClimberElevatorRightOutput(double power){
-    climberElevatorMotorRight_->Set(power);
-}
-
-void RobotModel::SetClimberElevatorLeftOutput(double power){
-    climberElevatorMotorLeft_->Set(power);
-}
 
 void RobotModel::SetControlPanelOutput(double power){
     controlPanelMotor_->Set(power);
@@ -154,12 +148,12 @@ void RobotModel::SetElevatorFeederOutput(double power) {
 }
 
 void RobotModel::SetElevatorRightOutput(double power) {
-    climberElevatorMotorRight_->Set(power);
+    climberRightElevatorMotor_->Set(power);
     //elevatorFeederMotor_->Set(power);
 }
 
 void RobotModel::SetElevatorLeftOutput(double power) {
-    climberElevatorMotorLeft_->Set(power);
+    climberLeftElevatorMotor_->Set(power);
     //elevatorFeederMotor_->Set(power);
 }
 

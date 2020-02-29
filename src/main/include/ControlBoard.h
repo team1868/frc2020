@@ -16,12 +16,10 @@ class ControlBoard {
  public:
   enum Joysticks{ kLeftJoy, kRightJoy };
 	enum Axes{ kX, kY, kZ, kLT};
-  enum Buttons{kHighGearShift, kLowGearShift, kShootingButton, kClimbElevatorUpButton, kClimbElevatorDownButton,
-    kAlignButton, kTrenchAlignButton, kControlPanelStage2Button, kControlPanelStage3Button, kIntakeSeriesButton,
+  enum Buttons{kHighGearShift, kLowGearShift, kShootingButton, kClimbRightElevatorUpButton, kClimbRightElevatorDownButton,
+    kAlignButton, kTrenchAlignButton, kControlPanelButton, kIntakeSeriesButton, kClimbLeftElevatorUpButton, kClimbLeftElevatorDownButton,
     kIndexSeriesButton, kShootClosePrepButton, kShootFarPrepButton, kUndoElevatorButton,
-    kWristDownButton, kWristUpButton, kRunRollersButton, kReverseRollersButton, kGearShiftButton,
-    kClimbWinchRightButton, kClimbWinchLeftButton};
-    // remove ClimbWinchRightButton and ClimbWinchLeftButton once auto climbing works
+    kWristDownButton, kWristUpButton, kRunRollersButton, kReverseRollersButton, kGearShiftButton,};
 
   ControlBoard();
   void ReadControls();
