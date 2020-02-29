@@ -81,6 +81,8 @@ class MainProgram : public frc::TimedRobot {
   double currTime_, lastTime_;
   double autoJoyVal_;
 
+  double lastJetsonAngle_, currJetsonAngle_, jetsonAngleTolerance_;
+
   int confl;
   
   NavXPIDSource *tempNavXSource_;

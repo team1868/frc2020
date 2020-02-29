@@ -452,7 +452,7 @@ void SuperstructureController::Intaking(){
 }
 
 void SuperstructureController::Indexing(){
-    std::cout << "kIndexing B)))))))))" << std::endl << std::flush;
+    //std::cout << "kIndexing B)))))))))" << std::endl << std::flush;
     IndexUpdate();
     //printf("in kIndexing\n");
 
@@ -473,7 +473,7 @@ bool SuperstructureController::Shooting(bool isAuto) {
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
     //std::cout << "velocity " << robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM << std::endl;
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
-    if(IsFlywheelAtSpeed() || (!topSensor_ && !bTimeout_)){
+    if(robot_->IsAutoFlywheelAtSpeed(desiredFlywheelVelocity_) || (!topSensor_ && !bTimeout_)){
         robot_->SetElevatorOutput(elevatorSlowPower_);
     } else {                                                                                                
         robot_->SetElevatorOutput(0.0);
