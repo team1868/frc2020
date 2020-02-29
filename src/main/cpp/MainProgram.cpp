@@ -226,13 +226,12 @@ void MainProgram::TeleopPeriodic() {
                 delete navXSource_;
             }
             if(alignTapeCommand!=nullptr){
-                alignTapeCommand->Reset();
                 delete alignTapeCommand;
             }
             navXSource_ = new NavXPIDSource(robot_); //create navX source
             printf("\nTURNING TO %f angle\n\n", currJetsonAngle_);
-            printf("current angle is %f and angle to turn to is %f\n", robot_->GetNavXYaw(), robot_->GetNavXYaw()+currJetsonAngle_);
-            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()+currJetsonAngle_, true, navXSource_, 2.0);
+            printf("current angle is %f and angle to turn to is %f\n", robot_->GetNavXYaw(), robot_->GetNavXYaw()-currJetsonAngle_);
+            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()-currJetsonAngle_, true, navXSource_, 2.0);
             //alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false, robot_->GetDeltaAngle(), robot_->GetDistance()); //nav, talon variables don't exist yet
             printf("created aligning command");
             alignTapeCommand->Init();
@@ -245,12 +244,11 @@ void MainProgram::TeleopPeriodic() {
     } else if (aligningTape_){
         //sendZMQ(true);
         // printf("in part align tape :))\n");
-        autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX);
+        autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
         autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
         //std::cout << "AM I NULL ALIGN??" << (alignTapeCommand==NULL) << std::endl << std::flush;
         if(fabs(autoJoyVal_) >= 0.1 || alignTapeCommand==nullptr || alignTapeCommand->IsDone()){
             robot_->SetLight(false);
-            alignTapeCommand->Reset();
             delete alignTapeCommand;
             alignTapeCommand = NULL;
             aligningTape_ = false;
@@ -329,11 +327,11 @@ void MainProgram::ConnectRecvZMQ() {
     try {
 		printf("in try connect to jetson\n");
         //change to dynamic jetson address
+        subscriber_->connect("tcp://10.18.68.12:5808");
 		printf("jetson connected to socket\n");
         int confl = 1;
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-		subscriber_->connect("tcp://10.18.68.12:5808");
         subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
     } catch(const zmq::error_t &exc) {
 		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
@@ -360,11 +358,7 @@ std::string MainProgram::ReadZMQ() {
     */
     printf("starting read from jetson\n");
 	//std::string contents = s_recv(*subscriber_);
-    std::string contents;
-    zmq::message_t m;
-    subscriber_->recv(&m, ZMQ_NOBLOCK);
-    contents = std::string(static_cast<char*>(m.data()), m.size());
-	printf("contents from jetson: %s \n", contents.c_str());
+	std::string contents = s_recv(*subscriber_);
     return contents;
 }
 
@@ -406,7 +400,7 @@ bool MainProgram::ReadAll(std::string contents) {
         printf("received values\n"); //TODO MAYBE ERROR CHECK ZMQ SEND ON JETSON SIDE
         double angle = stod(result.at(1));
         double distance = stod(result.at(2));
-        //printf("jetson set angle is %f and set distance is %f\n", angle, distance);
+        printf("jetson set angle is %f and set distance is %f\n", angle, distance);
 		robot_->SetDeltaAngle(angle);
 		robot_->SetDistance(distance);//1.6;
         abort = false;

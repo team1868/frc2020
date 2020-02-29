@@ -125,6 +125,8 @@ void RobotModel::SetLeftClimberElevatorOutput(double power){
     climberLeftElevatorMotor_->Set(power);
 }
 
+
+
 void RobotModel::SetControlPanelOutput(double power){
     controlPanelMotor_->Set(power);
 }
@@ -173,6 +175,15 @@ void RobotModel::GetColorFromSensor() {
     // cout<<"red "<<detectedColor_.red<<endl;
     // cout<<"green "<<detectedColor_.green<<endl;
     // cout<<"blue "<<detectedColor_.blue<<endl;
+}
+
+
+bool RobotModel::GetRightLimitSwitch() {
+    return(limitSwitchRight->Get());
+}
+
+bool RobotModel::GetLeftLimitSwitch() {
+    return(limitSwitchLeft->Get());
 }
 
 std::string RobotModel::MatchColor() {

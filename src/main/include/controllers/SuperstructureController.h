@@ -24,9 +24,9 @@ class SuperstructureController {
     kControlPanel, kClimbing, kDefaultTeleop
   };
 
-  enum ClimbingState {
-    kClimbingIdle, kClimbingElevator
-  };
+  // enum ClimbingState {
+  //   kClimbingIdle, kClimbingElevator
+  // };
 
   enum PowerCellHandlingState {
     kIntaking, kIndexing, kShooting, kResetting, kUndoElevator
@@ -49,6 +49,7 @@ class SuperstructureController {
   void UpdateButtons();
   double RatioFlywheel();
   bool GetShootingIsDone();
+
   // bool GetWaitingIsDone();
   
   void SetShootingState(double autoVelocity);
@@ -67,7 +68,7 @@ class SuperstructureController {
   void ControlPanelFinalSpin();
   std::string GetControlPanelColor();
   void Reset();
-
+  void Climbing();
 
 
   ~SuperstructureController();
@@ -81,14 +82,14 @@ class SuperstructureController {
   void Resetting();
   void UndoElevator();
   void CheckControlPanelDesired();
-  void CheckClimbDesired();
+  // void CheckClimbDesired();
   void CheckElevatorUndoDesired();
 
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
   SuperstructureState currState_, nextState_;
-  ClimbingState currClimbingState_;
+  //ClimbingState currClimbingState_, nextClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
 

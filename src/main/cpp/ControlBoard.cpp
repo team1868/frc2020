@@ -33,12 +33,12 @@ ControlBoard::ControlBoard() {
 	buttons_[kIndexSeriesButton] = new ButtonReader(operatorJoyB_, INDEX_SERIES_BUTTON_PORT);
 	buttons_[kShootClosePrepButton] = new ButtonReader(operatorJoyB_, SHOOT_CLOSE_PREP_BUTTON_PORT);
 	buttons_[kShootFarPrepButton] = new ButtonReader(operatorJoyB_, SHOOT_FAR_PREP_BUTTON_PORT);
-	buttons_[kUndoElevatorButton] = new ButtonReader(operatorJoy_, OH_SHIT_UNDO_ELEVATOR_BUTTON_PORT);
+	buttons_[kUndoElevatorButton] = new ButtonReader(operatorJoy_, UNDO_ELEVATOR_BUTTON_PORT);
 
 	buttons_[kGearShiftButton] = new ButtonReader(leftJoy_, GEARSHIFT_BUTTON_PORT);
 
-	buttons_[kClimbRightElevatorUpButton] = new ButtonReader(operatorJoy_, CLIMB_RIGHT_ELEVATOR_UP_BUTTON_PORT);
-	buttons_[kClimbRightElevatorDownButton] = new ButtonReader(operatorJoy_, CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT);
+	buttons_[kClimbRightElevatorUpButton] = new ButtonReader(operatorJoyB_, CLIMB_RIGHT_ELEVATOR_UP_BUTTON_PORT);
+	buttons_[kClimbRightElevatorDownButton] = new ButtonReader(operatorJoyB_, CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT);
 	buttons_[kClimbLeftElevatorUpButton] = new ButtonReader(operatorJoy_, CLIMB_LEFT_ELEVATOR_UP_BUTTON_PORT);
 	buttons_[kClimbLeftElevatorDownButton] = new ButtonReader(operatorJoy_, CLIMB_LEFT_ELEVATOR_DOWN_BUTTON_PORT);
 
@@ -46,6 +46,7 @@ ControlBoard::ControlBoard() {
     buttons_[kWristUpButton] = new ButtonReader(operatorJoy_, WRIST_UP_BUTTON_PORT);
     buttons_[kRunRollersButton] = new ButtonReader(operatorJoy_, WRIST_RUN_ROLLERS_BUTTON);
     buttons_[kReverseRollersButton] = new ButtonReader(operatorJoy_, WRIST_REVERSE_ROLLERS_BUTTON);
+	
 	
 	//create buttons here after creating a option in the Buttons enum
 	//example

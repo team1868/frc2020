@@ -164,10 +164,16 @@ RobotModel::RobotModel() :
 	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID);
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID);
 	elevatorMotor_ = new WPI_VictorSPX(ELEVATOR_MOTOR_ID);
-	
+
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
 	controlPanelGameData_ = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 	colorSensor_ = new rev::ColorSensorV3{I2CPORT};	
+	// new aditi code
+
+	limitSwitchRight = new frc::DigitalInput(2);
+	limitSwitchLeft = new frc::DigitalInput(3);
+
+
 	colorMatcher_.AddColorMatch(kBlueTarget);
 	colorMatcher_.AddColorMatch(kGreenTarget);
 	colorMatcher_.AddColorMatch(kRedTarget);
@@ -208,8 +214,14 @@ RobotModel::RobotModel() :
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
 	voltageEntry_ = GetModeTab().Add("Battery Voltage", 12.5).GetEntry();
 
+	climberRightLimitSwitch_ = GetFunctionalityTab().Add("Right Limit Switch", limitSwitchRight).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry();
+	climberLeftLimitSwitch_ = GetFunctionalityTab().Add("Left Limit Switch", limitSwitchLeft).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry(); 
+
 	leftCurrentEntry_ = GetFunctionalityTab().Add("Left Master Current", 0.0).GetEntry();
 	rightCurrentEntry_ = GetFunctionalityTab().Add("Right Master Current", 0.0).GetEntry();
+
+
+
 
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
@@ -367,7 +379,7 @@ void RobotModel::ResetDriveEncoders() {
 bool RobotModel::GetLeftEncoderStopped() {
 	if (currLeftVelocity_ < STOP_VELOCITY_THRESHOLD && currLeftVelocity_ > -STOP_VELOCITY_THRESHOLD 
 	&& lastLeftVelocity_ < STOP_VELOCITY_THRESHOLD && lastLeftVelocity_ > -STOP_VELOCITY_THRESHOLD) {
-		//printf("left encoder is stopped\n");
+		printf("left encoder is stopped\n");
 		return true;
 	}
 	// if (GetLeftVelocity() < STOP_VELOCITY_THRESHOLD && GetLeftVelocity() > -STOP_VELOCITY_THRESHOLD){
