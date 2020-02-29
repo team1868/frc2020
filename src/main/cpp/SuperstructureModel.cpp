@@ -95,6 +95,14 @@ bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){
     return false;
 }
 
+double RobotModel::GetFlywheelMotor1Current(){
+    return flywheelMotor1_->GetSupplyCurrent();
+}
+
+double RobotModel::GetFlywheelMotor2Current(){
+    return flywheelMotor2_->GetSupplyCurrent();
+}
+
 void RobotModel::EngageFlywheelHood() {
     flywheelHoodSolenoid_->Set(true);
 }

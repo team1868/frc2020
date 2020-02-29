@@ -194,7 +194,7 @@ void MainProgram::TeleopPeriodic() {
     //std::cout << "checking tape align\n" << std::flush;
     if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
         robot_->SetLight(true);
-        printf("light on");
+        //printf("light on");
         SendZMQ(true);
     } else {
         robot_->SetLight(false);
@@ -215,7 +215,8 @@ void MainProgram::TeleopPeriodic() {
             }
             navXSource_ = new NavXPIDSource(robot_); //create navX source
             printf("\nTURNING TO %f angle\n\n", robot_->GetDeltaAngle());
-            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()-robot_->GetDeltaAngle(), true, navXSource_);
+            printf("current angle is %f and angle to turn to is %f\n", robot_->GetNavXYaw(), robot_->GetNavXYaw()-robot_->GetDeltaAngle());
+            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()-robot_->GetDeltaAngle(), true, navXSource_, 2.0);
             //alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false, robot_->GetDeltaAngle(), robot_->GetDistance()); //nav, talon variables don't exist yet
             printf("created aligning command");
             alignTapeCommand->Init();
@@ -231,7 +232,7 @@ void MainProgram::TeleopPeriodic() {
         autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
         autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
         //std::cout << "AM I NULL ALIGN??" << (alignTapeCommand==NULL) << std::endl << std::flush;
-        if(fabs(autoJoyVal_) < 0.05 || alignTapeCommand==nullptr || alignTapeCommand->IsDone()){
+        if(fabs(autoJoyVal_) >= 0.1 || alignTapeCommand==nullptr || alignTapeCommand->IsDone()){
             robot_->SetLight(false);
             delete alignTapeCommand;
             alignTapeCommand = NULL;

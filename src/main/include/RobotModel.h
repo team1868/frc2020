@@ -228,6 +228,8 @@ class RobotModel {
     double FlywheelMotor1Output();
     double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
+    double GetFlywheelMotor1Current();
+    double GetFlywheelMotor2Current();
     
     void SetRightClimberElevatorOutput(double power);
     void SetLeftClimberElevatorOutput(double power);
