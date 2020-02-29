@@ -559,7 +559,7 @@ void SuperstructureController::IndexUpdate(){
         //printf("RUNNING TOP ELEVATOR\n");
         //printf("running elevator");
         robot_->SetElevatorOutput(elevatorFastPower_);
-        std::cout << "making elevator go" << std::endl << std::flush;
+        //std::cout << "making elevator go" << std::endl << std::flush;
     } else {
         //printf("not running elevator");
         robot_->SetElevatorOutput(0.0);
@@ -606,23 +606,23 @@ void SuperstructureController::SetShootingState(double autoVelocity){
     nextHandlingState_ = kShooting;
     robot_->EngageFlywheelHood();
 
-    printf("start Shooting\n");
+    //printf("start Shooting\n");
 }
 void SuperstructureController::SetIndexingState(){
-    std::cout << "setting index state" << std::endl  << std::flush;
+    //std::cout << "setting index state" << std::endl  << std::flush;
     nextWristState_ = kRaising; //resetting whatever intake did
     nextHandlingState_ = kIndexing;
-    printf("start Indexing-----------I AM HERE ALKDJFLAKSDJFLSAKDJFLAKSJDF-\n");
+    //printf("start Indexing-----------I AM HERE ALKDJFLAKSDJFLSAKDJFLAKSJDF-\n");
 }
 void SuperstructureController::SetIntakingState(){
-    printf("WE ARE IN THE INTAKING STATE IN SPC.CPP THANK U :D\n");
+    //printf("WE ARE IN THE INTAKING STATE IN SPC.CPP THANK U :D\n");
     nextWristState_ = kLowering;
     nextHandlingState_ = kIntaking;
-    printf("start Intaking\n");
+    //printf("start Intaking\n");
 }
 
 void SuperstructureController::SetPreppingState(double desiredVelocity){ //starts warming up shooter B)
-    std::cout << "prepping SDJFSKLDFJ)(WEFJLKJFLSKDJF)(SEFJSKLFJSDLKFJ" << std::endl;
+    //std::cout << "prepping SDJFSKLDFJ)(WEFJLKJFLSKDJF)(SEFJSKLFJSDLKFJ" << std::endl;
     //robot_->SetLight(true);
     //distanceToTarget_ = robot_->GetDistance();
     //desiredVelocity = (distanceToTarget_+1827.19)/0.547; //velocity from distance, using desmos
@@ -631,10 +631,10 @@ void SuperstructureController::SetPreppingState(double desiredVelocity){ //start
     if(!farPrepping_){ 
         std::cout << "STARTING PREPPING 4 FIRST TIME" << std::endl;
         shootPrepStartTime_ = robot_->GetTime(); //TODO FIX
-        printf("start Prepping\n");
+        //printf("start Prepping\n");
     }
     robot_->EngageFlywheelHood();
-    std::cout << "flywheel hood ENGAGED" << std::endl;
+    //std::cout << "flywheel hood ENGAGED" << std::endl;
     farPrepping_ = true;
     closePrepping_ = false;
     desiredFlywheelVelocity_ = desiredVelocity;

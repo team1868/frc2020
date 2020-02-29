@@ -201,9 +201,14 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	} else { // not done
 		
 		double output = talonOutput_->GetOutput();
-		output *= 0.5;
+		//output *= 0.5;
 //		double output = 0.0;
 		// adjust motor values according to PID
+		// if(fabs(output) < 0.05){
+		// 	printf("VALUE TOO SMALL SET TIMEOUT TO TRUE, EXITED PIVOT\n");
+		// 	pivotCommandStartTime_ = -100.0; //timeout immediately, because the robot has stopped moving
+		// }
+
 		robot_->SetDriveValues(RobotModel::kLeftWheels, output);
 		robot_->SetDriveValues(RobotModel::kRightWheels, -output);
 		//robot_->SetDriveValues(output, output); //NOTE: NO STATIC FRICTION
