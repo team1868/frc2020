@@ -113,7 +113,7 @@ void RobotModel::EngageFlywheelHood() {
 }
 
 void RobotModel::DisengageFlywheelHood() {
-    std::cout << "disengaging flywheel hood" << std::endl;
+    //std::cout << "disengaging flywheel hood" << std::endl;
     flywheelHoodSolenoid_->Set(false);
 }
 
@@ -212,6 +212,10 @@ std::string RobotModel::GetControlPanelGameData() {
 //should return degrees
 double RobotModel::GetIntakeWristAngle(){
     return TICKS_TO_WRIST_DEGREES*intakeWristMotor_->GetSelectedSensorPosition();
+}
+
+void RobotModel::ResetWristAngle(){
+    intakeWristMotor_->SetSelectedSensorPosition(0);
 }
 
 bool RobotModel::GetElevatorFeederLightSensorStatus() {

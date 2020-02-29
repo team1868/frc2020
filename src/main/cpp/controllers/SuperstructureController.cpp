@@ -39,6 +39,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     manualRollerPower_ = 0.5;
     autoWristDownP_ = 0.07;
     autoWristUpP_ = 0.1;
+    isManualRaisingWrist_ = false;
 
     controlPanelPower_ = 0.5; // fix
     controlPanelCounter_ = 0;
@@ -140,69 +141,93 @@ void SuperstructureController::Reset() { // might not need this
 
 void SuperstructureController::WristUpdate(){
     //printf("wrist update\n");
-    if(!autoWristEntry_.GetBoolean(true)){
-        //printf("HERE OISDHAFOSDKJFLASKDHFJ\n");
-        // human: decide rollers auto or manual
-        if (humanControl_->GetDesired(ControlBoard::Buttons::kWristUpButton)){
-            robot_->SetIntakeWristOutput(-0.5);
-            //printf("wrist up\n");
-        }
-        else if (humanControl_->GetDesired(ControlBoard::Buttons::kWristDownButton)){
-            robot_->SetIntakeWristOutput(0.5);
-            //printf("wrist down\n");
-        }
-        else{
-            robot_->SetIntakeWristOutput(0.0);
-        }
-        if(humanControl_->GetDesired(ControlBoard::Buttons::kReverseRollersButton)){
-            robot_->SetIntakeRollersOutput(-0.5);
-        } else if(humanControl_->GetDesired(ControlBoard::Buttons::kRunRollersButton)){
-            //printf("RUNNING ROLLERS RIGH NOWWWWW at %f\n", manualRollerPower_);
-            robot_->SetIntakeRollersOutput(manualRollerPower_);
-        }else {
-            robot_->SetIntakeRollersOutput(0.0);
-        }
-    } else {
-        //("inside auto wrist in mode %d\n", currWristState_);
+    //auto wrist 
+    double intakeWristOutput = 0.0, intakeRollersOutput = 0.0;
+    if(autoWristEntry_.GetBoolean(true)){
         currWristAngle_ = robot_->GetIntakeWristAngle(); // might not need?
         switch (currWristState_){
             case kRaising:
-                robot_->SetIntakeRollersOutput(0.0);
+                //robot_->SetIntakeRollersOutput(0.0);
+                // intakeRollersOutput = 0.0;
                 //printf("current wrist angle %f\n", currWristAngle_);
                 if(currWristAngle_ > 10.0) {
-                    robot_->SetIntakeWristOutput(autoWristUpP_*(0.0-currWristAngle_));//(0.0-currWristAngle_)*wristPFac_); 
+                    //robot_->SetIntakeWristOutput(autoWristUpP_*(0.0-currWristAngle_));//(0.0-currWristAngle_)*wristPFac_); 
+                    intakeWristOutput = autoWristUpP_*(0.0-currWristAngle_);
                     //printf("DONE LOLS\n");
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
-                else{
-                    robot_->SetIntakeWristOutput(0.0);
-                }
+                // else{
+                //     //robot_->SetIntakeWristOutput(0.0);
+                //     intakeWristOutput = 0.0;
+                // }
                 break;
             case kLowering:
                 //printf("lowering, pfac: %f, desired angle: %f, current angle %f\n", wristPFac_, desiredIntakeWristAngle_, currWristAngle_);
                 if(currWristAngle_ < desiredIntakeWristAngle_-45.0) {
-                    robot_->SetIntakeWristOutput(autoWristDownP_*(desiredIntakeWristAngle_-currWristAngle_));//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
+                    //robot_->SetIntakeWristOutput(autoWristDownP_*(desiredIntakeWristAngle_-currWristAngle_));//(desiredIntakeWristAngle_-currWristAngle_)*wristPFac_);
+                    intakeWristOutput = autoWristDownP_*(desiredIntakeWristAngle_-currWristAngle_);
                     //robot_->SetIntakeWristOutput(0.5);
-                } else{
-                    robot_->SetIntakeWristOutput(0.0);
-                    //printf("LOWERED, not running wrist\n");
                 }
+                // else{
+                //     //robot_->SetIntakeWristOutput(0.0);
+                //     intakeWristOutput = 0.0;
+                //     //printf("LOWERED, not running wrist\n");
+                // }
                 if(currWristAngle_ > desiredIntakeWristAngle_ - 45.0 - 45.0){ //within acceptable range, ~740 degrees in sensor is 90 degrees on wrist
-                    robot_->SetIntakeRollersOutput(intakeRollersPower_);
+                    //robot_->SetIntakeRollersOutput(intakeRollersPower_);
+                    intakeRollersOutput = intakeRollersPower_;
                     //std::cout << "intake rollers moving i think" << std::endl;
                 }
-                else{
-                    robot_->SetIntakeRollersOutput(0.0);
-                }
+                // else{
+                //     //robot_->SetIntakeRollersOutput(0.0);
+                //     intakeRollersOutput = 0.0;
+                // }
                 break;
             default:
                 printf("ERROR: no state in wrist controller \n");
-                robot_->SetIntakeWristOutput(0.0);
-                robot_->SetIntakeRollersOutput(0.0);
+                //robot_->SetIntakeWristOutput(0.0);
+                // intakeWristOutput = 0.0;
+                // //robot_->SetIntakeRollersOutput(0.0);
+                // intakeRollersOutput = 0.0;
         }
         currWristState_ = nextWristState_;
 
     }
+
+    //manual wrist override
+    if(isManualRaisingWrist_ && !humanControl_->GetDesired(ControlBoard::Buttons::kWristUpButton)){ //was just raising wrist
+        robot_->ResetWristAngle();
+    }
+    isManualRaisingWrist_ = false;
+    if (humanControl_->GetDesired(ControlBoard::Buttons::kWristUpButton)){
+        //robot_->SetIntakeWristOutput(-0.5);
+        intakeWristOutput = -0.5;
+        isManualRaisingWrist_ = true;
+        //printf("wrist up\n");
+    }
+    else if (humanControl_->GetDesired(ControlBoard::Buttons::kWristDownButton)){
+        //robot_->SetIntakeWristOutput(0.5);
+        intakeWristOutput = 0.5;
+        //printf("wrist down\n");
+    }
+    // else{
+    //     //robot_->SetIntakeWristOutput(0.0);
+    //     intakeWristOutput = 0.0;
+    // }
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kReverseRollersButton)){
+        //robot_->SetIntakeRollersOutput(-0.5);
+        intakeRollersOutput = -0.5;
+    } else if(humanControl_->GetDesired(ControlBoard::Buttons::kRunRollersButton)){
+        //printf("RUNNING ROLLERS RIGH NOWWWWW at %f\n", manualRollerPower_);
+        //robot_->SetIntakeRollersOutput(manualRollerPower_);
+        intakeRollersOutput = manualRollerPower_;
+    }
+    // else {
+    //     //robot_->SetIntakeRollersOutput(0.0);
+    //     intakeRollersOutput = 0.0;
+    // }
+    robot_->SetIntakeWristOutput(intakeWristOutput);
+    robot_->SetIntakeRollersOutput(intakeRollersOutput);
 }
 
 void SuperstructureController::UpdatePrep(bool isAuto){

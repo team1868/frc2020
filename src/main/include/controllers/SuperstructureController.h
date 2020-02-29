@@ -128,6 +128,7 @@ class SuperstructureController {
 
   double distanceToTarget_;
   bool isAuto_;
+  bool isManualRaisingWrist_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
