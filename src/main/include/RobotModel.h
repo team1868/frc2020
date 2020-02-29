@@ -209,6 +209,7 @@ class RobotModel {
     double GetPointI();
     double GetPointD();
 
+    void ResetWristAngle();
 
     // superstructure robot model
     void SetAutoState(uint32_t state);

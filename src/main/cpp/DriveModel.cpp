@@ -794,7 +794,7 @@ void RobotModel::RefreshShuffleboard(){
 	resetWristAngle_ = resetWristAngleEntry_.GetBoolean(false);
 	if (resetWristAngle_) {
 		//printf("reset wrist angle\n");
-		intakeWristMotor_->SetSelectedSensorPosition(0);
+		ResetWristAngle();
 	}
 
 

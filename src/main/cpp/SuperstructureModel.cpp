@@ -216,6 +216,10 @@ double RobotModel::GetIntakeWristAngle(){
     return TICKS_TO_WRIST_DEGREES*intakeWristMotor_->GetSelectedSensorPosition();
 }
 
+void RobotModel::ResetWristAngle(){
+    intakeWristMotor_->SetSelectedSensorPosition(0);
+}
+
 bool RobotModel::GetElevatorFeederLightSensorStatus() {
     return  elevatorFeederLightSensor_->Get();
 }
