@@ -147,13 +147,8 @@ void RobotModel::SetElevatorFeederOutput(double power) {
     //elevatorMotor_->Set(power);
 }
 
-void RobotModel::SetElevatorRightOutput(double power) {
-    climberRightElevatorMotor_->Set(power);
-    //elevatorFeederMotor_->Set(power);
-}
-
-void RobotModel::SetElevatorLeftOutput(double power) {
-    climberLeftElevatorMotor_->Set(power);
+void RobotModel::SetElevatorOutput(double power) {
+    elevatorMotor_->Set(power);
     //elevatorFeederMotor_->Set(power);
 }
 

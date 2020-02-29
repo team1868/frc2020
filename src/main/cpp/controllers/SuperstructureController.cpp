@@ -617,8 +617,7 @@ void SuperstructureController::IndexUpdate(){
         //printf("RUNNING TOP ELEVATOR\n");
         //printf("running elevator");
         // INCORRECT??
-        robot_->SetElevatorLeftOutput(elevatorFastPower_);
-        robot_->SetElevatorRightOutput(elevatorFastPower_);
+        robot_->SetElevatorOutput(elevatorFastPower_);
         //std::cout << "making elevator go" << std::endl << std::flush;
     } else {
         //printf("not running elevator");

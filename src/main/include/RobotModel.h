@@ -252,8 +252,7 @@ class RobotModel {
 
     void SetIndexFunnelOutput(double power);
     void SetElevatorFeederOutput(double power);
-    void SetElevatorRightOutput(double power);
-    void SetElevatorLeftOutput(double power);
+    void SetElevatorOutput(double power);
     
     void SetLight(bool setLight);
 
