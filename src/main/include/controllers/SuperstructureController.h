@@ -37,6 +37,7 @@ class SuperstructureController {
   }; 
 
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
+  void AutoInit();
   void Update(bool isAuto);
   void UpdatePrep(bool isAuto);
   void DisabledUpdate();
@@ -57,7 +58,7 @@ class SuperstructureController {
   
   void SetIsAuto(bool isAuto);
 
-  bool IsFlywheelAtSpeed();
+  bool IsFlywheelAtSpeed(double rpm);
 
 
 

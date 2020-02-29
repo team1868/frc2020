@@ -257,10 +257,10 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
                 //					DO_PERIODIC(1, printf("Command start at: %f \n", currTimeSec));
                 currentCommand_->Init();
                 printf("Initializing current commmand\n");
-				IndexingCommand *tempthing = dynamic_cast<IndexingCommand*>(currentCommand_);
-				if(tempthing==NULL){
-					printf("THIS IS NOT A INDEXING COMMAND\n");
-				}
+				// IndexingCommand *tempthing = dynamic_cast<IndexingCommand*>(currentCommand_);
+				// if(tempthing==NULL){
+				// 	printf("THIS IS NOT A INDEXING COMMAND\n");
+				// }
 				printf("AM I DONE???? %d\n", currentCommand_->IsDone());
             } else {
 				printf("currentCommand_ is null\n");
