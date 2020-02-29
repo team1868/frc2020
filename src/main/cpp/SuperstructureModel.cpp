@@ -113,7 +113,7 @@ void RobotModel::EngageFlywheelHood() {
 }
 
 void RobotModel::DisengageFlywheelHood() {
-    std::cout << "disengaging flywheel hood" << std::endl;
+    //std::cout << "disengaging flywheel hood" << std::endl;
     flywheelHoodSolenoid_->Set(false);
 }
 
