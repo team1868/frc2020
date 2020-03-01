@@ -102,7 +102,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelMotor1OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 1 output", robot_->FlywheelMotor1Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor2OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 2 output", robot_->FlywheelMotor2Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
-    //climbElevatorUpPower_ = GetFunctionalityTab().Add("Elevator Up Pwoer", 0.5).GetEntry();
+    //climbElevatorUpPower_ = GetFunctionalityTab().Add("Elevator Up Power", 0.5).GetEntry();
 	//climbElevatorDownPower_ = GetFunctionalityTab().Add("Elevator Down Power", -0.4).GetEntry();
 
     //TODO make timeout
@@ -391,23 +391,23 @@ void SuperstructureController::UpdateButtons(){
         nextHandlingState_ = kIndexing;
     }
 
-    PowerCellHandlingState previousState = kIndexing; 
+    PowerCellHandlingState previousUndoState = nextHandlingState_; // //TODO ERROR bad naming, keep the same type for same name
     //printf("-----saved last handling state!-----\n");
     if(humanControl_->GetDesired(ControlBoard::Buttons::kUndoElevatorButton)){
-        previousState = nextHandlingState_; //TODO ERROR bad naming, keep the same type for same name
         printf("elevator is being undone\n");
         nextHandlingState_ = kUndoElevator;
     } else if(nextHandlingState_ == kUndoElevator && !humanControl_->GetDesired(ControlBoard::Buttons::kUndoElevatorButton)) {
-        nextHandlingState_ = previousState;
+        nextHandlingState_ = previousUndoState;
     }
 
+    /*
+    PowerCellHandlingState previousFunnelFeederElevatorState = nextHandlingState_; ////TODO ERROR bad naming, keep the same type for same name
     if(humanControl_->GetDesired(ControlBoard::Buttons::kFunnelFeederElevatorButton)){
-        previousState = nextHandlingState_; //TODO ERROR bad naming, keep the same type for same name
         printf("elevator is being undone\n");
         nextHandlingState_ = kManualFunnelFeederElevator;
     } else if(nextHandlingState_ == kManualFunnelFeederElevator && !humanControl_->GetDesired(ControlBoard::Buttons::kFunnelFeederElevatorButton)) {
-        nextHandlingState_ = previousState;
-    }
+        nextHandlingState_ = previousFunnelFeederElevatorState;
+    }*/
 
     //flywheel control if not shooting
     if (nextHandlingState_ != kShooting){
@@ -764,9 +764,12 @@ double SuperstructureController::RatioFlywheel(){
 }
 
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
-    double desiredVelocity = 1.82827*robot_->GetDistance() + 3340.61;
-    //return desiredVelocity;
-    return closeFlywheelVelocity_;
+    double shotDistance = sqrt(pow(robot_->GetDistance(), 2.0) - pow(60.0, 2.0)) + 6.0;
+    printf("distance from shot %f", shotDistance);
+    double desiredVelocity = 5.58494*220.0 + 2966.29;
+    printf("desired velocity calculate %f", desiredVelocity);
+    return desiredVelocity;
+    //return closeFlywheelVelocity_;
 }
 
 //TODO actually implement
