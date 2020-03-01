@@ -9,6 +9,7 @@
 
 #define PRACTICE_BOT
 
+#include <zhelpers.hpp>
 #include <frc/WPILib.h>
 #include <AHRS.h>
 #include <ctre/Phoenix.h>
@@ -262,6 +263,14 @@ class RobotModel {
     void GetColorFromSensor(); 
     std::string MatchColor();
 
+    void ConnectRecvZMQ();
+    std::string ReadZMQ();
+    bool ReadAll(std::string contents);
+    void ConnectSendZMQ();
+    void SendZMQ(bool lowExposure);
+    void ZMQinit();
+    bool UpdateZMQ();
+
     ~RobotModel();
 
   private:
@@ -411,7 +420,13 @@ class RobotModel {
     // input sequence
     std::string autoInputSequence_;
 
-
+    
+    //zmq
+    zmq::context_t *context_;//, *context2_; //context for creating sockets
+    zmq::socket_t *subscriber_; //socket to receive message from jetson
+    zmq::socket_t *publisher_; //socket to send message to jetson
+    int confl;
+    bool isSocketBound_;
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;

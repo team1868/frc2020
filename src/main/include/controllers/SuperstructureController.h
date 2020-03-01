@@ -48,6 +48,7 @@ class SuperstructureController {
   void UpdateButtons();
   double RatioFlywheel();
   bool GetShootingIsDone();
+  bool GetIsPrepping();
 
   // bool GetWaitingIsDone();
   

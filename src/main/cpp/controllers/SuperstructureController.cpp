@@ -119,11 +119,14 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     shootingIsDone_ = false;
 }
 
+//auto init
 void SuperstructureController::AutoInit(){
     shootingIsDone_ = false;
 }
 
+//teleop and auto init
 void SuperstructureController::Reset() { // might not need this
+
     currState_ = kDefaultTeleop;
     nextState_ = kDefaultTeleop;
     currHandlingState_ = kIndexing;
@@ -136,6 +139,8 @@ void SuperstructureController::Reset() { // might not need this
     flywheelDFac_ = flywheelDEntry_.GetDouble(0.0);
     //flywheelFFac_ = flywheelFEntry_.GetDouble(0.0);
     FlywheelPIDControllerUpdate();
+
+    
 }
 
 void SuperstructureController::WristUpdate(){
@@ -250,7 +255,7 @@ void SuperstructureController::Update(bool isAuto){
     currTime_ = robot_->GetTime(); // may or may not be necessary
     RefreshShuffleboard();
     if (!isAuto){
-        // CheckClimbDesired();
+        CheckClimbDesired();
         CheckControlPanelDesired();
     }
     
@@ -326,27 +331,21 @@ void SuperstructureController::Update(bool isAuto){
             break;
         case kClimbing:
             printf("climbing state \n");
-            if(!robot_->GetRightLimitSwitch()){
-                if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton)){
-                    robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
-                } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
-                    robot_->SetRightClimberElevatorOutput(climbElevatorDownPower_);
-                } else{
-                    robot_->SetRightClimberElevatorOutput(0.0);
-                }   
-            } else {
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
+               !robot_->GetRightLimitSwitch()){
+                robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
+            } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
+                robot_->SetRightClimberElevatorOutput(climbElevatorDownPower_);
+            } else{
                 robot_->SetRightClimberElevatorOutput(0.0);
-            }
+            }   
 
-            if(!robot_->GetLeftLimitSwitch()){
-                if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton)){
-                    robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
-                } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
-                    robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
-                } else{
-                    robot_->SetLeftClimberElevatorOutput(0.0);
-                }
-            } else {
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
+               !robot_->GetLeftLimitSwitch()){
+                robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
+            } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
+                robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
+            } else{
                 robot_->SetLeftClimberElevatorOutput(0.0);
             }
             
@@ -356,7 +355,7 @@ void SuperstructureController::Update(bool isAuto){
             !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
                 nextState_ = kDefaultTeleop; // verify that it should be next state
             }
-            // Climbing()
+            //Climbing()
             break;
         default:
             printf("ERROR: no state in superstructure controller\n");
@@ -436,6 +435,8 @@ void SuperstructureController::UpdateButtons(){
             farPrepping_ = true;
         } else {
             //printf("STOPPING FLYWHEEL\n");
+            closePrepping_ = false;
+            farPrepping_ = false;
             desiredFlywheelVelocity_ = 0.0;
             SetFlywheelPowerDesired(desiredFlywheelVelocity_);
             robot_->SetControlModeVelocity(0.0);
@@ -802,6 +803,10 @@ bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
     }
     //return true; // TODO for operator to decide when she wants to shoot
     return atTargetSpeed_;
+}
+
+bool SuperstructureController::GetIsPrepping(){
+    return (farPrepping_ || closePrepping_);
 }
 
 std::string SuperstructureController::GetControlPanelColor() {
