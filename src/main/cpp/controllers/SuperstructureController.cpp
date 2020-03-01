@@ -108,7 +108,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     elevatorTopLightSensorEntry_ = sensorsLayout_.Add("top elevator", false).GetEntry();
     elevatorBottomLightSensorEntry_ = sensorsLayout_.Add("bottom elevator", false).GetEntry();
 
-    controlPanelColorEntry_ = robot_->GetSuperstructureTab().Add("control panel color", "").GetEntry();
+    controlPanelColorEntry_ = robot_->GetFunctionalityTab().Add("control panel color", "").GetEntry();
     controlPanelColorEntry_.SetString(GetControlPanelColor());
     //TODO make timeout
 

@@ -33,7 +33,7 @@ ControlBoard::ControlBoard() {
 	buttons_[kIndexSeriesButton] = new ButtonReader(operatorJoyB_, INDEX_SERIES_BUTTON_PORT);
 	buttons_[kShootClosePrepButton] = new ButtonReader(operatorJoyB_, SHOOT_CLOSE_PREP_BUTTON_PORT);
 	buttons_[kShootFarPrepButton] = new ButtonReader(operatorJoyB_, SHOOT_FAR_PREP_BUTTON_PORT);
-	buttons_[kUndoElevatorButton] = new ButtonReader(operatorJoy_, UNDO_ELEVATOR_BUTTON_PORT);
+	buttons_[kUndoElevatorButton] = new ButtonReader(operatorJoyB_, UNDO_ELEVATOR_BUTTON_PORT);
 	buttons_[kFunnelFeederElevatorButton] = new ButtonReader(operatorJoyB_, FUNNEL_FEEDER_ELEVATOR_UP_BUTTON_PORT);
 
 	buttons_[kGearShiftButton] = new ButtonReader(leftJoy_, GEARSHIFT_BUTTON_PORT);
