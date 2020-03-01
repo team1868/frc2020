@@ -55,6 +55,7 @@ static double HIGH_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER =  0.0;
 static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
 static const double ROBOT_WIDTH = 28.5/12; //ft
+
 // superstructure
 static const int SPARK_ENCODER_TICKS = 42;
 static const double FLYWHEEL_DIAMETER = 8.0; // inches
@@ -76,12 +77,6 @@ static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);
 static constexpr frc::Color kGreenTarget = frc::Color(0.193, 0.555, 0.252);
 static constexpr frc::Color kRedTarget = frc::Color(0.444, 0.388, 0.171);
 static constexpr frc::Color kYellowTarget = frc::Color(0.318, 0.535, 0.147);
-
-// todo - delete later
-static constexpr frc::Color BLUE = frc::Color(0.143, 0.427, 0.429); //0.127, 0.430, 0.442
-static constexpr frc::Color GREEN = frc::Color(0.197, 0.561, 0.240); //0.177, 0.574, 0.249
-static constexpr frc::Color RED = frc::Color(0.561, 0.232, 0.114); //0.478, 0.369, 0.153
-static constexpr frc::Color YELLOW = frc::Color(0.361, 0.524, 0.113); //0.322, 0.880, 0.128
 
 class SuperstructureController;
 class RobotModel {
@@ -231,7 +226,6 @@ class RobotModel {
     void ConfigFlywheelI(double iFac_);
     void ConfigFlywheelD(double dFac_);
     void ConfigFlywheelF(double fFac_);
-    double RatioFlywheel(double value);
     double FlywheelMotor1Output();
     double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
@@ -263,6 +257,7 @@ class RobotModel {
     void GetColorFromSensor(); 
     std::string MatchColor();
 
+    // zmq
     void ConnectRecvZMQ();
     std::string ReadZMQ();
     bool ReadAll(std::string contents);
@@ -309,9 +304,6 @@ class RobotModel {
     frc::Color detectedColor_, matchedColor_;
     rev::ColorMatch colorMatcher_;
     std::string colorString_;
-
-    // LIMIT SWITCH
-    frc::DigitalInput *limitSwitchRight, *limitSwitchLeft;
 
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;

@@ -225,8 +225,8 @@ RobotModel::RobotModel() :
 	navXYawEntry_ = GetFunctionalityTab().Add("NavX Yaw", 0.0).GetEntry();
 	voltageEntry_ = GetModeTab().Add("Battery Voltage", 12.5).GetEntry();
 
-	climberRightLimitSwitchEntry_ = GetFunctionalityTab().Add("Right Limit Switch", limitSwitchRight).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry();
-	climberLeftLimitSwitchEntry_ = GetFunctionalityTab().Add("Left Limit Switch", limitSwitchLeft).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry(); 
+	climberRightLimitSwitchEntry_ = GetFunctionalityTab().Add("Right Limit Switch", limitSwitchRight_).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry();
+	climberLeftLimitSwitchEntry_ = GetFunctionalityTab().Add("Left Limit Switch", limitSwitchLeft_).WithWidget(frc::BuiltInWidgets::kBooleanBox).GetEntry(); 
 
 	leftCurrentEntry_ = GetFunctionalityTab().Add("Left Master Current", 0.0).GetEntry();
 	rightCurrentEntry_ = GetFunctionalityTab().Add("Right Master Current", 0.0).GetEntry();
