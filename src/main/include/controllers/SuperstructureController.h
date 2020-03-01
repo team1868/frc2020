@@ -136,6 +136,7 @@ class SuperstructureController {
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
 
   nt::NetworkTableEntry intakeWristAngleEntry_;
+  nt::NetworkTableEntry climbElevatorUpEntry_, climbElevatorDownEntry_;
   nt::NetworkTableEntry autoWristEntry_, autoWristDownPEntry_, autoWristUpPEntry_;
   nt::NetworkTableEntry controlPanelColorEntry_, flywheelMotor1CurrentEntry_, flywheelMotor2CurrentEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;

@@ -83,7 +83,6 @@ static const int WRIST_UP_BUTTON_PORT                    = 8;
 static const int WRIST_RUN_ROLLERS_BUTTON                = 7;
 static const int WRIST_REVERSE_ROLLERS_BUTTON            = 6;
 
-
 static const int CLIMB_RIGHT_ELEVATOR_UP_BUTTON_PORT     = 4; 
 static const int CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT   = 5;
 static const int CLIMB_LEFT_ELEVATOR_UP_BUTTON_PORT      = 4; 
