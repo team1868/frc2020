@@ -766,9 +766,9 @@ double SuperstructureController::RatioFlywheel(){
 //uses inches
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
     double shotDistance = sqrt(pow(robot_->GetDistance()*12.0, 2.0) - pow(60.0, 2.0)) + 6.0; //all in inches
-    printf("distance from shot %f", shotDistance);
+    //printf("distance from shot %f", shotDistance);
     double desiredVelocity = 5.58494*shotDistance + 2966.29;
-    printf("desired velocity calculate %f", desiredVelocity);
+    //printf("desired velocity calculate %f", desiredVelocity);
     return desiredVelocity;
     //return closeFlywheelVelocity_;
 }

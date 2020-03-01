@@ -26,4 +26,5 @@ class AlignTapeCommand : public AutoCommand{
   bool isDone_;
   bool aligning_;
   double lastJetsonAngle_, currJetsonAngle_, jetsonAngleTolerance_;
+  double maxTime_, startTime_;
 };

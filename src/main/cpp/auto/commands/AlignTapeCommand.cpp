@@ -17,12 +17,15 @@ AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource)
     //navXSource_ = new NavXPIDSource(robot_);
     navXSource_ = navXSource;
     isDone_ = false;
+    maxTime_ = 6.0;
+    startTime_ = 0.0;
 }
 
 void AlignTapeCommand::Init(){
     printf("init in align tape command\n");
     lastJetsonAngle_ = robot_->GetDeltaAngle();
     currJetsonAngle_ = robot_->GetDeltaAngle();
+    startTime_ = robot_->GetTime();
     robot_->SetLight(true);
     robot_->SendZMQ(true);
     aligning_ = false;
@@ -43,7 +46,7 @@ void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
             pivotCommand_->Init();
         }
     } else {
-        if(pivotCommand_!=nullptr && !pivotCommand_->IsDone()){
+        if(pivotCommand_!=nullptr && !pivotCommand_->IsDone() && currTimeSec-startTime_<=maxTime_){
             pivotCommand_->Update(currTimeSec, deltaTimeSec);
         } else {
             printf("DONE with align tape\n");
@@ -63,7 +66,7 @@ void AlignTapeCommand::Reset(){
         pivotCommand_ = nullptr;
     }
     robot_->SetLight(false);
-    robot_->SendZMQ(false);
+    //robot_->SendZMQ(false);
     isDone_ = true;
     //printf("here!\n");
 }

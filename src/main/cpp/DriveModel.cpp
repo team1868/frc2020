@@ -845,7 +845,7 @@ bool RobotModel::ReadAll(std::string contents) {
 	} else {
 		abort = true;
 		SetDeltaAngle(0.0);
-		SetDistance(0.0);
+		//SetDistance(0.0);
         //printf("returning because nothing received\n");
 	}
 	//printf("desired delta angle at %f in AlignWithTapeCommand\n", GetDeltaAngle());
@@ -885,7 +885,12 @@ void RobotModel::ConnectSendZMQ() {
 
 void RobotModel::SendZMQ(bool lowExposure) {
     //string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
-    std::string message = std::to_string(lowExposure);
+	std::string message =
+		std::to_string(lowExposure) +
+		" targetRPM:" +
+		std::to_string((int)(superstructureController_->CalculateFlywheelVelocityDesired())) +
+		" RPM:" + 
+		std::to_string((int)(GetFlywheelMotor1Velocity()*FALCON_TO_RPM));
     //std::cout << message << std::endl;
     //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
     int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
