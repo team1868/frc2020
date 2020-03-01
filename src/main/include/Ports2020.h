@@ -73,7 +73,7 @@ static const int SHOOTING_BUTTON_PORT                    = 2;//1; // fix all sup
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT           = 5;
 static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 3; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 2; //random
-static const int UNDO_ELEVATOR_BUTTON_PORT               = 1; // fix port
+static const int UNDO_ELEVATOR_BUTTON_PORT               = 8; // fix port
 static const int FUNNEL_FEEDER_ELEVATOR_UP_BUTTON_PORT   = 6;
 
 static const int INTAKE_SERIES_BUTTON_PORT               = 1;      

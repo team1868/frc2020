@@ -45,21 +45,8 @@ int RobotModel::GetFlywheelMotor1Velocity() {
     // raw sensor units per 100 ms
 }
 
-// remove later
-double RobotModel::RatioFlywheel(double value){
-    /*double ratioFlywheelOutput = 12.43/GetVoltage()*value;
-    if(ratioFlywheelOutput > 1){
-        ratioFlywheelOutput = 1;
-    } else if(ratioFlywheelOutput < -1){
-        ratioFlywheelOutput = -1;
-    }
-    return ratioFlywheelOutput;*/
-    //return GetVoltage()*0.00001421*desiredVelocity_;
-}
-
 // make into one function later whoops
 void RobotModel::ConfigFlywheelP(double pFac){
-    //printf("pFac %f\n", pFac);
     flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac);
 }
 void RobotModel::ConfigFlywheelI(double iFac){
@@ -82,21 +69,23 @@ double RobotModel::FlywheelMotor2Output(){
 }
 
 bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){
-    // double value = GetFlywheelMotor1Velocity()*FALCON_TO_RPM;
-    // //printf("falcon velocity %f\n", value);
-    // //printf("desiredVelocity %f\n", desiredVelocity);
-    // if(GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredVelocity&& 
-    // GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredVelocity+150.0){
-    //     numTimeAtSpeed_++;
-    //     if (numTimeAtSpeed_ >= 1){ //3){ 
-    //         //printf("FLYWHEEL IS AT SPEED");
-    //         return true;
-    //     }
-    //     //numTimeAtSpeed_ = 0;
-    //     return false;
-    // }
-    // numTimeAtSpeed_ = 0;
-    // return false;
+    /*
+    double value = GetFlywheelMotor1Velocity()*FALCON_TO_RPM;
+    //printf("falcon velocity %f\n", value);
+    //printf("desiredVelocity %f\n", desiredVelocity);
+    if(GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredVelocity&& 
+    GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredVelocity+150.0){
+        numTimeAtSpeed_++;
+        if (numTimeAtSpeed_ >= 1){ //3){ 
+            //printf("FLYWHEEL IS AT SPEED");
+            return true;
+        }
+        //numTimeAtSpeed_ = 0;
+        return false;
+    }
+    numTimeAtSpeed_ = 0;
+    return false;
+    */
     return superstructureController_->IsFlywheelAtSpeed(desiredVelocity);
 }
 

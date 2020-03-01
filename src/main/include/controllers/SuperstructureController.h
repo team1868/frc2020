@@ -137,11 +137,15 @@ class SuperstructureController {
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_, flywheelMotor1OutputEntry_, flywheelMotor2OutputEntry_;
+  nt::NetworkTableEntry flywheelMotor1CurrentEntry_, flywheelMotor2CurrentEntry_;
+
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
 
   nt::NetworkTableEntry intakeWristAngleEntry_;
-  nt::NetworkTableEntry climbElevatorUpEntry_, climbElevatorDownEntry_;
   nt::NetworkTableEntry autoWristEntry_, autoWristDownPEntry_, autoWristUpPEntry_;
-  nt::NetworkTableEntry controlPanelColorEntry_, flywheelMotor1CurrentEntry_, flywheelMotor2CurrentEntry_;
-  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
+
+  nt::NetworkTableEntry climbElevatorUpEntry_, climbElevatorDownEntry_;
+
+  nt::NetworkTableEntry controlPanelColorEntry_;
 };
