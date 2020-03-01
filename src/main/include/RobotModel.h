@@ -233,17 +233,13 @@ class RobotModel {
     double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
 
-    bool GetRightLimitSwitch();
-    bool GetLeftLimitSwitch();
-    
-    //void SetClimberElevatorRightOutput(double power);  // DESTROY
-    //void SetClimberElevatorLeftOutput(double power);
-
     double GetFlywheelMotor1Current();
     double GetFlywheelMotor2Current();
     
     void SetRightClimberElevatorOutput(double power);
     void SetLeftClimberElevatorOutput(double power);
+    bool GetRightLimitSwitch();
+    bool GetLeftLimitSwitch();
 
     void SetIntakeWristOutput(double power);
     void SetIntakeRollersOutput(double power);
@@ -308,6 +304,7 @@ class RobotModel {
     frc::Solenoid *flywheelHoodSolenoid_;
 
     WPI_TalonSRX *climberRightElevatorMotor_, *climberLeftElevatorMotor_;
+    frc::DigitalInput *limitSwitchRight_, *limitSwitchLeft_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;
@@ -322,7 +319,8 @@ class RobotModel {
     WPI_TalonSRX *intakeWristMotor_;
     
     frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_;
+    //WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot
+    WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_; // comp bot
     WPI_VictorSPX *elevatorMotor_;
 
     double navXSpeed_;
@@ -427,7 +425,7 @@ class RobotModel {
     nt::NetworkTableEntry lowGearSFrictionEntry_, lowGearTurnSFrictionEntry_, highGearSFrictionEntry_, highGearTurnSFrictionEntry_;
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
-    nt::NetworkTableEntry climberRightLimitSwitch_, climberLeftLimitSwitch_; 
+    nt::NetworkTableEntry climberRightLimitSwitchEntry_, climberLeftLimitSwitchEntry_; 
   
 
 

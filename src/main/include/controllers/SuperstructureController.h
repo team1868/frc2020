@@ -14,8 +14,8 @@
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
 //static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
 static const double MAX_FALCON_RPM = 5800.0;
-static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
-//static const double RATIO_BATTERY_VOLTAGE = 12.72;
+//static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
+static const double RATIO_BATTERY_VOLTAGE = 12.72;
 
 class SuperstructureController {
  public:
@@ -24,12 +24,8 @@ class SuperstructureController {
     kControlPanel, kClimbing, kDefaultTeleop
   };
 
-  // enum ClimbingState {
-  //   kClimbingIdle, kClimbingElevator
-  // };
-
   enum PowerCellHandlingState {
-    kIntaking, kIndexing, kShooting, kResetting, kUndoElevator
+    kIntaking, kIndexing, kShooting, kResetting, kUndoElevator, kManualFunnelFeederElevator
   };
 
    enum WristState {
@@ -81,15 +77,15 @@ class SuperstructureController {
   bool Shooting(bool isAuto);
   void Resetting();
   void UndoElevator();
+  void ManualFunnelFeederElevator();
   void CheckControlPanelDesired();
-  // void CheckClimbDesired();
+  void CheckClimbDesired();
   void CheckElevatorUndoDesired();
 
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
   SuperstructureState currState_, nextState_;
-  //ClimbingState currClimbingState_, nextClimbingState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
 
