@@ -202,6 +202,7 @@ RobotModel::RobotModel() :
     publisher_ = nullptr;
     subscriber_ = nullptr;
     isSocketBound_ = false;
+	hasContents_ = false;
 
 	// flywheelMotor1_->ConfigFactoryDefault();
 	// /* first choose the sensor */
@@ -781,9 +782,13 @@ void RobotModel::ConnectRecvZMQ() {
     std::cout << "reached end of connect recv zmq\n" << std::flush;
 }
 
-bool RobotModel::UpdateZMQ(){ //returns has contents
+void RobotModel::UpdateZMQ(){ //returns has contents
 	std::string temp = ReadZMQ();
-    return !ReadAll(temp);
+    hasContents_ = !ReadAll(temp);
+}
+
+bool RobotModel::ZMQHasContents(){
+	return hasContents_;
 }
 
 std::string RobotModel::ReadZMQ() {

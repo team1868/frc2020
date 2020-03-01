@@ -19,6 +19,7 @@
 #include "auto/commands/IndexingCommand.h"
 #include "auto/commands/IntakingCommand.h"
 #include "auto/commands/PreppingCommand.h"
+#include "auto/commands/AlignTapeCommand.h"
 
 
 class AutoMode {

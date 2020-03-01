@@ -210,6 +210,15 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				std::cout << "making new indexing command" << std::endl;
 			}
 			break;
+		case 'a':
+			printf("starting auto align command\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new AlignTapeCommand(robot_, navX_);
+				std::cout << "making new align tape command" << std::endl;
+			}
+			break;
 		default:	// When it's not listed, don't do anything :)
 			printf("Unexpected character %c detected. Terminating queue", command);
 			firstCommand_ = NULL;
