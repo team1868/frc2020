@@ -6,6 +6,10 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
+
+#define PRACTICE_BOT
+
+#include <zhelpers.hpp>
 #include <frc/WPILib.h>
 #include <AHRS.h>
 #include <ctre/Phoenix.h>
@@ -23,7 +27,6 @@
 #include "ControlBoard.h"
 #include "controllers/SuperstructureController.h"
 #include <math.h>
-#include <zhelpers.hpp>
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -260,12 +263,14 @@ class RobotModel {
     void GetColorFromSensor(); 
     std::string MatchColor();
 
-    void ZMQInit();
     void ConnectRecvZMQ();
     std::string ReadZMQ();
+    bool ReadAll(std::string contents);
     void ConnectSendZMQ();
     void SendZMQ(bool lowExposure);
-    bool ReadAll(std::string contents);
+    void ZMQinit();
+    void UpdateZMQ();
+    bool ZMQHasContents();
 
     ~RobotModel();
 
@@ -273,12 +278,6 @@ class RobotModel {
 
     ControlBoard *humanControl_;
     SuperstructureController *superstructureController_;
-
-    //zmq
-    zmq::context_t *context_;//, *context2_; //context for creating sockets
-    zmq::socket_t *subscriber_; //socket to receive message from jetson
-    zmq::socket_t *publisher_; //socket to send message to jetson
-    bool isSocketBound_;
 
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;
@@ -319,8 +318,12 @@ class RobotModel {
     WPI_TalonSRX *intakeWristMotor_;
     
     frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    //WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot
+
+#ifdef PRACTICE_BOT
+    WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot
+#else
     WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_; // comp bot
+#endif
     WPI_VictorSPX *elevatorMotor_;
 
     double navXSpeed_;
@@ -418,7 +421,14 @@ class RobotModel {
     // input sequence
     std::string autoInputSequence_;
 
-
+    
+    //zmq
+    zmq::context_t *context_;//, *context2_; //context for creating sockets
+    zmq::socket_t *subscriber_; //socket to receive message from jetson
+    zmq::socket_t *publisher_; //socket to send message to jetson
+    int confl;
+    bool isSocketBound_;
+    bool hasContents_;
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;

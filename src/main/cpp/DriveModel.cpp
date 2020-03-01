@@ -48,8 +48,6 @@ RobotModel::RobotModel() :
     initialLeftEncoderValue_ = initialRightEncoderValue_ = 0.0;
 	isHighGear_ = true;
 
-	isSocketBound_ = false;
-
       // initializing timer
     timer_ = new frc::Timer();
     timer_->Start();
@@ -163,10 +161,15 @@ RobotModel::RobotModel() :
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
-	//indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID); // practice bot
-    //elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID); // practice bot
+#ifdef PRACTICE_BOT
+	//printf("WORKINGINSIDNFLKSDFJLKSF\n");
+	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID); // practice bot
+    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID); // practice bot
+#else
+	//printf("NOT WORKINGLKSJDFLKJSDLKFJSLDKJFKLSKDFJLDKJFLKD\n");
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID); // comp bot
     elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID); // com76 p bot
+#endif
 	elevatorMotor_ = new WPI_VictorSPX(ELEVATOR_MOTOR_ID);
 
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
@@ -198,6 +201,8 @@ RobotModel::RobotModel() :
 	context_ = nullptr; //same context for send + receive zmq
     publisher_ = nullptr;
     subscriber_ = nullptr;
+    isSocketBound_ = false;
+	hasContents_ = false;
 
 	// flywheelMotor1_->ConfigFactoryDefault();
 	// /* first choose the sensor */
@@ -612,140 +617,7 @@ void RobotModel::GearShift() {
 	}
 }
 
-void RobotModel::ZMQInit(){
-	if (context_ == nullptr) {
-        context_ = new zmq::context_t(2); //same context for send + receive zmq
-        publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
-        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        ConnectRecvZMQ();
-        ConnectSendZMQ();
-    }
-}
 
-void RobotModel::ConnectRecvZMQ(){
-	try {
-		printf("in try connect to jetson\n");
-        //change to dynamic jetson address
-		//printf("jetson connected to socket\n");
-        int confl = 1;
-        subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-        subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-        subscriber_->connect("tcp://10.18.68.12:5808");
-        subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
-    } catch(const zmq::error_t &exc) {
-		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
-		std::cerr << exc.what();
-	}
-    std::cout << "reached end of connect recv zmq\n" << std::flush;
-}
-
-std::string RobotModel::ReadZMQ(){
-	/*try {
-		printf("in try connect to jetson in readZMQ\n");
-        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        //change to dynamic jetson address
-        subscriber_->connect("tcp://10.18.68.12:5808");
-		printf("jetson connected to socket\n");
-        int confl = 1;
-		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
-    } catch(const zmq::error_t &exc) {
-		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
-		std::cerr << exc.what();
-	}
-    */
-    printf("starting read from jetson\n");
-	//std::string contents = s_recv(*subscriber
-    //std::string contents = s_recv(*subscriber_);
-    std::string contents;
-    zmq::message_t m;
-    subscriber_->recv(&m, ZMQ_NOBLOCK);
-    contents = std::string(static_cast<char*>(m.data()), m.size());
-    return contents;
-}
-
-void RobotModel::ConnectSendZMQ(){
-	//zmq socket to send message to jetson
-    try{
-        std::cout << "start connect send zmq\n" << std::flush;
-        //std::cout << "done connect socket zmq\n" << std::flush;
-        if(!isSocketBound_){
-            publisher_->bind("tcp://*:5807");
-            isSocketBound_ = true;
-        }
-        int confl = 1;
-        std::cout << "setting socket zmq\n" << std::flush;
-        publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-        std::cout << "done setting socket zmq\n" << std::flush;
-    } catch (const zmq::error_t &exc) {
-		printf("TRY CATCH FAILED IN ZMQ CONNECT SEND\n");
-		std::cerr << exc.what();
-	}
-}
-
-bool RobotModel::ReadAll(std::string contents){
-	printf("ready to read from jetson\n");
-    
-    std::stringstream ss(contents); //split string contents into a vector
-	std::vector<std::string> result;
-    bool abort;
-
-	while(ss.good()) {
-		std::string substr;
-		getline( ss, substr, ' ' );
-		if (substr == "") {
-			continue;
-		}
-		result.push_back( substr );
-	}
-	
-	// if(!contents.empty() && result.size() > 1) {
-    //     robot_->SetDeltaAngle( stod(result.at(0)) );
-	// 	 ->SetDistance( stod(result.at(1)) );
-    //     abort = false;
-	// } else {
-	// 	abort = true;
-	// 	printf("contents empty in alignwithtape\n");
-	// }
-
-    //jetson string is hasTarget, angle (deg from center), raw distance (ft)
-	if(result.size() > 2) {
-        printf("received values\n"); //TODO MAYBE ERROR CHECK ZMQ SEND ON JETSON SIDE
-        double angle = stod(result.at(1));
-        double distance = stod(result.at(2));
-        //printf("jetson set angle is %f and set distance is %f\n", angle, distance);
-		SetDeltaAngle(angle);
-		SetDistance(distance);//1.6;
-        abort = false;
-	} else {
-		abort = true;
-		SetDeltaAngle(0.0);
-		SetDistance(0.0);
-        printf("returning because nothing received\n");
-	}
-	printf("desired delta angle at %f in AlignWithTapeCommand\n", GetDeltaAngle());
-    printf("desired delta distance at %f in AlignWithTapeCommand\n", GetDistance());
-		
-	/*} catch (const std::exception &exc) {
-		printf("TRY CATCH FAILED IN READFROMJETSON\n");
-		std::cout << exc.what() << std::endl;
-		desiredDeltaAngle_ = 0.0;
-		// desiredDistance_ = 0.0;
-	}*/
-
-    printf("end of read angle with %d\n", abort);
-    return abort;
-}
-
-void RobotModel::SendZMQ(bool lowExposure){
-	//string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
-    std::string message = std::to_string(lowExposure);
-    //std::cout << message << std::endl;
-    //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
-    int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
-    //std::cout << sent << " done sending to zmq" << std::endl;
-}
 
 double RobotModel::ModifyCurrent(int channel, double value){
 
@@ -872,6 +744,7 @@ void RobotModel::SetTestSequence(std::string testSequence) {
 	testSequence_ = testSequence;
 }
 
+//TODO what is this?
 std::string RobotModel::GetAlignSequence() {
 	return alignSequence_;
 }
@@ -880,6 +753,149 @@ void RobotModel::SetAlignSequence(std::string alignSequence) {
 	alignSequence_ = alignSequence;
 }
 
+void RobotModel::ZMQinit(){
+	//zmq
+    if (context_ == nullptr) {
+        context_ = new zmq::context_t(2); //same context for send + receive zmq
+        publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
+        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
+        ConnectRecvZMQ();
+        ConnectSendZMQ();
+    }
+}
+
+void RobotModel::ConnectRecvZMQ() {
+    //connect to zmq socket to receive from jetson
+    try {
+		printf("in try connect to jetson\n");
+        //change to dynamic jetson address
+		//printf("jetson connected to socket\n");
+        int confl = 1;
+        subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
+        subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
+        subscriber_->connect("tcp://10.18.68.12:5808");
+        subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
+    } catch(const zmq::error_t &exc) {
+		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
+		std::cerr << exc.what();
+	}
+    std::cout << "reached end of connect recv zmq\n" << std::flush;
+}
+
+void RobotModel::UpdateZMQ(){ //returns has contents
+	std::string temp = ReadZMQ();
+    hasContents_ = !ReadAll(temp);
+}
+
+bool RobotModel::ZMQHasContents(){
+	return hasContents_;
+}
+
+std::string RobotModel::ReadZMQ() {
+    /*try {
+		printf("in try connect to jetson in readZMQ\n");
+        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
+        //change to dynamic jetson address
+        subscriber_->connect("tcp://10.18.68.12:5808");
+		printf("jetson connected to socket\n");
+        int confl = 1;
+		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
+		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
+		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
+    } catch(const zmq::error_t &exc) {
+		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
+		std::cerr << exc.what();
+	}
+    */
+    //printf("starting read from jetson\n");
+	//std::string contents = s_recv(*subscriber
+    //std::string contents = s_recv(*subscriber_);
+    std::string contents;
+    zmq::message_t m;
+    subscriber_->recv(&m, ZMQ_NOBLOCK);
+    contents = std::string(static_cast<char*>(m.data()), m.size());
+    return contents;
+}
+
+bool RobotModel::ReadAll(std::string contents) {
+    //printf("ready to read from jetson\n");
+    
+    std::stringstream ss(contents); //split string contents into a vector
+	std::vector<std::string> result;
+    bool abort;
+
+	while(ss.good()) {
+		std::string substr;
+		getline( ss, substr, ' ' );
+		if (substr == "") {
+			continue;
+		}
+		result.push_back( substr );
+	}
+
+    //jetson string is hasTarget, angle (deg from center), raw distance (ft)
+	if(result.size() > 2) {
+        //printf("received values\n"); //TODO MAYBE ERROR CHECK ZMQ SEND ON JETSON SIDE
+        double angle = stod(result.at(1));
+        double distance = stod(result.at(2));
+        //printf("jetson set angle is %f and set distance is %f\n", angle, distance);
+		SetDeltaAngle(angle);
+		SetDistance(distance);//1.6;
+        abort = false;
+	} else {
+		abort = true;
+		SetDeltaAngle(0.0);
+		//SetDistance(0.0);
+        //printf("returning because nothing received\n");
+	}
+	//printf("desired delta angle at %f in AlignWithTapeCommand\n", GetDeltaAngle());
+    //printf("desired delta distance at %f in AlignWithTapeCommand\n", GetDistance());
+		
+	/*} catch (const std::exception &exc) {
+		printf("TRY CATCH FAILED IN READFROMJETSON\n");
+		std::cout << exc.what() << std::endl;
+		desiredDeltaAngle_ = 0.0;
+		// desiredDistance_ = 0.0;
+	}*/
+
+    //printf("end of read angle with %d\n", abort);
+    return abort;
+
+}
+
+void RobotModel::ConnectSendZMQ() {
+    //zmq socket to send message to jetson
+    try{
+        std::cout << "start connect send zmq\n" << std::flush;
+        //std::cout << "done connect socket zmq\n" << std::flush;
+        if(!isSocketBound_){
+            publisher_->bind("tcp://*:5807");
+            isSocketBound_ = true;
+        }
+        int confl = 1;
+        std::cout << "setting socket zmq\n" << std::flush;
+        publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
+        std::cout << "done setting socket zmq\n" << std::flush;
+    } catch (const zmq::error_t &exc) {
+		printf("TRY CATCH FAILED IN ZMQ CONNECT SEND\n");
+		std::cerr << exc.what();
+	}
+
+}
+
+void RobotModel::SendZMQ(bool lowExposure) {
+    //string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
+	std::string message =
+		std::to_string(lowExposure) +
+		" targetRPM:" +
+		std::to_string((int)(superstructureController_->CalculateFlywheelVelocityDesired())) +
+		" RPM:" + 
+		std::to_string((int)(GetFlywheelMotor1Velocity()*FALCON_TO_RPM));
+    //std::cout << message << std::endl;
+    //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
+    int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
+    //std::cout << sent << " done sending to zmq" << std::endl;
+}
 
 void RobotModel::CreateNavX(){
 	navXSource_ = new NavXPIDSource(this);
@@ -888,7 +904,6 @@ void RobotModel::CreateNavX(){
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
 }
-
 
 void RobotModel::RefreshShuffleboard(){
 

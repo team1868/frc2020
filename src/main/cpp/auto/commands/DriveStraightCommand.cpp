@@ -14,8 +14,8 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		double desiredDistance, bool slow) : AutoCommand(),
 		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout"))
 		{
-	isAbsoluteAngle_ = false;
 	slow_ = slow;
+	isAbsoluteAngle_ = false;
 
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
@@ -33,17 +33,17 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 }
 
 // constructor
-// DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
-// 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
-// 		double desiredDistance, double absoluteAngle) :
-// 		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout"))
-// 		{
-// 	isAbsoluteAngle_ = true;
-// 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
-// 	desiredAngle_ = absoluteAngle;
+DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
+		double desiredDistance, double absoluteAngle) :
+		driveStraightLayout_(robot->GetFunctionalityTab().GetLayout("DriveStraight", "List Layout"))
+		{
+	isAbsoluteAngle_ = true;
+	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
+	desiredAngle_ = absoluteAngle;
 
-// 	//NOTE: adding repetitive title, this may be an issue later
-// }
+	//NOTE: adding repetitive title, this may be an issue later
+}
 
 // initialize class for run
 void DriveStraightCommand::Init() {
@@ -191,6 +191,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 
 //		double maxOutput = fmax(fabs(rightMotorOutput_), fabs(leftMotorOutput_));
 	}
+
 	if(slow_){
 		//TODO fix to ratio rather than hard sets
 		if(leftMotorOutput_ > 0.2){

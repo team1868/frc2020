@@ -11,17 +11,16 @@
 
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
-#include <zhelpers.hpp>
 
 #include "RobotModel.h"
 #include "ControlBoard.h"
 #include "controllers/SuperstructureController.h"
 #include "controllers/DriveController.h"
-#include "auto/commands/DriveStraightCommand.h"
-#include "auto/commands/PivotCommand.h"
+//#include "auto/commands/DriveStraightCommand.h"
+//#include "auto/commands/PivotCommand.h"
 #include "auto/commands/AlignTapeCommand.h"
 #include "auto/commands/TrenchAlignTapeCommand.h"
-#include "auto/commands/WaitingCommand.h"
+//#include "auto/commands/WaitingCommand.h"
 #include "auto/modes/TestMode.h"
 #include "auto/commands/profiling/MotionProfileTestCommand.h"
 
@@ -39,13 +38,6 @@ class MainProgram : public frc::TimedRobot {
   void TeleopPeriodic() override;
   //void DisabledPeriodic() override;
   void TestPeriodic() override;
-  // void ConnectRecvZMQ();
-  // std::string ReadZMQ();
-  // // void readDetected(string contents);
-  // bool ReadAll(std::string contents);
-  // // void readDistance(string contents);
-  // void ConnectSendZMQ();
-  // void SendZMQ(bool lowExposure);
 
   void ResetControllers();
 
@@ -60,33 +52,23 @@ class MainProgram : public frc::TimedRobot {
   double matchTime_;
 
   bool aligningTape_;
-  PivotCommand *alignTapeCommand;
+  AlignTapeCommand *alignTapeCommand_;
   //AlignTapeCommand *alignTapeCommand;
   TrenchAlignTapeCommand *trenchAlignTapeCommand;
-
-
-  //zmq
-  zmq::context_t *context_;//, *context2_; //context for creating sockets
-  zmq::socket_t *subscriber_; //socket to receive message from jetson
-  zmq::socket_t *publisher_; //socket to send message to jetson
 
   //MotionProfileTestCommand *thing_;
   VelocityPIDSource *thingS_;
   VelocityPIDOutput *thingO_;
   AnglePIDOutput *thingAO_;
 
-  bool isSocketBound_;
-
   TestMode *testSequence_;
   double currTime_, lastTime_;
   double autoJoyVal_;
 
   double lastJetsonAngle_, currJetsonAngle_, jetsonAngleTolerance_;
-
-  int confl;
   
-  NavXPIDSource *tempNavXSource_;
-  PivotCommand *tempPivot_;
+  //NavXPIDSource *tempNavXSource_;
+  //PivotCommand *tempPivot_;
 
   std::string sequence_;
   nt::NetworkTableEntry autoSequenceEntry_;

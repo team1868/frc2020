@@ -36,9 +36,9 @@ class DriveStraightCommand : public AutoCommand {
        * @param distance in feet
        * @param angle the robot should be
        */
-    // DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
-    //       AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
-    //       double desiredDistance, double absoluteAngle);
+    DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+          AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
+          double desiredDistance, double absoluteAngle);
 
     /**
      * Destructor
@@ -106,9 +106,8 @@ private:
 	double lastDOutput_;
 	double lastDistance_;
 	int numTimesStopped_;
-  bool slow_;
 
-  
+  bool slow_;
   
   frc::ShuffleboardLayout &driveStraightLayout_;
 	nt::NetworkTableEntry leftStraightEntry_, rightStraightEntry_, angleErrorEntry_, angleErrorGraphEntry_, desiredAngleEntry_,

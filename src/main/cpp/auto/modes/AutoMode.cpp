@@ -114,14 +114,12 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			break;
 		case 'd':	// Drive straight
 			double distance;
-			bool slow;
 			iss >> distance;
-			iss >> slow;
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
 				printf("Distance: %f\n", distance);
-				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, slow);
+				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, true);
 			}
 			break;
 		case '!':
@@ -210,6 +208,15 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			} else {
 				tempCommand = new IndexingCommand(robot_);
 				std::cout << "making new indexing command" << std::endl;
+			}
+			break;
+		case 'a':
+			printf("starting auto align command\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new AlignTapeCommand(robot_, navX_);
+				std::cout << "making new align tape command" << std::endl;
 			}
 			break;
 		default:	// When it's not listed, don't do anything :)

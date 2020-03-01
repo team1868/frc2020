@@ -27,22 +27,13 @@ void MainProgram::RobotInit() {
     currJetsonAngle_ = 0.0;
     lastJetsonAngle_ = 0.0;
     jetsonAngleTolerance_ = 3.0;
-
-    isSocketBound_ = false;
+    
+    navXSource_ = new NavXPIDSource(robot_);
+    talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
     
     autoSequenceEntry_ = robot_->GetModeTab().Add("Auto Test Sequence", "t 0").GetEntry();
     sequence_ = autoSequenceEntry_.GetString("t 0"); //TODO ERROR move this to auto init
     printf("I am alive.\n");
-
-    //context_ = new zmq::context_t(2); //same context for send + receive zmq
-    //publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
-    //subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-    //connectRecvZMQ();
-    //connectSendZMQ();
-    context_ = nullptr; //same context for send + receive zmq
-    publisher_ = nullptr;
-    subscriber_ = nullptr;
-    printf("done with zmq init\n");
 }
 
 /**
@@ -54,6 +45,7 @@ void MainProgram::RobotInit() {
  * LiveWindow and SmartDashboard integrated updating.
  */
 void MainProgram::RobotPeriodic() {
+
     driveController_->RefreshShuffleboard();
     superstructureController_->RefreshShuffleboard();
     robot_->RefreshShuffleboard();
@@ -80,27 +72,24 @@ void MainProgram::AutonomousInit() {
     robot_->SetHighGear();
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
-    //robot_->SetHighGear();
     robot_->CreateNavX();
     robot_->EngageFlywheelHood();
     robot_->SetTestSequence(robot_->GetChosenSequence());
     superstructureController_->Reset();
     superstructureController_->AutoInit();
 
-    //zmq
-    robot_->ZMQInit();
+    robot_->ZMQinit();
+    //robot_->SetLight(true);
+    robot_->SendZMQ(true);
 
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
     //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    robot_->SetTestSequence("i w 1.0 d -8.0 1 n b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
+    robot_->SetTestSequence("i d 10.0 n");//"n b 3560.0 s 3560.0 n i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
     
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
-
-    navXSource_ = new NavXPIDSource(robot_);
-    talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
 
@@ -138,6 +127,8 @@ void MainProgram::AutonomousInit() {
 }
 
 void MainProgram::AutonomousPeriodic() {
+    robot_->UpdateZMQ();
+
     robot_->RefreshShuffleboard();
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
@@ -164,7 +155,6 @@ void MainProgram::DisabledInit() {
 }
 
 void MainProgram::TeleopInit() {
-    std::cout << "TELEOP INIT UWU" << std::endl;
     //superstructureController_->SetIsAuto(false);
     superstructureController_->Reset();
     std::cout << "in teleopinit\n" << std::flush;
@@ -179,24 +169,25 @@ void MainProgram::TeleopInit() {
     std::cout << "before zmq\n" << std::flush;
     //zmq::context_t * 
     //context2_ = new zmq::context_t(1);
-    robot_->ZMQInit();
-    // if (context_ == nullptr) {
-    //     context_ = new zmq::context_t(2); //same context for send + receive zmq
-    //     publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
-    //     subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-    //     ConnectRecvZMQ();
-    //     ConnectSendZMQ();
-    // }
+    robot_->ZMQinit();
+    
     std::cout << "end of teleopinit\n" << std::flush;
 }
 
 void MainProgram::TeleopPeriodic() {
 
+    robot_->UpdateZMQ();
+    //bool hasContents = robot_->UpdateZMQ();
+
     //printf("left distance is %f and right distance is %f\n", robot_->GetLeftDistance(), robot_->GetRightDistance());
     humanControl_->ReadControls();
         //align tapes not at trench (like auto)
     //std::cout << "checking tape align\n" << std::flush;
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
+    //TODO maybe error, setting in two locations
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton) ||
+       superstructureController_->GetIsPrepping() ||
+       alignTapeCommand_!=nullptr){
+           
         robot_->SetLight(true);
         //printf("light on");
         robot_->SendZMQ(true);
@@ -205,61 +196,36 @@ void MainProgram::TeleopPeriodic() {
         robot_->SendZMQ(false);
     }
     if (!aligningTape_ && humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
-        std::cout << "READY TO START ZMQ READ\n" << std::flush;
-        //robot_->SetLight(true);
-        
-        //sendZMQ(true); //tell jetson to turn exposure down
-
-        std::string temp = robot_->ReadZMQ();
-        bool hasContents = !robot_->ReadAll(temp);
-        lastJetsonAngle_ = currJetsonAngle_;
-        currJetsonAngle_ = robot_->GetDeltaAngle();
-        printf("last jetson angle is %f and curr jetson angle is %f\n", lastJetsonAngle_, currJetsonAngle_);
-        if(hasContents && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_){
-            printf("done with reading, creating aligning command");
-            aligningTape_ = true;
-            if(navXSource_!=nullptr){ //prevent memory leak from last run of auto align
-                delete navXSource_;
-            }
-            if(alignTapeCommand!=nullptr){
-                alignTapeCommand->Reset();
-                delete alignTapeCommand;
-            }
-            navXSource_ = new NavXPIDSource(robot_); //create navX source
-            printf("\nTURNING TO %f angle\n\n", currJetsonAngle_);
-            printf("current angle is %f and angle to turn to is %f\n", robot_->GetNavXYaw(), robot_->GetNavXYaw()+currJetsonAngle_);
-            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()+currJetsonAngle_, true, navXSource_, 2.0);
-            //alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false, robot_->GetDeltaAngle(), robot_->GetDistance()); //nav, talon variables don't exist yet
-            printf("created aligning command");
-            alignTapeCommand->Init();
-            printf("starting teleop align tapes\n");
-            return;
-        } else {
-            printf("exited jetson align, nothing read\n");
+        std::cout << "READY TO START ALIGN TAPE\n" << std::endl;
+        if(alignTapeCommand_!=nullptr){
+            alignTapeCommand_->Reset();
+            delete alignTapeCommand_;
+            alignTapeCommand_ = nullptr;
+            printf("deleted align tape for next iter\n");
         }
-        //robot_->SetLight(false);
+        //printf("NAVXS IS NULL? %d\n", (navXSource_==nullptr));
+        alignTapeCommand_ = new AlignTapeCommand(robot_, navXSource_);
+        alignTapeCommand_->Init();
+        aligningTape_ = true;
+        return;
     } else if (aligningTape_){
-        //sendZMQ(true);
-        // printf("in part align tape :))\n");
         autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX);
         autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
-        //std::cout << "AM I NULL ALIGN??" << (alignTapeCommand==NULL) << std::endl << std::flush;
-        if(fabs(autoJoyVal_) >= 0.1 || alignTapeCommand==nullptr || alignTapeCommand->IsDone()){
-            robot_->SetLight(false);
-            alignTapeCommand->Reset();
-            delete alignTapeCommand;
-            alignTapeCommand = NULL;
+        
+        if(fabs(autoJoyVal_) >= 0.1 || alignTapeCommand_==nullptr || alignTapeCommand_->IsDone()){
+            //printf("ALIGN TAPE IS NULL? %d\n", (alignTapeCommand_==nullptr));
+            alignTapeCommand_->Reset();
+            delete alignTapeCommand_;
+            alignTapeCommand_ = nullptr;
             aligningTape_ = false;
             printf("destroyed align tape command\n");
         } else {
-            alignTapeCommand->Update(currTime_, currTime_-lastTime_);
-            printf("updated align tape command\n");
+            //printf("ALIGN TAPE IS NULL? %d\n", (alignTapeCommand_==nullptr));
+            alignTapeCommand_->Update(currTime_, currTime_-lastTime_);
+            //printf("updated align tape command\n");
             return;
-
         }
-    }// else {
-       // sendZMQ(false);
-    //}
+    }
 
     driveController_->Update();
     //std::cout << "before superstructure\n" << std::flush;
@@ -319,143 +285,6 @@ void MainProgram::ResetControllers() {
     driveController_->Reset();
     superstructureController_->Reset();
 }
-
-// void MainProgram::ConnectRecvZMQ() {
-//     //connect to zmq socket to receive from jetson
-//     try {
-// 		printf("in try connect to jetson\n");
-//         //change to dynamic jetson address
-// 		//printf("jetson connected to socket\n");
-//         int confl = 1;
-//         subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-//         subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-//         subscriber_->connect("tcp://10.18.68.12:5808");
-//         subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
-//     } catch(const zmq::error_t &exc) {
-// 		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
-// 		std::cerr << exc.what();
-// 	}
-//     std::cout << "reached end of connect recv zmq\n" << std::flush;
-// }
-
-// std::string MainProgram::ReadZMQ() {
-//     /*try {
-// 		printf("in try connect to jetson in readZMQ\n");
-//         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-//         //change to dynamic jetson address
-//         subscriber_->connect("tcp://10.18.68.12:5808");
-// 		printf("jetson connected to socket\n");
-//         int confl = 1;
-// 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-// 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-// 		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
-//     } catch(const zmq::error_t &exc) {
-// 		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
-// 		std::cerr << exc.what();
-// 	}
-//     */
-//     printf("starting read from jetson\n");
-// 	//std::string contents = s_recv(*subscriber
-//     //std::string contents = s_recv(*subscriber_);
-//     std::string contents;
-//     zmq::message_t m;
-//     subscriber_->recv(&m, ZMQ_NOBLOCK);
-//     contents = std::string(static_cast<char*>(m.data()), m.size());
-//     return contents;
-// }
-
-// void MainProgram::readDistance(string contents){
-
-// }
-
-// void MainProgram::readDetected(string contents){
-
-// }
-
-// bool MainProgram::ReadAll(std::string contents) {
-//     printf("ready to read from jetson\n");
-    
-//     std::stringstream ss(contents); //split string contents into a vector
-// 	std::vector<std::string> result;
-//     bool abort;
-
-// 	while(ss.good()) {
-// 		std::string substr;
-// 		getline( ss, substr, ' ' );
-// 		if (substr == "") {
-// 			continue;
-// 		}
-// 		result.push_back( substr );
-// 	}
-	
-// 	// if(!contents.empty() && result.size() > 1) {
-//     //     robot_->SetDeltaAngle( stod(result.at(0)) );
-// 	// 	robot_->SetDistance( stod(result.at(1)) );
-//     //     abort = false;
-// 	// } else {
-// 	// 	abort = true;
-// 	// 	printf("contents empty in alignwithtape\n");
-// 	// }
-
-//     //jetson string is hasTarget, angle (deg from center), raw distance (ft)
-// 	if(result.size() > 2) {
-//         printf("received values\n"); //TODO MAYBE ERROR CHECK ZMQ SEND ON JETSON SIDE
-//         double angle = stod(result.at(1));
-//         double distance = stod(result.at(2));
-//         //printf("jetson set angle is %f and set distance is %f\n", angle, distance);
-// 		robot_->SetDeltaAngle(angle);
-// 		robot_->SetDistance(distance);//1.6;
-//         abort = false;
-// 	} else {
-// 		abort = true;
-// 		robot_->SetDeltaAngle(0.0);
-// 		robot_->SetDistance(0.0);
-//         printf("returning because nothing received\n");
-// 	}
-// 	printf("desired delta angle at %f in AlignWithTapeCommand\n", robot_->GetDeltaAngle());
-//     printf("desired delta distance at %f in AlignWithTapeCommand\n", robot_->GetDistance());
-		
-// 	/*} catch (const std::exception &exc) {
-// 		printf("TRY CATCH FAILED IN READFROMJETSON\n");
-// 		std::cout << exc.what() << std::endl;
-// 		desiredDeltaAngle_ = 0.0;
-// 		// desiredDistance_ = 0.0;
-// 	}*/
-
-//     printf("end of read angle with %d\n", abort);
-//     return abort;
-
-// }
-
-// void MainProgram::ConnectSendZMQ() {
-//     //zmq socket to send message to jetson
-//     try{
-//         std::cout << "start connect send zmq\n" << std::flush;
-//         //std::cout << "done connect socket zmq\n" << std::flush;
-//         if(!isSocketBound_){
-//             publisher_->bind("tcp://*:5807");
-//             isSocketBound_ = true;
-//         }
-//         int confl = 1;
-//         std::cout << "setting socket zmq\n" << std::flush;
-//         publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-//         std::cout << "done setting socket zmq\n" << std::flush;
-//     } catch (const zmq::error_t &exc) {
-// 		printf("TRY CATCH FAILED IN ZMQ CONNECT SEND\n");
-// 		std::cerr << exc.what();
-// 	}
-
-// }
-
-// void MainProgram::SendZMQ(bool lowExposure) {
-//     //string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
-//     std::string message = std::to_string(lowExposure);
-//     //std::cout << message << std::endl;
-//     //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
-//     int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
-//     //std::cout << sent << " done sending to zmq" << std::endl;
-// }
-
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<MainProgram>(); }

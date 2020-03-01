@@ -8,20 +8,23 @@
 #pragma once
 #include "RobotModel.h"
 #include "auto/AutoCommand.h"
-#include "controllers/SuperstructureController.h"
 #include "auto/commands/PivotCommand.h"
+#include "auto/PIDsource/PIDInputSource.h"
 
-class AlignTapeCommand : public AutoCommand {
+class AlignTapeCommand : public AutoCommand{
  public:
-  AlignTapeCommand(RobotModel * robot);
-  void Init(PivotCommand * alignTapeCommand, NavXPIDSource * navXSource);
-  void Update(double currTimeSec, double deltaTimeSec, PivotCommand *alignTapeCommand);
+  AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource_);
+  ~AlignTapeCommand();
+  void Init();
+  void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();
   void Reset();
-  virtual ~AlignTapeCommand();
  private:
+  RobotModel *robot_;
+  PivotCommand *pivotCommand_;
+  NavXPIDSource *navXSource_;
   bool isDone_;
-  RobotModel * robot_;
+  bool aligning_;
   double lastJetsonAngle_, currJetsonAngle_, jetsonAngleTolerance_;
-  //NavXPIDSource *navXSource_;
+  double maxTime_, startTime_;
 };

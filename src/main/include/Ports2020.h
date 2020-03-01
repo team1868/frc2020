@@ -74,7 +74,7 @@ static const int TRENCH_ALIGN_TAPE_BUTTON_PORT           = 5;
 static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 3; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 2; //random
 static const int UNDO_ELEVATOR_BUTTON_PORT               = 1; // fix port
-static const int FUNNEL_FEEDER_ELEVATOR_UP_BUTTON_PORT   = 7;
+static const int FUNNEL_FEEDER_ELEVATOR_UP_BUTTON_PORT   = 6;
 
 static const int INTAKE_SERIES_BUTTON_PORT               = 1;      
 static const int INDEX_SERIES_BUTTON_PORT                = 3;
@@ -82,7 +82,6 @@ static const int WRIST_DOWN_BUTTON_PORT                  = 11;
 static const int WRIST_UP_BUTTON_PORT                    = 8;
 static const int WRIST_RUN_ROLLERS_BUTTON                = 7;
 static const int WRIST_REVERSE_ROLLERS_BUTTON            = 6;
-
 
 static const int CLIMB_RIGHT_ELEVATOR_UP_BUTTON_PORT     = 4; 
 static const int CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT   = 5;
@@ -102,9 +101,14 @@ static const int GEARSHIFT_BUTTON_PORT                   = 3; //random
 static const int GYRO_PORT                               = 1; // ANALOG IO
 
 // DIO
-static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 0;//3
-static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 1;//1
-static const int LEFT_CLIMB_LIMIT_SWITCH_PORT            = 2;
-static const int RIGHT_CLIMB_LIMIT_SWITCH_PORT           = 3;
+#ifdef PRACTICE_BOT
+static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 0;
+static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 1;
+#else 
+static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 3;//0;
+static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 2;//1;
+#endif
+static const int LEFT_CLIMB_LIMIT_SWITCH_PORT            = 4;
+static const int RIGHT_CLIMB_LIMIT_SWITCH_PORT           = 5;
 
 
