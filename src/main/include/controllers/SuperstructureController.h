@@ -12,10 +12,13 @@
 //#include "auto/PIDSource/PIDOutputSource.h"
 
 static const double FALCON_TO_RPM = 600.0/2048.0; //multiply to convert
-//static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
+#ifdef PRACTICE_BOT
+static const double MAX_FALCON_RPM = 6000.0; // magic number!!!! for practice bot
+static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
+#else
 static const double MAX_FALCON_RPM = 5800.0;
-//static const double RATIO_BATTERY_VOLTAGE = 12.27; // for practice bot
 static const double RATIO_BATTERY_VOLTAGE = 12.72;
+#endif
 
 class SuperstructureController {
  public:

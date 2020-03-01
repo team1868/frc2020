@@ -101,8 +101,13 @@ static const int GEARSHIFT_BUTTON_PORT                   = 3; //random
 static const int GYRO_PORT                               = 1; // ANALOG IO
 
 // DIO
+#ifdef PRACTICE_BOT
+static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 0;
+static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 1;
+#else 
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 3;//0;
 static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 2;//1;
+#endif
 static const int LEFT_CLIMB_LIMIT_SWITCH_PORT            = 4;
 static const int RIGHT_CLIMB_LIMIT_SWITCH_PORT           = 5;
 

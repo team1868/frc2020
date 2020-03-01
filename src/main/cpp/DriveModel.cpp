@@ -161,10 +161,15 @@ RobotModel::RobotModel() :
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
-	//indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID); // practice bot
-    //elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID); // practice bot
+#ifdef PRACTICE_BOT
+	//printf("WORKINGINSIDNFLKSDFJLKSF\n");
+	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID); // practice bot
+    elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID); // practice bot
+#else
+	//printf("NOT WORKINGLKSJDFLKJSDLKFJSLDKJFKLSKDFJLDKJFLKD\n");
 	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID); // comp bot
     elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID); // com76 p bot
+#endif
 	elevatorMotor_ = new WPI_VictorSPX(ELEVATOR_MOTOR_ID);
 
 	controlPanelMotor_ = new WPI_VictorSPX(CONTROL_PANEL_MOTOR_ID);
@@ -380,7 +385,7 @@ void RobotModel::ResetDriveEncoders() {
 bool RobotModel::GetLeftEncoderStopped() {
 	if (currLeftVelocity_ < STOP_VELOCITY_THRESHOLD && currLeftVelocity_ > -STOP_VELOCITY_THRESHOLD 
 	&& lastLeftVelocity_ < STOP_VELOCITY_THRESHOLD && lastLeftVelocity_ > -STOP_VELOCITY_THRESHOLD) {
-		printf("left encoder is stopped\n");
+		//printf("left encoder is stopped\n");
 		return true;
 	}
 	// if (GetLeftVelocity() < STOP_VELOCITY_THRESHOLD && GetLeftVelocity() > -STOP_VELOCITY_THRESHOLD){

@@ -6,6 +6,9 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
+
+#define PRACTICE_BOT
+
 #include <frc/WPILib.h>
 #include <AHRS.h>
 #include <ctre/Phoenix.h>
@@ -305,8 +308,12 @@ class RobotModel {
     WPI_TalonSRX *intakeWristMotor_;
     
     frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
-    //WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot
+
+#ifdef PRACTICE_BOT
+    WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot
+#else
     WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_; // comp bot
+#endif
     WPI_VictorSPX *elevatorMotor_;
 
     double navXSpeed_;

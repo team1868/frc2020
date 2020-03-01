@@ -549,10 +549,10 @@ void SuperstructureController::Indexing(){
 
 bool SuperstructureController::Shooting(bool isAuto) {
     //std::cout << "kShooting" << std::endl;
-    // if(farShooting_){
+    // if(farShooting_ && !isAuto){
     //     robot_->EngageFlywheelHood();
     // }
-    // else {
+    // else if (!isAuto){
     //     robot_->DisengageFlywheelHood();
     // }
     //printf("in kShooting AAAAAAAAAAAAAAAA NOTICE ME !!! !! AAAA\n");// with %f\n", desiredFlywheelVelocity_);
@@ -762,8 +762,9 @@ double SuperstructureController::RatioFlywheel(){
     return MAX_FALCON_RPM*robot_->GetVoltage()/RATIO_BATTERY_VOLTAGE;
 }
 
+//uses inches
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
-    double shotDistance = sqrt(pow(robot_->GetDistance(), 2.0) - pow(60.0, 2.0)) + 6.0;
+    double shotDistance = sqrt(pow(robot_->GetDistance()*12.0, 2.0) - pow(60.0, 2.0)) + 6.0; //all in inches
     printf("distance from shot %f", shotDistance);
     double desiredVelocity = 5.58494*shotDistance + 2966.29;
     printf("desired velocity calculate %f", desiredVelocity);
@@ -784,8 +785,8 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRP
 
 bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
     printf("CURRENT SPEED IS %f\n", robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
-    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm && 
-        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+150.0){
+    if(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm){// && 
+        //robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+150.0){
         numTimeAtSpeed_++;
         if (numTimeAtSpeed_ >= 3){
             atTargetSpeed_ = true;
@@ -794,11 +795,12 @@ bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
             numTimeAtSpeed_ = 0;
             atTargetSpeed_ = false;
         }
+        atTargetSpeed_ = true;
     } else {
         numTimeAtSpeed_ = 0;
         atTargetSpeed_ = false;
     }
-    //return true; // for operator to decide when she wants to shoot
+    //return true; // TODO for operator to decide when she wants to shoot
     return atTargetSpeed_;
 }
 
