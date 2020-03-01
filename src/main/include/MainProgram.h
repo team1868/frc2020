@@ -39,13 +39,13 @@ class MainProgram : public frc::TimedRobot {
   void TeleopPeriodic() override;
   //void DisabledPeriodic() override;
   void TestPeriodic() override;
-  void ConnectRecvZMQ();
-  std::string ReadZMQ();
-  // void readDetected(string contents);
-  bool ReadAll(std::string contents);
-  // void readDistance(string contents);
-  void ConnectSendZMQ();
-  void SendZMQ(bool lowExposure);
+  // void ConnectRecvZMQ();
+  // std::string ReadZMQ();
+  // // void readDetected(string contents);
+  // bool ReadAll(std::string contents);
+  // // void readDistance(string contents);
+  // void ConnectSendZMQ();
+  // void SendZMQ(bool lowExposure);
 
   void ResetControllers();
 

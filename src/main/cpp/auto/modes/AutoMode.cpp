@@ -114,12 +114,14 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			break;
 		case 'd':	// Drive straight
 			double distance;
+			bool slow;
 			iss >> distance;
+			iss >> slow;
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
 				printf("Distance: %f\n", distance);
-				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance);
+				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, slow);
 			}
 			break;
 		case '!':

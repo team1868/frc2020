@@ -23,6 +23,7 @@
 #include "ControlBoard.h"
 #include "controllers/SuperstructureController.h"
 #include <math.h>
+#include <zhelpers.hpp>
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
@@ -263,12 +264,25 @@ class RobotModel {
     void GetColorFromSensor(); 
     std::string MatchColor();
 
+    void ZMQInit();
+    void ConnectRecvZMQ();
+    std::string ReadZMQ();
+    void ConnectSendZMQ();
+    void SendZMQ(bool lowExposure);
+    bool ReadAll(std::string contents);
+
     ~RobotModel();
 
   private:
 
     ControlBoard *humanControl_;
     SuperstructureController *superstructureController_;
+
+    //zmq
+    zmq::context_t *context_;//, *context2_; //context for creating sockets
+    zmq::socket_t *subscriber_; //socket to receive message from jetson
+    zmq::socket_t *publisher_; //socket to send message to jetson
+    bool isSocketBound_;
 
     frc::Timer *timer_;
     frc::PowerDistributionPanel *pdp_;

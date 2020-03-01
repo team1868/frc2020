@@ -26,7 +26,7 @@ class DriveStraightCommand : public AutoCommand {
      */
     DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
         AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
-        double desiredDistance);
+        double desiredDistance, bool slow);
       /**
        * Constructor that generates the DriveStraight Command
        * @param navXSource angle input for the PID Loop
@@ -36,9 +36,9 @@ class DriveStraightCommand : public AutoCommand {
        * @param distance in feet
        * @param angle the robot should be
        */
-    DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
-          AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
-          double desiredDistance, double absoluteAngle);
+    // DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+    //       AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
+    //       double desiredDistance, double absoluteAngle);
 
     /**
      * Destructor
@@ -106,6 +106,7 @@ private:
 	double lastDOutput_;
 	double lastDistance_;
 	int numTimesStopped_;
+  bool slow_;
 
   
   
