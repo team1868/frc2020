@@ -264,7 +264,8 @@ class RobotModel {
     void ConnectSendZMQ();
     void SendZMQ(bool lowExposure);
     void ZMQinit();
-    bool UpdateZMQ();
+    void UpdateZMQ();
+    bool ZMQHasContents();
 
     ~RobotModel();
 
@@ -419,6 +420,7 @@ class RobotModel {
     zmq::socket_t *publisher_; //socket to send message to jetson
     int confl;
     bool isSocketBound_;
+    bool hasContents_;
 
     frc::ShuffleboardTab &driverTab_, &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
     nt::NetworkTableEntry maxOutputEntry_, minVoltEntry_, maxCurrentEntry_, leftDriveEncoderEntry_, rightDriveEncoderEntry_, leftVelocityEntry_, rightVelocityEntry_;

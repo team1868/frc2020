@@ -28,6 +28,9 @@ void MainProgram::RobotInit() {
     lastJetsonAngle_ = 0.0;
     jetsonAngleTolerance_ = 3.0;
     
+    navXSource_ = new NavXPIDSource(robot_);
+    talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+    
     autoSequenceEntry_ = robot_->GetModeTab().Add("Auto Test Sequence", "t 0").GetEntry();
     sequence_ = autoSequenceEntry_.GetString("t 0"); //TODO ERROR move this to auto init
     printf("I am alive.\n");
@@ -42,6 +45,7 @@ void MainProgram::RobotInit() {
  * LiveWindow and SmartDashboard integrated updating.
  */
 void MainProgram::RobotPeriodic() {
+
     driveController_->RefreshShuffleboard();
     superstructureController_->RefreshShuffleboard();
     robot_->RefreshShuffleboard();
@@ -75,18 +79,17 @@ void MainProgram::AutonomousInit() {
     superstructureController_->AutoInit();
 
     robot_->ZMQinit();
+    //robot_->SetLight(true);
+    robot_->SendZMQ(true);
 
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
     //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    robot_->SetTestSequence("n b 3560.0 s 3560.0 n i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
+    robot_->SetTestSequence("n a");//"n b 3560.0 s 3560.0 n i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
     
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
-
-    navXSource_ = new NavXPIDSource(robot_);
-    talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
 
@@ -124,6 +127,8 @@ void MainProgram::AutonomousInit() {
 }
 
 void MainProgram::AutonomousPeriodic() {
+    robot_->UpdateZMQ();
+
     robot_->RefreshShuffleboard();
     // if(!tempPivot_->IsDone()){
     //     tempPivot_->Update(0.0, 0.0);
@@ -171,13 +176,18 @@ void MainProgram::TeleopInit() {
 
 void MainProgram::TeleopPeriodic() {
 
-    bool hasContents = robot_->UpdateZMQ();
+    robot_->UpdateZMQ();
+    //bool hasContents = robot_->UpdateZMQ();
 
     //printf("left distance is %f and right distance is %f\n", robot_->GetLeftDistance(), robot_->GetRightDistance());
     humanControl_->ReadControls();
         //align tapes not at trench (like auto)
     //std::cout << "checking tape align\n" << std::flush;
-    if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton) || superstructureController_->GetIsPrepping()){
+    //TODO maybe error, setting in two locations
+    if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton) ||
+       superstructureController_->GetIsPrepping() ||
+       alignTapeCommand_!=nullptr){
+           
         robot_->SetLight(true);
         //printf("light on");
         robot_->SendZMQ(true);
@@ -186,58 +196,36 @@ void MainProgram::TeleopPeriodic() {
         robot_->SendZMQ(false);
     }
     if (!aligningTape_ && humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
-        std::cout << "READY TO START ZMQ READ\n" << std::flush;
-        //robot_->SetLight(true);
-        
-        //sendZMQ(true); //tell jetson to turn exposure down
-        lastJetsonAngle_ = currJetsonAngle_;
-        currJetsonAngle_ = robot_->GetDeltaAngle();
-        printf("last jetson angle is %f and curr jetson angle is %f\n", lastJetsonAngle_, currJetsonAngle_);
-        if(hasContents && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_){
-            printf("done with reading, creating aligning command");
-            aligningTape_ = true;
-            if(navXSource_!=nullptr){ //prevent memory leak from last run of auto align
-                delete navXSource_;
-            }
-            if(alignTapeCommand!=nullptr){
-                alignTapeCommand->Reset();
-                delete alignTapeCommand;
-            }
-            navXSource_ = new NavXPIDSource(robot_); //create navX source
-            printf("\nTURNING TO %f angle\n\n", currJetsonAngle_);
-            printf("current angle is %f and angle to turn to is %f\n", robot_->GetNavXYaw(), robot_->GetNavXYaw()+currJetsonAngle_);
-            alignTapeCommand = new PivotCommand(robot_, robot_->GetNavXYaw()+currJetsonAngle_, true, navXSource_, 2.0);
-            //alignTapeCommand = new AlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false, robot_->GetDeltaAngle(), robot_->GetDistance()); //nav, talon variables don't exist yet
-            printf("created aligning command");
-            alignTapeCommand->Init();
-            printf("starting teleop align tapes\n");
-            return;
-        } else {
-            printf("exited jetson align, nothing read\n");
+        std::cout << "READY TO START ALIGN TAPE\n" << std::endl;
+        if(alignTapeCommand_!=nullptr){
+            alignTapeCommand_->Reset();
+            delete alignTapeCommand_;
+            alignTapeCommand_ = nullptr;
+            printf("deleted align tape for next iter\n");
         }
-        //robot_->SetLight(false);
+        //printf("NAVXS IS NULL? %d\n", (navXSource_==nullptr));
+        alignTapeCommand_ = new AlignTapeCommand(robot_, navXSource_);
+        alignTapeCommand_->Init();
+        aligningTape_ = true;
+        return;
     } else if (aligningTape_){
-        //sendZMQ(true);
-        // printf("in part align tape :))\n");
         autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX);
         autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
-        //std::cout << "AM I NULL ALIGN??" << (alignTapeCommand==NULL) << std::endl << std::flush;
-        if(fabs(autoJoyVal_) >= 0.1 || alignTapeCommand==nullptr || alignTapeCommand->IsDone()){
-            robot_->SetLight(false);
-            alignTapeCommand->Reset();
-            delete alignTapeCommand;
-            alignTapeCommand = NULL;
+        
+        if(fabs(autoJoyVal_) >= 0.1 || alignTapeCommand_==nullptr || alignTapeCommand_->IsDone()){
+            //printf("ALIGN TAPE IS NULL? %d\n", (alignTapeCommand_==nullptr));
+            alignTapeCommand_->Reset();
+            delete alignTapeCommand_;
+            alignTapeCommand_ = nullptr;
             aligningTape_ = false;
             printf("destroyed align tape command\n");
         } else {
-            alignTapeCommand->Update(currTime_, currTime_-lastTime_);
-            printf("updated align tape command\n");
+            //printf("ALIGN TAPE IS NULL? %d\n", (alignTapeCommand_==nullptr));
+            alignTapeCommand_->Update(currTime_, currTime_-lastTime_);
+            //printf("updated align tape command\n");
             return;
-
         }
-    }// else {
-       // sendZMQ(false);
-    //}
+    }
 
     driveController_->Update();
     //std::cout << "before superstructure\n" << std::flush;
