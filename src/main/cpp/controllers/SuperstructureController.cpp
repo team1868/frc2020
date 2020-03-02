@@ -335,7 +335,7 @@ void SuperstructureController::Update(bool isAuto){
             break;
         case kClimbing:
             printf("climbing state \n");
-            robot_->DisengageClimberRatchet();
+            robot_->EngageClimberRatchet();
             if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
                !robot_->GetRightLimitSwitch()){
                 robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
@@ -359,6 +359,7 @@ void SuperstructureController::Update(bool isAuto){
             !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
             !humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
                 nextState_ = kDefaultTeleop; // verify that it should be next state
+                robot_->DisengageClimberRatchet();
             }
             //Climbing()
             break;

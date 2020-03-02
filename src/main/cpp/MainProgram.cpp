@@ -74,7 +74,7 @@ void MainProgram::AutonomousInit() {
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
     robot_->EngageFlywheelHood();
-    robot_->EngageClimberRatchet();
+    robot_->DisengageClimberRatchet();
     robot_->SetTestSequence(robot_->GetChosenSequence());
     superstructureController_->Reset();
     superstructureController_->AutoInit();
@@ -83,15 +83,12 @@ void MainProgram::AutonomousInit() {
     //robot_->SetLight(true);
     robot_->SendZMQ(true);
 
-
-    robot_->SetTestSequence("b 3560.0 s 3560.0 n t -33.0 d -8.7 i t 0.0 d -9.5 n a y q");// d 9.5 t -33.0 d 8.7 t 0.0");//robot_->GetChosenSequence());
-    //std::cout << "YOUR AUTO SEQUENCE:  " << robot_->GetChosenSequence() << std::endl;
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
 
     //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
     //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    //robot_->SetTestSequence("i d -16.0 n");//"n b 3560.0 s 3560.0 n i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
+    robot_->SetTestSequence("n a");//"n b 3560.0 s 3560.0 n i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
     
     //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
 
@@ -164,7 +161,9 @@ void MainProgram::TeleopInit() {
     std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();
     robot_->DisengageFlywheelHood();
-    robot_->EngageClimberRatchet();
+    //printf("hood\n");
+    robot_->DisengageClimberRatchet();
+    //printf("done with climb ratchet\n");
 
     robot_->StartCompressor();
 
