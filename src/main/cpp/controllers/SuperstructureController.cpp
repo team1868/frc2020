@@ -100,8 +100,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelMotor1OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 1 output", robot_->FlywheelMotor1Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor2OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 2 output", robot_->FlywheelMotor2Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
-    climbElevatorUpEntry_ = robot_->GetFunctionalityTab().Add("Elevator Up Power", climbElevatorUpPower_).GetEntry();
-	climbElevatorDownEntry_ = robot_->GetFunctionalityTab().Add("Elevator Down Power", climbElevatorDownPower_).GetEntry();
+    climbElevatorUpEntry_ = robot_->GetSuperstructureTab().Add("Elevator Up Power", climbElevatorUpPower_).GetEntry();
+	climbElevatorDownEntry_ = robot_->GetSuperstructureTab().Add("Elevator Down Power", climbElevatorDownPower_).GetEntry();
 
     //TODO make timeout
 
