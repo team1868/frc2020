@@ -74,6 +74,7 @@ void MainProgram::AutonomousInit() {
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
     robot_->EngageFlywheelHood();
+    robot_->EngageClimberRatchet();
     robot_->SetTestSequence(robot_->GetChosenSequence());
     superstructureController_->Reset();
     superstructureController_->AutoInit();
@@ -160,6 +161,7 @@ void MainProgram::TeleopInit() {
     std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();
     robot_->DisengageFlywheelHood();
+    robot_->EngageClimberRatchet();
 
     robot_->StartCompressor();
 

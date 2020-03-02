@@ -37,10 +37,10 @@ static const int ELEVATOR_MOTOR_ID                       = 8;
 // Pneumatics
 static const int PNEUMATICS_CONTROL_MODULE_ID            = 0;
 
-static const int GEAR_SHIFT_FORWARDS_SOLENOID_PORT       = 1; // fix
-static const int GEAR_SHIFT_REVERSE_SOLENOID_PORT        = 2; // fix
+static const int GEAR_SHIFT_SOLENOID_PORT                = 1; // fix       = 2; // fix
 static const int LIGHT_SOLENOID_PORT                     = 4; // fix, should control LED light on tape detect camera
 static const int FLYWHEEL_HOOD_SOLENOID_PORT             = 0; // this is correct
+static const int CLIMB_RATCHET_SOLENOID_PORT             = 2;
 
 // PDP Channels 
 static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN             = 0; 

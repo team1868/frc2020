@@ -100,8 +100,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelMotor1OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 1 output", robot_->FlywheelMotor1Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor2OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 2 output", robot_->FlywheelMotor2Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
 
-    climbElevatorUpEntry_ = robot_->GetSuperstructureTab().Add("Elevator Up Power", climbElevatorUpPower_).GetEntry();
-	climbElevatorDownEntry_ = robot_->GetSuperstructureTab().Add("Elevator Down Power", climbElevatorDownPower_).GetEntry();
+    climbElevatorUpEntry_ = robot_->GetFunctionalityTab().Add("Elevator Up Power", climbElevatorUpPower_).GetEntry();
+	climbElevatorDownEntry_ = robot_->GetFunctionalityTab().Add("Elevator Down Power", climbElevatorDownPower_).GetEntry();
 
     //TODO make timeout
 
@@ -329,6 +329,7 @@ void SuperstructureController::Update(bool isAuto){
             break;
         case kClimbing:
             printf("climbing state \n");
+            robot_->DisengageClimberRatchet();
             if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
                !robot_->GetRightLimitSwitch()){
                 robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
@@ -765,12 +766,14 @@ double SuperstructureController::RatioFlywheel(){
 
 //uses inches
 double SuperstructureController::CalculateFlywheelVelocityDesired() {
+    /*if(!(robot_->GetDistance() > 0)){
+        return 4000.0;
+    }*/
     double shotDistance = sqrt(pow(robot_->GetDistance()*12.0, 2.0) - pow(60.0, 2.0)) + 6.0; //all in inches
     //printf("distance from shot %f", shotDistance);
     double desiredVelocity = 5.58494*shotDistance + 2966.29;
     //printf("desired velocity calculate %f", desiredVelocity);
     return desiredVelocity;
-    //return closeFlywheelVelocity_;
 }
 
 //TODO actually implement

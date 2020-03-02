@@ -106,6 +106,16 @@ void RobotModel::DisengageFlywheelHood() {
     flywheelHoodSolenoid_->Set(false);
 }
 
+void RobotModel::EngageClimberRatchet() {
+    climberRatchetSolenoid_->Set(true);
+}
+
+void RobotModel::DisengageClimberRatchet() {
+    climberRatchetSolenoid_->Set(false);
+}
+
+
+
 void RobotModel::SetRightClimberElevatorOutput(double power){
     climberRightElevatorMotor_->Set(power);
 }
