@@ -74,6 +74,8 @@ void MainProgram::AutonomousInit() {
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
     robot_->EngageFlywheelHood();
+    robot_->EngageClimberRatchet();
+    robot_->SetTestSequence(robot_->GetChosenSequence());
     superstructureController_->Reset();
     superstructureController_->AutoInit();
 
@@ -82,7 +84,7 @@ void MainProgram::AutonomousInit() {
     robot_->SendZMQ(true);
 
 
-    robot_->SetTestSequence("b 3560.0 s 3560.0 n t -33.0 d -8.7 i t 0.0 d -9.5 n a b 4000.0 s 4000.0");// d 9.5 t -33.0 d 8.7 t 0.0");//robot_->GetChosenSequence());
+    robot_->SetTestSequence("b 3560.0 s 3560.0 n t -33.0 d -8.7 i t 0.0 d -9.5 n a y q");// d 9.5 t -33.0 d 8.7 t 0.0");//robot_->GetChosenSequence());
     //std::cout << "YOUR AUTO SEQUENCE:  " << robot_->GetChosenSequence() << std::endl;
     //robot_->SetTestSequence("c 1.0 90.0 0");
     //robot_->SetTestSequence(sequence_);
@@ -162,6 +164,7 @@ void MainProgram::TeleopInit() {
     std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();
     robot_->DisengageFlywheelHood();
+    robot_->EngageClimberRatchet();
 
     robot_->StartCompressor();
 

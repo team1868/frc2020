@@ -222,6 +222,8 @@ class RobotModel {
     int GetFlywheelMotor1Velocity();
     void EngageFlywheelHood();
     void DisengageFlywheelHood();
+    void EngageClimberRatchet();
+    void DisengageClimberRatchet();
     double GetTargetDistance();
     void SetControlModeVelocity(double desiredVelocity);
     void ConfigFlywheelP(double pFac_);
@@ -301,6 +303,7 @@ class RobotModel {
 
     WPI_TalonSRX *climberRightElevatorMotor_, *climberLeftElevatorMotor_;
     frc::DigitalInput *limitSwitchRight_, *limitSwitchLeft_;
+    frc::Solenoid *climberRatchetSolenoid_;
     
     WPI_VictorSPX *controlPanelMotor_;
     rev::ColorSensorV3 *colorSensor_;

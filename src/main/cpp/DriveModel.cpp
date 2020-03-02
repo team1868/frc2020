@@ -74,7 +74,7 @@ RobotModel::RobotModel() :
     compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
 
 	// initializing double solenoid for gear
-	gearSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARDS_SOLENOID_PORT);
+	gearSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_SOLENOID_PORT);
 	
 	// initializing solenoid for led light
 	lightSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, LIGHT_SOLENOID_PORT);
@@ -131,7 +131,6 @@ RobotModel::RobotModel() :
 	//flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
 
 
-
 	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
@@ -149,6 +148,7 @@ RobotModel::RobotModel() :
 
 	climberRightElevatorMotor_ = new WPI_TalonSRX(CLIMB_RIGHT_ELEVATOR_ID);
 	climberLeftElevatorMotor_ = new WPI_TalonSRX(CLIMB_LEFT_ELEVATOR_ID);
+	climberRatchetSolenoid_ = new frc::Solenoid(CLIMB_RATCHET_SOLENOID_PORT);
 
 	intakeRollersMotor_ = new WPI_VictorSPX(INTAKE_ROLLERS_MOTOR_ID);
     intakeWristMotor_ = new WPI_TalonSRX(INTAKE_WRIST_MOTOR_ID);
@@ -682,7 +682,6 @@ bool RobotModel::IsHighGear(){
 	return isHighGear_;
 }
 
-
 //align tapes
 void RobotModel::SetDeltaAngle(double angle) {
 	desiredDeltaAngle_ = angle;
@@ -973,6 +972,43 @@ void RobotModel::RefreshShuffleboard(){
 }
 
 RobotModel::~RobotModel(){
+	
+	/*delete climberRatchetSolenoid_;
+	delete flywheelHoodSolenoid_;
+	delete gearSolenoid_;
+	delete lightSolenoid_;
+	delete compressor_;
+	delete timer_;
+	delete navX_;
+	delete pdp_;
+	
+	//motors
+	delete leftMaster_;
+	delete rightMaster_;
+	delete leftSlaveA_;
+	delete rightSlaveA_;
+	delete flywheelMotor1_;
+	delete flywheelMotor2_;
+	delete climberLeftElevatorMotor_;
+	delete climberRightElevatorMotor_;
+	delete intakeRollersMotor_;
+	delete intakeWristMotor_;
+	delete indexFunnelMotor_;
+	delete elevatorFeederMotor_;
+	delete elevatorMotor_;
+	delete controlPanelMotor_;
+
+	delete elevatorFeederLightSensor_;
+	delete elevatorLightSensor_;
+	delete colorSensor_;
+	delete limitSwitchRight_;
+	delete limitSwitchLeft_;
+
+	
+	delete fortyAmpFXLimit_;
+	delete fortyAmpSRXLimit_;
+	delete thirtyAmpSRXLimit_; */
+
 	//drive straight
 	aPEntry_.Delete();
     aIEntry_.Delete(); 
@@ -1020,6 +1056,19 @@ RobotModel::~RobotModel(){
     ratioAllEntry_.Delete();
 	ratioDriveEntry_.Delete();
 	ratioSuperstructureEntry_.Delete();
+	climberRightLimitSwitchEntry_.Delete();
+	climberLeftLimitSwitchEntry_.Delete();
+
+	initLineErrorEntry_.Delete();
+	trenchDistErrorEntry_.Delete();
+	trenchWidthErrorEntry_.Delete();
+	trenchLengthErrorEntry_.Delete();
+	targetZDistErrorEntry_.Delete();
+	targetZHeightErrorEntry_.Delete();
+	loadingDDistErrorEntry_.Delete();
+	playerSt2MidErrorEntry_.Delete();
+	initLineSlantEntry_.Delete();
+	
 
 	bColorEntry_.Delete();
 	rColorEntry_.Delete();
