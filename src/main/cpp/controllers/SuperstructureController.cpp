@@ -33,8 +33,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     elevatorFastPower_ = 0.4;//0.75; //fix
     indexFunnelPower_ = 0.3; // fix
     intakeRollersPower_ = 0.5;
-    lowerElevatorTimeout_ = 5.0; //fix
-    elevatorTimeout_ = 3.0;
+    lowerElevatorTimeout_ = 2.0; //fix
+    elevatorTimeout_ = 2.0;
     //lastBottomStatus_ = false;
     manualRollerPower_ = 0.5;
     autoWristDownP_ = 0.07;
@@ -74,9 +74,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     flywheelVelocityEntry_ = flywheelPIDLayout_.Add("flywheel velocity", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelVelocityErrorEntry_ = flywheelPIDLayout_.Add("flywheel error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     
-    flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.0).GetEntry();
+    flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.35).GetEntry();
     flywheelIEntry_ = flywheelPIDLayout_.Add("flywheel I", 0.0).GetEntry();
-    flywheelDEntry_ = flywheelPIDLayout_.Add("flywheel D", 0.0).GetEntry();
+    flywheelDEntry_ = flywheelPIDLayout_.Add("flywheel D", 0.1).GetEntry();
     //flywheelFEntry_ = flywheelPIDLayout_.Add("flywheel FF", 1.0).GetEntry();
     flywheelMotor1OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 1 output", robot_->FlywheelMotor1Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor2OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 2 output", robot_->FlywheelMotor2Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
@@ -132,9 +132,9 @@ void SuperstructureController::Reset() { // might not need this
     currWristState_ = kRaising;
     nextWristState_ = kRaising;
 
-    flywheelPFac_ = flywheelPEntry_.GetDouble(11.0);
+    flywheelPFac_ = flywheelPEntry_.GetDouble(0.35);
     flywheelIFac_ = flywheelIEntry_.GetDouble(0.0);
-    flywheelDFac_ = flywheelDEntry_.GetDouble(0.0);
+    flywheelDFac_ = flywheelDEntry_.GetDouble(0.1);
     //flywheelFFac_ = flywheelFEntry_.GetDouble(0.0);
     FlywheelPIDControllerUpdate();
 
@@ -280,7 +280,7 @@ void SuperstructureController::Update(bool isAuto){
             // }
             //UpdateButtons();   
 
-            IndexPrep();
+            IndexPrep(isAuto);
 
             //TODO replace "//robot_->SetArm(bool a);" with if !sensorGood set arm power small in bool a direction
             //in current code: true is arm down and false is arm up
@@ -515,7 +515,7 @@ void SuperstructureController::DisabledUpdate() {
 }
 */
 
-void SuperstructureController::IndexPrep(){
+void SuperstructureController::IndexPrep(bool isAuto){
     bottomSensor_ = robot_->GetElevatorFeederLightSensorStatus();
     topSensor_ = robot_->GetElevatorLightSensorStatus();
     
@@ -526,7 +526,11 @@ void SuperstructureController::IndexPrep(){
         startIndexTime_ = currTime_;
     }
 
-    tTimeout_ = currTime_-startElevatorTime_ > elevatorTimeout_;
+    if(isAuto){
+        tTimeout_ = currTime_-startElevatorTime_ > 0.2;
+    } else {
+        tTimeout_ = currTime_-startElevatorTime_ > elevatorTimeout_;
+    }
     bTimeout_ = currTime_-startIndexTime_ > lowerElevatorTimeout_;
 }
 
@@ -576,8 +580,6 @@ bool SuperstructureController::Shooting(bool isAuto) {
     }
 
     if(!bottomSensor_ && !bTimeout_){
-        //std::cout << "nothing in bot sensor, not time out tho" << std::endl;
-        //robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
     } else {
         //std::cout << "stopping index" << std::endl;
@@ -640,7 +642,7 @@ void SuperstructureController::Resetting() {
 void SuperstructureController::UndoElevator(){
     robot_->SetElevatorOutput(-elevatorSlowPower_);
     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
-    robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+    //robot_->SetIndexFunnelOutput(-indexFunnelPower_);
     robot_->SetFlywheelOutput(-elevatorSlowPower_); // might need to adjust
 }
 
@@ -669,7 +671,11 @@ void SuperstructureController::IndexUpdate(){
 
     //control bottom
     if(!bottomSensor_ && (!bTimeout_ || currHandlingState_ == kIntaking)){
-        robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
+        if(((int)currTime_)%2 == 0){
+            robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
+        } else {
+            robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+        }
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         //printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");
         //std::cout << "intake stuffs, if in kindexing B)" <<std::endl << std::flush;

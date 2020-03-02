@@ -7,17 +7,21 @@
 
 #include "auto/commands/ShootingCommand.h"
 
-ShootingCommand::ShootingCommand(RobotModel * robot, double autoVelocity, bool setVelocity) : AutoCommand() {
+ShootingCommand::ShootingCommand(RobotModel * robot, double autoVelocity) : AutoCommand() {
     printf("shooting command\n");
     robot_ = robot;
     isDone_ = false;
-    if(setVelocity){
-        autoVelocity_ = autoVelocity; //this is flywheel velocity
-    }
-    else{
-        autoVelocity_ = robot_->CalculateFlywheelVelocityDesired();
-    }
-    
+    autoVelocity_ = autoVelocity; //this is flywheel velocity
+    setVelocity_ = true;
+    startShootingTime_ = 0.0;
+}
+
+ShootingCommand::ShootingCommand(RobotModel * robot) : AutoCommand() {
+    printf("shooting command\n");
+    robot_ = robot;
+    isDone_ = false;
+    autoVelocity_ = 0.0; //this is flywheel velocity
+    setVelocity_ = false;
     startShootingTime_ = 0.0;
 }
 
@@ -25,6 +29,9 @@ void ShootingCommand::Init(){
     isDone_ = false;
     startShootingTime_ = robot_->GetTime();
     std::cout << "time starting " << startShootingTime_ << std::endl;
+    if(!setVelocity_){
+        autoVelocity_ = robot_->CalculateFlywheelVelocityDesired();
+    }
     robot_->SetShooting(autoVelocity_);
     robot_->ShootingAutoInit();
 }

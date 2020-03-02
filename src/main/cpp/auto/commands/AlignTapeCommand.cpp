@@ -17,7 +17,7 @@ AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource)
     //navXSource_ = new NavXPIDSource(robot_);
     navXSource_ = navXSource;
     isDone_ = false;
-    maxTime_ = 6.0;
+    maxTime_ = 2.0;
     startTime_ = 0.0;
 }
 
@@ -38,11 +38,11 @@ void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
     if(!aligning_){
         lastJetsonAngle_ = currJetsonAngle_;
         currJetsonAngle_ = robot_->GetDeltaAngle();
-        if(robot_->ZMQHasContents() && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_){
+        if(robot_->ZMQHasContents() && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_ && robot_->GetDistance() > 0.0){
             printf("received last angle %f and curr angle %f, starting\n", lastJetsonAngle_, currJetsonAngle_);
             aligning_ = true;
             printf("turning to angle %f in align tape\n", currJetsonAngle_);
-            pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, jetsonAngleTolerance_);
+            pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 2.0);
             pivotCommand_->Init();
         }
     } else {
@@ -50,6 +50,9 @@ void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
             pivotCommand_->Update(currTimeSec, deltaTimeSec);
         } else {
             printf("DONE with align tape\n");
+            if(currTimeSec-startTime_>maxTime_){
+                printf("DONE FROM TIMEOUT IN AUTO ALIGN\n");
+            }
             isDone_ = true;
         }
     }

@@ -16,7 +16,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		{
 	slow_ = slow;
 	isAbsoluteAngle_ = false;
-	slowSpeed_ = 0.3; //0.3 for practice bot
+	slowSpeed_ = 0.25; //0.3 for practice bot
 
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
@@ -292,7 +292,7 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	distancePID_ = NULL;
 
 	rTolerance_ = 0.5;
-	dTolerance_ = 2.0 / 12.0;
+	dTolerance_ = 3.0/12.0;//2.0 / 12.0;
 
 	rMaxOutput_ = 0.15;
 	dMaxOutput_ = 0.1;

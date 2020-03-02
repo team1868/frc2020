@@ -114,12 +114,14 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			break;
 		case 'd':	// Drive straight
 			double distance;
+			bool driveSlow;
 			iss >> distance;
+			iss >> driveSlow;
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
 				printf("Distance: %f\n", distance);
-				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, true);
+				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, driveSlow);
 			}
 			break;
 		case '!':
@@ -180,7 +182,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new ShootingCommand(robot_, autoVelocity, true);
+				tempCommand = new ShootingCommand(robot_, autoVelocity);
 			}
 			break;
 		case 'b': //prepping
@@ -190,7 +192,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new PreppingCommand(robot_, desiredVelocity, true);
+				tempCommand = new PreppingCommand(robot_, desiredVelocity);
 			}
 			break;
 		case 'i': //intaking
@@ -225,7 +227,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = NULL;
 			}
 			else { 
-				tempCommand = new ShootingCommand(robot_, 0.0, false);
+				tempCommand = new ShootingCommand(robot_);
 			}
 			break;
 		case 'y': // prepping 2
@@ -233,7 +235,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new PreppingCommand(robot_, 0.0, false);
+				tempCommand = new PreppingCommand(robot_);
 			}
 			break;
 		default:	// When it's not listed, don't do anything :)

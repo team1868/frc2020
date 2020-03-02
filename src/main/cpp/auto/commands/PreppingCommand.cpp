@@ -7,21 +7,27 @@
 
 #include "auto/commands/PreppingCommand.h"
 
-PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity, bool setVelocity) : AutoCommand() {
+PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity) : AutoCommand() {
     printf("prepping command\n");
     robot_ = robot;
     isDone_ = false;
-    if(setVelocity){
-        desiredVelocity_ = desiredVelocity;
-    }
-    else{
-        desiredVelocity_ = robot_->CalculateFlywheelVelocityDesired();
-    }
+    setVelocity_ = true;
+    desiredVelocity_ = desiredVelocity;
+}
+
+PreppingCommand::PreppingCommand(RobotModel * robot) : AutoCommand() {
+    printf("prepping command\n");
+    robot_ = robot;
+    isDone_ = false;
+    setVelocity_ = false;
+    desiredVelocity_ = 0.0;
 }
 
 void PreppingCommand::Init(){
     isDone_ = false;
-
+    if(!setVelocity_){
+        desiredVelocity_ = robot_->CalculateFlywheelVelocityDesired();
+    }
 }
 
 void PreppingCommand::Update(double currTimeSec, double deltaTimeSec){
@@ -29,11 +35,12 @@ void PreppingCommand::Update(double currTimeSec, double deltaTimeSec){
     printf("STILL PREPPING\n");
     robot_->SetPrepping(desiredVelocity_);
     //robot_->SetPrepping(desiredVelocity_);
-    isDone_ = robot_->IsAutoFlywheelAtSpeed(desiredVelocity_);
-    if(isDone_){
-        printf("AM DONE PREPPING\n");
-    }
+    isDone_ = true;//robot_->IsAutoFlywheelAtSpeed(desiredVelocity_);
 
+    // if(isDone_){
+    //     printf("AM DONE PREPPING\n");
+    // }
+    
     //isDone_ = true;
 }
 

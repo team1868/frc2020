@@ -40,19 +40,19 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 	    
 		myRobot->GetVoltage() << ", " <<
 	    //myRobot->GetTotalCurrent() << ", " <<
-	    myRobot->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
-	    myRobot->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
-	    myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
-	    myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
+	    // myRobot->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
+	    // myRobot->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
+	    // myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
+	    // myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
 		
-		myRobot->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN) << ", " <<
-		myRobot->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN) << ", " <<
+		// myRobot->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN) << ", " <<
 
 		//myRobot->GetCurrent(HIGH_GEAR) get back to this in a sec
 		

@@ -34,6 +34,20 @@ void MainProgram::RobotInit() {
     autoSequenceEntry_ = robot_->GetModeTab().Add("Auto Test Sequence", "t 0").GetEntry();
     sequence_ = autoSequenceEntry_.GetString("t 0"); //TODO ERROR move this to auto init
     printf("I am alive.\n");
+
+
+    robot_->GetDriverTab().Add("Choose auto", realAutoChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
+	realAutoChooser_.SetDefaultOption("0 blank", "n");
+    realAutoChooser_.AddOption("PROGRAMMING AUTO ALIGN TEST", "n a");
+	//realAutoChooser_.AddOption("1: Target Zone", "b 3545.0 s 3545.0 n t -33.0 d -8.5 0 i t 0.0 b 4812.0 d -9.5 1 n a a q n"); //Note: shooting but not making shot
+	realAutoChooser_.AddOption("1: Target Zone", "n b 3545.0 s 3545.0 n t -33.0 d -8.5 0 i t 0.0 d -9.5 1 n d 10.0 0 a"); //Note: NO SHOT!
+	realAutoChooser_.AddOption("2: Center to bar", "n a y q t -33.0 i d -7.6 0 d 6.6 0 t 0.0 a y q n");
+    realAutoChooser_.AddOption("3: Shoot and move forwards", "n a y q n d 5.0 0");
+    realAutoChooser_.AddOption("4: Shoot and move back", "n a y q n d -5.0 0");
+    //realAutoChooser_.AddOption("2: Loading Bay", "n a y q n t -118.1 d -16.53 t -53.05 d -10.0 a y q n");//d 10.0 t -38.66 d 8.93 y t 0.0 q");
+	//realAutoChooser_.AddOption("3: Mid-Trench", );
+	//realAutoChooser_.AddOption("4: Mid-Player Station", );
+	//realAutoChooser_.AddOption("5: other", tempAutoString_);
 }
 
 /**
@@ -75,6 +89,7 @@ void MainProgram::AutonomousInit() {
     robot_->CreateNavX();
     robot_->EngageFlywheelHood();
     robot_->DisengageClimberRatchet();
+    robot_->ResetWristAngle();
     robot_->SetTestSequence(robot_->GetChosenSequence());
     superstructureController_->Reset();
     superstructureController_->AutoInit();
@@ -83,22 +98,40 @@ void MainProgram::AutonomousInit() {
     //robot_->SetLight(true);
     robot_->SendZMQ(true);
 
-    //robot_->SetTestSequence("c 1.0 90.0 0");
+
+
+
+
+
+
+
+
+
+
+    //auto selection
+    robot_->SetTestSequence(realAutoChooser_.GetSelected());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     //robot_->SetTestSequence(sequence_);
 
-    //robot_->SetTestSequence("d 1.0 c 3.0 180.0 0"); //for testing high gear and low gear
-    //robot_->SetTestSequence("c 3.0 90.0 0 0");
-    robot_->SetTestSequence("n a");//"n b 3560.0 s 3560.0 n i w 4.0 b 3560.0 s 3560.0 n");// c 4.0 90.0 1 1");
-    
-    //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90.0 d 1.0 t 0.0"); //for testing high gear and low gear
-
-    //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
+    //start in front of target and go to trench to pick up 3 balls then shoot
+    //robot_->SetTestSequence("b 3560.0 s 3560.0 n t -33.0 d -8.7 i t 0.0 d -9.5 n a y q");
 
     testSequence_ = new TestMode(robot_, humanControl_);
     testSequence_->QueueFromString(robot_->GetTestSequence());
-
-
-    //robot_->SetLight(true); //turn on light for auto
 
     testSequence_->Init();
     std::cout<< "init time: " << robot_->GetTime() << std::endl;

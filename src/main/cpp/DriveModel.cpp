@@ -203,6 +203,8 @@ RobotModel::RobotModel() :
     subscriber_ = nullptr;
     isSocketBound_ = false;
 	hasContents_ = false;
+	desiredDistance_ = 0.0;
+	desiredDeltaAngle_ = 0.0;
 
 	// flywheelMotor1_->ConfigFactoryDefault();
 	// /* first choose the sensor */

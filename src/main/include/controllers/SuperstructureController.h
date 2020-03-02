@@ -75,7 +75,7 @@ class SuperstructureController {
 
  private:
   void IndexUpdate();
-  void IndexPrep();
+  void IndexPrep(bool isAuto);
   void Intaking();
   void Indexing();
   bool Shooting(bool isAuto);

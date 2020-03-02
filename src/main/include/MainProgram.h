@@ -72,4 +72,5 @@ class MainProgram : public frc::TimedRobot {
 
   std::string sequence_;
   nt::NetworkTableEntry autoSequenceEntry_;
+  frc::SendableChooser<std::string> realAutoChooser_;
 };
