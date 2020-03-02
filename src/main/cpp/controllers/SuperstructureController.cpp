@@ -141,7 +141,7 @@ void SuperstructureController::Reset() { // might not need this
     
 }
 
-void SuperstructureController::WristUpdate(){
+void SuperstructureController::WristUpdate(bool isAuto){
     //printf("wrist update\n");
     //auto wrist 
     double intakeWristOutput = 0.0, intakeRollersOutput = 0.0;
@@ -229,7 +229,13 @@ void SuperstructureController::WristUpdate(){
     //     intakeRollersOutput = 0.0;
     // }
     robot_->SetIntakeWristOutput(intakeWristOutput);
-    robot_->SetIntakeRollersOutput(intakeRollersOutput);
+    if(isAuto && fabs(intakeRollersOutput) > 0.1){
+        robot_->SetIntakeRollersOutput(1.0);
+    } else {
+        //TODO DELETE THIS LATER
+        //intakeRollersOutput *= 0.5;
+        robot_->SetIntakeRollersOutput(intakeRollersOutput);
+    }
 }
 
 void SuperstructureController::UpdatePrep(bool isAuto){
@@ -267,7 +273,7 @@ void SuperstructureController::Update(bool isAuto){
             //CheckClimbDesired();
 
             UpdatePrep(isAuto);
-            WristUpdate();
+            WristUpdate(isAuto);
             //printf("default teleop\n");
             // if (!isAuto){
             //     UpdateButtons();   

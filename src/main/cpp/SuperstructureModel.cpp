@@ -207,6 +207,7 @@ void RobotModel::ResetWristAngle(){
     intakeWristMotor_->SetSelectedSensorPosition(0);
 }
 
+#ifdef PRACTICE_BOT
 bool RobotModel::GetElevatorFeederLightSensorStatus() {
     return  elevatorFeederLightSensor_->Get();
 }
@@ -214,3 +215,11 @@ bool RobotModel::GetElevatorLightSensorStatus() {
     return elevatorLightSensor_->Get();
 }
 
+#else
+bool RobotModel::GetElevatorFeederLightSensorStatus() {
+    return  !elevatorFeederLightSensor_->Get();
+}
+bool RobotModel::GetElevatorLightSensorStatus() {
+    return !elevatorLightSensor_->Get();
+}
+#endif

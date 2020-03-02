@@ -487,15 +487,15 @@ void RobotModel::UpdateCurrent(int channel) {
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN); */
-	flywheelOneCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN); // test if this works
-	flywheelTwoCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN);
-	climbOneCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN);
-	climbTwoCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN);
-	intakeRollersCurrent_ = pdp_->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN);
-	intakeWristCurrent_ = pdp_->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN);
-	IndexFunnelCurrent_ = pdp_->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN);
-	elevatorFeederCurrent_ = pdp_->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHAN);
-	elevatorCurrent_ = pdp_->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN);
+	// flywheelOneCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN); // test if this works
+	// flywheelTwoCurrent_ = pdp_->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN);
+	// climbOneCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN);
+	// climbTwoCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN);
+	// intakeRollersCurrent_ = pdp_->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN);
+	// intakeWristCurrent_ = pdp_->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN);
+	// IndexFunnelCurrent_ = pdp_->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN);
+	// elevatorFeederCurrent_ = pdp_->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHAN);
+	// elevatorCurrent_ = pdp_->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN);
 
 	leftDriveACurrent_ = leftMaster_->GetSupplyCurrent(); //works
 	leftDriveBCurrent_ = leftMaster_->GetSupplyCurrent();
@@ -897,6 +897,10 @@ void RobotModel::SendZMQ(bool lowExposure) {
     //std::cout << sent << " done sending to zmq" << std::endl;
 }
 
+double RobotModel::CalculateFlywheelVelocityDesired(){
+	return superstructureController_->CalculateFlywheelVelocityDesired();
+}
+
 void RobotModel::CreateNavX(){
 	navXSource_ = new NavXPIDSource(this);
 }
@@ -943,7 +947,7 @@ void RobotModel::RefreshShuffleboard(){
 	bColorEntry_.SetDouble(detectedColor_.blue);
  
 
-	UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
+	//UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
 	resetWristAngle_ = resetWristAngleEntry_.GetBoolean(false);

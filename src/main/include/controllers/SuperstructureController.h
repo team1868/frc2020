@@ -44,7 +44,7 @@ class SuperstructureController {
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelVelocityDesired();
   void SetFlywheelPowerDesired(double flywheelVelocityRPM);
-  void WristUpdate();
+  void WristUpdate(bool isAuto);
   void UpdateButtons();
   double RatioFlywheel();
   bool GetShootingIsDone();

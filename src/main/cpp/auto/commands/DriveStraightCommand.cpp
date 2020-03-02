@@ -16,6 +16,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 		{
 	slow_ = slow;
 	isAbsoluteAngle_ = false;
+	slowSpeed_ = 0.3; //0.3 for practice bot
 
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
@@ -191,18 +192,18 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 
 //		double maxOutput = fmax(fabs(rightMotorOutput_), fabs(leftMotorOutput_));
 	}
-
+    
 	if(slow_){
 		//TODO fix to ratio rather than hard sets
-		if(leftMotorOutput_ > 0.2){
-			leftMotorOutput_ = 0.2;
-		} else if(leftMotorOutput_ < -0.2){
-			leftMotorOutput_ = -0.2;
+		if(leftMotorOutput_ > slowSpeed_){
+			leftMotorOutput_ = slowSpeed_;
+		} else if(leftMotorOutput_ < -slowSpeed_){
+			leftMotorOutput_ = -slowSpeed_;
 		}
-		if(rightMotorOutput_ > 0.2){
-			rightMotorOutput_ = 0.2;
-		} else if(rightMotorOutput_ < -0.2){
-			rightMotorOutput_ = -0.2;
+		if(rightMotorOutput_ > slowSpeed_){
+			rightMotorOutput_ = slowSpeed_;
+		} else if(rightMotorOutput_ < -slowSpeed_){
+			rightMotorOutput_ = -slowSpeed_;
 		}
 	}
 	// drive motors

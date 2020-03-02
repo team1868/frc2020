@@ -39,7 +39,7 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 	    myRobot->GetNavXPitch() << ", " <<
 	    
 		myRobot->GetVoltage() << ", " <<
-	    myRobot->GetTotalCurrent() << ", " <<
+	    //myRobot->GetTotalCurrent() << ", " <<
 	    myRobot->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
 	    myRobot->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
 	    myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<

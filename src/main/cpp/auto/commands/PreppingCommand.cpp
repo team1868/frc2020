@@ -7,11 +7,16 @@
 
 #include "auto/commands/PreppingCommand.h"
 
-PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity) : AutoCommand() {
+PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity, bool setVelocity) : AutoCommand() {
     printf("prepping command\n");
     robot_ = robot;
     isDone_ = false;
-    desiredVelocity_ = desiredVelocity;
+    if(setVelocity){
+        desiredVelocity_ = desiredVelocity;
+    }
+    else{
+        desiredVelocity_ = robot_->CalculateFlywheelVelocityDesired();
+    }
 }
 
 void PreppingCommand::Init(){

@@ -12,7 +12,7 @@
 
 class PreppingCommand : public AutoCommand {
  public:
-  PreppingCommand(RobotModel * robot, double desiredVelocity_);
+  PreppingCommand(RobotModel * robot, double desiredVelocity, bool setVelocity);
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();

@@ -108,6 +108,7 @@ private:
 	int numTimesStopped_;
 
   bool slow_;
+  double slowSpeed_;
   
   frc::ShuffleboardLayout &driveStraightLayout_;
 	nt::NetworkTableEntry leftStraightEntry_, rightStraightEntry_, angleErrorEntry_, angleErrorGraphEntry_, desiredAngleEntry_,

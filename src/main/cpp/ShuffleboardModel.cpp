@@ -30,9 +30,9 @@ void RobotModel::CreatePIDEntries(){
     //tIFacNet_ =  curveTurnPIDLayout_.Add("Curve tI", 0.0).GetEntry();
     //tDFacNet_ =  curveTurnPIDLayout_.Add("Curve tD", 0.0).GetEntry();
 
-    pEntryP_ = pointPIDLayout_.Add("P", 0.0).GetEntry();
+    pEntryP_ = pointPIDLayout_.Add("P", 0.016).GetEntry();
     iEntryP_ = pointPIDLayout_.Add("I", 0.0).GetEntry();
-    dEntryP_ = pointPIDLayout_.Add("D", 0.0).GetEntry();
+    dEntryP_ = pointPIDLayout_.Add("D", 0.0115).GetEntry();
 }
 
 

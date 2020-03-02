@@ -11,7 +11,7 @@
 
 class ShootingCommand : public AutoCommand{
  public:
-  ShootingCommand(RobotModel * robot, double autoVelocity);
+  ShootingCommand(RobotModel * robot, double autoVelocity, bool setVelocity);
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();

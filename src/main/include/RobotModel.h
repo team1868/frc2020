@@ -7,7 +7,7 @@
 
 #pragma once
 
-#define PRACTICE_BOT
+//#define PRACTICE_BOT
 
 #include <zhelpers.hpp>
 #include <frc/WPILib.h>
@@ -146,6 +146,8 @@ class RobotModel {
     double GetCurrent(int channel);
     double ModifyCurrent(int channel, double value);
     double CheckMotorCurrentOver(int channel, double power);
+
+    double CalculateFlywheelVelocityDesired();
 
     double GetTotalPower();
     double GetTotalEnergy();

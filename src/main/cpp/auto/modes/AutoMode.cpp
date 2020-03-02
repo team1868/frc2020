@@ -180,7 +180,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new ShootingCommand(robot_, autoVelocity);
+				tempCommand = new ShootingCommand(robot_, autoVelocity, true);
 			}
 			break;
 		case 'b': //prepping
@@ -190,7 +190,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			if(IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				tempCommand = new PreppingCommand(robot_, desiredVelocity);
+				tempCommand = new PreppingCommand(robot_, desiredVelocity, true);
 			}
 			break;
 		case 'i': //intaking
@@ -217,6 +217,23 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			} else {
 				tempCommand = new AlignTapeCommand(robot_, navX_);
 				std::cout << "making new align tape command" << std::endl;
+			}
+			break;
+		case 'q': //shooting 2
+			printf("shooting w/o set velocity");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			}
+			else { 
+				tempCommand = new ShootingCommand(robot_, 0.0, false);
+			}
+			break;
+		case 'y': // prepping 2
+			printf("prepping w/o set velocity");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new PreppingCommand(robot_, 0.0, false);
 			}
 			break;
 		default:	// When it's not listed, don't do anything :)
