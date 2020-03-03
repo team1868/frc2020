@@ -23,7 +23,7 @@ void RobotModel::CreatePIDEntries(){
     // iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
     // dEntry_ = pivotPIDLayout_.Add("D", 0.0115).GetEntry(); // 0.0173 for nova, 0.0162 for practice bot 0.0115 for comp bot
 
-    pEntry_ = pivotPIDLayout_.Add("P", 0.02).GetEntry(); // 0.03225 for nova, 0.0247 for practice bot 0.016 for comp bot
+    pEntry_ = pivotPIDLayout_.Add("P", 0.017).GetEntry(); // 0.03225 for nova, 0.0247 for practice bot 0.016 for comp bot
     iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
     dEntry_ = pivotPIDLayout_.Add("D", 0.015).GetEntry();
 

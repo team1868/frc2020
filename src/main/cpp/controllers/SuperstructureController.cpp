@@ -24,7 +24,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     climbPowerDesired_ = 0.0; // needs to equal 0
     
     desiredFlywheelVelocity_ = 0.0;
-    closeFlywheelVelocity_ = 3550;
+    closeFlywheelVelocity_ = 2800.0;//3550;
     flywheelResetTime_ = 2.0; // fix //why does this exist
     stopDetectionTime_ = 0.0;
 
@@ -158,6 +158,7 @@ void SuperstructureController::WristUpdate(bool isAuto){
                     //printf("DONE LOLS\n");
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
+                intakeRollersOutput = 0.0;
                 // else{
                 //     //robot_->SetIntakeWristOutput(0.0);
                 //     intakeWristOutput = 0.0;
@@ -175,11 +176,12 @@ void SuperstructureController::WristUpdate(bool isAuto){
                 //     intakeWristOutput = 0.0;
                 //     //printf("LOWERED, not running wrist\n");
                 // }
-                if(currWristAngle_ > desiredIntakeWristAngle_ - 45.0 - 45.0){ //within acceptable range, ~740 degrees in sensor is 90 degrees on wrist
+                //if(currWristAngle_ > desiredIntakeWristAngle_ - 45.0 - 45.0){ //within acceptable range, ~740 degrees in sensor is 90 degrees on wrist
                     //robot_->SetIntakeRollersOutput(intakeRollersPower_);
-                    intakeRollersOutput = intakeRollersPower_;
+                
+                intakeRollersOutput = intakeRollersPower_;
                     //std::cout << "intake rollers moving i think" << std::endl;
-                }
+                //}
                 // else{
                 //     //robot_->SetIntakeRollersOutput(0.0);
                 //     intakeRollersOutput = 0.0;
@@ -336,8 +338,8 @@ void SuperstructureController::Update(bool isAuto){
         case kClimbing:
             printf("climbing state \n");
             robot_->EngageClimberRatchet();
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton) &&
-               !robot_->GetRightLimitSwitch()){
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorUpButton)){// &&
+               //!robot_->GetRightLimitSwitch()){
                 robot_->SetRightClimberElevatorOutput(climbElevatorUpPower_);
             } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbRightElevatorDownButton)){
                 robot_->SetRightClimberElevatorOutput(climbElevatorDownPower_);
@@ -345,8 +347,8 @@ void SuperstructureController::Update(bool isAuto){
                 robot_->SetRightClimberElevatorOutput(0.0);
             }   
 
-            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton) &&
-               !robot_->GetLeftLimitSwitch()){
+            if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorUpButton)){ //&&
+               //!robot_->GetLeftLimitSwitch()){
                 robot_->SetLeftClimberElevatorOutput(climbElevatorUpPower_);
             } else if(humanControl_->GetDesired(ControlBoard::Buttons::kClimbLeftElevatorDownButton)){
                 robot_->SetLeftClimberElevatorOutput(climbElevatorDownPower_);
@@ -642,6 +644,11 @@ void SuperstructureController::Resetting() {
 void SuperstructureController::UndoElevator(){
     robot_->SetElevatorOutput(-elevatorSlowPower_);
     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
+    if(((int)currTime_)%4 == 0){
+        robot_->SetIndexFunnelOutput(-indexFunnelPower_); //TODO PUT BACK IN
+    } else {
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    }
     //robot_->SetIndexFunnelOutput(-indexFunnelPower_);
     robot_->SetFlywheelOutput(-elevatorSlowPower_); // might need to adjust
 }
@@ -671,10 +678,10 @@ void SuperstructureController::IndexUpdate(){
 
     //control bottom
     if(!bottomSensor_ && (!bTimeout_ || currHandlingState_ == kIntaking)){
-        if(((int)currTime_)%2 == 0){
-            robot_->SetIndexFunnelOutput(indexFunnelPower_); //TODO PUT BACK IN
+        if(((int)currTime_)%4 == 0){
+            robot_->SetIndexFunnelOutput(-indexFunnelPower_); //TODO PUT BACK IN
         } else {
-            robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+            robot_->SetIndexFunnelOutput(indexFunnelPower_);
         }
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         //printf("RUNNNNINGGGG FUNNEL AND FEEDER\n");

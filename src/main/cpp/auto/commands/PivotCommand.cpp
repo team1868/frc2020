@@ -121,6 +121,8 @@ void PivotCommand::Init() {
 	//Profiler profiler(robot_, "Pivot Init");
 	// Setting PID values (in case they changed)
 	//TODO INI GetIniValues();
+	robot_->SetLastPivotAngle(desiredAngle_);
+
 	GetPIDValues();
 	pivotPID_->SetPID(pFac_, iFac_, dFac_);
 

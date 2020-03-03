@@ -263,7 +263,7 @@ RobotModel::RobotModel() :
 	autoSequenceEntry_ = GetAutoOffsetTab().Add("input auto sequence", "").GetEntry();
 	autoInputSequence_ = autoSequenceEntry_.GetString("");
 
-	GetDriverTab().Add("Auto Sequence Choices", autoSendableChooser_).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
+	GetModeTab().Add("ignore for utah", autoSendableChooser_).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
 	autoSendableChooser_.SetDefaultOption("0 blank", "t 0.0 d 0.0");
 	autoSendableChooser_.AddOption("1: Target Zone", GetChosenSequence1());
 	autoSendableChooser_.AddOption("2: Loading Bay", GetChosenSequence2());
@@ -752,6 +752,13 @@ std::string RobotModel::GetAlignSequence() {
 
 void RobotModel::SetAlignSequence(std::string alignSequence) {
 	alignSequence_ = alignSequence;
+}
+
+void RobotModel::SetLastPivotAngle(double value){
+	lastPivotAngle_ = value;
+}
+double RobotModel::GetLastPivotAngle(){
+	return lastPivotAngle_;
 }
 
 void RobotModel::ZMQinit(){

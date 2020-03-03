@@ -27,6 +27,8 @@ void MainProgram::RobotInit() {
     currJetsonAngle_ = 0.0;
     lastJetsonAngle_ = 0.0;
     jetsonAngleTolerance_ = 3.0;
+
+    robot_->SetLastPivotAngle(robot_->GetNavXYaw());
     
     navXSource_ = new NavXPIDSource(robot_);
     talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -37,14 +39,16 @@ void MainProgram::RobotInit() {
 
 
     robot_->GetDriverTab().Add("Choose auto", realAutoChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
-	realAutoChooser_.SetDefaultOption("0 blank", "n");
+	realAutoChooser_.SetDefaultOption("0 blank", "n a y q n d 5.0 0");
     realAutoChooser_.AddOption("PROGRAMMING AUTO ALIGN TEST", "n a");
+    realAutoChooser_.AddOption("PROGRAMMING PIVOT TEST", "n t 33.0");
 	//realAutoChooser_.AddOption("1: Target Zone", "b 3545.0 s 3545.0 n t -33.0 d -8.5 0 i t 0.0 b 4812.0 d -9.5 1 n a a q n"); //Note: shooting but not making shot
-	realAutoChooser_.AddOption("1: Target Zone", "n b 3545.0 s 3545.0 n t -33.0 d -8.5 0 i t 0.0 d -9.5 1 n d 10.0 0 a"); //Note: NO SHOT!
+	realAutoChooser_.AddOption("1: Target Zone", "n b 3545.0 s 3545.0 n t -33.0 d -8.3 0 i t 0.0 d -9.5 1 n d 11.0 0 a"); //Note: NO SHOT!
 	realAutoChooser_.AddOption("2: Center to bar", "n a y q t -33.0 i d -7.6 0 d 6.6 0 t 0.0 a y q n");
     realAutoChooser_.AddOption("3: Shoot and move forwards", "n a y q n d 5.0 0");
     realAutoChooser_.AddOption("4: Shoot and move back", "n a y q n d -5.0 0");
-    //realAutoChooser_.AddOption("2: Loading Bay", "n a y q n t -118.1 d -16.53 t -53.05 d -10.0 a y q n");//d 10.0 t -38.66 d 8.93 y t 0.0 q");
+    realAutoChooser_.AddOption("EXPERIMENTAL", "b 3545.0 s 3545.0 n t -33.0 d -8.3 0 i t 0.0 b 4820.0 d -9.5 1 n a s 4820.0 n"); //Note: shooting but not making shot
+	//realAutoChooser_.AddOption("2: Loading Bay", "n a y q n t -118.1 d -16.53 t -53.05 d -10.0 a y q n");//d 10.0 t -38.66 d 8.93 y t 0.0 q");
 	//realAutoChooser_.AddOption("3: Mid-Trench", );
 	//realAutoChooser_.AddOption("4: Mid-Player Station", );
 	//realAutoChooser_.AddOption("5: other", tempAutoString_);
@@ -83,6 +87,7 @@ void MainProgram::AutonomousInit() {
     //TODO add test sequence sets
 
     //superstructureController_->SetIsAuto(true);
+    robot_->SetLastPivotAngle(robot_->GetNavXYaw());
     robot_->SetHighGear();
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
@@ -190,6 +195,8 @@ void MainProgram::DisabledInit() {
 
 void MainProgram::TeleopInit() {
     //superstructureController_->SetIsAuto(false);
+    robot_->SetLastPivotAngle(robot_->GetNavXYaw()); //currently unecessary
+
     superstructureController_->Reset();
     std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();

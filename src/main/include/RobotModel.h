@@ -261,6 +261,9 @@ class RobotModel {
     void GetColorFromSensor(); 
     std::string MatchColor();
 
+    void SetLastPivotAngle(double value);
+    double GetLastPivotAngle();
+
     // zmq
     void ConnectRecvZMQ();
     std::string ReadZMQ();
@@ -359,6 +362,8 @@ class RobotModel {
     double lastVelocTime_, currVelocTime_;
     double currLeftDistance_, currRightDistance_; 
     double lastLeftDistance_, lastRightDistance_; 
+
+    double lastPivotAngle_;
     
     // choosing strings
     std::string chosenSequence_;
