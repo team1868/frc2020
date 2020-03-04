@@ -112,6 +112,8 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     controlPanelColorEntry_.SetString(GetControlPanelColor());
     //TODO make timeout
 
+    flywheelRPMconstEntry_ = robot_->GetDriverTab().Add("Flywheel rpm C", 0.0).GetEntry();
+
     printf("end of superstructure controller constructor\n");
 
     shootingIsDone_ = false;
@@ -158,7 +160,7 @@ void SuperstructureController::WristUpdate(bool isAuto){
                     //printf("DONE LOLS\n");
                     //robot_->SetIntakeWristOutput(-0.5);
                 }
-                intakeRollersOutput = 0.0;
+                //intakeRollersOutput = 0.0;
                 // else{
                 //     //robot_->SetIntakeWristOutput(0.0);
                 //     intakeWristOutput = 0.0;
@@ -178,7 +180,6 @@ void SuperstructureController::WristUpdate(bool isAuto){
                 // }
                 //if(currWristAngle_ > desiredIntakeWristAngle_ - 45.0 - 45.0){ //within acceptable range, ~740 degrees in sensor is 90 degrees on wrist
                     //robot_->SetIntakeRollersOutput(intakeRollersPower_);
-                
                 intakeRollersOutput = intakeRollersPower_;
                     //std::cout << "intake rollers moving i think" << std::endl;
                 //}
@@ -232,12 +233,10 @@ void SuperstructureController::WristUpdate(bool isAuto){
     // }
     robot_->SetIntakeWristOutput(intakeWristOutput);
     if(isAuto && fabs(intakeRollersOutput) > 0.1){
-        robot_->SetIntakeRollersOutput(1.0);
-    } else {
-        //TODO DELETE THIS LATER
-        //intakeRollersOutput *= 0.5;
-        robot_->SetIntakeRollersOutput(intakeRollersOutput);
-    }
+        intakeRollersOutput = 1.0;
+    } 
+    robot_->SetIntakeRollersOutput(intakeRollersOutput);
+    //printf("running rolelrs! at %f power\n", intakeRollersOutput);
 }
 
 void SuperstructureController::UpdatePrep(bool isAuto){
@@ -791,7 +790,7 @@ double SuperstructureController::CalculateFlywheelVelocityDesired() {
     }*/
     double shotDistance = sqrt(pow(robot_->GetDistance()*12.0, 2.0) - pow(60.0, 2.0)) + 6.0; //all in inches
     //printf("distance from shot %f", shotDistance);
-    double desiredVelocity = 5.58494*shotDistance + 2966.29;
+    double desiredVelocity = 5.58494*shotDistance + 2966.29 - 325.0 + flywheelRPMconst_;
     //printf("desired velocity calculate %f", desiredVelocity);
     return desiredVelocity;
 }
@@ -934,6 +933,8 @@ void SuperstructureController::ControlPanelFinalSpin() {
 */
 
 void SuperstructureController::RefreshShuffleboard(){
+    flywheelRPMconst_ = flywheelRPMconstEntry_.GetDouble(0.0);
+
     manualRollerPower_ = rollerManualEntry_.GetDouble(manualRollerPower_);
     autoWristUpP_ = autoWristUpPEntry_.GetDouble(autoWristUpP_);
     autoWristDownP_ = autoWristDownPEntry_.GetDouble(autoWristDownP_);
@@ -965,12 +966,14 @@ void SuperstructureController::RefreshShuffleboard(){
 }
 
 SuperstructureController::~SuperstructureController() {
+    flywheelRPMconstEntry_.Delete();
     intakeWristAngleEntry_.Delete();
     
     flywheelPEntry_.Delete();
     flywheelIEntry_.Delete();
     flywheelDEntry_.Delete();
     //flywheelFEntry_.Delete();
+
     flywheelVelocityErrorEntry_.Delete();
     flywheelVelocityEntry_.Delete();
     flywheelMotor1OutputEntry_.Delete();
@@ -981,8 +984,19 @@ SuperstructureController::~SuperstructureController() {
     elevatorBottomLightSensorEntry_.Delete();
     elevatorTopLightSensorEntry_.Delete();
 
+    autoWristEntry_.Delete();
+    autoWristUpPEntry_.Delete();
+    autoWristDownPEntry_.Delete();
+
     climbElevatorUpEntry_.Delete();
     climbElevatorDownEntry_.Delete();
 
     controlPanelColorEntry_.Delete();
+
+    slowElevatorEntry_.Delete();
+    fastElevatorEntry_.Delete();
+    funnelEntry_.Delete();
+    rollerManualEntry_.Delete();
+    closeFlywheelEntry_.Delete();
+    targetSpeedEntry_.Delete();
 }

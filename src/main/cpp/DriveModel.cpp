@@ -10,6 +10,9 @@
 #include "ControlBoard.h"
 #include "controllers/DriveController.h"
 
+//TODO: make tabs static so other shuffleboard entries can be static and prevent memory leaks
+// RobotModel::driverTab_ = frc::Shuffleboard::GetTab("Driveteam Control");
+// &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
 
 RobotModel::RobotModel() :
     driverTab_(frc::Shuffleboard::GetTab("Driveteam Control")),

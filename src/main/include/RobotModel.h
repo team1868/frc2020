@@ -438,8 +438,6 @@ class RobotModel {
     nt::NetworkTableEntry ratioAllEntry_, ratioDriveEntry_, ratioSuperstructureEntry_;
     nt::NetworkTableEntry navXYawEntry_, voltageEntry_;
     nt::NetworkTableEntry climberRightLimitSwitchEntry_, climberLeftLimitSwitchEntry_; 
-  
-
 
     frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;

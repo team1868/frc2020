@@ -133,6 +133,8 @@ class SuperstructureController {
   double distanceToTarget_;
   bool isAuto_;
   bool isManualRaisingWrist_;
+
+  double flywheelRPMconst_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
@@ -148,4 +150,6 @@ class SuperstructureController {
   nt::NetworkTableEntry climbElevatorUpEntry_, climbElevatorDownEntry_;
 
   nt::NetworkTableEntry controlPanelColorEntry_;
+
+  nt::NetworkTableEntry flywheelRPMconstEntry_;
 };

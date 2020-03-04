@@ -42,7 +42,7 @@ void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
             printf("received last angle %f and curr angle %f, starting\n", lastJetsonAngle_, currJetsonAngle_);
             aligning_ = true;
             printf("turning to angle %f in align tape\n", currJetsonAngle_);
-            pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 2.0);
+            pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 1.2);
             pivotCommand_->Init();
         }
     } else {

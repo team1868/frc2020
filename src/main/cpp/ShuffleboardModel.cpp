@@ -9,9 +9,9 @@
 
 void RobotModel::CreatePIDEntries(){
     //last tuned: 2/20 without climber2
-    aPEntry_ = anglePIDLayout_.Add("P", 0.0055).GetEntry(); // 0.0055 for practice bot
+    aPEntry_ = anglePIDLayout_.Add("P", 0.017).GetEntry(); // 0.0055 for practice bot
     aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
-    aDEntry_ = anglePIDLayout_.Add("D", 0.01).GetEntry();
+    aDEntry_ = anglePIDLayout_.Add("D", 0.0125).GetEntry();
     dPEntry_ = distancePIDLayout_.Add("P", 0.125).GetEntry(); // 0.19 for practice bot
     dIEntry_ = distancePIDLayout_.Add("I", 0.0).GetEntry();
     dDEntry_ = distancePIDLayout_.Add("D", 0.11).GetEntry(); // 0.08 for practice bot
@@ -25,7 +25,7 @@ void RobotModel::CreatePIDEntries(){
 
     pEntry_ = pivotPIDLayout_.Add("P", 0.017).GetEntry(); // 0.03225 for nova, 0.0247 for practice bot 0.016 for comp bot
     iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    dEntry_ = pivotPIDLayout_.Add("D", 0.015).GetEntry();
+    dEntry_ = pivotPIDLayout_.Add("D", 0.0125).GetEntry();
 
     dPFacNet_ =  curveDistancePIDLayout_.Add("Curve dP", 0.1).GetEntry();
     dIFacNet_ =  curveDistancePIDLayout_.Add("Curve dI", 0.0).GetEntry();
