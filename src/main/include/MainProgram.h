@@ -36,7 +36,7 @@ class MainProgram : public frc::TimedRobot {
   void DisabledInit() override;
   void TeleopInit() override;
   void TeleopPeriodic() override;
-  //void DisabledPeriodic() override;
+  void DisabledPeriodic() override;
   void TestPeriodic() override;
 
   void ResetControllers();

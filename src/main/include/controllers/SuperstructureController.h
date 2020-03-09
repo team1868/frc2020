@@ -133,6 +133,7 @@ class SuperstructureController {
   double distanceToTarget_;
   bool isAuto_;
   bool isManualRaisingWrist_;
+  double startRatchetTime_;
 
   double flywheelRPMconst_;
   

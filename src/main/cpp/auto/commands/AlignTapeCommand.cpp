@@ -35,25 +35,30 @@ void AlignTapeCommand::Init(){
 void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
     printf("updating align :DD\n");
     robot_->SendZMQ(true);
-    if(!aligning_){
-        lastJetsonAngle_ = currJetsonAngle_;
-        currJetsonAngle_ = robot_->GetDeltaAngle();
-        if(robot_->ZMQHasContents() && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_ && robot_->GetDistance() > 0.0){
-            printf("received last angle %f and curr angle %f, starting\n", lastJetsonAngle_, currJetsonAngle_);
-            aligning_ = true;
-            printf("turning to angle %f in align tape\n", currJetsonAngle_);
-            pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 1.2);
-            pivotCommand_->Init();
-        }
+    if(currTimeSec-startTime_>=5.0){
+        printf("EXITING ALIGN, TIMEOUT did not receive good values from jetson\n");
+        isDone_ = true;
     } else {
-        if(pivotCommand_!=nullptr && !pivotCommand_->IsDone() && currTimeSec-startTime_<=maxTime_){
-            pivotCommand_->Update(currTimeSec, deltaTimeSec);
-        } else {
-            printf("DONE with align tape\n");
-            if(currTimeSec-startTime_>maxTime_){
-                printf("DONE FROM TIMEOUT IN AUTO ALIGN\n");
+        if(!aligning_){
+            lastJetsonAngle_ = currJetsonAngle_;
+            currJetsonAngle_ = robot_->GetDeltaAngle();
+            if(robot_->ZMQHasContents() && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_ && robot_->GetDistance() > 0.0){
+                printf("received last angle %f and curr angle %f, starting\n", lastJetsonAngle_, currJetsonAngle_);
+                aligning_ = true;
+                printf("turning to angle %f in align tape\n", currJetsonAngle_);
+                pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 1.2);
+                pivotCommand_->Init();
             }
-            isDone_ = true;
+        } else {
+            if(pivotCommand_!=nullptr && !pivotCommand_->IsDone() && currTimeSec-startTime_<=maxTime_){
+                pivotCommand_->Update(currTimeSec, deltaTimeSec);
+            } else {
+                printf("DONE with align tape\n");
+                if(currTimeSec-startTime_>maxTime_){
+                    printf("DONE FROM TIMEOUT IN AUTO ALIGN\n");
+                }
+                isDone_ = true;
+            }
         }
     }
 }

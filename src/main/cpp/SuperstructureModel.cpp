@@ -137,7 +137,7 @@ void RobotModel::SetControlPanelOutput(double power){
 }
 
 void RobotModel::SetIntakeRollersOutput(double power) {
-    intakeRollersMotor_->Set(-power); // needs to be negative for comp bot
+    intakeRollersMotor_->Set(power); // needs to be negative for comp bot
 }
 
 void RobotModel::SetIntakeWristOutput(double power) {

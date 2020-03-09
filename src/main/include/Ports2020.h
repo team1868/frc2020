@@ -88,6 +88,8 @@ static const int CLIMB_RIGHT_ELEVATOR_DOWN_BUTTON_PORT   = 5;
 static const int CLIMB_LEFT_ELEVATOR_UP_BUTTON_PORT      = 4; 
 static const int CLIMB_LEFT_ELEVATOR_DOWN_BUTTON_PORT    = 5;
 
+static const int DEFAULT_SHOOT_BUTTON_PORT               = 4;
+
 
 static const int CONTROL_PANEL_BUTTON_PORT               = 51;//2;
 

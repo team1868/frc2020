@@ -9,7 +9,7 @@
 #include "auto/modes/AlignMode.h"
 
 AlignMode::AlignMode(RobotModel *robot, ControlBoard *controlBoard) : AutoMode(robot, controlBoard) {
-    printf("in test mode constructor \n");
+    printf("in align mode test mode constructor \n");
 }
 
 void AlignMode::CreateQueue(AutoMode::AutoPositions pos) {

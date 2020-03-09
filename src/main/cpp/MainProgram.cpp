@@ -27,6 +27,7 @@ void MainProgram::RobotInit() {
     currJetsonAngle_ = 0.0;
     lastJetsonAngle_ = 0.0;
     jetsonAngleTolerance_ = 3.0;
+    alignTapeCommand_ = nullptr;
 
     robot_->SetLastPivotAngle(robot_->GetNavXYaw());
     
@@ -42,14 +43,19 @@ void MainProgram::RobotInit() {
 	realAutoChooser_.SetDefaultOption("0 blank", "n a y q n d 5.0 0");
     realAutoChooser_.AddOption("PROGRAMMING AUTO ALIGN TEST", "n a");
     realAutoChooser_.AddOption("PROGRAMMING PIVOT TEST", "n t 33.0");
+    realAutoChooser_.AddOption("PROGRAMMING SHOOTING TEST", "n b 3470.0 s 3470.0 n");
+    realAutoChooser_.AddOption("NEW AUTO TEST", "n b 3470.0 s 3470.0 t 0.0 i d -11.7 0 d 11.7 0 a y q n");
 	//realAutoChooser_.AddOption("1: Target Zone", "b 3545.0 s 3545.0 n t -33.0 d -8.5 0 i t 0.0 b 4812.0 d -9.5 1 n a a q n"); //Note: shooting but not making shot
 	//untuned shots
     //4 degrees off last angle
-    realAutoChooser_.AddOption("1: Target Zone", "n b 3370.0 s 3370.0 n t -33.0 d -8.3 0 i t 0.0 d -9.5 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
+    //lab 10ft shot is 3370
+    //NASA //realAutoChooser_.AddOption("1: Target Zone", "n b 3370.0 s 3370.0 n t -33.0 d -8.3 0 i t 0.0 d -9.5 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
+	realAutoChooser_.AddOption("1: Target Zone", "n b 3470.0 s 3470.0 n t -45.0 d -8.5 0 i t 0.0 d -9.7 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
 	realAutoChooser_.AddOption("2: Center to bar", "n a y q t -33.0 i d -7.6 0 d 6.6 0 t 0.0 a y q n");
+    realAutoChooser_.AddOption("2.: Center to bar PRACTICE MATCH TEST", "i t 0.0 d -7.6 0 d 6.6 0 t 33.0 a y q n");
     realAutoChooser_.AddOption("3: Shoot and move forwards", "n a y q n d 5.0 0");
     realAutoChooser_.AddOption("4: Shoot and move back", "n a y q n d -5.0 0");
-    realAutoChooser_.AddOption("EXPERIMENTAL", "b 3370.0 s 3370.0 n t -33.0 d -8.3 0 i t 0.0 b 4490.0 d -9.5 1 n a s 4490.0 n"); //Note: shooting but not making shot
+    realAutoChooser_.AddOption("PROGRAMMING EXPERIMENTAL", "b 3470.0 s 3470.0 n t -33.0 d -8.3 0 i t 0.0 b 4490.0 d -9.5 1 n a s 4490.0 n"); //Note: shooting but not making shot
 	//realAutoChooser_.AddOption("2: Loading Bay", "n a y q n t -118.1 d -16.53 t -53.05 d -10.0 a y q n");//d 10.0 t -38.66 d 8.93 y t 0.0 q");
 	//realAutoChooser_.AddOption("3: Mid-Trench", );
 	//realAutoChooser_.AddOption("4: Mid-Player Station", );
@@ -97,7 +103,7 @@ void MainProgram::AutonomousInit() {
     robot_->EngageFlywheelHood();
     robot_->DisengageClimberRatchet();
     robot_->ResetWristAngle();
-    robot_->SetTestSequence(robot_->GetChosenSequence());
+    //robot_->SetTestSequence(robot_->GetChosenSequence());
     superstructureController_->Reset();
     superstructureController_->AutoInit();
 
@@ -118,7 +124,7 @@ void MainProgram::AutonomousInit() {
     //auto selection
     robot_->SetTestSequence(realAutoChooser_.GetSelected());
 
-
+    std::cout << "YOUR AUTO SEQUENCE IS " << realAutoChooser_.GetSelected() << std::endl;
 
 
 
@@ -205,12 +211,15 @@ void MainProgram::TeleopInit() {
     robot_->DisengageFlywheelHood();
     //printf("hood\n");
     robot_->DisengageClimberRatchet();
+    //robot_->SetLight(false);
     //printf("done with climb ratchet\n");
 
     robot_->StartCompressor();
 
     matchTime_ = frc::Timer::GetMatchTime();
     aligningTape_ = false;
+    alignTapeCommand_ = nullptr;
+    //}
 
     std::cout << "before zmq\n" << std::flush;
     //zmq::context_t * 
@@ -319,11 +328,11 @@ void MainProgram::TeleopPeriodic() {
     // }
 
 }
-/*
+
 void MainProgram::DisabledPeriodic() {
-    humanControl_->ReadControls();
-    superstructureController_->DisabledUpdate();
-}*/
+    //humanControl_->ReadControls();
+    robot_->SetTestSequence(realAutoChooser_.GetSelected());
+}
 
 void MainProgram::TestPeriodic() {}
 

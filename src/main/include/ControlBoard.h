@@ -19,7 +19,8 @@ class ControlBoard {
   enum Buttons{kHighGearShift, kLowGearShift, kShootingButton, kClimbRightElevatorUpButton, kClimbRightElevatorDownButton,
     kAlignButton, kTrenchAlignButton, kControlPanelButton, kIntakeSeriesButton, kClimbLeftElevatorUpButton, kClimbLeftElevatorDownButton,
     kIndexSeriesButton, kShootClosePrepButton, kShootFarPrepButton, kUndoElevatorButton,
-    kWristDownButton, kWristUpButton, kRunRollersButton, kReverseRollersButton, kGearShiftButton, kFunnelFeederElevatorButton};
+    kWristDownButton, kWristUpButton, kRunRollersButton, kReverseRollersButton, kGearShiftButton, kFunnelFeederElevatorButton,
+    kDefaultShootButton};
 
   ControlBoard();
   void ReadControls();

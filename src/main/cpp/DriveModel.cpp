@@ -795,6 +795,7 @@ void RobotModel::ConnectRecvZMQ() {
 
 void RobotModel::UpdateZMQ(){ //returns has contents
 	std::string temp = ReadZMQ();
+	std::cout << "read from zmq " << temp << std::endl;
     hasContents_ = !ReadAll(temp);
 }
 
