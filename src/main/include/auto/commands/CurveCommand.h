@@ -13,32 +13,53 @@
 
 class CurveCommand : public AutoCommand {
  public:
+
+   /** constuctor
+   * @param robot a RobotModel
+   * @param desiredRadius a double that refers to the desired radius
+   * @param desiredAngle a double that refers to the desired angle for the robot to turn
+   * @param turnLeft is true if the robot is supposed to turn left
+   * @param goForward is true if robot should go forward
+   * @param navXSource a NavXPIDSource
+   * @param talonEncoderPIDSource a TalonEncoderPIDSource
+   * @param anglePIDOuptut an AnglePIDOutput
+   * @param distancePIDOutput a DistancePIDOutput
+   */
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft, bool goForward,
-    NavXPIDSource* navXSource, TalonEncoderCurvePIDSource *talonEncoderCurvePIDSource,
+    NavXPIDSource* navXSource, TalonEncoderPIDSource *talonEncoderPIDSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
-    NavXPIDSource* navXSource, TalonEncoderCurvePIDSource *talonEncoderCurvePIDSource,
+    NavXPIDSource* navXSource, TalonEncoderPIDSource *talonEncoderPIDSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
+  
   void Init();
+  
   void Update(double currTimeSec, double deltaTimeSec);
+  
+  //returns isDone_
   bool IsDone();
+
+  // disables distance PID if it's null & set's isDone_ to true
   void Reset();
 
+  //destructor
   ~CurveCommand();
 
  private:
+
+  //calculates desired angle based off distance
   double CalcCurDesiredAngle(double curPivDistance);
+
+  //sets dPFac_, dIFac_ and dDFac_
   void GetPIDValues();
 
-
   NavXPIDSource *navXPIDSource_;
-  TalonEncoderCurvePIDSource *talonEncoderCurvePIDSource_;
+  TalonEncoderPIDSource *talonEncoderPIDSource_;
   AnglePIDOutput *anglePIDOutput_;
   DistancePIDOutput *distancePIDOutput_;
-  frc::PIDController *dPID_; //*tPID_
+  frc::PIDController *dPID_;
 
   double dPFac_, dIFac_, dDFac_;
-  //double tPFac_, tIFac_, tDFac_;
 
   RobotModel *robot_;
   double initAngle_;
@@ -58,13 +79,15 @@ class CurveCommand : public AutoCommand {
 
   double curAngleError_;
 
+  // deals with direction robot is turning
   bool turnLeft_;
   bool goForward_;
   double direction_;
 
   bool isDone_;
 
+  //shuffleboard
   frc::ShuffleboardLayout &curveLayout_;
-  nt::NetworkTableEntry dOutputNet_, /*tOutputNet_,*/ lOutputNet_, rOutputNet_,
+  nt::NetworkTableEntry dOutputNet_, lOutputNet_, rOutputNet_,
     dErrorNet_, tErrorNet_, pidSourceNet_;
 };

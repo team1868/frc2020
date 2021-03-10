@@ -18,11 +18,6 @@ public:
 	WaitingCommand(RobotModel *robot, double myWaitTimeSec);
 
 	/**
-	 * Destructor
-	 */
-	virtual ~WaitingCommand();
-
-	/**
 	 * Starts the timer
 	 */
 	void Init();
@@ -37,11 +32,21 @@ public:
 	 */
 	bool IsDone();
 
+	/**
+	 * resets isDone_ to true
+	 */
 	void Reset();
+
+	/**
+	 * Destructor
+	 */
+	virtual ~WaitingCommand();
 private:
+	RobotModel * robot_;
+
+	//time variables
 	double waitTimeSec_;
 	double startTime_;
-	RobotModel * robot_;
-	//frc::Timer *timer_;
+
 	bool isDone_;
 };

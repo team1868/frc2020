@@ -8,30 +8,31 @@
 #include "auto/commands/IntakingCommand.h"
 
 IntakingCommand::IntakingCommand(RobotModel * robot) : AutoCommand() {
-    printf("intaking command\n");
     robot_ = robot;
     isDone_ = false;
-
+    printf("intaking command\n");
 }
 
+// intaking command has been called so command is not done yet
 void IntakingCommand::Init(){
     isDone_ = false;
 }
 
+// sets the robot's state to intaking, command is done
 void IntakingCommand::Update(double currTimeSec, double deltaTimeSec){
-    robot_->SetIntaking(); //true is wrist up
+    robot_->SetIntaking(); // is true when wrist is up
     isDone_ = true;
-    printf("I AM DONE KJASDLKFAJSDOIFHASEKLNFLAKDSN HEREHEWLKEJRSLSSLSLSLSL\n");
 }
 
+// checks if command is done
 bool IntakingCommand::IsDone(){
     return isDone_;
 }
 
+// sets command as done
 void IntakingCommand::Reset(){
     isDone_ = true;
 }
 
 IntakingCommand::~IntakingCommand(){
-    
 }

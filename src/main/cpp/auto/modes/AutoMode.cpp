@@ -6,87 +6,96 @@
 /*----------------------------------------------------------------------------*/
 
 #include "auto/modes/AutoMode.h"
-//using namespace std;
 
 AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");
 
-        firstCommand_ = NULL;
-		currentCommand_ = NULL;
-		robot_ = robot;
-		humanControl_ = controlBoard;
-		navX_ = robot_->GetNavXSource();
-		talonEncoder_ = new TalonEncoderPIDSource(robot_);
-		talonEncoderCurve_ = new TalonEncoderCurvePIDSource(robot_);
-		angleOutput_ = new AnglePIDOutput();
-		distanceOutput_ = new DistancePIDOutput();
-		breakDesired_ = false;
-		currAngle_ = 0.0;
+    firstCommand_ = nullptr;
+	currentCommand_ = nullptr;
+
+	robot_ = robot;
+	humanControl_ = controlBoard;
+	navX_ = robot_->GetNavXSource();
+
+	talonEncoder_ = new TalonEncoderPIDSource(robot_);
+	talonEncoderCurve_ = new TalonEncoderPIDSource(robot_);
+	angleOutput_ = new AnglePIDOutput();
+	distanceOutput_ = new DistancePIDOutput();
+	talonOutput_ = new PivotPIDTalonOutput(robot_);
+
+	breakDesired_ = false;
+	currAngle_ = 0.0;
 
 	printf("Done constructing AutoMode\n");
 }
 
+// get queue of commands from auto sequence string 
 void AutoMode::QueueFromString(std::string autoSequence) {
-    firstCommand_ = NULL;
-		currentCommand_ = NULL;
-		AutoCommand *lastCommand = NULL;
-		iss.str (autoSequence);
-		std::cout << std::string ("autosequence ") + autoSequence << std::endl;
-		breakDesired_ = false;
-		currAngle_ = 0.0;//robot_->GetNavXYaw();
+    firstCommand_ = nullptr;
+	currentCommand_ = nullptr;
+	AutoCommand *lastCommand = nullptr;
+	AutoCommand* tempCommand = nullptr;
 
-		if (autoSequence == "") {
-			printf("NO SEQUENCE ! TRY AGAIN KID");
+	// sets autoSequence as the contents of the stream
+	iss.str (autoSequence);
+	breakDesired_ = false;
+	currAngle_ = 0.0;
+	char command;
+
+	if (autoSequence == "") {
+		printf("NO SEQUENCE ! TRY AGAIN KID");
+	}
+
+	// get each command in autoSequence
+	while ((iss >> command) && !breakDesired_) {
+		printf("Command: %c, ", command);
+
+		// get command associated with character in autoSequence
+		tempCommand = GetStringCommand(command);
+
+		// break if no more commands left
+		if(tempCommand == nullptr){
+			printf("ERROR: tempCommand is null in autoMode queuing");
+			break;
 		}
 
-		//printf("Auto sequence: %s", autoSequence.c_str());
-		
-		AutoCommand* tempCommand = NULL;
-		char command;
+		// tempCommand is not null, so we can go ahead
+		if (firstCommand_ == nullptr) { // start of command sequence
+			firstCommand_ = tempCommand;
+			currentCommand_ = firstCommand_;
+			lastCommand = currentCommand_; // sets as lastCommand, assumes that firstCommand is the last command
+		} else {
+			// set last command
+			lastCommand->SetNextCommand(tempCommand);
+			lastCommand = lastCommand->GetNextCommand();
 
-		while ((iss >> command) && !breakDesired_) {
-			//iss >> command;
-			printf("Command: %c, ", command);
-
-			tempCommand = GetStringCommand(command);
-
-			if(tempCommand==NULL){
-				printf("ERROR: tempCommand is null in autoMode queuing");
-				break;
-			}
-
-			if (firstCommand_ == NULL) {
-				firstCommand_ = tempCommand;
-				currentCommand_ = firstCommand_;
-				lastCommand = currentCommand_;
-			} else {
-				lastCommand->SetNextCommand(tempCommand);
-				lastCommand = lastCommand->GetNextCommand();
-				if(lastCommand == NULL){
-					breakDesired_ = true;
-					printf("last command was NULL\n"); //this code may or may not be necessary
-				}
+			// something failed, exit loop
+			if(lastCommand == nullptr){
+				breakDesired_ = true;
+				printf("last command was NULL\n"); //this code may or may not be necessary
 			}
 		}
-		iss.clear(); //might be this?
+	}
+
+	// clears the error state of the stream
+	iss.clear();
 }
 
-//TODO ERROR MUST HAVE A COMMAND AFTER ANY SUPERSTRUCTURE COMMAND OR CRASH
+// Given character command from autoSequence, return corresponding AutoCommand
 AutoCommand* AutoMode::GetStringCommand(char command) {
-		AutoCommand* tempCommand = NULL;
-		AutoCommand* commandA = NULL;
+	AutoCommand* tempCommand = nullptr;
+	AutoCommand* commandA = nullptr;
+		
+	printf("current loading command is %c\n", command);
 
-		printf("current loading command is %c\n", command);
-
-		switch(command) {
+	switch(command) {
 		case '[':
 			char charA;
 			iss >> charA;
-			printf("Command %c ", charA);
 			commandA = GetStringCommand(charA);
 			tempCommand = commandA;
 
-			charA = NULL;
+			charA = '\0';
 			iss >> charA;
 			while (charA != ']') {
 				printf("in parallel %c\n", charA);
@@ -94,70 +103,74 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 
 				commandA->SetNextCommand(memeCommand);
 				commandA = commandA->GetNextCommand();
-				charA = NULL;
+				charA = '\0';
 				iss >> charA;
 			}
 
 			double rand;
 			iss >> rand;
 			break;
+
 		case 't':	// Pivots with absolute position
 			double angle;
 			iss >> angle;
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				currAngle_ = angle;
 				printf("Angle: %f\n", angle);
-				tempCommand = new PivotCommand(robot_, angle, true, navX_);
+				tempCommand = new PivotCommand(robot_, angle, true, navX_, talonOutput_);
 			}
 			break;
+
 		case 'd':	// Drive straight
 			double distance;
 			bool driveSlow;
 			iss >> distance;
 			iss >> driveSlow;
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				printf("Distance: %f\n", distance);
 				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, driveSlow);
 			}
 			break;
-		case '!':
+
+		case '!': // point command
 			double pointAngle;
 			bool turningLeft;
 			iss >> pointAngle;
 			iss >> turningLeft;
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				currAngle_ = pointAngle;
 				printf("point angle: %f\n", pointAngle);
-				tempCommand = new PointCommand(robot_, pointAngle, true, navX_, turningLeft);
+				tempCommand = new PointCommand(robot_, pointAngle, true, navX_, turningLeft, talonOutput_);
 			}
 			break;
+
 		case 'c':	// curve command
 			double curveRadius;
 			double curveAngle;
-			int turnLeft;
-			int goForward;
+			bool turnLeft;
+			bool goForward;
 			iss >> curveRadius;
 			iss >> curveAngle;
 			iss >> turnLeft;
 			iss >> goForward;
-			if (IsFailed(command)) {
-				tempCommand = NULL;
+			if (IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				printf("radius: %f\n, angle: %f\n, turnleft: %d\n, goForward: %d\n", curveRadius, curveAngle, turnLeft, goForward);
-				if (turnLeft == 0) { //todo change these to bools
-					if (goForward == 0) {
+				if (!turnLeft) { // turn right
+					if (!goForward) {
 						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, false, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					} else{
 						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, true, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					}
-				} else {
-					if (goForward == 0) {
+				} else { // turn left
+					if (!goForward) {
 						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, false, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
 					} else{
 						tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, true, navX_, talonEncoderCurve_, angleOutput_, distanceOutput_);
@@ -165,99 +178,107 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				}
 			}
 			break;
-		case 'w':
+
+		case 'w': // wait command
 			printf("Wait Command\n");
 			double waitTime;
 			iss >> waitTime;
-			if (IsFailed(command)) {
-				tempCommand = NULL;
+			if (IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				tempCommand = new WaitingCommand(robot_, waitTime);
 			}
 			break;
-		case 's': //shooting
+
+		case 's': // shooting with velocity
 			printf("starting shooting\n");
 			double autoVelocity;
 			iss >> autoVelocity;
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				tempCommand = new ShootingCommand(robot_, autoVelocity);
 			}
 			break;
-		case 'b': //prepping
+
+		case 'b': // prepping with velocity
 			printf("starting prepping\n");
 			double desiredVelocity;
 			iss >> desiredVelocity;
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				tempCommand = new PreppingCommand(robot_, desiredVelocity);
 			}
 			break;
-		case 'i': //intaking
+
+		case 'i': // intaking
 			printf("starting intaking\n");
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				tempCommand = new IntakingCommand(robot_);
 			}
 			break;
-		case 'n': //indexing
+
+		case 'n': // indexing
 			printf("starting indexing\n");
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				tempCommand = new IndexingCommand(robot_);
-				std::cout << "making new indexing command" << std::endl;
 			}
 			break;
-		case 'a':
+
+		case 'a': // auto align
 			printf("starting auto align command\n");
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
-				tempCommand = new AlignTapeCommand(robot_, navX_);
-				std::cout << "making new align tape command" << std::endl;
+				tempCommand = new AlignTapeCommand(robot_, navX_, talonOutput_);
 			}
 			break;
-		case 'q': //shooting 2
+
+		case 'q': //shooting 2, without set velocity
 			printf("shooting w/o set velocity");
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			}
 			else { 
 				tempCommand = new ShootingCommand(robot_);
 			}
 			break;
-		case 'y': // prepping 2
+
+		case 'y': // prepping 2, without set velocity
 			printf("prepping w/o set velocity");
-			if(IsFailed(command)) {
-				tempCommand = NULL;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
 			} else {
 				tempCommand = new PreppingCommand(robot_);
 			}
 			break;
+
 		default:	// When it's not listed, don't do anything :)
-			printf("Unexpected character %c detected. Terminating queue", command);
-			firstCommand_ = NULL;
-			currentCommand_ = NULL;
-			tempCommand = NULL;
+			printf("Unexpected character %c detected. Terminating queue", command); // TODO trace this and make sure it won't crashh
+			firstCommand_ = nullptr;
+			currentCommand_ = nullptr;
+			tempCommand = nullptr;
 			breakDesired_ = true;
-			//break;
-		}
+	}
 
-		printf("Loaded a command\n");
+	printf("Loaded a command\n");
 
-		return tempCommand;
+	return tempCommand; // NULL if something went wrong
 }
 
+// TODO trace
+// error in stream, returns true if something went wrong
 bool AutoMode::IsFailed(char command) {
-    if (iss.fail()) {
-        iss.clear();
+    if (iss.fail()) { // error in stream
+        iss.clear(); // clear errors in stream
         printf("Unexpected character detected after %c. Terminating queue", command);
-        firstCommand_ = NULL;
-        currentCommand_ = NULL;
+        firstCommand_ = nullptr;
+        currentCommand_ = nullptr;
         breakDesired_ = true;
         return true;
     }
@@ -265,62 +286,53 @@ bool AutoMode::IsFailed(char command) {
 }
 
 void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
-	//printf("Currently Updating \n");
-    if (currentCommand_ != NULL) {
-        //			printf("Update in automode running\n");
-		// if (currentCommand_->Abort()) {
-		// 	currentCommand_->Reset();
-		// 	printf("aborting auto sequence. start driver control\n");
-		// }
-        if (currentCommand_->IsDone()) {
-            //				DO_PERIODIC(1, printf("Command complete at: %f \n", currTimeSec));
+    if (currentCommand_ != nullptr) {
+        if (currentCommand_->IsDone()) { // if command is done, reset and move on
 			printf("before reset in autmode\n");
 			currentCommand_->Reset();
 			printf("reset in automode\n");
+
 			AutoCommand *nextCommand = currentCommand_->GetNextCommand();
-			// currentCommand_->~AutoCommand();
             // delete currentCommand_;
 			currentCommand_ = nextCommand;
-            if (currentCommand_ != NULL) {
-                //					DO_PERIODIC(1, printf("Command start at: %f \n", currTimeSec));
-                currentCommand_->Init();
-                printf("Initializing current commmand\n");
-				// IndexingCommand *tempthing = dynamic_cast<IndexingCommand*>(currentCommand_);
-				// if(tempthing==NULL){
-				// 	printf("THIS IS NOT A INDEXING COMMAND\n");
-				// }
-				printf("AM I DONE???? %d\n", currentCommand_->IsDone());
+            if (currentCommand_ != nullptr) {
+                currentCommand_->Init(); // init current command
             } else {
 				printf("currentCommand_ is null\n");
 			}
-        } else {
-            //				printf("Update current command\n");
+        } else { // command is not done, continue to update
             currentCommand_->Update(currTimeSec, deltaTimeSec);
         }
     } else {
-        //			printf("Done with auto mode update\n");
+		// Current command is null, nothing to update
+        printf("Done with auto mode update\n");
     }
 }
 
+// returns if done, false as long as current command is not null
 bool AutoMode::IsDone() {
-    return (currentCommand_ == NULL);
+    return (currentCommand_ == nullptr);
 }
 
+// abort current command
 bool AutoMode::Abort() {
+	// always returns false??
 	return currentCommand_->Abort();
 }
 
+// disable current command and goes back to the first command if not null
 void AutoMode::Disable() {
     printf("Disabling\n");
     if (!IsDone()) {
         printf("Resetting current command\n");
         currentCommand_->Reset();
     }
-    if (firstCommand_ != NULL) {
+    if (firstCommand_ != nullptr) {
         currentCommand_ = firstCommand_;
         AutoCommand* nextCommand;
-        while (currentCommand_ != NULL) {
+        while (currentCommand_ != nullptr) {
             nextCommand = currentCommand_->GetNextCommand();
+			// gets rid of memory/value that currentCommand points to, sets it to point to next command
             delete currentCommand_; //changed here
             currentCommand_ = nextCommand;
         }
@@ -330,8 +342,9 @@ void AutoMode::Disable() {
 }
 
 AutoMode::~AutoMode(){
-	if(talonEncoder_ != NULL) delete talonEncoder_;
-	if(talonEncoderCurve_ != NULL) delete talonEncoderCurve_;
-	if(angleOutput_ != NULL) delete angleOutput_;
-	if(distanceOutput_ != NULL) delete distanceOutput_;
+	// delete if they were created
+	if (talonEncoder_ != nullptr) delete talonEncoder_;
+	if (talonEncoderCurve_ != nullptr) delete talonEncoderCurve_;
+	if (angleOutput_ != nullptr) delete angleOutput_;
+	if (distanceOutput_ != nullptr) delete distanceOutput_;
 }

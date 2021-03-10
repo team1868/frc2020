@@ -16,6 +16,7 @@ class ButtonReader {
 public:
 	// ButtonReader constructor to set joystick, button, get currState, set lastState to currState
 	//@param joy a Joystick
+	//@param buttonNum an int
 	ButtonReader(frc::Joystick *joy, int buttonNum);
 
 	// destructor
@@ -39,6 +40,8 @@ public:
 private:
 	frc::Joystick *joystick;
 	int buttonNum;
+
+	// currState is true if button is currently pressed
 	bool lastState;
 	bool currState;
 };
@@ -46,12 +49,17 @@ private:
 // ToggleButtonReader reads the states of toggles
 class ToggleButtonReader : public ButtonReader {
 public:
-	// ToggleButtonReader constructor to initialize currToggleState
-	// @param joy a Joystick
+	/* 
+	 * ToggleButtonReader constructor to initialize currToggleState
+	 * @param joy a Joystick
+	 * @param buttonNum an int
+	 */
 	ToggleButtonReader(frc::Joystick *joy, int buttonNum);
 
+	// destructor
 	virtual ~ToggleButtonReader();
 
+	// @return true if toggle state is true or if it turned true after button got pressed. 
 	virtual bool GetState();
 
 private:
@@ -75,7 +83,10 @@ public:
 	 */
 	SwitchReader(frc::Joystick *myJoy, int upButton, int downButton);
 
-	// @return the state of the switch (up or down)
+	// destructor
+	virtual ~SwitchReader();
+
+	// @return the state of the switch (up or down or neutral)
 	SwitchState GetSwitchState();
 
 private:

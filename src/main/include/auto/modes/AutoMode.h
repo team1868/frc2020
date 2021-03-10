@@ -24,10 +24,12 @@
 
 class AutoMode {
   public:
-    enum AutoPositions {kBlank, kLeft, kMiddle, kRight};
+    enum AutoPositions {kBlank}; //Change for 2022
 
     AutoMode(RobotModel *robot, ControlBoard *controlBoard);
     // might need to comment out the robot and controlBoard up here because superstructure controller takes in robot and controlboard as parameters when created
+    
+    // destructor
     virtual ~AutoMode();
 
     virtual void CreateQueue(AutoMode::AutoPositions pos) {};
@@ -56,7 +58,9 @@ class AutoMode {
 
 	  NavXPIDSource* navX_;
 	  TalonEncoderPIDSource* talonEncoder_;
-    TalonEncoderCurvePIDSource* talonEncoderCurve_;
+    TalonEncoderPIDSource* talonEncoderCurve_;
+    //TalonEncoderCurvePIDSource* talonEncoderCurve_; // needs to be used
+    PivotPIDTalonOutput* talonOutput_;
 
 	  AnglePIDOutput *angleOutput_;
 	  DistancePIDOutput *distanceOutput_;

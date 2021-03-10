@@ -16,11 +16,7 @@
 #include "ControlBoard.h"
 #include "controllers/SuperstructureController.h"
 #include "controllers/DriveController.h"
-//#include "auto/commands/DriveStraightCommand.h"
-//#include "auto/commands/PivotCommand.h"
 #include "auto/commands/AlignTapeCommand.h"
-#include "auto/commands/TrenchAlignTapeCommand.h"
-//#include "auto/commands/WaitingCommand.h"
 #include "auto/modes/TestMode.h"
 #include "auto/commands/profiling/MotionProfileTestCommand.h"
 
@@ -53,10 +49,7 @@ class MainProgram : public frc::TimedRobot {
 
   bool aligningTape_;
   AlignTapeCommand *alignTapeCommand_;
-  //AlignTapeCommand *alignTapeCommand;
-  TrenchAlignTapeCommand *trenchAlignTapeCommand;
 
-  //MotionProfileTestCommand *thing_;
   VelocityPIDSource *thingS_;
   VelocityPIDOutput *thingO_;
   AnglePIDOutput *thingAO_;
@@ -67,9 +60,6 @@ class MainProgram : public frc::TimedRobot {
 
   double lastJetsonAngle_, currJetsonAngle_, jetsonAngleTolerance_;
   
-  //NavXPIDSource *tempNavXSource_;
-  //PivotCommand *tempPivot_;
-
   std::string sequence_;
   nt::NetworkTableEntry autoSequenceEntry_;
   frc::SendableChooser<std::string> realAutoChooser_;

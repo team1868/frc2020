@@ -11,16 +11,32 @@
 
 class ShootingCommand : public AutoCommand{
  public:
+  /**
+	 * ShootingCommand a constructor
+	 * @param robot a RobotModel
+	 * @param autoVelocity a double that is flywheel velocity
+	 */
   ShootingCommand(RobotModel * robot, double autoVelocity);
+  
+  /**
+	 * ShootingCommand a constructor
+	 * @param robot a RobotModel
+	 */
   ShootingCommand(RobotModel * robot);
+
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();
   void Reset();
+
+  // destructor
   virtual ~ShootingCommand();
+  
  private:
   bool isDone_;
   RobotModel * robot_;
+
+  // shooting variables
   bool setVelocity_;
   double autoVelocity_;
   double startShootingTime_;

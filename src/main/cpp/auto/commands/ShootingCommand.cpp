@@ -11,54 +11,58 @@ ShootingCommand::ShootingCommand(RobotModel * robot, double autoVelocity) : Auto
     printf("shooting command\n");
     robot_ = robot;
     isDone_ = false;
-    autoVelocity_ = autoVelocity; //this is flywheel velocity
-    setVelocity_ = true;
     startShootingTime_ = 0.0;
+
+    autoVelocity_ = autoVelocity; // this is flywheel velocity
+    setVelocity_ = true;
 }
 
 ShootingCommand::ShootingCommand(RobotModel * robot) : AutoCommand() {
     printf("shooting command\n");
     robot_ = robot;
     isDone_ = false;
-    autoVelocity_ = 0.0; //this is flywheel velocity
-    setVelocity_ = false;
     startShootingTime_ = 0.0;
+
+    autoVelocity_ = 0.0; // this is flywheel velocity
+    setVelocity_ = false;
 }
 
+// gets start time, gets desired velocity (depends on constructor), sets robot to shooting state
 void ShootingCommand::Init(){
     isDone_ = false;
     startShootingTime_ = robot_->GetTime();
-    std::cout << "time starting shooting command" << startShootingTime_ << std::endl;
+
+    // if constructor doesn't have desired velocity parameter, calculate and set desired velocity
     if(!setVelocity_){
         autoVelocity_ = robot_->CalculateFlywheelVelocityDesired();
     }
+
+    // set robot to shooting state
     robot_->SetShooting(autoVelocity_);
     robot_->ShootingAutoInit();
 }
 
+// checks if shooting is done
 void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
-    std::cout << "update SHOOTING COMMAND :D" << std::endl;
-    // if(robot_->GetTime() > robot_->GetStopDetectionTime() + 2.0){
-    //     isDone_ = true;z
-    // }
+    // timeout or check if done (when at desired velocity)
     if(robot_->GetTime()-startShootingTime_ >= 8.0){
         isDone_ = true;
     } else {
         isDone_ = robot_->GetShootingIsDone();
     }
-    if(isDone_){ //when shooting stops 
-        printf("DONE SHOOTING IN AUTO\n");
+
+    // when shooting stops, stop flywheel
+    if(isDone_){
         robot_->SetControlModeVelocity(0.0);
-        //robot_->DisengageFlywheelHood();
-        //robot_->SetIndexing(); //index after shoot
-        //robot_->SetLight(false);
     }
 }
 
+// checks if command is done
 bool ShootingCommand::IsDone(){
     return isDone_;
 }
 
+// resets shooting by setting the command as finished
 void ShootingCommand::Reset(){
     isDone_ = true;
 }

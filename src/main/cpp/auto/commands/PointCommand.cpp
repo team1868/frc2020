@@ -9,7 +9,7 @@
 #include <frc/WPILib.h>
 
 // constructor
-PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, bool turnLeft) :
+PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, bool turnLeft, PivotPIDTalonOutput* talonOutput) :
 	pointLayout_(robot->GetFunctionalityTab().GetLayout("Point", "List Layout"))
 	{
 
@@ -22,14 +22,6 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	initYaw_ = navXSource_->PIDGet();
 
 	turnLeft_ = turnLeft;
-    // relativeAngle_ = desiredAngle - initYaw_;
-    // if (isAbsoluteAngle){
-    //     if (fabs(relativeAngle_) > 180.0){
-    //         turnLeft_ = (relativeAngle_ > 0.0);
-    //     }else {
-    //         turnLeft_ = (relativeAngle_ <= 0.0);
-    //     }
-    // }
 
 	// adjust angle is absolute
 	if (isAbsoluteAngle){
@@ -37,10 +29,10 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	} else {
 		desiredAngle_ = initYaw_ + desiredAngle;
 		if (desiredAngle_ > 180) {
-			desiredAngle_ -= -360; //TODO bug that doesn't matter
-		} else if (desiredAngle_ < -180) {
-			desiredAngle_ += 360;
-		}
+			desiredAngle_ -= 360; 
+		} else if (desiredAngle_ < -179) {
+ 			desiredAngle_ += 360;
+ 		}
 	}
 
 	// initialize variables
@@ -48,30 +40,30 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	robot_ = robot;
 	 
 	// initialize PID talon output
-	talonOutput_ = new PivotPIDTalonOutput(robot_);
+	talonOutput_ = talonOutput;
 
 	// initialize time variables
 	pointCommandStartTime_ =  robot_->GetTime();
-	pointTimeoutSec_ = 5.0;//0.0; //note edited from last year
+	pointTimeoutSec_ = 5.0; //note edited from last year
 
-	// retrieve pid values from user //moved to shuffleboard model
+	// retrieve pid values from user 
+	// moved to shuffleboard model
 	pFac_ = robot_->GetPointP();
 	iFac_ = robot_->GetPointI();
 	dFac_ = robot_->GetPointD();
 
-//	actualTimeoutSec_ = fabs(desiredAngle) * pointTimeoutSec_ / 90.0;
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
 	pointPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
-	tolerance_ = 3.0;//1.0;
+	tolerance_ = 3.0;
 
 	numTimesOnTarget_ = 0;
 
 }
 
 // constructor
-PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance, bool turnLeft) :
+PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance, bool turnLeft, PivotPIDTalonOutput* talonOutput) :
 	pointLayout_(robot->GetFunctionalityTab().GetLayout("Point", "List Layout"))
 	{
 
@@ -82,22 +74,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	navXSource_ = navXSource;
 
 	initYaw_ = navXSource_->PIDGet();
-    // relativeAngle_ = desiredAngle - initYaw_;
-    // if (isAbsoluteAngle){
-    //     if (fabs(relativeAngle_) > 180.0){
-    //         if (relativeAngle_ > 0.0) {
-    //             turnLeft_ = true;
-    //         } else {
-    //             turnLeft_ = false;
-    //         }
-    //     }else {
-    //         if (relativeAngle_ > 0.0) {
-    //             turnLeft_ = false;
-    //         } else {
-    //             turnLeft_ = true;
-    //         }
-    //     }
-    // }
+
 	turnLeft_ = turnLeft;
 	// adjust angle is absolute
 	if (isAbsoluteAngle){
@@ -105,10 +82,10 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	} else {
 		desiredAngle_ = initYaw_ + desiredAngle;
 		if (desiredAngle_ > 180) {
-			desiredAngle_ -= -360; //TODO bug that doesn't matter
-		} else if (desiredAngle_ < -180) {
-			desiredAngle_ += 360;
-		}
+			desiredAngle_ -= 360; 
+		} else if (desiredAngle_ < -179) {
+ 			desiredAngle_ += 360;
+ 		}
 	}
 
 	// initialize variables
@@ -116,42 +93,40 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	robot_ = robot;
 	
 	// initialize PID talon output
-	talonOutput_ = new PivotPIDTalonOutput(robot_);
+	talonOutput_ = talonOutput;
 
 	// initialize time variables
 	pointCommandStartTime_ = robot_->GetTime();
-	pointTimeoutSec_ = 5.0;//0.0; //note edited from last year
+	pointTimeoutSec_ = 5.0; //note edited from last year
 
 	pFac_ = robot_->GetPointP();
 	iFac_ = robot_->GetPointI();
 	dFac_ = robot_->GetPointD();
 
-//	actualTimeoutSec_ = fabs(desiredAngle) * pointTimeoutSec_ / 90.0;
 	pointPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
-	tolerance_ = tolerance;//3.0;
+	tolerance_ = tolerance;
 
 	numTimesOnTarget_ = 0;
 
 }
 
+//gets PID values from ini file, sets to 0 if not present
 void PointCommand::GetPIDValues() {
 	pFac_ = robot_-> GetPointP();
 	iFac_ = robot_-> GetPointI();
 	dFac_ = robot_-> GetPointD();
 }
 
-
+// gets Yaw from navX, sets Setpoint, continuous to false, output range, and absolute tolerance
 void PointCommand::Init() {
 	//Profiler profiler(robot_, "Point Init");
 	// Setting PID values (in case they changed)
-	//TODO INI GetIniValues();
-	//robot_->ZeroNavXYaw();
 	GetPIDValues();
 	pointPID_->SetPID(pFac_, iFac_, dFac_);
 
-	// initliaze NavX angle
+	// initialize NavX angle
 	initYaw_ = navXSource_->PIDGet();
 
 	// set settings for PID
@@ -184,11 +159,10 @@ void PointCommand::Reset() {
 	rightDriveEntry_.SetDouble(0.0);
 
 	// disable PID
-	if (pointPID_ != NULL) {
+	if (pointPID_ != nullptr) {
 		pointPID_->Disable();
 		delete pointPID_;
-		//delete talonOutput_;
-		pointPID_ = NULL;
+		pointPID_ = nullptr;
 		printf("Disabling pointcommand %f \n", robot_->GetNavXYaw());
 
 	}
@@ -205,34 +179,30 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	double timeDiff = robot_->GetTime() - pointCommandStartTime_;
 	bool timeOut = (timeDiff > pointTimeoutSec_);								//test this value
 
-	//printf("error is %f in point command\n",pointPID_->GetError());
 	// on target
 	if (pointPID_->OnTarget()) {
 		numTimesOnTarget_++;
 	} else {
 		numTimesOnTarget_ = 0;
 	}
-	//printf("On target %d times\n",numTimesOnTarget_);
+
 	if ((pointPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
 		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
-				"Final NavX Angle from robot: %f \n"
+				"Final NavX Angle from robot: %f \n" 
 				"%f Angle NavX Error %f\n",
 				timeDiff, navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
 					pointPID_->GetError());
 		Reset();
-		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 		printf("%f POINT IS DONE \n", robot_->GetTime());
 		if (timeOut) {
-			printf("%f FROM POINT TIME OUT GO GET CHICKEN TENDERS @ %f\n", robot_->GetTime(), timeDiff);
+			printf("%f TIME OUT @ %f\n", robot_->GetTime(), timeDiff);
 		}
 	} else { // not done
 		
 		double output = talonOutput_->GetOutput();
 		output *= 0.5;
-//		double output = 0.0;
 		// adjust motor values according to PID
-		//printf("OUTPUT IS %f\n", output);
 		printf("ERROR IS %f\n", pointPID_->GetError());
         if (turnLeft_) {
             // turning left, set left wheel to stationary
@@ -256,12 +226,11 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
         } else {
             rightDriveEntry_.SetDouble(0.0);
             leftDriveEntry_.SetDouble(output);
-         }
+        }
 		
 		
 		pointErrorEntry_.SetDouble(pointPID_->GetError());
 
-		//printf("output is %f\n", output);
 	}
 }
 
@@ -276,6 +245,4 @@ PointCommand::~PointCommand() {
 	leftDriveEntry_.Delete();
 	rightDriveEntry_.Delete();
 	pointErrorEntry_.Delete();
-	delete talonOutput_;
-//	printf("IS DONE FROM DECONSTRUCTOR\n");
 }

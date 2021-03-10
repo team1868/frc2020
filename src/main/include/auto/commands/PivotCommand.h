@@ -27,8 +27,8 @@ public:
 	 * @param isAbsolutePosition a bool that represents whether the angle is absolute position of deta angle
 	 * @param navXSource a NavXPIDSource
 	 */
-	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource);
-	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance);
+	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, PivotPIDTalonOutput* talonOutput);
+	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance, PivotPIDTalonOutput* talonOutput);
 
 	/**
 	 * PivotCommand a destructor
@@ -46,7 +46,7 @@ public:
 	void Reset();
 
 	/**
-	 * if PivotPID is on target more than three times then timeout
+	 * if PivotPID is on target more than 8 times then timeout
 	 * pivotPID resets, disable, isDone sets to true
 	 */
 	void Update(double currTimeSec, double deltaTimeSec);
@@ -57,14 +57,11 @@ public:
 	bool IsDone();
 
 	/**
-	 * gets PID values from ini file, sets to 0 if not present
+	 * gets PID values from Shuffleboard, sets to 0 if not present
 	 */
 	void GetPIDValues();
 
-
 private:
-	//double output;
-
 	double pFac_, iFac_, dFac_;
 	double desiredAngle_;
 	double initYaw_;
@@ -81,16 +78,8 @@ private:
 	double maxOutput_;
 	double tolerance_;
 
-	
-
-	/**
-	 * Minimum output to correct for, less would be considered done
-	 */
-	double minDrivePivotOutput_;
-
 	double pivotCommandStartTime_;
-
-	double pivotTimeoutSec_, actualTimeoutSec_;
+	double pivotTimeoutSec_;
 
   	frc::ShuffleboardLayout &pivotLayout_;
 	nt::NetworkTableEntry leftDriveEntry_, rightDriveEntry_, pivotErrorEntry_;

@@ -25,12 +25,17 @@ public:
 		nextCommand_ = NULL;
 	}
 
+	// destructor
 	virtual ~AutoCommand() {}
 
 	virtual void Init() = 0;
 
+	// update intake state to done
+  	//@param currTimeSec a double
+	//@param deltaTimeSec a double
 	virtual void Update(double currTimeSec, double deltaTimeSec) = 0;
 
+	// @return true if done
 	virtual bool IsDone() = 0;
 
 	virtual void Reset() = 0;

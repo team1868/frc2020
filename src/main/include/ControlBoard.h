@@ -14,22 +14,22 @@
 
 class ControlBoard {
  public:
-  enum Joysticks{ kLeftJoy, kRightJoy };
-	enum Axes{ kX, kY, kZ, kLT};
-  enum Buttons{kHighGearShift, kLowGearShift, kShootingButton, kClimbRightElevatorUpButton, kClimbRightElevatorDownButton,
-    kAlignButton, kTrenchAlignButton, kControlPanelButton, kIntakeSeriesButton, kClimbLeftElevatorUpButton, kClimbLeftElevatorDownButton,
-    kIndexSeriesButton, kShootClosePrepButton, kShootFarPrepButton, kUndoElevatorButton,
-    kWristDownButton, kWristUpButton, kRunRollersButton, kReverseRollersButton, kGearShiftButton, kFunnelFeederElevatorButton,
-    kDefaultShootButton};
+  enum Joysticks{kLeftJoy, kRightJoy};
+	enum Axes{kX, kY, kZ, kLT};
+  enum Buttons{kAlignButton, kGearShiftButton, 
+              kIntakeSeriesButton, kIndexSeriesButton, 
+              kShootClosePrepButton, kShootFarPrepButton, kShootingButton, 
+              kClimbRightElevatorUpButton, kClimbRightElevatorDownButton, 
+              kClimbLeftElevatorUpButton, kClimbLeftElevatorDownButton, 
+              kUndoElevatorButton,
+              kWristUpButton, kWristDownButton, kRunRollersButton, kReverseRollersButton,
+              kControlPanelButton};
 
   ControlBoard();
   void ReadControls();
   double GetJoystickValue(Joysticks j, Axes a); 
   bool GetDesired(Buttons button);
   bool JustPressed(Buttons button);
-
-  bool GetFlywheelDesired();
-  bool GetClimberDesired();
 
   ~ControlBoard();
 

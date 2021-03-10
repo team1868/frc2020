@@ -39,7 +39,6 @@ class SuperstructureController {
   void AutoInit();
   void Update(bool isAuto);
   void UpdatePrep(bool isAuto);
-  void DisabledUpdate();
   void RefreshShuffleboard();
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelVelocityDesired();
@@ -49,8 +48,6 @@ class SuperstructureController {
   double RatioFlywheel();
   bool GetShootingIsDone();
   bool GetIsPrepping();
-
-  // bool GetWaitingIsDone();
   
   void SetShootingState(double autoVelocity);
   void SetIntakingState();
@@ -89,7 +86,7 @@ class SuperstructureController {
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
-  SuperstructureState currState_, nextState_;
+  SuperstructureState currSuperState_, nextSuperState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
 
@@ -116,7 +113,7 @@ class SuperstructureController {
   double closeTicksPerSecDesired_;
   double farTicksPerSecDesired_;
 
-  double shootPrepStartTime_, stopDetectionTime_;
+  double shootPrepStartTime_;
   int numTimeAtSpeed_;
   bool closePrepping_, farPrepping_;
   bool atTargetSpeed_;

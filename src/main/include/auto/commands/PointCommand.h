@@ -19,19 +19,22 @@ class PointCommand : public AutoCommand {
 
 public:
 	/**
-	 * PivotCommand a constructor
+	 * PointCommand a constructor
 	 * @param robot a RobotModel
 	 * @param desiredAngle a double that is the angle of the turn
 	 * @param isAbsolutePosition a bool that represents whether the angle is absolute position of deta angle
 	 * @param navXSource a NavXPIDSource
+	 * @param turnLeft a bool that represents what direction the robot should turn in
+	 * @param talonOutput a PivotPidTalonOutput
 	 */
-	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, bool turnLeft);
-	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance, bool turnLeft);
+	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, bool turnLeft,  PivotPIDTalonOutput* talonOutput);
 
+	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance, bool turnLeft,  PivotPIDTalonOutput* talonOutput);
+	
 	/**
-	 * PivotCommand a destructor
+	 * gets PID values from ini file, sets to 0 if not present
 	 */
-	virtual ~PointCommand();
+	void GetPIDValues();
 
 	/**
 	 * gets Yaw from navX, sets Setpoint, continuous to false, output range, and absolute tolerance
@@ -55,25 +58,27 @@ public:
 	bool IsDone();
 
 	/**
-	 * gets PID values from ini file, sets to 0 if not present
+	 * PointCommand a destructor
 	 */
-	void GetPIDValues();
+	virtual ~PointCommand();
 
 
 private:
-	//double output;
-
+	//pid
 	double pFac_, iFac_, dFac_;
 	double desiredAngle_;
 	double initYaw_;
-  double relativeAngle_;
+  	double relativeAngle_;
 
+	// set to true when reset() method
 	bool isDone_;
-  bool turnLeft_;
 
+	// indicates which direction robot should turn
+  	bool turnLeft_;
 
 	int numTimesOnTarget_;
 
+	//pointers
 	RobotModel *robot_;
 	frc::PIDController *pointPID_;
 	NavXPIDSource * navXSource_;
@@ -82,17 +87,14 @@ private:
 	double maxOutput_;
 	double tolerance_;
 
-	
-
-	/**
-	 * Minimum output to correct for, less would be considered done
-	 */
+	// minimum output to correct for, less would be considered done
 	double minDrivePointOutput_;
 
+	// time variables
 	double pointCommandStartTime_;
-
 	double pointTimeoutSec_, actualTimeoutSec_;
 
-  frc::ShuffleboardLayout &pointLayout_;
+	// shuffle board entries
+  	frc::ShuffleboardLayout &pointLayout_;
 	nt::NetworkTableEntry leftDriveEntry_, rightDriveEntry_, pointErrorEntry_;
 };

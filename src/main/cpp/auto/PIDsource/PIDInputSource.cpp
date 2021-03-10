@@ -9,6 +9,11 @@
 #include <frc/WPILib.h>
 #include "RobotModel.h"
 
+/**
+ * Assigns the robot and resets the accumulated yaw
+ * initializes accumulatedYawEntry_ to 0
+ * @param RobotModel
+ */
 NavXPIDSource::NavXPIDSource(RobotModel *robot) {
 	robot_ = robot;
 	lastYaw_ = robot_->GetNavXYaw();
@@ -17,14 +22,19 @@ NavXPIDSource::NavXPIDSource(RobotModel *robot) {
 	deltaYaw_ = currYaw_ - lastYaw_;
 }
 
+/**
+ * calculates accumulatedYaw 
+ * @return accumulatedYaw_
+ */
 double NavXPIDSource::PIDGet() {
-//	CalculateAccumulatedYaw();
 	accumulatedYaw_ = robot_->GetNavXYaw();
-//	accumulatedYaw_ = robot_->GetNavXYaw();
-	frc::SmartDashboard::PutNumber("Accumulated Yawwwww", accumulatedYaw_);
 	return accumulatedYaw_;
 }
-
+ 
+/**
+ * Updates currYAW, calculates deltaYaw and accumulatedYaw
+ * @return accumulatedYaw
+ */
 double NavXPIDSource::CalculateAccumulatedYaw() {
 	lastYaw_ = currYaw_;
 	currYaw_ = robot_->GetNavXYaw();
@@ -41,50 +51,60 @@ double NavXPIDSource::CalculateAccumulatedYaw() {
 	return accumulatedYaw_;
 }
 
+/**
+ * Sets AccumulatedYaw and deltaYaw to zero
+ * Updates currYaw and lastYaw
+ */
 void NavXPIDSource::ResetAccumulatedYaw() {
 	accumulatedYaw_ = 0.0;
-	printf("darn\n");
 	currYaw_ = robot_->GetNavXYaw();
 	printf("finished resetting yaw\n");
 	lastYaw_ = currYaw_;
 	deltaYaw_ = 0.0;
 }
 
+/**
+ * Destructor
+ */
 NavXPIDSource::~NavXPIDSource() {
-
 }
 
+/**
+ * Assigns robot, sets averageTalonDistance to 0
+ * @param RobotModel
+ */
 TalonEncoderPIDSource::TalonEncoderPIDSource(RobotModel* robot) {
 	robot_ = robot;
 	averageTalonDistance_ = 0.0;
 }
 
+/**
+ * Gets distance from left and right encoders and sets averageTalonDistance
+ * as average of the two
+ * @return averageTalonDistance_
+ */
+//not used and doesn't work
 double TalonEncoderPIDSource::PIDGet() {
 	double leftDistance = robot_->GetLeftDistance();
 	double rightDistance = robot_->GetRightDistance();
 
-	// FIX THIS TO BE BETTER THANKS
-	if (robot_->GetLeftEncoderStopped()) {
-		//printf("case1 left stopped\n");
-		averageTalonDistance_ = rightDistance;
-	} else if (robot_->GetRightEncoderStopped()) {
-		//printf("case2 right stopped\n");
-		averageTalonDistance_ = leftDistance;
-	} else {
-		//printf("case3 no stop\n");
-		averageTalonDistance_= (rightDistance + leftDistance) / 2.0;
-	}
-	frc::SmartDashboard::PutNumber("Left Distance", leftDistance);
-	frc::SmartDashboard::PutNumber("Right Distance", rightDistance);
-	frc::SmartDashboard::PutNumber("Average Distance", averageTalonDistance_);
+	averageTalonDistance_= (rightDistance + leftDistance) / 2;
 	return averageTalonDistance_;
 
 }
 
+/**
+ * Destructor
+ */
 TalonEncoderPIDSource::~TalonEncoderPIDSource() {
-
 }
 
+/** 
+ * Assigns the robot
+ * Updates lastTime_ and currTime_
+ * Sets lastAvgPosition_, currAvgPosition and avgVelocity to 0
+ * @param RobotModel
+ */
 VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
 	robot_ = robot;
 	lastTime_ = robot_->GetTime();
@@ -93,7 +113,12 @@ VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
 	currAvgPosition_ = 0.0;
 	avgVelocity_ = 0.0;
 }
-	
+
+/**
+ * Updates lastTime_, currTime_, lastAvgPosition_ and currAvgPosition_ 
+ * Calculates avgVelocity_
+ */	
+//unused 
 void VelocityPIDSource::UpdateVelocity(){
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
@@ -104,26 +129,16 @@ void VelocityPIDSource::UpdateVelocity(){
 	avgVelocity_ = (currAvgPosition_-lastAvgPosition_)/(currTime_-lastTime_);
 }
 
+/**
+ * @return avgVelocity_
+ */
 double VelocityPIDSource::PIDGet(){
 	return avgVelocity_;
 }
 
+/**
+ * Destructor
+ */
 VelocityPIDSource::~VelocityPIDSource(){
-
-}
-
-TalonEncoderCurvePIDSource::TalonEncoderCurvePIDSource(RobotModel * robot){
-	robot_ = robot;
-	averageTalonDistance_ = 0.0;
-}
-
-double TalonEncoderCurvePIDSource::PIDGet(){
-	double leftDistance = robot_->GetLeftDistance();
-	double rightDistance = robot_->GetRightDistance();
-	averageTalonDistance_= (rightDistance + leftDistance) / 2;
-	return averageTalonDistance_;
-}
-
-TalonEncoderCurvePIDSource::~TalonEncoderCurvePIDSource(){
 
 }

@@ -16,9 +16,10 @@ class PreppingCommand : public AutoCommand {
   PreppingCommand(RobotModel * robot);
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
-  bool IsDone();
   void Reset();
+  bool IsDone();
   virtual ~PreppingCommand();
+  
  private:
   bool isDone_;
   bool setVelocity_;

@@ -23,86 +23,74 @@ uint32_t RobotModel::GetAutoState() {
     return state_;
 }
 
+// run flywheel
 void RobotModel::SetFlywheelOutput(double power){
     flywheelMotor1_->Set(power);
-    //flywheelMotor2_->Set(-power);
 }
 
+// get flywheel 1 motor encoder value
 double RobotModel::GetFlywheel1EncoderValue(){
     return flywheelEncoder1_->GetIntegratedSensorPosition();
 }
 
+// get flywheel 2 motor encoder value
 double RobotModel::GetFlywheel2EncoderValue() {
     return -flywheelEncoder2_->GetIntegratedSensorPosition(); 
 }
 
+// ?
 void RobotModel::SetControlModeVelocity(double desiredVelocity) {
     flywheelMotor1_->Set(ControlMode::Velocity, desiredVelocity);
 }
 
+// get flywheel motor 1 velocity
 int RobotModel::GetFlywheelMotor1Velocity() {
     return flywheelMotor1_->GetSelectedSensorVelocity(0); // 0 means primary closed loop
     // raw sensor units per 100 ms
 }
 
-// make into one function later whoops
-void RobotModel::ConfigFlywheelP(double pFac){
+void RobotModel::ConfigFlywheelPID(double pFac, double iFac, double dFac){
     flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac);
-}
-void RobotModel::ConfigFlywheelI(double iFac){
     flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, iFac);
-}
-void RobotModel::ConfigFlywheelD(double dFac){
     flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac);
 }
+
 void RobotModel::ConfigFlywheelF(double fFac){
-    //printf("pid ff: %f\n", fFac);
     flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
 }
 
+// get flywheel motor 1 output
 double RobotModel::FlywheelMotor1Output(){
     flywheelMotor1_->GetMotorOutputPercent();
 }
 
+// get flywheel motor 2 output
 double RobotModel::FlywheelMotor2Output(){
     flywheelMotor2_->GetMotorOutputPercent();
 }
 
+// checking if flywheel is at speed in auto 
 bool RobotModel::IsAutoFlywheelAtSpeed(double desiredVelocity){
-    /*
-    double value = GetFlywheelMotor1Velocity()*FALCON_TO_RPM;
-    //printf("falcon velocity %f\n", value);
-    //printf("desiredVelocity %f\n", desiredVelocity);
-    if(GetFlywheelMotor1Velocity()*FALCON_TO_RPM > desiredVelocity&& 
-    GetFlywheelMotor1Velocity()*FALCON_TO_RPM < desiredVelocity+150.0){
-        numTimeAtSpeed_++;
-        if (numTimeAtSpeed_ >= 1){ //3){ 
-            //printf("FLYWHEEL IS AT SPEED");
-            return true;
-        }
-        //numTimeAtSpeed_ = 0;
-        return false;
-    }
-    numTimeAtSpeed_ = 0;
-    return false;
-    */
     return superstructureController_->IsFlywheelAtSpeed(desiredVelocity);
 }
 
+// get flywheel motor 1 supply current
 double RobotModel::GetFlywheelMotor1Current(){
     return flywheelMotor1_->GetSupplyCurrent();
 }
 
+// get flywheel motor 2 supply current
 double RobotModel::GetFlywheelMotor2Current(){
     return flywheelMotor2_->GetSupplyCurrent();
 }
 
+// bring flywheel hood up
 void RobotModel::EngageFlywheelHood() {
     flywheelHoodSolenoid_->Set(true);
 }
 
+// bring flywheel hood down
 void RobotModel::DisengageFlywheelHood() {
-    //std::cout << "disengaging flywheel hood" << std::endl;
     flywheelHoodSolenoid_->Set(false);
 }
 
@@ -114,54 +102,51 @@ void RobotModel::DisengageClimberRatchet() {
     climberRatchetSolenoid_->Set(false);
 }
 
-
-
+// run right climber motor
 void RobotModel::SetRightClimberElevatorOutput(double power){
     climberRightElevatorMotor_->Set(power);
 }
 
+// run left climber motor
 void RobotModel::SetLeftClimberElevatorOutput(double power){
     climberLeftElevatorMotor_->Set(power);
 }
 
-bool RobotModel::GetRightLimitSwitch(){
-    return (limitSwitchRight_->Get());
-}
-
-bool RobotModel::GetLeftLimitSwitch(){
-    return (limitSwitchLeft_->Get());
-}
-
+// run control panel motor
 void RobotModel::SetControlPanelOutput(double power){
     controlPanelMotor_->Set(power);
 }
 
+// run intake rollers
 void RobotModel::SetIntakeRollersOutput(double power) {
     intakeRollersMotor_->Set(power); // needs to be negative for comp bot
 }
 
+// move intake wrist
 void RobotModel::SetIntakeWristOutput(double power) {
+    // making sure that power isn't over 1.0 or under -1.0
     if(power > 1.0){
         power = 1.0;
     } else if (power < -1.0) {
         power = -1.0;
     }
+
     intakeWristMotor_->Set(power);
 }
 
+// run index funnel
 void RobotModel::SetIndexFunnelOutput(double power) {
     indexFunnelMotor_->Set(-power);
 }
 
+// run elevator feeder
 void RobotModel::SetElevatorFeederOutput(double power) {
     elevatorFeederMotor_->Set(-power);
-    //elevatorMotor_->Set(power);
 }
 
+// run elevator
 void RobotModel::SetElevatorOutput(double power) {
-    //std::cout << "elevator should be running B)" << std::endl;
     elevatorMotor_->Set(power);
-    //elevatorFeederMotor_->Set(power);
 }
 
 void RobotModel::SetLight(bool setLight){
@@ -169,20 +154,12 @@ void RobotModel::SetLight(bool setLight){
 }
 
 
-double RobotModel::GetTargetDistance() {
-    // vision code to get distance, idk how that works but it needs to work
-    return 0.0;
-}
-
-
+// getting current color from sensor
 void RobotModel::GetColorFromSensor() {
     detectedColor_ = colorSensor_->GetColor();
-    // cout<<"red "<<detectedColor_.red<<endl;
-    // cout<<"green "<<detectedColor_.green<<endl;
-    // cout<<"blue "<<detectedColor_.blue<<endl;
 }
 
-
+// getting detected color
 std::string RobotModel::MatchColor() {
     colorConfidence_ = 0.9;
     matchedColor_ = colorMatcher_.MatchClosestColor(detectedColor_, colorConfidence_);
@@ -199,7 +176,6 @@ std::string RobotModel::MatchColor() {
       colorString_ = "Unknown"; // add some command to move forward if this happens
     }
 
-    //cout<<colorString_<<endl;
     return colorString_;
 }
 

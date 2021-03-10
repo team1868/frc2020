@@ -21,7 +21,7 @@ class DriveController {
     void Reset();
     void RefreshShuffleboard();
     void TankDrive(double left, double right);
-    void ArcadeDrive(double thrust, double rotate, double thrustSensitivity, double rotateSensitivity);
+    void ArcadeDrive(double thrust, double rotate);
 
     // adjusts sensitivity for turn
   	double GetCubicAdjustment(double value, double adjustmentConstant);
@@ -30,6 +30,7 @@ class DriveController {
     double GetRotateVelocityAdjustment(double value);
     void MaxSpeedAdjustment(double &leftvalue, double &rightvalue);
 
+    // destructor
     ~DriveController();
     
   private:
@@ -37,9 +38,11 @@ class DriveController {
 	  ControlBoard *humanControl_;
     bool arcadeMode_;
 
+    // shuffleboard
     frc::ShuffleboardLayout &driveLayout_;
     nt::NetworkTableEntry arcadeEntry_, thrustSensitivityEntry_, rotateSensitivityEntry_, anaModeEntry_, autoShiftEntry_, highGearEntry_;
     
+    // joystick and drive values
     double thrustSensitivity_, rotateSensitivity_;
     double rightJoystickXLastValue_, rightJoystickXCurrValue_;
     double minForwardThrust_, minBackwardThrust_;

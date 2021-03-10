@@ -111,9 +111,7 @@ class RobotModel {
     void SetShooting(double autoVelocity);
     void SetPrepping(double desiredVelocity);
 
-    // bool GetWaitingIsDone();
     bool GetShootingIsDone();
-    // void SetStopDetectionTimeDefault();
     
     void ResetDriveEncoders();
     void RefreshShuffleboard();
@@ -136,9 +134,6 @@ class RobotModel {
     bool GetRightEncoderStopped();
     std::string GetTestSequence();
     void SetTestSequence(std::string testSequence);
-
-    std::string GetAlignSequence();
-    void SetAlignSequence(std::string alignSequence);
 
     double GetCurrentVoltage();
     double GetTotalCurrent();
@@ -172,6 +167,7 @@ class RobotModel {
     double SetInitLineSlant(); //initiation line is slanted
 
     void CheckAllianceColor();
+    std::string GetDefaultSequence();
     std::string GetChosenSequence();
     std::string GetChosenSequence1();
     std::string GetChosenSequence2();
@@ -224,12 +220,9 @@ class RobotModel {
     void DisengageFlywheelHood();
     void EngageClimberRatchet();
     void DisengageClimberRatchet();
-    double GetTargetDistance();
     void SetControlModeVelocity(double desiredVelocity);
-    void ConfigFlywheelP(double pFac_);
-    void ConfigFlywheelI(double iFac_);
-    void ConfigFlywheelD(double dFac_);
     void ConfigFlywheelF(double fFac_);
+    void ConfigFlywheelPID(double pFac_, double iFac_, double dFac_);
     double FlywheelMotor1Output();
     double FlywheelMotor2Output();
     bool IsAutoFlywheelAtSpeed(double desiredVelocity);
@@ -239,8 +232,6 @@ class RobotModel {
     
     void SetRightClimberElevatorOutput(double power);
     void SetLeftClimberElevatorOutput(double power);
-    bool GetRightLimitSwitch();
-    bool GetLeftLimitSwitch();
 
     void SetIntakeWristOutput(double power);
     void SetIntakeRollersOutput(double power);
@@ -441,7 +432,7 @@ class RobotModel {
 
     frc::ShuffleboardLayout &driveStraightPIDLayout_, &anglePIDLayout_, &distancePIDLayout_, &pivotPIDLayout_, &curvePIDLayout_, &curveDistancePIDLayout_, &curveTurnPIDLayout_, &pointPIDLayout_;
     nt::NetworkTableEntry aPEntry_, aIEntry_, aDEntry_, dPEntry_, dIEntry_, dDEntry_, pEntry_, iEntry_, dEntry_;
-    nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_; //tPFacNet_, tIFacNet_,tDFacNet_;
+    nt::NetworkTableEntry dPFacNet_, dIFacNet_, dDFacNet_;
     nt::NetworkTableEntry pEntryP_, iEntryP_, dEntryP_;
     nt::NetworkTableEntry rColorEntry_, gColorEntry_, bColorEntry_;
     nt::NetworkTableEntry resetWristAngleEntry_;

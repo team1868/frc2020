@@ -38,7 +38,7 @@ class DriveStraightCommand : public AutoCommand {
        */
     DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
           AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
-          double desiredDistance, double absoluteAngle);
+          double desiredDistance, bool slow, double absoluteAngle);
 
     /**
      * Destructor
@@ -90,6 +90,8 @@ private:
 	RobotModel *robot_;
 
 	bool isAbsoluteAngle_;
+
+  //PID dependencies
 	double rPFac_, rIFac_, rDFac_;
 	double rMaxOutput_, rTolerance_;
 	double dPFac_, dIFac_, dDFac_;
@@ -99,7 +101,11 @@ private:
 	double initialAvgDistance_;
 	double desiredDistance_;
 	double desiredTotalAvgDistance_;
+
+  //motor output
 	double leftMotorOutput_, rightMotorOutput_;
+
+  //to check if done
 	double initialDriveTime_, diffDriveTime_, driveTimeoutSec_;
 	bool isDone_;
 	int numTimesOnTarget_;
@@ -107,12 +113,12 @@ private:
 	double lastDistance_;
 	int numTimesStopped_;
 
+  //slow
   bool slow_;
   double slowSpeed_;
   
+  //shuffleboard
   frc::ShuffleboardLayout &driveStraightLayout_;
 	nt::NetworkTableEntry leftStraightEntry_, rightStraightEntry_, angleErrorEntry_, angleErrorGraphEntry_, desiredAngleEntry_,
-	encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_;
-    
-
+	  encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_;
 };

@@ -748,15 +748,6 @@ void RobotModel::SetTestSequence(std::string testSequence) {
 	testSequence_ = testSequence;
 }
 
-//TODO what is this?
-std::string RobotModel::GetAlignSequence() {
-	return alignSequence_;
-}
-
-void RobotModel::SetAlignSequence(std::string alignSequence) {
-	alignSequence_ = alignSequence;
-}
-
 void RobotModel::SetLastPivotAngle(double value){
 	lastPivotAngle_ = value;
 }
@@ -795,7 +786,7 @@ void RobotModel::ConnectRecvZMQ() {
 
 void RobotModel::UpdateZMQ(){ //returns has contents
 	std::string temp = ReadZMQ();
-	std::cout << "read from zmq " << temp << std::endl;
+	//std::cout << "read from zmq " << temp << std::endl;
     hasContents_ = !ReadAll(temp);
 }
 

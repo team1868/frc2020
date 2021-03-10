@@ -14,22 +14,24 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 void MainProgram::RobotInit() {
+
     robot_ = new RobotModel();
     humanControl_ = new ControlBoard();
     superstructureController_ = new SuperstructureController(robot_, humanControl_);
     robot_->SetSuperstructureController(superstructureController_);
     driveController_ = new DriveController(robot_, humanControl_);
+
     robot_->CreatePIDEntries(); 
     printf("created PID entries\n"); 
     robot_->ResetDriveEncoders();
     robot_->SetHighGear();
+    robot_->SetLastPivotAngle(robot_->GetNavXYaw());
+
     aligningTape_ = false;
     currJetsonAngle_ = 0.0;
     lastJetsonAngle_ = 0.0;
     jetsonAngleTolerance_ = 3.0;
     alignTapeCommand_ = nullptr;
-
-    robot_->SetLastPivotAngle(robot_->GetNavXYaw());
     
     navXSource_ = new NavXPIDSource(robot_);
     talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -38,8 +40,7 @@ void MainProgram::RobotInit() {
     sequence_ = autoSequenceEntry_.GetString("t 0"); //TODO ERROR move this to auto init
     printf("I am alive.\n");
 
-
-    robot_->GetDriverTab().Add("Choose auto", realAutoChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
+    robot_->GetDriverTab().Add("Choose auto", realAutoChooser_).WithWidget(frc::BuiltInWidgets::kComboBoxChooser);
 	realAutoChooser_.SetDefaultOption("0 blank", "n a y q n d 5.0 0");
     realAutoChooser_.AddOption("PROGRAMMING AUTO ALIGN TEST", "n a");
     realAutoChooser_.AddOption("PROGRAMMING PIVOT TEST", "n t 33.0");
@@ -94,7 +95,6 @@ void MainProgram::RobotPeriodic() {
 void MainProgram::AutonomousInit() {
     //TODO add test sequence sets
 
-    //superstructureController_->SetIsAuto(true);
     robot_->SetLastPivotAngle(robot_->GetNavXYaw());
     robot_->SetHighGear();
     robot_->ResetDriveEncoders();
@@ -108,148 +108,77 @@ void MainProgram::AutonomousInit() {
     superstructureController_->AutoInit();
 
     robot_->ZMQinit();
-    //robot_->SetLight(true);
     robot_->SendZMQ(true);
-
-
-
-
-
-
-
-
-
 
 
     //auto selection
     robot_->SetTestSequence(realAutoChooser_.GetSelected());
 
     std::cout << "YOUR AUTO SEQUENCE IS " << realAutoChooser_.GetSelected() << std::endl;
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    //robot_->SetTestSequence(sequence_);
-
-    //start in front of target and go to trench to pick up 3 balls then shoot
-    //robot_->SetTestSequence("b 3560.0 s 3560.0 n t -33.0 d -8.7 i t 0.0 d -9.5 n a y q");
-
+ 
     testSequence_ = new TestMode(robot_, humanControl_);
     testSequence_->QueueFromString(robot_->GetTestSequence());
-
     testSequence_->Init();
-    std::cout<< "init time: " << robot_->GetTime() << std::endl;
 
-    // printf("done with init, moving to periodic\n");
-
-    //robot_->SetTestSequence("d 1.0 t 90.0 d 1.0 t 180.0 d 1.0 t -90 d 1.0 t 0.0");
-
-    //testSequence_ = new TestMode(robot_, humanControl_);
-    //testSequence_->QueueFromString(robot_->GetTestSequence());
-
-    // printf("before init\n");
-    // testSequence_->Init();
-
-    // printf("done with init, moving to periodic\n");
-
-
-    // thingS_ = new VelocityPIDSource(robot_);
-    // thingO_ = new VelocityPIDOutput();
-    // thingAO_ = new AnglePIDOutput();
-    // thing_ = new MotionProfileTestCommand(robot_, thingS_, robot_->GetNavXSource(), thingO_, thingAO_);
-    // thing_->Init();
-
-    // tempNavXSource_ = new NavXPIDSource(robot_);
-    // tempPivot_ = new PivotCommand(robot_, 90.0, true, tempNavXSource_);
-    // tempPivot_->Init();
 }
 
+// updates during autonomous, checks if auto sequence is done
 void MainProgram::AutonomousPeriodic() {
+    
     robot_->UpdateZMQ();
-
     robot_->RefreshShuffleboard();
-    // if(!tempPivot_->IsDone()){
-    //     tempPivot_->Update(0.0, 0.0);
-    // }
-    // lastTime_ = currTime_;
-    // currTime_ = robot_->GetTime();
 
-    // //printf("AM I NULL????? %d\n", testSequence_==nullptr);
-
-    // if(!thing_->IsDone()){
-    //     thing_->Update(currTime_, currTime_-lastTime_);
-    // }
     if(!testSequence_->IsDone()){
         testSequence_->Update(currTime_, currTime_-lastTime_);
     } else {
-        //printf("In auto but sequence done\n");
+        // In auto but sequence is done
         superstructureController_->SetIndexingState();
     }
+
     superstructureController_->Update(true);
 }
 
+// end of auto, turns camera led light off
 void MainProgram::DisabledInit() {
-    robot_ -> SetLight(false); //turn camera led light off end of auto
+    robot_ -> SetLight(false);
 }
 
 void MainProgram::TeleopInit() {
-    //superstructureController_->SetIsAuto(false);
-    robot_->SetLastPivotAngle(robot_->GetNavXYaw()); //currently unecessary
 
+    robot_->SetLastPivotAngle(robot_->GetNavXYaw()); // currently unused but makes drive straight possible (just in case)
     superstructureController_->Reset();
-    std::cout << "in teleopinit\n" << std::flush;
     robot_->ResetDriveEncoders();
     robot_->DisengageFlywheelHood();
-    //printf("hood\n");
     robot_->DisengageClimberRatchet();
-    //robot_->SetLight(false);
-    //printf("done with climb ratchet\n");
-
     robot_->StartCompressor();
-
+    
     matchTime_ = frc::Timer::GetMatchTime();
     aligningTape_ = false;
     alignTapeCommand_ = nullptr;
-    //}
-
     std::cout << "before zmq\n" << std::flush;
-    //zmq::context_t * 
-    //context2_ = new zmq::context_t(1);
     robot_->ZMQinit();
-    
     std::cout << "end of teleopinit\n" << std::flush;
 }
 
 void MainProgram::TeleopPeriodic() {
 
     robot_->UpdateZMQ();
-    //bool hasContents = robot_->UpdateZMQ();
-
-    //printf("left distance is %f and right distance is %f\n", robot_->GetLeftDistance(), robot_->GetRightDistance());
     humanControl_->ReadControls();
-        //align tapes not at trench (like auto)
-    //std::cout << "checking tape align\n" << std::flush;
-    //TODO maybe error, setting in two locations
+        
+    // auto align tapes
+    
     if(humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton) ||
        superstructureController_->GetIsPrepping() ||
        alignTapeCommand_!=nullptr){
            
         robot_->SetLight(true);
-        //printf("light on");
         robot_->SendZMQ(true);
+
     } else {
         robot_->SetLight(false);
         robot_->SendZMQ(false);
     }
+
     if (!aligningTape_ && humanControl_->GetDesired(ControlBoard::Buttons::kAlignButton)){
         std::cout << "READY TO START ALIGN TAPE\n" << std::endl;
         if(alignTapeCommand_!=nullptr){
@@ -258,79 +187,37 @@ void MainProgram::TeleopPeriodic() {
             alignTapeCommand_ = nullptr;
             printf("deleted align tape for next iter\n");
         }
-        //printf("NAVXS IS NULL? %d\n", (navXSource_==nullptr));
+
         alignTapeCommand_ = new AlignTapeCommand(robot_, navXSource_);
         alignTapeCommand_->Init();
         aligningTape_ = true;
-        return;
+        return; // go directly into aligning (continue)
+
     } else if (aligningTape_){
         autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX);
         autoJoyVal_ = driveController_->GetDeadbandAdjustment(autoJoyVal_);
         
+        // if the robot is moving or there is no alignTapeCommand or the command is done, destroy the command
         if(fabs(autoJoyVal_) >= 0.1 || alignTapeCommand_==nullptr || alignTapeCommand_->IsDone()){
-            //printf("ALIGN TAPE IS NULL? %d\n", (alignTapeCommand_==nullptr));
             alignTapeCommand_->Reset();
             delete alignTapeCommand_;
             alignTapeCommand_ = nullptr;
             aligningTape_ = false;
-            printf("destroyed align tape command\n");
-        } else {
-            //printf("ALIGN TAPE IS NULL? %d\n", (alignTapeCommand_==nullptr));
+        } else { // otherwise, update command (until done, or exits by conditions above)
             alignTapeCommand_->Update(currTime_, currTime_-lastTime_);
-            //printf("updated align tape command\n");
             return;
         }
     }
 
     driveController_->Update();
-    //std::cout << "before superstructure\n" << std::flush;
     superstructureController_->Update(false);
-    //std::cout << "updated drive and superstructure\n" << std::flush;
-    //superstructureController_->WristUpdate();
     robot_->GetColorFromSensor();
     robot_->MatchColor();
-    
-    //std::cout << "updated colors\n" << std::flush;
-    
-
     matchTime_ = frc::Timer::GetMatchTime();
-    //sendZMQ();//sending here bc. returns after each if below and i don't want to change everything hehe
-
-    // //trench align tapes
-    // if (!aligningTape_ && humanControl_->JustPressed(ControlBoard::Buttons::kTrenchAlignButton)){
-    //     aligningTape_ = true;
-    //     trenchAlignTapeCommand = new TrenchAlignTapeCommand(robot_, humanControl_, navX_, talonEncoderSource_, false); //nav, talon variables don't exist yet
-    //     trenchAlignTapeCommand->Init();
-    //     printf("starting teleop align tapes\n");
-    //     return;
-    // } else if (aligningTape_){
-    //     // printf("in part align tape :))\n");
-    //     /*
-    //     //humanControl_->ReadControls();
-    //     //autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
-    //     //autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
-    //     if(autoJoyVal_ != 0.0 || aCommand == NULL){ //TODO mild sketch, check deadbands more
-    //         printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband or aCommand is NULL %d\n\n", autoJoyVal_, aCommand==NULL);
-    //         delete aCommand;
-    //         aCommand = NULL;
-    //         aligningTape_ = false;
-    //     } else */
-    //     if(!trenchAlignTapeCommand->IsDone()){
-    //         trenchAlignTapeCommand->Update(currTime_, currTime_-lastTime_); //(currTimeSec_, deltaTimeSec_); - variables don't exist yet
-    //         printf("updated align tape command\n");
-    //     } else { //isDone() is true
-    //         delete trenchAlignTapeCommand;
-    //         trenchAlignTapeCommand = NULL;
-    //         aligningTape_ = false;
-    //         printf("destroyed align tape command\n");
-    //     }
-    //     return;
-    // }
 
 }
 
 void MainProgram::DisabledPeriodic() {
-    //humanControl_->ReadControls();
     robot_->SetTestSequence(realAutoChooser_.GetSelected());
 }
 

@@ -29,8 +29,6 @@ public:
 	 */
 	void SetAutonomousMode(AutoMode *autoMode);
 
-	void StartAutonomous();		// TODO
-
 	/**
 	 * create a queue for automode and initializes it
 	 */

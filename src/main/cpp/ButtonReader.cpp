@@ -14,27 +14,34 @@
 ButtonReader::ButtonReader(frc::Joystick* myJoystick, int myButtonNum){
 	joystick = myJoystick;
 	buttonNum = myButtonNum;
+
+	// initially set currState as value of the button, initially set lastState as currState
 	currState = joystick->GetRawButton(buttonNum);
 	lastState = currState;
 }
 
+// gets value of the button (pressed or not)
 void ButtonReader::ReadValue() {
 	lastState = currState;
 	currState = joystick->GetRawButton(buttonNum);
 }
 
+// sees if button has been pressed, only true at the moment when button is initially pressed
 bool ButtonReader::WasJustPressed() {
 	return (lastState == false && currState == true);
 }
 
+// sees if button has been released, only true at the moment when button is released
 bool ButtonReader::WasJustReleased() {
 	return (lastState == true && currState == false);
 }
 
+// sees if button has changed from being pressed to released or vice versa 
 bool ButtonReader::StateJustChanged() {
 	return (lastState != currState);
 }
 
+// sees if the button is pressed (down is true)
 bool ButtonReader::IsDown() {
 	return currState;
 }
@@ -42,21 +49,29 @@ bool ButtonReader::IsDown() {
 ButtonReader::~ButtonReader() {
 }
 
+// class ToggleButtonReader
+// is subclass of ButtonReader, its state toggles every time that it was just released, and reads the state of toggles.
+
 ToggleButtonReader::ToggleButtonReader(frc::Joystick *joy, int buttonNum) :
 	ButtonReader(joy, buttonNum) {
 	currToggleState = false;
 }
 
-// gets the current state of the toggle
+// toggles the button's state and then reads the button's state 
 bool ToggleButtonReader::GetState() {
+	// currToggleState is toggled every time the button was just released
 	if (WasJustReleased()) {
 		currToggleState = !currToggleState;
 	}
+
 	return (currToggleState);
 }
 
 ToggleButtonReader::~ToggleButtonReader() {
 }
+
+// class SwitchReader
+// reads the state of switches (up, down, or neutral)
 
 SwitchReader::SwitchReader(frc::Joystick *myJoy, int upButton, int downButton) {
 	joy = myJoy;
@@ -64,10 +79,14 @@ SwitchReader::SwitchReader(frc::Joystick *myJoy, int upButton, int downButton) {
 	downB = downButton;
 }
 
+// gets the switches state and returns its state (up, down, or neutral)
 SwitchState SwitchReader::GetSwitchState() {
 	if (joy->GetRawButton(upB))
 		return kUp;
 	if (joy->GetRawButton(downB))
 		return kDown;
 	return kNeutral;
+}
+
+SwitchReader::~SwitchReader() {
 }

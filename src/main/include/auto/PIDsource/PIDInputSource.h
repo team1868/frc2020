@@ -20,12 +20,13 @@ public:
 	 */
 	NavXPIDSource(RobotModel *robot);
 	/**
-	 * Calculates and returns AccumulatedYaw
-	 * @return AccumulatedYaw
+	 * Calculates accumulatedYaw
+	 * @return accumulatedYaw
 	 */
 	double PIDGet();
 	/**
 	 * Updates currYAW, calculates deltaYaw and accumulatedYaw
+	 * @return accumulatedYaw
 	 */
 	double CalculateAccumulatedYaw();
 	/**
@@ -41,6 +42,9 @@ public:
 private:
 	double currYaw_, lastYaw_, deltaYaw_, accumulatedYaw_;
 	RobotModel *robot_;
+	/**
+	 * displays accumulatedYaw on Shuffleboard
+	 */
 
 };
 
@@ -54,10 +58,12 @@ public:
 	 */
 	TalonEncoderPIDSource(RobotModel *robot);
 	/**
-	 *Gets distance from left and right encoders and sets averageTalonDistance
-	 *as average of the two
-	 *@return averageTalonDistance_
+	 * Gets distance from left and right encoders and sets averageTalonDistance
+	 * as average of the two
+	 * displays leftDistance, rightDistance and averageTalonDistance_ on Shuffleboard
+	 * @return averageTalonDistance_
 	 */
+	//not used and doesn't work
 	double PIDGet();
 	/**
 	 * Destructor
@@ -69,14 +75,27 @@ private:
 	 * Average distance of left and right encoders
 	 */
 	double averageTalonDistance_;
+
 };
 
 class VelocityPIDSource : public frc::PIDSource {
 public:
-	
+	/** 
+	 * Assigns the robot
+	 * updates lastTime_ and currTime_
+	 * sets lastAvgPosition_, currAvgPosition and avgVelocity to 0
+	 * @param RobotModel
+	 */
 	VelocityPIDSource(RobotModel *robot);
-	
+	/**
+	 * updates lastTime_, currTime_, lastAvgPosition_ and currAvgPosition_ 
+	 * calculates avgVelocity_
+	 */
+	//unused 
 	void UpdateVelocity();
+	/**
+	 * @return avgVelocity_
+	 */
 	double PIDGet();
 	/**
 	 * Destructor
@@ -90,27 +109,3 @@ private:
 };
 
 
-class TalonEncoderCurvePIDSource : public frc::PIDSource {
-public:
-	/**
-	 * Assigns robot and sets averageTalonDistance to 0
-	 * @param RobotModel
-	 */
-	TalonEncoderCurvePIDSource(RobotModel *robot);
-	/**
-	 *Gets distance from left and right encoders and sets averageTalonDistance
-	 *as average of the two
-	 *@return averageTalonDistance_
-	 */
-	double PIDGet();
-	/**
-	 * Destructor
-	 */
-	virtual ~TalonEncoderCurvePIDSource();
-private:
-	RobotModel *robot_;
-	/**
-	 * Average distance of left and right encoders
-	 */
-	double averageTalonDistance_;
-};

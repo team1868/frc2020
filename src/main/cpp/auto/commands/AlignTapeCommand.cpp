@@ -7,78 +7,141 @@
 
 #include "auto/commands/AlignTapeCommand.h"
 
-AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource) : AutoCommand() {
+//constructor, called when robot knows will align in some future
+AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource, PivotPIDTalonOutput *talonOutput) : AutoCommand() {
+
+    //initialize class variables
     robot_ = robot;
+    navXSource_ = navXSource;
+    pivotCommand_ = nullptr;
+    talonOutput_ = talonOutput;
+
     lastJetsonAngle_ = 0.0;
     currJetsonAngle_ = 0.0;
     jetsonAngleTolerance_ = 3.0;
+
     aligning_ = false;
-    pivotCommand_ = nullptr;
-    //navXSource_ = new NavXPIDSource(robot_);
-    navXSource_ = navXSource;
     isDone_ = false;
+
     maxTime_ = 2.0;
     startTime_ = 0.0;
+
+    printf("done with constructor in AlignTapeCommand\n");
 }
 
+//constructor, called when robot knows will align in some future
+AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource) : AutoCommand() {
+
+    //initialize class variables
+    robot_ = robot;
+    navXSource_ = navXSource;
+    pivotCommand_ = nullptr;
+    talonOutput_ = new PivotPIDTalonOutput(robot_);
+
+    lastJetsonAngle_ = 0.0;
+    currJetsonAngle_ = 0.0;
+    jetsonAngleTolerance_ = 3.0;
+
+    aligning_ = false;
+    isDone_ = false;
+
+    maxTime_ = 2.0;
+    startTime_ = 0.0;
+
+    printf("done with constructor in AlignTapeCommand\n");
+}
+
+//initialize class variables, called when about to start aligning
 void AlignTapeCommand::Init(){
     printf("init in align tape command\n");
+
+    //initialize class variables
     lastJetsonAngle_ = robot_->GetDeltaAngle();
     currJetsonAngle_ = robot_->GetDeltaAngle();
     startTime_ = robot_->GetTime();
-    robot_->SetLight(true);
-    robot_->SendZMQ(true);
     aligning_ = false;
     isDone_ = false;
+
+    //set light and exposure
+    robot_->SetLight(true);
+    robot_->SendZMQ(true);
 }
 
+//periodic update while executing command
 void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
-    printf("updating align :DD\n");
+
+    //tell jetson to lower exposure
     robot_->SendZMQ(true);
+
+    //timeout, if bad or 0 values received
     if(currTimeSec-startTime_>=5.0){
-        printf("EXITING ALIGN, TIMEOUT did not receive good values from jetson\n");
+        printf("WARNING: timeout in AlignTapeCommand, did not receive good values from jetson\n");
         isDone_ = true;
     } else {
+        //not timed out
+
+        //check if already has a target angle
         if(!aligning_){
+            //does not already have a target angle
+
             lastJetsonAngle_ = currJetsonAngle_;
             currJetsonAngle_ = robot_->GetDeltaAngle();
+
+            //check if two read values are similar, if so then that is the target angle
+            /*Note: read values are from RobotModel, not necessarily two adjacent values from vision,
+            * depending on update speed difference
+            */
             if(robot_->ZMQHasContents() && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_ && robot_->GetDistance() > 0.0){
-                printf("received last angle %f and curr angle %f, starting\n", lastJetsonAngle_, currJetsonAngle_);
-                aligning_ = true;
+                printf("successfully found similar angles: last angle was %f and currrent angle is %f, starting\n", lastJetsonAngle_, currJetsonAngle_);
                 printf("turning to angle %f in align tape\n", currJetsonAngle_);
-                pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 1.2);
+
+                aligning_ = true;
+
+                //create and initialize pivot command to the most recently read angle
+
+                pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 1.2, talonOutput_);
                 pivotCommand_->Init();
             }
         } else {
+            //already has a target angle and a pivot command
+
             if(pivotCommand_!=nullptr && !pivotCommand_->IsDone() && currTimeSec-startTime_<=maxTime_){
+                //pivot command is not finished
                 pivotCommand_->Update(currTimeSec, deltaTimeSec);
             } else {
-                printf("DONE with align tape\n");
+                //pivot command is finished
+                printf("done with aligning to tape\n");
                 if(currTimeSec-startTime_>maxTime_){
-                    printf("DONE FROM TIMEOUT IN AUTO ALIGN\n");
+                    printf("WARNING: cause is timeout\n");
                 }
                 isDone_ = true;
             }
         }
     }
 }
+
+//check if aligned to tape
 bool AlignTapeCommand::IsDone(){
     return isDone_;
 }
 
+//check and memory leaks and background pid
 void AlignTapeCommand::Reset(){
-    printf("DONE... resetting\n");
+    printf("done, resetting\n");
+
+    //remove pivot command
     if(pivotCommand_!=nullptr){
         pivotCommand_->Reset();
         delete pivotCommand_;
         pivotCommand_ = nullptr;
     }
+
+    //turn off light
     robot_->SetLight(false);
-    //robot_->SendZMQ(false);
     isDone_ = true;
-    //printf("here!\n");
 }
 
+//destructor, call reset just in case
 AlignTapeCommand::~AlignTapeCommand(){
     Reset();
 }

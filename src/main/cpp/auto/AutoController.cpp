@@ -22,6 +22,8 @@ void AutoController::SetAutonomousMode(AutoMode *myAutoMode) {
 	autoMode = myAutoMode;
 }
 
+//put autoMode in queue
+//Ask: Why create queue? What's the Init() for? (recursion?)
 void AutoController::Init(AutoMode::AutoPositions pos) {
 	printf("in autocontroller init\n");
 	if (autoMode == NULL) {
@@ -38,15 +40,17 @@ void AutoController::Init(AutoMode::AutoPositions pos) {
 	}
 }
 
+//update time
 void AutoController::Update(double currTimeSec, double deltaTimeSec) {
-//	printf("Auto controller update\n");
 	autoMode->Update(currTimeSec, deltaTimeSec);
 }
 
+//is autoMode done
 bool AutoController::IsDone() {
 	return autoMode->IsDone();
 }
 
+//abort auto
 bool AutoController::Abort() {
 	return autoMode->Abort();
 }
