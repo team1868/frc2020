@@ -47,6 +47,9 @@ ControlBoard::ControlBoard() {
     buttons_[kReverseRollersButton] = new ButtonReader(operatorJoy_, WRIST_REVERSE_ROLLERS_BUTTON);
 	//control panel controls
 	buttons_[kControlPanelButton] = new ButtonReader(operatorJoy_, CONTROL_PANEL_BUTTON_PORT);
+
+	//testing
+	buttons_[kTestFarShootButton] = new ButtonReader(operatorJoy_, 1); //TODO FIX
 	
 	//create buttons here after creating a option in the Buttons enum
 	//example

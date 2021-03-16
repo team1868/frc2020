@@ -33,7 +33,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     closePrepping_ = false;
     farPrepping_ = false;
     atTargetSpeed_ = false;
-    numTimeAtSpeed_ = 0.0;
+    numTimeAtSpeed_ = 0;
 
     // indexing and intaking
     elevatorFeederPower_ = 1.0; // fix
@@ -341,12 +341,12 @@ void SuperstructureController::UpdateButtons(){
     // determining next handling state
     if (humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){ // intaking
         nextHandlingState_ = kIntaking;
-    //} else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){ // shooting, TODO remove this, doesn't do anything????
-        //if (nextHandlingState_!=kShooting){ // get start time
-        //   startIndexTime_ = currTime_;
-        //}
+    } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){ // shooting, TODO remove this, doesn't do anything????
+        if (nextHandlingState_!=kShooting){ // get start time
+           startIndexTime_ = currTime_;
+        }
         //printf("REACHED THIS PART OF CODE\n");
-        //nextHandlingState_ = kShooting; 
+        nextHandlingState_ = kShooting; 
     } else if (nextHandlingState_ == kShooting){ //shooting to decide not to shoot. kShootingButton is not pressed (case taken care of in previous else if statement)
         nextHandlingState_ = kResetting;
     } else if (nextHandlingState_ != kResetting){ //not intaking, shooting, or resetting, only option is indexing or prepping (also includes indexing)
@@ -378,7 +378,7 @@ void SuperstructureController::UpdateButtons(){
             farPrepping_ = false;
 
         //testing purposes
-        } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){
+        } else if (humanControl_->GetDesired(ControlBoard::Buttons::kTestFarShootButton)){
             // far shot prep
             if (!closePrepping_){
                 // start close prep shooting
@@ -551,12 +551,12 @@ void SuperstructureController::IndexUpdate(){
         robot_->SetElevatorOutput(0.0);
     }
 
-    // run feeder no matter what unless timeout or t && b.
-    if (!(topSensor_ && bottomSensor_) && !bTimeout_){
-        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-    } else {
-        robot_->SetElevatorFeederOutput(0.0);
-    }
+    //4 ball elevator:  run feeder no matter what unless timeout or t && b.
+    //if (!(topSensor_ && bottomSensor_) && !bTimeout_){
+    //    robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    //} else {
+    //    robot_->SetElevatorFeederOutput(0.0);
+    //}
 
     // run funnel if !b
     if (!bottomSensor_ && (!bTimeout_ || currHandlingState_ == kIntaking)){
@@ -569,9 +569,11 @@ void SuperstructureController::IndexUpdate(){
         // }
 
         robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         
     } else {
         robot_->SetIndexFunnelOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
     }
 
     // Original logic (old funnel) DO NOT DELETE (utah fix)
@@ -676,16 +678,17 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRP
 
 bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
     printf("CURRENT SPEED IS %f\n", robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
-    if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm)/* && 
-        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+150.0)*/{
+    if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm-50 && 
+        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+50){
         numTimeAtSpeed_++;
-        if (numTimeAtSpeed_ >= 3){
+        if (numTimeAtSpeed_ >= 5){
             atTargetSpeed_ = true;
+            printf("REACHED SPEED\n");
         } else {
-            numTimeAtSpeed_ = 0;
+            //numTimeAtSpeed_ = 0;
             atTargetSpeed_ = false;
         }
-        atTargetSpeed_ = true;
+        //atTargetSpeed_ = true;
     } else {
         numTimeAtSpeed_ = 0;
         atTargetSpeed_ = false;
