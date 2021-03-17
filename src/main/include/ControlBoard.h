@@ -23,7 +23,7 @@ class ControlBoard {
               kClimbLeftElevatorUpButton, kClimbLeftElevatorDownButton, 
               kUndoElevatorButton,
               kWristUpButton, kWristDownButton, kRunRollersButton, kReverseRollersButton,
-              kControlPanelButton};
+              kControlPanelButton, kTestFarShootButton};
 
   ControlBoard();
   void ReadControls();
