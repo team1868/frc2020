@@ -75,6 +75,20 @@ void CurveCommand::Init(){
 
   initAngle_ = robot_->GetNavXYaw();
 
+  double finalAngle = initAngle_ + desiredAngle_;
+  if (finalAngle>180.0){
+    finalAngle -= 360.0;
+  } else if (finalAngle<-180){
+    finalAngle += 360.0;
+  }
+  //if (initAngle_ + desiredAngle_ > 360){
+  //  finalAngle = (initAngle_ + desiredAngle_)-360;
+  //}
+  //if(finalAngle > 180){
+  //  finalAngle = -(360 - finalAngle);
+  //}
+  robot_->SetLastPivotAngle(finalAngle);
+
   curAngle_ = initAngle_;
   curPivDistance_ = 0.0;
   curDesiredAngle_ = curAngle_;

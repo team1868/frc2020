@@ -61,9 +61,9 @@ void MainProgram::RobotInit() {
 	//realAutoChooser_.AddOption("3: Mid-Trench", );
 	//realAutoChooser_.AddOption("4: Mid-Player Station", );
 	//realAutoChooser_.AddOption("5: other", tempAutoString_);
-    realAutoChooser_.AddOption("5: Slalom", "t -37.25 d 10.188 1 t 0 d 9.036 1 t 63.435 d 6.5 1 t 26.656 c 2.795 234.274 1 1 t 116.565 d 5.9449 1 t 180 d 9.902 1 t -142.75 d 9.362 1 t 180");
-    realAutoChooser_.AddOption("6: Slalom box", "d 2.4791667 1 t 90 d -5.0 1 t 0 d 12.5 1 t -90 d -5.0 1 t 180 d -5.0 1 t 90 d -5.0 1 t 0 d -5.0 1 t -90 d -5.0 1 t 0 d -12.5 1 t 90 d -5.0 1 t 0 d -2.4791667 1");
-    realAutoChooser_.AddOption("Barrel", "t 4.11 d 11.63 1 t 75.0 c 3 240 0 1 t 0 d 7.36 1 t -75 c 3 240 1 1 t 50 d 8.59 1 t 0 c 3 180 1 1 d 21 1");
+    realAutoChooser_.AddOption("5: Slalom", "t -37.25 d 10.188 0 t 0 d 9.036 0 t 63.435 d 6.5 0 t 26.656 c 2.795 234.274 1 1 t 116.565 d 5.9449 0 t 180 d 9.902 0 t -142.75 d 9.362 0 t 180");
+    realAutoChooser_.AddOption("6: Slalom box", "d 2.4791667 0 t 90 d -5.0 0 t 0 d 12.5 0 t -90 d -5.0 0 t 180 d -5.0 0 t 90 d -5.0 0 t 0 d -5.0 0 t -90 d -5.0 0 t 0 d -12.5 0 t 90 d -5.0 0 t 0 d -2.4791667 0");
+    realAutoChooser_.AddOption("Barrel", "t 4.11 d 11.63 1 t 75.0 c 3 240 0 1 t 0 d 7.36 0 t -75 c 3 240 1 1 t 50 d 8.59 0 t 0 c 3 180 1 1 d 10.0 0");
     realAutoChooser_.AddOption("Bounce", "c 60 90 1 1 t -108.43 d -7.9 0 t 90 c 30 180 0 0 d -7.5 0 d 7.5 0 c 45 180 1 1 d 7.5 0 d -5 0 t 0 d 5 0");
 
 }
