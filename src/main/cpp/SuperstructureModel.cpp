@@ -136,7 +136,8 @@ void RobotModel::SetIntakeWristOutput(double power) {
 
 // run index funnel
 void RobotModel::SetIndexFunnelOutput(double power) {
-    indexFunnelMotor_->Set(-power);
+    indexFunnelMotorA_->Set(-power);
+    indexFunnelMotorB_->Set(-power);
 }
 
 // run elevator feeder

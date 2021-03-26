@@ -313,7 +313,7 @@ class RobotModel {
 #ifdef PRACTICE_BOT
     WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot
 #else
-    WPI_VictorSPX *indexFunnelMotor_, *elevatorFeederMotor_; // comp bot
+    WPI_VictorSPX *indexFunnelMotorA_, *indexFunnelMotorB_, *elevatorFeederMotor_; // comp bot
 #endif
     WPI_VictorSPX *elevatorMotor_;
 
@@ -339,7 +339,8 @@ class RobotModel {
     uint32_t state_;
     int numTimeAtSpeed_;
     double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
-    double intakeRollersCurrent_, intakeWristCurrent_, IndexFunnelCurrent_, elevatorFeederCurrent_, elevatorCurrent_;
+    //note: index funnel currents are not being used currently
+    double intakeRollersCurrent_, intakeWristCurrent_, indexFunnelACurrent_, indexFunnelBCurrent_, elevatorFeederCurrent_, elevatorCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
     double colorConfidence_;

@@ -210,6 +210,7 @@ void SuperstructureController::WristUpdate(bool isAuto){
     //     intakeRollersOutput *= 0.5;
     // }
 
+    //printf("intake roller output! %f\n", intakeRollersOutput);
     robot_->SetIntakeWristOutput(intakeWristOutput);
     robot_->SetIntakeRollersOutput(intakeRollersOutput);
 
@@ -522,7 +523,7 @@ void SuperstructureController::UndoElevator(){
     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
 
     // non utah fix
-    robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    robot_->SetIndexFunnelOutput(-indexFunnelPower_);
 
     // Utah fixes DO NOT DELETE!
     // if(((int)currTime_)%4 == 0){
@@ -678,8 +679,11 @@ void SuperstructureController::SetFlywheelPowerDesired(double flywheelVelocityRP
 
 bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
     printf("CURRENT SPEED IS %f\n", robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
-    if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm-50 && 
-        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+50){
+    //5100->60 tolerance
+    //2200->25
+    double tolerance = 35.0/2900.0*rpm; //tolerance at 1%
+    if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm-tolerance && 
+        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+tolerance){
         numTimeAtSpeed_++;
         if (numTimeAtSpeed_ >= 5){
             atTargetSpeed_ = true;
