@@ -170,7 +170,8 @@ RobotModel::RobotModel() :
     elevatorFeederMotor_ = new WPI_TalonSRX(ELEVATOR_FEEDER_MOTOR_ID); // practice bot
 #else
 	//printf("NOT WORKINGLKSJDFLKJSDLKFJSLDKJFKLSKDFJLDKJFLKD\n");
-	indexFunnelMotor_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_ID); // comp bot
+	indexFunnelMotorA_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_A_ID); // comp bot
+	indexFunnelMotorB_ = new WPI_VictorSPX(INDEX_FUNNEL_MOTOR_B_ID);
     elevatorFeederMotor_ = new WPI_VictorSPX(ELEVATOR_FEEDER_MOTOR_ID); // com76 p bot
 #endif
 	elevatorMotor_ = new WPI_VictorSPX(ELEVATOR_MOTOR_ID);
@@ -194,7 +195,8 @@ RobotModel::RobotModel() :
 	climbTwoCurrent_ = 0.0;
 	intakeRollersCurrent_ = 0.0;
 	intakeWristCurrent_ = 0.0;
-	IndexFunnelCurrent_ = 0.0;
+	indexFunnelACurrent_ = 0.0;
+	indexFunnelBCurrent_ = 0.0;
 	elevatorFeederCurrent_ = 0.0;
 	elevatorCurrent_ = 0.0;
 
@@ -498,7 +500,7 @@ void RobotModel::UpdateCurrent(int channel) {
 	// climbTwoCurrent_ = pdp_->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN);
 	// intakeRollersCurrent_ = pdp_->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN);
 	// intakeWristCurrent_ = pdp_->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN);
-	// IndexFunnelCurrent_ = pdp_->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN);
+	// IndexFunnelCurrent_ = pdp_->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN); //note: if add back in make sure to add both motors
 	// elevatorFeederCurrent_ = pdp_->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHAN);
 	// elevatorCurrent_ = pdp_->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN);
 
@@ -977,6 +979,7 @@ void RobotModel::RefreshShuffleboard(){
 
 RobotModel::~RobotModel(){
 	
+	//why is this removed?
 	/*delete climberRatchetSolenoid_;
 	delete flywheelHoodSolenoid_;
 	delete gearSolenoid_;

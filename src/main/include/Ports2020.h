@@ -28,7 +28,8 @@ static const int CLIMB_LEFT_ELEVATOR_ID                  = 25;
 static const int CONTROL_PANEL_MOTOR_ID                  = 11;
 static const int INTAKE_ROLLERS_MOTOR_ID                 = 10; 
 static const int INTAKE_WRIST_MOTOR_ID                   = 12; 
-static const int INDEX_FUNNEL_MOTOR_ID                   = 5;
+static const int INDEX_FUNNEL_MOTOR_A_ID                 = 5; //right side
+static const int INDEX_FUNNEL_MOTOR_B_ID                 = 11; //left side
 static const int ELEVATOR_FEEDER_MOTOR_ID                = 4; 
 static const int ELEVATOR_MOTOR_ID                       = 8;
 
@@ -54,7 +55,8 @@ static const int CLIMB_MOTOR_TWO_PDP_CHAN                = 6;
 static const int CONTROL_PANEL_MOTOR_PDP_CHAN            = 7;
 static const int INTAKE_ROLLERS_MOTOR_PDP_CHAN           = 8;
 static const int INTAKE_WRIST_MOTOR_PDP_CHAN             = 9;
-static const int INDEX_FUNNEL_MOTOR_PDP_CHAN             = 5;
+static const int INDEX_FUNNEL_MOTOR_A_PDP_CHAN           = 5; //unused currently
+static const int INDEX_FUNNEL_MOTOR_B_PDP_CHAN           = 13; //FAKE PORT, unused currently
 static const int ELEVATOR_FEEDER_MOTOR_PDP_CHAN          = 11;
 static const int ELEVATOR_MOTOR_PDP_CHAN                 = 12;
 
