@@ -9,12 +9,12 @@
 
 void RobotModel::CreatePIDEntries(){
     //last tuned: 2/20 without climber2
-    aPEntry_ = anglePIDLayout_.Add("P", 0.017).GetEntry(); // 0.0055 for practice bot
+    aPEntry_ = anglePIDLayout_.Add("P", 0.01275).GetEntry(); // 0.0055 for practice bot
     aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
-    aDEntry_ = anglePIDLayout_.Add("D", 0.0125).GetEntry();
-    dPEntry_ = distancePIDLayout_.Add("P", 0.125).GetEntry(); // 0.19 for practice bot
+    aDEntry_ = anglePIDLayout_.Add("D", 0.0).GetEntry();
+    dPEntry_ = distancePIDLayout_.Add("P", 0.1).GetEntry(); // 0.19 for practice bot
     dIEntry_ = distancePIDLayout_.Add("I", 0.0).GetEntry();
-    dDEntry_ = distancePIDLayout_.Add("D", 0.11).GetEntry(); // 0.08 for practice bot
+    dDEntry_ = distancePIDLayout_.Add("D", 0.0).GetEntry(); // 0.08 for practice bot
 
     // pEntry_ = pivotPIDLayout_.Add("P", 0.031).GetEntry();
     // iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
