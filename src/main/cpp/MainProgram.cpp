@@ -66,6 +66,17 @@ void MainProgram::RobotInit() {
     realAutoChooser_.AddOption("6: Slalom box", "n d 2.4791667 0 t 90 d -5.0 0 t 0 d 12.5 0 t -90 d -5.0 0 t 180 d -5.0 0 t 90 d -5.0 0 t 0 d -5.0 0 t -90 d -5.0 0 t 0 d -12.5 0 t 90 d -5.0 0 t 0 d -2.4791667 0");
     realAutoChooser_.AddOption("Barrel", "n t 4.11 d 11.63 1 t 75.0 c 3 240 0 1 t 0 d 7.36 0 t -75 c 3 240 1 1 t 50 d 8.59 0 t 0 c 3 180 1 1 d 10.0 0");
     realAutoChooser_.AddOption("Bounce", "n c 60 90 1 1 t -108.43 d -7.9 0 t 90 c 30 180 0 0 d -7.5 0 d 7.5 0 c 45 180 1 1 d 7.5 0 d -5 0 t 0 d 5 0");
+    
+    
+    /*
+    realAutoChooser_.AddOption("5: Slalom", "t -37.25 d 10.188 0 t 0 d 9.036 0 t 63.435 d 6.5 0 t 26.656 c 2.795 234.274 1 1 t 116.565 d 5.9449 0 t 180 d 9.902 0 t -142.75 d 9.362 0 t 180");
+    realAutoChooser_.AddOption("6: Slalom box", "d 2.4791667 0 t 90 d -5.0 0 t 0 d 12.5 0 t -90 d -5.0 0 t 180 d -5.0 0 t 90 d -5.0 0 t 0 d -5.0 0 t -90 d -5.0 0 t 0 d -12.5 0 t 90 d -5.0 0 t 0 d -2.4791667 0");
+    realAutoChooser_.AddOption("Barrel", "t 8.98 d 11.7421 1 t 60 c 3 240 0 1 t 0 d 10.098 1 c 3.5 315 1 1 t 43.84 d 8.487 1 t 18.435 c 3.16 180 1 1 t 180 d 22.5 1");
+    realAutoChooser_.AddOption("Bounce", "c 60 90 1 1 t -108.43 d -7.9 0 t 90 c 30 180 0 0 d -7.5 0 d 7.5 0 c 45 180 1 1 d 7.5 0 d -5 0 t 0 d 5 0");
+    realAutoChooser_.AddOption("drivestraight 5", "d 5.0 0");
+    realAutoChooser_.AddOption("drivestraight 10", "d 10.0 0");
+    realAutoChooser_.AddOption("drivestraight 20", "d 20.0 0");
+    */
 
 }
 
