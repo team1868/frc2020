@@ -176,14 +176,14 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	double timeDiff = robot_->GetTime() - pivotCommandStartTime_;
 	bool timeOut = (timeDiff > pivotTimeoutSec_); //test this value
 
-	printf("error is %f in pivot command\n",pivotPID_->GetError());
+	//printf("error is %f in pivot command\n",pivotPID_->GetError());
 	// on target
 	if (pivotPID_->OnTarget()) {
 		numTimesOnTarget_++;
 	} else {
 		numTimesOnTarget_ = 0;
 	}
-	printf("On target %d times\n",numTimesOnTarget_);
+	//printf("On target %d times\n",numTimesOnTarget_);
 	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
 		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
@@ -209,7 +209,7 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		leftDriveEntry_.SetDouble(-output);
 		pivotErrorEntry_.SetDouble(pivotPID_->GetError());
 
-		printf("output is %f\n", output);
+		//printf("output is %f\n", output);
 	}
 }
 

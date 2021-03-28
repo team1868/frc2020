@@ -67,6 +67,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     startResetTime_ = currTime_;
     startElevatorTime_ = currTime_;
     shootPrepStartTime_ = currTime_;
+    //printf("WARNING TIMEOUTS START TRUE (possible error?)\n");
+    //tTimeout_ = 1;
+    //bTimeout_ = 1;
 
     resetTimeout_ = 2.0;
     lowerElevatorTimeout_ = 2.0; //fix
@@ -237,7 +240,7 @@ void SuperstructureController::Update(bool isAuto){
     RefreshShuffleboard();
 
     switch(currSuperState_){ 
-        case kDefaultTeleop:
+        case kDefaultTeleop: //also auto
             if (!isAuto){
                 CheckClimbDesired();
                 CheckControlPanelDesired();
@@ -345,6 +348,7 @@ void SuperstructureController::UpdateButtons(){
     } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){ // shooting, TODO remove this, doesn't do anything????
         if (nextHandlingState_!=kShooting){ // get start time
            startIndexTime_ = currTime_;
+           printf("HEREOISHDNFLKSDHFSIOPEHKFLND ------\n");
         }
         //printf("REACHED THIS PART OF CODE\n");
         nextHandlingState_ = kShooting; 
@@ -446,8 +450,10 @@ void SuperstructureController::IndexPrep(bool isAuto){
     if (topSensor_){
         startElevatorTime_ = currTime_;
     }
-    if (bottomSensor_){
+    printf("ERROR: WILL NOT INDEX IN AUTO MODE BECAUSE OF THIS CODE\n");
+    if (bottomSensor_ && !isAuto){
         startIndexTime_ = currTime_;
+        printf("seeing something\n");
     }
 
     if (isAuto){
@@ -456,6 +462,7 @@ void SuperstructureController::IndexPrep(bool isAuto){
         tTimeout_ = currTime_-startElevatorTime_ > elevatorTimeout_;
     }
     bTimeout_ = currTime_-startIndexTime_ > lowerElevatorTimeout_;
+    //printf("B TIMEOUT IS %d\n", bTimeout_);
 }
 
 void SuperstructureController::Intaking(){
@@ -568,7 +575,7 @@ void SuperstructureController::IndexUpdate(){
         // } else {
         //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
         // }
-
+        //printf("updating here with btimeout at %d and bsensor at %d\n", bTimeout_, bottomSensor_);
         robot_->SetIndexFunnelOutput(indexFunnelPower_);
         robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         
@@ -611,7 +618,7 @@ void SuperstructureController::SetShootingState(double autoVelocity){
     desiredFlywheelVelocity_=autoVelocity;
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
     startElevatorTime_ = currTime_;
-    startIndexTime_ = currTime_;
+    startIndexTime_ = currTime_; //WARNING: possible error
     nextWristState_ = kRaising; //resetting whatever intake did
     nextHandlingState_ = kShooting;
 }
