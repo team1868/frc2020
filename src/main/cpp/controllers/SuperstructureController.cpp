@@ -450,7 +450,7 @@ void SuperstructureController::IndexPrep(bool isAuto){
     if (topSensor_){
         startElevatorTime_ = currTime_;
     }
-    printf("ERROR: WILL NOT INDEX IN AUTO MODE BECAUSE OF THIS CODE\n");
+    //printf("ERROR: WILL NOT INDEX IN AUTO MODE BECAUSE OF THIS CODE\n");
     if (bottomSensor_ && !isAuto){
         startIndexTime_ = currTime_;
         printf("seeing something\n");
@@ -688,7 +688,7 @@ bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
     printf("CURRENT SPEED IS %f\n", robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
     //5100->60 tolerance
     //2200->25
-    double tolerance = 35.0/2900.0*rpm; //tolerance at 1%
+    double tolerance = rpm*0.02;//35.0/2900.0*rpm; //tolerance at 1%
     if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm-tolerance && 
         robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+tolerance){
         numTimeAtSpeed_++;

@@ -20,6 +20,7 @@
 #include "auto/commands/IntakingCommand.h"
 #include "auto/commands/PreppingCommand.h"
 #include "auto/commands/AlignTapeCommand.h"
+#include "auto/commands/SetLastAngleCommand.h"
 
 
 class AutoMode {

@@ -73,9 +73,9 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
 // creates new PIDController
 void CurveCommand::Init(){
 
-  initAngle_ = robot_->GetNavXYaw();
+  initAngle_ = robot_->GetLastPivotAngle();
 
-  double finalAngle = initAngle_ + desiredAngle_;
+  double finalAngle = initAngle_ - desiredAngle_; //weird polarity
   if (finalAngle>180.0){
     finalAngle -= 360.0;
   } else if (finalAngle<-180){

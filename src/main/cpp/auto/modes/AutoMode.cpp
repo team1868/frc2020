@@ -149,7 +149,17 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = new PointCommand(robot_, pointAngle, true, navX_, turningLeft, talonOutput_);
 			}
 			break;
-
+		case 'u': 	//set last angle command
+			double lastAngle;
+			iss >> lastAngle;
+			if(IsFailed(command)) { // fail in stream
+				tempCommand = nullptr;
+			} else {
+				currAngle_ = pointAngle;
+				printf("last angle: %f\n", lastAngle);
+				tempCommand = new SetLastAngleCommand(robot_, lastAngle);
+			}
+			break;
 		case 'c':	// curve command
 			double curveRadius;
 			double curveAngle;
