@@ -290,7 +290,7 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	distancePID_ = nullptr;
 
 	rTolerance_ = 0.1; //was 0.5
-	dTolerance_ = 4.0/12.0;
+	dTolerance_ = 0.375; //was 4.0/12.0
 
 	rMaxOutput_ = 0.15;
 	dMaxOutput_ = 0.1;

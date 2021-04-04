@@ -206,6 +206,8 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){
       rOutput = -1.0;
     }
 
+    lOutput *=0.8;
+    rOutput *=0.8;
     
     //ramp up max PID output from initial to final
     if (diffCurveTime_ > maxT_){

@@ -25,7 +25,7 @@ void RobotModel::CreatePIDEntries(){
     // dEntry_ = pivotPIDLayout_.Add("D", 0.0115).GetEntry(); // 0.0173 for nova, 0.0162 for practice bot 0.0115 for comp bot
 
     //pivot pid entries
-    pEntry_ = pivotPIDLayout_.Add("P", 0.014).GetEntry(); // 0.03225 for nova, 0.0247 for practice bot 0.016 for comp bot, 0.007 for 90 degree turns basketball courts
+    pEntry_ = pivotPIDLayout_.Add("P", 0.012).GetEntry(); // 0.03225 for nova, 0.0247 for practice bot 0.016 for comp bot, 0.007 for 90 degree turns basketball courts
     iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
     dEntry_ = pivotPIDLayout_.Add("D", 0.007).GetEntry();
 
