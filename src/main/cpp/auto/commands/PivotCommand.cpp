@@ -46,7 +46,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	pivotTimeoutSec_ = 5.0; //note edited from last year
 
 	maxOutput_ = 0.9;
-	tolerance_ = 3.0;
+	tolerance_ = 4.0;
 	numTimesOnTarget_ = 0;
 
 	// retrieve pid values from user //moved to shuffleboard model

@@ -109,7 +109,7 @@ void CurveCommand::Init(){
 
   dPID_->SetSetpoint(direction_*desiredAngle_*desiredRadius_*PI/180.0);//2*PI*desiredRadius_/(360/desiredAngle_));
 
-  dPID_->SetAbsoluteTolerance(1.0/12.0); // TODO: tune
+  dPID_->SetAbsoluteTolerance(2.0/12.0); // TODO: tune
 
 	dPID_->SetContinuous(false);
 
@@ -206,6 +206,8 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){
       rOutput = -1.0;
     }
 
+    lOutput *=0.8; //0.8 for everything except slalom
+    rOutput *=0.8;
     
     //ramp up max PID output from initial to final
     if (diffCurveTime_ > maxT_){
