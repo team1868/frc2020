@@ -8,9 +8,12 @@
 #include "controllers/SuperstructureController.h"
 #include <math.h>
 
+
+
 SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoard *humanControl) :
     flywheelPIDLayout_(robot->GetSuperstructureTab().GetLayout("Flywheel", "List Layout").WithPosition(0, 0)),
     sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1)),
+
     manualOverrideLayout_(robot->GetModeTab().GetLayout("climb override", "List Layout").WithPosition(1,1)),
     powerLayout_(robot->GetSuperstructureTab().GetLayout("power control", "List Layout").WithPosition(3, 0))
     {
@@ -79,19 +82,24 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     startRatchetTime_ = -1.0; // TODO check
 
     // shuffleboard
+#ifdef SUPERSTRUCTURECONTROLS
     flywheelVelocityEntry_ = flywheelPIDLayout_.Add("flywheel velocity", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelVelocityErrorEntry_ = flywheelPIDLayout_.Add("flywheel error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
-    
+#endif
     flywheelPEntry_ = flywheelPIDLayout_.Add("flywheel P", 0.35).GetEntry();
     flywheelIEntry_ = flywheelPIDLayout_.Add("flywheel I", 0.0).GetEntry();
     flywheelDEntry_ = flywheelPIDLayout_.Add("flywheel D", 0.1).GetEntry();
     //flywheelFEntry_ = flywheelPIDLayout_.Add("flywheel FF", 1.0).GetEntry();
+#ifdef SUPERSTRUCTURECONTROLS
     flywheelMotor1OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 1 output", robot_->FlywheelMotor1Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor2OutputEntry_ = flywheelPIDLayout_.Add("flywheel motor 2 output", robot_->FlywheelMotor2Output()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor1CurrentEntry_ = flywheelPIDLayout_.Add("flywheel motor 1 current", robot_->GetFlywheelMotor1Current()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelMotor2CurrentEntry_ = flywheelPIDLayout_.Add("flywheel motor 2 current", robot_->GetFlywheelMotor2Current()).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
-    closeFlywheelEntry_ = powerLayout_.Add("close flywheel velocity", closeFlywheelVelocity_).GetEntry();
+#endif
+
     targetSpeedEntry_ = flywheelPIDLayout_.Add("target speed", atTargetSpeed_).GetEntry();
+
+    closeFlywheelEntry_ = powerLayout_.Add("close flywheel velocity", closeFlywheelVelocity_).GetEntry();
 
     autoWristEntry_ = manualOverrideLayout_.Add("auto wrist", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
     autoWristDownPEntry_ = robot_->GetPIDTab().Add("wrist down p", autoWristDownP_).GetEntry();
@@ -161,7 +169,7 @@ void SuperstructureController::WristUpdate(bool isAuto){
     if (autoWristEntry_.GetBoolean(true)){
         currWristAngle_ = robot_->GetIntakeWristAngle(); // might not need?
         switch (currWristState_){
-            case kRaising:
+            case kRaising: //if climbing, raise wrist
                 if (currWristAngle_ > 10.0) {
                     intakeWristOutput = autoWristUpP_*(0.0-currWristAngle_);
                 }
@@ -834,13 +842,15 @@ void SuperstructureController::RefreshShuffleboard(){
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
     targetSpeedEntry_.SetBoolean(atTargetSpeed_);
 
+#ifdef SHUFFLEBOARDCONTROLS
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
     flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
     flywheelMotor1OutputEntry_.SetDouble(robot_->FlywheelMotor1Output());
     flywheelMotor2OutputEntry_.SetDouble(robot_->FlywheelMotor2Output());
     flywheelMotor1CurrentEntry_.SetDouble(robot_->GetFlywheelMotor1Current());
     flywheelMotor2CurrentEntry_.SetDouble(robot_->GetFlywheelMotor2Current());
-    
+#endif
+
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
 }
@@ -854,13 +864,15 @@ SuperstructureController::~SuperstructureController() {
     flywheelDEntry_.Delete();
     //flywheelFEntry_.Delete();
 
+#ifdef SHUFFLEBOARDCONTROLS
     flywheelVelocityErrorEntry_.Delete();
     flywheelVelocityEntry_.Delete();
     flywheelMotor1OutputEntry_.Delete();
     flywheelMotor2OutputEntry_.Delete();
     flywheelMotor1CurrentEntry_.Delete();
     flywheelMotor2CurrentEntry_.Delete();
-    
+#endif
+
     elevatorBottomLightSensorEntry_.Delete();
     elevatorTopLightSensorEntry_.Delete();
 
