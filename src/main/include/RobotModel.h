@@ -240,6 +240,7 @@ class RobotModel {
     
     bool GetElevatorFeederLightSensorStatus();
     bool GetElevatorLightSensorStatus();
+    bool GetFunnelLightSensorStatus();
 
     void SetIndexFunnelOutput(double power);
     void SetElevatorFeederOutput(double power);
@@ -308,7 +309,7 @@ class RobotModel {
     WPI_VictorSPX *intakeRollersMotor_;
     WPI_TalonSRX *intakeWristMotor_;
     
-    frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_;
+    frc::DigitalInput *elevatorFeederLightSensor_, *elevatorLightSensor_, *funnelLightSensor_;
 
 #ifdef PRACTICE_BOT
     WPI_TalonSRX *indexFunnelMotor_, *elevatorFeederMotor_; // practice bot

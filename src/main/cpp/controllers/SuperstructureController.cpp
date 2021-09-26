@@ -42,7 +42,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     elevatorFeederPower_ = 1.0; // fix
     elevatorSlowPower_ = 0.4; //fix
     elevatorFastPower_ = 0.4;//0.75; //fix
-    indexFunnelPower_ = 0.3; // fix
+    indexFunnelPower_ = 0.4; // fix
     intakeRollersPower_ = 1.0;//0.5;
     manualRollerPower_ = 0.5;
 
@@ -76,10 +76,15 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     resetTimeout_ = 2.0;
     lowerElevatorTimeout_ = 2.0; //fix
+    resetElevatorTimeout_ = 5.0; // time before bringing down the balls when t && !b
+    startResetElevatorTime_ = currTime_;
     elevatorTimeout_ = 2.0;
     startIndexTime_ = currTime_-lowerElevatorTimeout_-1.0;
     startResetTime_ = currTime_-elevatorTimeout_-1.0;
     startRatchetTime_ = -1.0; // TODO check
+
+    // indexing logic
+    isIndexing_ = false;  
 
     // shuffleboard
 #ifdef SUPERSTRUCTURECONTROLS
@@ -120,6 +125,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     // sensors
     elevatorTopLightSensorEntry_ = sensorsLayout_.Add("top elevator", false).GetEntry();
     elevatorBottomLightSensorEntry_ = sensorsLayout_.Add("bottom elevator", false).GetEntry();
+    funnelLightSensorEntry_ = sensorsLayout_.Add("funnel sensor", false).GetEntry();
 
     // control panel
     controlPanelColorEntry_ = robot_->GetFunctionalityTab().Add("control panel color", "").GetEntry();
@@ -141,6 +147,7 @@ void SuperstructureController::AutoInit(){
 
 //teleop and auto init
 void SuperstructureController::Reset() { // might not need this
+
     closePrepping_ = false;
     farPrepping_ = false;
 
@@ -173,7 +180,6 @@ void SuperstructureController::WristUpdate(bool isAuto){
                 if (currWristAngle_ > 10.0) {
                     intakeWristOutput = autoWristUpP_*(0.0-currWristAngle_);
                 }
-
                 break;
             case kLowering:
                 if (currWristAngle_ < desiredIntakeWristAngle_-45.0) {
@@ -224,6 +230,7 @@ void SuperstructureController::WristUpdate(bool isAuto){
     //printf("intake roller output! %f\n", intakeRollersOutput);
     robot_->SetIntakeWristOutput(intakeWristOutput);
     robot_->SetIntakeRollersOutput(intakeRollersOutput);
+
 
 }
 
@@ -353,6 +360,7 @@ void SuperstructureController::UpdateButtons(){
     // determining next handling state
     if (humanControl_->GetDesired(ControlBoard::Buttons::kIntakeSeriesButton)){ // intaking
         nextHandlingState_ = kIntaking;
+        // printf("INTAKING BUTTON IS PRESSED \n :DSLKF:SLDKFJSL:KDFJSD:LKFJSDLK:F:DLSFL:SDJKLFLKDFJ:LSKDJF:LKSDJF:LKJSDF:LKJSDF");
     } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){ // shooting, TODO remove this, doesn't do anything????
         if (nextHandlingState_!=kShooting){ // get start time
            startIndexTime_ = currTime_;
@@ -454,6 +462,7 @@ void SuperstructureController::CheckClimbDesired(){
 void SuperstructureController::IndexPrep(bool isAuto){
     bottomSensor_ = robot_->GetElevatorFeederLightSensorStatus();
     topSensor_ = robot_->GetElevatorLightSensorStatus();
+    funnelSensor_ = robot_->GetFunnelLightSensorStatus();
     
     if (topSensor_){
         startElevatorTime_ = currTime_;
@@ -560,12 +569,86 @@ void SuperstructureController::ManualFunnelFeederElevator(){
 // indexing
 void SuperstructureController::IndexUpdate(){
 
-    // only run elevator if !t && b
+    // new CODDE :LAKDJSFLJKSDF
+
+    
+
+    // New code for CalGames
+    // regular elevator indexing
     if (!topSensor_ && bottomSensor_){
         robot_->SetElevatorOutput(elevatorFastPower_);
     } else {
         robot_->SetElevatorOutput(0.0);
     }
+
+    // run feeder if nothing at the bottom and not timed
+    // if (!bottomSensor_){
+    //    robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    // } else {
+    //    robot_->SetElevatorFeederOutput(0.0);
+    // }
+
+    // run funnel if intaking (TODO: need timeout? bTimeout_...)
+    if (currHandlingState_ == kIntaking){
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    } else if (!bottomSensor_ && !bTimeout_) {
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    } else {
+        robot_->SetIndexFunnelOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
+    }
+
+    // New code with funnelSensor_
+    // indexing: if !topSensor_ && (isIndexing_ || funnelSensor_)
+    // nothing is at the top (can run elevator), is currently indexing OR something needs to be put in the elevator
+    // if (!topSensor_ && (isIndexing_ || funnelSensor_)){ // UPWARDS
+    //     isIndexing_ = true;
+    //     if (!topSensor_) {
+    //         robot_->SetIndexFunnelOutput(0.0);
+    //         robot_->SetElevatorFeederOutput(0.0);
+    //         robot_->SetElevatorOutput(0.0);
+    //     } else {
+    //         isIndexing_ = false;
+    //         robot_->SetIndexFunnelOutput(0.0);
+    //         robot_->SetElevatorFeederOutput(0.0);
+    //         robot_->SetElevatorOutput(0.0);
+    //     }
+    // } else if (!bottomSensor_){ // something at the top, nothing at the bottom sensor, so can reindex DOWNWARDS
+
+
+
+    // } else {
+    //     // otherwise, (something at the top OR nothing to index) AND something at the bottom
+    //     robot_->SetIndexFunnelOutput(0.0);
+    //     robot_->SetElevatorFeederOutput(0.0);
+    //     robot_->SetElevatorOutput(0.0);
+    // }
+
+    //  - isIndexing_ = true
+    //      
+    //  - run funnel, feeder, and elevator upwards until topSensor_
+    //  - once topSensor_, isIndexing_ = false
+    //  - MUST fiknish indexing before re-indexing
+    // re-indexing:
+    //  - 
+
+    //  - no balls are coming -> !funnelSensor_ and topSensor_
+    //  - run elevator downwards until bottomSensor_
+
+
+
+
+    // the below code (1) and (2) work. REVERT BACK IF CALGAMES FIX DOESN'T WORK!!
+
+    // only run elevator if !t && b
+    // (1)
+    // if (!topSensor_ && bottomSensor_){
+    //     robot_->SetElevatorOutput(elevatorFastPower_);
+    // } else {
+    //     robot_->SetElevatorOutput(0.0);
+    // }
 
     //4 ball elevator:  run feeder no matter what unless timeout or t && b.
     //if (!(topSensor_ && bottomSensor_) && !bTimeout_){
@@ -575,22 +658,23 @@ void SuperstructureController::IndexUpdate(){
     //}
 
     // run funnel if !b
-    if (!bottomSensor_ && (!bTimeout_ || currHandlingState_ == kIntaking)){
+    // (1)
+    // if (!bottomSensor_ && (!bTimeout_ || currHandlingState_ == kIntaking)){
 
-        // UTAH FIX DO NOT DELETE
-        // if(((int)currTime_)%4 == 0){
-        //     robot_->SetIndexFunnelOutput(-indexFunnelPower_); //TODO PUT BACK IN
-        // } else {
-        //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
-        // }
-        //printf("updating here with btimeout at %d and bsensor at %d\n", bTimeout_, bottomSensor_);
-        robot_->SetIndexFunnelOutput(indexFunnelPower_);
-        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    //     // UTAH FIX DO NOT DELETE
+    //     // if(((int)currTime_)%4 == 0){
+    //     //     robot_->SetIndexFunnelOutput(-indexFunnelPower_); //TODO PUT BACK IN
+    //     // } else {
+    //     //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    //     // }
+    //     //printf("updating here with btimeout at %d and bsensor at %d\n", bTimeout_, bottomSensor_);
+    //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    //     robot_->SetElevatorFeederOutput(elevatorFeederPower_);
         
-    } else {
-        robot_->SetIndexFunnelOutput(0.0);
-        robot_->SetElevatorFeederOutput(0.0);
-    }
+    // } else {
+    //     robot_->SetIndexFunnelOutput(0.0);
+    //     robot_->SetElevatorFeederOutput(0.0);
+    // }
 
     // Original logic (old funnel) DO NOT DELETE (utah fix)
     // //control top
@@ -612,6 +696,7 @@ void SuperstructureController::IndexUpdate(){
     //     robot_->SetIndexFunnelOutput(0.0);
     //     robot_->SetElevatorFeederOutput(0.0);       
     // }
+
 
 }
 
@@ -840,6 +925,7 @@ void SuperstructureController::RefreshShuffleboard(){
     
     elevatorBottomLightSensorEntry_.SetBoolean(robot_->GetElevatorFeederLightSensorStatus());
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
+    funnelLightSensorEntry_.SetBoolean(robot_->GetFunnelLightSensorStatus());
     targetSpeedEntry_.SetBoolean(atTargetSpeed_);
 
 #ifdef SHUFFLEBOARDCONTROLS
@@ -875,6 +961,7 @@ SuperstructureController::~SuperstructureController() {
 
     elevatorBottomLightSensorEntry_.Delete();
     elevatorTopLightSensorEntry_.Delete();
+    funnelLightSensorEntry_.Delete();
 
     autoWristEntry_.Delete();
     autoWristUpPEntry_.Delete();

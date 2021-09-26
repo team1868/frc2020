@@ -164,6 +164,7 @@ RobotModel::RobotModel() :
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
+	funnelLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
 #ifdef PRACTICE_BOT
 	//printf("WORKINGINSIDNFLKSDFJLKSF\n");
 	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID); // practice bot
