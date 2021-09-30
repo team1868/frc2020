@@ -92,6 +92,7 @@ class SuperstructureController {
 
   double currTime_, lastTime_;
   double startResetTime_, resetTimeout_;
+  double startResetElevatorTime_;
 
   double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
@@ -106,7 +107,7 @@ class SuperstructureController {
   double lowerElevatorTimeout_, elevatorTimeout_;
   double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, indexFunnelPower_;
   double startIndexTime_, startElevatorTime_;
-  bool bottomSensor_, topSensor_, bTimeout_, tTimeout_;
+  bool bottomSensor_, topSensor_, funnelSensor_, bTimeout_, tTimeout_, resetElevatorTimeout_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
 
@@ -132,17 +133,21 @@ class SuperstructureController {
   bool isManualRaisingWrist_;
   double startRatchetTime_;
 
+  // indexing logic
+  bool isIndexing_;
+
   double flywheelRPMconst_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
+  //#define SUPERSTRUCTURECONTROLS
   #ifdef SUPERSTRUCTURECONTROLS
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_, flywheelMotor1OutputEntry_, flywheelMotor2OutputEntry_;
   nt::NetworkTableEntry flywheelMotor1CurrentEntry_, flywheelMotor2CurrentEntry_;
   #endif
 
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
-  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_;
+  nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, funnelLightSensorEntry_;
 
   nt::NetworkTableEntry intakeWristAngleEntry_;
   nt::NetworkTableEntry autoWristEntry_, autoWristDownPEntry_, autoWristUpPEntry_;

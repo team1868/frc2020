@@ -164,6 +164,7 @@ RobotModel::RobotModel() :
 
     elevatorFeederLightSensor_ = new frc::DigitalInput(BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT);
 	elevatorLightSensor_ = new frc::DigitalInput(TOP_ELEVATOR_LIGHT_SENSOR_PORT);
+	funnelLightSensor_ = new frc::DigitalInput(FUNNEL_LIGHT_SENSOR_PORT);
 #ifdef PRACTICE_BOT
 	//printf("WORKINGINSIDNFLKSDFJLKSF\n");
 	indexFunnelMotor_ = new WPI_TalonSRX(INDEX_FUNNEL_MOTOR_ID); // practice bot
@@ -918,10 +919,10 @@ void RobotModel::RefreshShuffleboard(){
 
 	/* set closed loop gains in slot0 */
 
-	// flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
-	// flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
-	// flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
-	// flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
+	//flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
+	//flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
+	//flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
+	//flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
 	
 	lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;

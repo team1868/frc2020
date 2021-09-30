@@ -28,7 +28,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
     arcadeEntry_ = driveLayout_.Add("Arcade Mode", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
     thrustSensitivityEntry_ = driveLayout_.Add("Thrust Sensitivity", 0.5).GetEntry();
     rotateSensitivityEntry_ = driveLayout_.Add("Rotate Sensitivity", 0.7).GetEntry();
-    anaModeEntry_ = driveLayout_.Add("Ana Mode", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
+    anaModeEntry_ = driveLayout_.Add("Ana Mode", true).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
     autoShiftEntry_ = robot_->GetFunctionalityTab().Add("auto shift", false).WithWidget(frc::BuiltInWidgets::kToggleSwitch).GetEntry();
     highGearEntry_ = robot_->GetFunctionalityTab().Add("high gear", robot_->IsHighGear()).GetEntry();
     

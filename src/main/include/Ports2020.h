@@ -111,6 +111,7 @@ static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 1;
 #else 
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 3;//0;
 static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 2;//1;
+static const int FUNNEL_LIGHT_SENSOR_PORT                = 4;
 #endif
 static const int LEFT_CLIMB_LIMIT_SWITCH_PORT            = 4;
 static const int RIGHT_CLIMB_LIMIT_SWITCH_PORT           = 5;

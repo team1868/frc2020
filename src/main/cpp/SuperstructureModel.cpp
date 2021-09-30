@@ -209,4 +209,7 @@ bool RobotModel::GetElevatorFeederLightSensorStatus() {
 bool RobotModel::GetElevatorLightSensorStatus() {
     return !elevatorLightSensor_->Get();
 }
+bool RobotModel::GetFunnelLightSensorStatus(){
+    return !funnelLightSensor_->Get();
+}
 #endif
