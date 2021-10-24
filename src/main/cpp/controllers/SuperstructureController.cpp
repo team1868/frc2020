@@ -120,6 +120,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     isBallIncoming_ = false;  
 
     // shuffleboard
+//#define SUPERSTRUCTURECONTROLS
 #ifdef SUPERSTRUCTURECONTROLS
     flywheelVelocityEntry_ = flywheelPIDLayout_.Add("flywheel velocity", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
     flywheelVelocityErrorEntry_ = flywheelPIDLayout_.Add("flywheel error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
@@ -210,7 +211,7 @@ void SuperstructureController::Reset() { // might not need this
     flywheelPFac_ = flywheelPEntry_.GetDouble(0.35);
     flywheelIFac_ = flywheelIEntry_.GetDouble(0.0);
     flywheelDFac_ = flywheelDEntry_.GetDouble(0.1);
-    //flywheelFFac_ = flywheelFEntry_.GetDouble(0.0);
+    flywheelFFac_ = flywheelFEntry_.GetDouble(0.0);
     FlywheelPIDControllerUpdate();
 
     
@@ -423,7 +424,7 @@ void SuperstructureController::UpdateButtons(){
     } else if (humanControl_->GetDesired(ControlBoard::Buttons::kShootingButton)){ // shooting, TODO remove this, doesn't do anything????
         if (nextHandlingState_!=kShooting){ // get start time
            startIndexTime_ = currTime_;
-           printf("HEREOISHDNFLKSDHFSIOPEHKFLND ------\n");
+           //printf("HEREOISHDNFLKSDHFSIOPEHKFLND ------\n");
         }
         //printf("REACHED THIS PART OF CODE\n");
         nextHandlingState_ = kShooting; 
@@ -1046,8 +1047,10 @@ bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
     //5100->60 tolerance
     //2200->25
     double tolerance = rpm*0.02;//35.0/2900.0*rpm; //tolerance at 1%
-    if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm-tolerance && 
-        robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+tolerance){
+
+    if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm-tolerance 
+        // && robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+tolerance //easier to get to flywheel speed, used in Utah code
+        ){
         numTimeAtSpeed_++;
         if (numTimeAtSpeed_ >= 5){
             atTargetSpeed_ = true;
@@ -1055,6 +1058,7 @@ bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
         } else {
             //numTimeAtSpeed_ = 0;
             atTargetSpeed_ = false;
+            printf("at target speed, but hasn't been 5 seconds\n");
         }
         //atTargetSpeed_ = true;
     } else {
@@ -1196,8 +1200,7 @@ void SuperstructureController::RefreshShuffleboard(){
     motorCurrentLimit_ = currentLimitEntry_.GetDouble(25.0);
 
 
-
-
+//#define SHUFFLEBOARDCONTROLS
 #ifdef SHUFFLEBOARDCONTROLS
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
     flywheelVelocityErrorEntry_.SetDouble(desiredFlywheelVelocity_-robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM);
