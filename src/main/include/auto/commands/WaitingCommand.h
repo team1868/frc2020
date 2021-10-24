@@ -12,9 +12,12 @@
 
 class WaitingCommand : public AutoCommand {
 public:
-	/**
-	 * Assigns the waitTimeSec and creates the timer
-	 */
+	
+	/** 
+	 * Constructor, assigns the waitTimeSec and creates the timer
+   	 * @param robot a RobotModel
+   	 * @param myWaitTimeSec a double
+  	 */
 	WaitingCommand(RobotModel *robot, double myWaitTimeSec);
 
 	/**
@@ -22,23 +25,26 @@ public:
 	 */
 	void Init();
 
-	/**
+	/** 
 	 * Checks if the timer meets the waitTimeSec. If so, isDone is set to true.
-	 */
+   	 * @param currTimeSec a double
+   	 * @param deltaTimeSec a double
+   	 */
 	void Update(double currTimeSec, double deltaTimeSec);
 
-	/**
-	 * @return isDone
-	 */
+	/** 
+	 * returns isDone_
+ 	 * @returns isDone_
+ 	 */
 	bool IsDone();
 
 	/**
-	 * resets isDone_ to true
-	 */
+ 	 * resets isDone_ to true
+ 	 */ 
 	void Reset();
 
 	/**
-	 * Destructor
+	 * destructor
 	 */
 	virtual ~WaitingCommand();
 private:

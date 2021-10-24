@@ -15,7 +15,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     sensorsLayout_(robot->GetSuperstructureTab().GetLayout("Sensors", "List Layout").WithPosition(0, 1)),
 
     manualOverrideLayout_(robot->GetModeTab().GetLayout("climb override", "List Layout").WithPosition(1,1)),
-    powerLayout_(robot->GetSuperstructureTab().GetLayout("power control", "List Layout").WithPosition(3, 0))
+    powerLayout_(robot->GetSuperstructureTab().GetLayout("power control", "List Layout").WithPosition(3, 0)),
+    currentLayout_(robot->GetSuperstructureTab().GetLayout("motor current", "List Layout").WithPosition(4, 0)),
+    timeoutsLayout_(robot->GetSuperstructureTab().GetLayout("jammed timeouts control", "List Layout").WithPosition(5,0))
     {
     
     robot_ = robot;
@@ -39,12 +41,32 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     numTimeAtSpeed_ = 0;
 
     // indexing and intaking
-    elevatorFeederPower_ = 1.0; // fix
-    elevatorSlowPower_ = 0.4; //fix
-    elevatorFastPower_ = 0.4;//0.75; //fix
-    indexFunnelPower_ = 0.4; // fix
-    intakeRollersPower_ = 1.0;//0.5;
-    manualRollerPower_ = 0.5;
+
+    elevatorFeederPower_ = 0.45; // 0.65; // Calgames: 1.0
+    elevatorSlowPower_ = 0.5; // Calgames: 0.4
+    elevatorFastPower_ = 0.5; //0.75; //fix Calgames: 0.4
+    indexFunnelSlowPower_ = 0.55;
+    indexFunnelPower_ = 0.55; // Calgames: 0.4
+    intakeRollersPower_ = 1.0; // Calgames: 1.0
+    manualRollerPower_ = 0.5; // Calgames: 0.5
+
+    // new values for CalGames updated indexing TESTED AND WORKS (Get chicken nuggets let's goooo)
+    // elevatorFeederPower_ = 0.45;
+    // elevatorSlowPower_ = 0.4;
+    // elevatorFastPower_ = 0.5; 
+    // indexFunnelSlowPower_ = 0.55;
+    // indexFunnelPower_ = 0.55;
+    // intakeRollersPower_ = 1.0; // Calgames: 1.0
+    // manualRollerPower_ = 0.5; // Calgames: 0.5
+
+    // values for 5-ball indexing logic
+    // elevatorFeederPower_ = 0.65;
+    // elevatorSlowPower_ = 0.4;
+    // elevatorFastPower_ = 0.75;
+    // indexFunnelSlowPower_ = 0.55;
+    // indexFunnelPower_ = 0.55;
+    // intakeRollersPower_ = 1.0;
+    // manualRollerPower_ = 0.5;
 
     autoWristDownP_ = 0.07;
     autoWristUpP_ = 0.1;
@@ -64,10 +86,14 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     nextWristState_ = kRaising;
     currHandlingState_ = kIndexing;
     nextHandlingState_ = kIndexing;
+    currIndexLogicState_ = kIdle;
+    nextIndexLogicState_ = kIdle;
+    
     
     // time and timeouts
     currTime_ = robot_->GetTime();
     startResetTime_ = currTime_;
+    startIndexingTime_ = currTime_;
     startElevatorTime_ = currTime_;
     shootPrepStartTime_ = currTime_;
     //printf("WARNING TIMEOUTS START TRUE (possible error?)\n");
@@ -80,11 +106,18 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     startResetElevatorTime_ = currTime_;
     elevatorTimeout_ = 2.0;
     startIndexTime_ = currTime_-lowerElevatorTimeout_-1.0;
+    startReIndexTime_ = currTime_;
     startResetTime_ = currTime_-elevatorTimeout_-1.0;
     startRatchetTime_ = -1.0; // TODO check
+    jammedStartTimeout_ = currTime_;
+    jammedTimeout_ = 0.6;
+
+    currJammed_ = false;
+
+    motorCurrentLimit_ = 25.0;
 
     // indexing logic
-    isIndexing_ = false;  
+    isBallIncoming_ = false;  
 
     // shuffleboard
 #ifdef SUPERSTRUCTURECONTROLS
@@ -134,6 +167,15 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     flywheelRPMconstEntry_ = robot_->GetDriverTab().Add("Flywheel rpm C", 0.0).GetEntry();
 
+    // funnel and feeder 
+    funnelRightMotorEntry_ = currentLayout_.Add("Funnel Right Motor", 0.0).GetEntry();
+    funnelLeftMotorEntry_ = currentLayout_.Add("Funnel Left Motor", 0.0).GetEntry();
+    feederMotorEntry_ = currentLayout_.Add("Feeder Motor", 0.0).GetEntry();
+
+
+    jammedTimeoutEntry_ = timeoutsLayout_.Add("Jammed Timeout", jammedTimeout_).GetEntry();
+    currentLimitEntry_ = timeoutsLayout_.Add("Motor Current Limit", motorCurrentLimit_).GetEntry();
+    
     printf("end of superstructure controller constructor\n");
 
 }
@@ -143,6 +185,13 @@ void SuperstructureController::AutoInit(){
     shootingIsDone_ = false;
     currHandlingState_ = kIndexing; // TODO AHHHH might break. Possible error
     nextHandlingState_ = kIndexing;
+    startReIndexTime_ = currTime_;
+    startIndexingTime_ = currTime_;
+}
+
+void SuperstructureController::TeleopInit(){
+    startReIndexTime_ = currTime_;
+    startIndexingTime_ = currTime_;
 }
 
 //teleop and auto init
@@ -219,6 +268,13 @@ void SuperstructureController::WristUpdate(bool isAuto){
         intakeRollersOutput = 1.0;
     } 
 
+    // if (robot_->GetFeederMotorStatus() > 25.0 || 
+    //     robot_->GetLeftFunnelMotorStatus() > 25.0 || 
+    //     robot_->GetRightFunnelMotorStatus() > 25.0){
+    //         intakeRollersOutput = -1.0;
+    // }
+    
+
     // Utah fix DO NOT DELETE
     // if(!isAuto){
     //     if(((int)(currTime_*5.0))%6 == 0){
@@ -226,6 +282,7 @@ void SuperstructureController::WristUpdate(bool isAuto){
     //     }
     //     intakeRollersOutput *= 0.5;
     // }
+    
 
     //printf("intake roller output! %f\n", intakeRollersOutput);
     robot_->SetIntakeWristOutput(intakeWristOutput);
@@ -280,6 +337,7 @@ void SuperstructureController::Update(bool isAuto){
                     Indexing();
                     break;
                 case kShooting:
+                    printf("IN KSHOOTING");
                     shootingIsDone_ = Shooting(isAuto_);
                     break;
                 case kResetting:
@@ -348,6 +406,7 @@ void SuperstructureController::Update(bool isAuto){
             robot_->SetControlModeVelocity(0.0);
             robot_->SetIndexFunnelOutput(0.0);
             robot_->SetElevatorFeederOutput(0.0);
+            printf("HERE: 7");
             currWristState_ = kRaising;
             nextWristState_ = kRaising;
 
@@ -470,7 +529,7 @@ void SuperstructureController::IndexPrep(bool isAuto){
     //printf("ERROR: WILL NOT INDEX IN AUTO MODE BECAUSE OF THIS CODE\n");
     if (bottomSensor_ && !isAuto){
         startIndexTime_ = currTime_;
-        printf("seeing something\n");
+        // printf("seeing something\n");
     }
 
     if (isAuto){
@@ -496,23 +555,38 @@ bool SuperstructureController::Shooting(bool isAuto) {
 
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
 
+    printf("TRYING TO SHOOT, INDEXING UP :FLKJSDFLJK");
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
-    if (IsFlywheelAtSpeed(desiredFlywheelVelocity_) || (!topSensor_ && !bTimeout_)){
+    if (IsFlywheelAtSpeed(desiredFlywheelVelocity_) || (!topSensor_ )){ //&& !bTimeout_)){ 
+        // nothing at the top OR at desired speed, move elevator up
         robot_->SetElevatorOutput(elevatorSlowPower_);
+
+        // also move funnel and feeder if either the bottom  or funnel sensors see something
+        if (bottomSensor_ || funnelSensor_){
+            robot_->SetIndexFunnelOutput(indexFunnelPower_);
+            robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+        } else{
+            robot_->SetIndexFunnelOutput(0.0);
+            robot_->SetElevatorFeederOutput(0.0);
+        }
     } else {                                                                                          
         robot_->SetElevatorOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
+        printf("HERE: 1");
+        robot_->SetIndexFunnelOutput(0.0);
     }
 
-    if (!bottomSensor_ && !bTimeout_){
-        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-    } else {
-        robot_->SetIndexFunnelOutput(0.0);
-        robot_->SetElevatorFeederOutput(0.0);
-    }
+    // if (bottomSensor_){ // && !bTimeout_){
+    //     robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    // } else {
+    //     robot_->SetIndexFunnelOutput(0.0);
+    //     robot_->SetElevatorFeederOutput(0.0);
+    // }
 
     nextWristState_ = kRaising;
 
-    if (tTimeout_ && bTimeout_){
+    if (tTimeout_){ // && bTimeout_){
         robot_->SetControlModeVelocity(0.0);
         nextHandlingState_ = kIndexing;
         return true;
@@ -538,6 +612,7 @@ void SuperstructureController::Resetting() {
 
     robot_->SetIndexFunnelOutput(0.0);
     robot_->SetElevatorFeederOutput(0.0);
+    printf("HERE: 2");
     nextWristState_ = kRaising;
 }
 
@@ -547,7 +622,9 @@ void SuperstructureController::UndoElevator(){
     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
 
     // non utah fix
-    robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+    // robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+    robot_->SetIndexFunnelOutput(-indexFunnelSlowPower_);
+
 
     // Utah fixes DO NOT DELETE!
     // if(((int)currTime_)%4 == 0){
@@ -569,54 +646,241 @@ void SuperstructureController::ManualFunnelFeederElevator(){
 // indexing
 void SuperstructureController::IndexUpdate(){
 
-    // new CODDE :LAKDJSFLJKSDF
-
-    
-
-    // New code for CalGames
-    // regular elevator indexing
-    if (!topSensor_ && bottomSensor_){
-        robot_->SetElevatorOutput(elevatorFastPower_);
-    } else {
-        robot_->SetElevatorOutput(0.0);
-    }
-
-    // run feeder if nothing at the bottom and not timed
-    // if (!bottomSensor_){
-    //    robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-    // } else {
-    //    robot_->SetElevatorFeederOutput(0.0);
-    // }
-
-    // run funnel if intaking (TODO: need timeout? bTimeout_...)
-    if (currHandlingState_ == kIntaking){
-        robot_->SetIndexFunnelOutput(indexFunnelPower_);
-        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-    } else if (!bottomSensor_ && !bTimeout_) {
-        robot_->SetIndexFunnelOutput(indexFunnelPower_);
-        robot_->SetElevatorFeederOutput(elevatorFeederPower_);
-    } else {
-        robot_->SetIndexFunnelOutput(0.0);
-        robot_->SetElevatorFeederOutput(0.0);
-    }
-
-    // New code with funnelSensor_
+    // new code with new funnel sensor
     // indexing: if !topSensor_ && (isIndexing_ || funnelSensor_)
     // nothing is at the top (can run elevator), is currently indexing OR something needs to be put in the elevator
-    // if (!topSensor_ && (isIndexing_ || funnelSensor_)){ // UPWARDS
-    //     isIndexing_ = true;
-    //     if (!topSensor_) {
-    //         robot_->SetIndexFunnelOutput(0.0);
-    //         robot_->SetElevatorFeederOutput(0.0);
-    //         robot_->SetElevatorOutput(0.0);
-    //     } else {
-    //         isIndexing_ = false;
-    //         robot_->SetIndexFunnelOutput(0.0);
-    //         robot_->SetElevatorFeederOutput(0.0);
-    //         robot_->SetElevatorOutput(0.0);
-    //     }
-    // } else if (!bottomSensor_){ // something at the top, nothing at the bottom sensor, so can reindex DOWNWARDS
+    // funnelSensor_
+    // isBallIncoming_
 
+    // code this is working
+    // if (bottomSensor_){
+    //     printf("ON\n");
+    // } else {
+    //     printf("NOOOOOOOOOO\n");
+    // }
+
+    if (funnelSensor_){
+        isBallIncoming_ = true;
+    }
+
+    // If over 25 V, go backwards
+    
+    if ((!currJammed_ || currTime_ - jammedStartTimeout_ <= jammedTimeout_) && 
+        (robot_->GetFeederMotorStatus() >= motorCurrentLimit_||
+        robot_->GetLeftFunnelMotorStatus() >= motorCurrentLimit_ || 
+        robot_->GetRightFunnelMotorStatus() >= motorCurrentLimit_)){
+        
+        if (!currJammed_){
+            jammedStartTimeout_ = currTime_;
+            currJammed_ = true;
+        }
+        
+        robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
+        robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+        return;
+
+    } 
+    // else if ((!currJammed_ || currTime_ - jammedStartTimeout_ <= jammedTimeout_) && 
+    //             (robot_->GetLeftFunnelMotorStatus() >= motorCurrentLimit_
+    //             || robot_->GetRightFunnelMotorStatus() >= motorCurrentLimit_)){
+    //     if (!currJammed_){
+    //         jammedStartTimeout_ = currTime_;
+    //         currJammed_ = true;
+    //     }
+    //     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+    //     return;
+
+    // } 
+    else {
+        currJammed_ = false;
+    }
+
+
+
+    // --- figure out the state ---
+    
+    if(currIndexLogicState_ == kReady || currIndexLogicState_ == kIdle || currIndexLogicState_ == kFull){
+        // printf("CHECKING");
+        if (topSensor_ && !bottomSensor_){
+            // something at top and nothing at bottom, we want to move downwards: start re-indexing
+            currIndexLogicState_ = kReIndexing;
+            startReIndexTime_ = currTime_; // start reIndex timing (to check timeout)
+        } else if (!topSensor_ && bottomSensor_){ 
+            // nothing at the top, something at the bottom, ready to index upwards
+            currIndexLogicState_ = kReady;
+        } else if (topSensor_ && bottomSensor_){ 
+            // something at the top, something at the bottom, don't move!
+            currIndexLogicState_ = kFull;
+        } 
+        // else if (!isBallIncoming_) { // TODO: don't know if this is needed
+            // currIndexLogicState_ = kIdle;
+        // } 
+        else if (!topSensor_ && !bottomSensor_){
+            currIndexLogicState_ = kIdle;
+        }
+        else {
+            nextIndexLogicState_ = kIdle;
+        }
+    }
+    
+    // if (funnelSensor_){
+    //     printf("SEES BALL DS:LFKJSD:LFKJSsD:LKFJDS:LKF\n");
+    // }
+
+    // funnel
+
+    if (currIndexLogicState_ == kReIndexing && funnelSensor_) {
+        // don't move if reIndexing and something is at the funnel
+        robot_->SetIndexFunnelOutput(0.0);
+    } else if (currIndexLogicState_ == kFull && funnelSensor_) {
+        // don't run if full elevator and the ball has been moved to the funnel sensor
+        robot_->SetIndexFunnelOutput(0.0);
+    } else if (currIndexLogicState_ == kIndexingUp){
+        // if indexing upwards, run funnel
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    } else if ((currIndexLogicState_ == kReady || currIndexLogicState_ == kIdle) 
+                && funnelSensor_){ 
+        // if something is in the funnel and elevator is prepped to index up
+        // run index and start indexing proocess
+        // printf("FUNNEL SENSOR STARTING TO GO UP\n");
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        // move on to kIndexingUp state
+        currIndexLogicState_ = kIndexingUp;
+        startIndexingTime_ = currTime_;
+    } else if (currHandlingState_ == kIntaking){
+        // otherwise, as long as the button is pressed (so kFull, kReady, kReIndexing && !funnelSensor_, kReady && !funnelSensor_)
+        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    } else {
+        // stop.
+        robot_->SetIndexFunnelOutput(0.0);
+    }
+
+    // start with kReIndex
+    // std::cout << "Logic state: " << currIndexLogicState_ << std::endl;
+    // std::cout << "Is ball coming:  " << isBallIncoming_ << std::endl;
+
+    // -----------------
+    
+    // kFull, don't move elevator
+    if (currIndexLogicState_ == kFull || currIndexLogicState_ == kReady || currIndexLogicState_ == kIdle){
+        robot_->SetElevatorOutput(0.0);
+        robot_->SetElevatorFeederOutput(0.0);
+        printf("HERE: 3");
+        if (currIndexLogicState_ == kFull) {
+            nextIndexLogicState_ = kFull;
+        } else if (currIndexLogicState_ == kReady) {
+            nextIndexLogicState_ = kReady;
+        } else {
+            nextIndexLogicState_ = kIdle;
+        }
+    }
+
+    // kReIndexing
+    if (currIndexLogicState_ == kReIndexing){
+        if (bottomSensor_ || currTime_-startReIndexTime_ > 3.0){
+            // if bottom or timout, STOP!
+            robot_->SetElevatorOutput(0.0);
+            robot_->SetElevatorFeederOutput(0.0);
+            printf("HERE: 4");
+            nextIndexLogicState_ = kReady;
+        } else {
+            // otherwise, move downwards
+            robot_->SetElevatorOutput(-elevatorFastPower_);
+            // robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
+            robot_->SetElevatorFeederOutput(0.0);
+            printf("HERE: 5");
+            nextIndexLogicState_ = kReIndexing;
+        }
+    }
+
+    // kIndexingUp
+    if (currIndexLogicState_ == kIndexingUp){
+        // if (!topSensor_ && currTime_-startIndexingTime_ < 2.0){
+        if (!topSensor_ && (currTime_-startIndexingTime_ < 0.45 || bottomSensor_)){
+            // as long as !top, not timeout, and something is at the bottom, move up!
+            printf("GOES UP!!!!!!\n");
+            robot_->SetElevatorOutput(elevatorSlowPower_);
+            robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+            nextIndexLogicState_ = kIndexingUp;
+        } else {
+            // something at the top, stop everything
+            robot_->SetElevatorOutput(0.0);
+            robot_->SetElevatorFeederOutput(0.0);
+            printf("HERE: 6");
+            // isBallIncoming_ = false;
+            // nextIndexLogicState_ = kIdle; // this works
+            nextIndexLogicState_ = kReIndexing; // TODO: test this (if this doesn't work... rip)
+        }
+    }
+
+    currIndexLogicState_ = nextIndexLogicState_;
+
+    // end of WORKING ON THIS a;dfjalkdfads;fj
+
+
+
+    // if nothing at top and nothing at bottom, then we're in an in between state. either reIndexing or indexing
+
+    // checking if handling a ball
+    // if (!isBallIncoming_){ // only if not previously handling a ball can we start handling a new one
+    //     isBallIncoming_ = funnelSensor_;
+    // }
+
+    // bool ready = (currIndexLogicState_ == kReady); // nothing at top, something at bottom, ready to index upwards
+
+    // funnel logic
+    // if not ready to index upwards and something in the funnel
+    // if (currIndexLogicState_ == kReIndexing && funnelSensor_){
+    //     // stop funnel because we need to reIndex
+    //     robot_->SetIndexFunnelOutput(0.0);
+    // } else if (currIndexLogicState_ == kReady && funnelSensor_){ // everything is prepped for indexing upwards
+    //     isBallIncoming_ = true;
+    //     // ready to index upwards and something in the funnel
+    //     currIndexLogicState_ = kIndexingUp;
+    //     // we want to be in an indexing up state
+    // } else if (!funnelSensor_ && currHandlingState_ == kIntaking) { 
+    //     // if nothing at the funnel and in intaking state, keep on running the funnel
+    //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    // } else {
+    //     // otherwise, stop
+    //     robot_->SetIndexFunnelOutput(0.0);
+    // }
+
+    
+    // else if (!bottomSensor_ && !bTimeout_) {
+    //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    // } 
+
+    // if (currIndexLogicState_ == kReady && isBallIncoming_){
+    //     // if ready (indexed down) and a ball is waiting
+    //     isBallIncoming_ = false;
+    //     currIndexLogicState_ = kIndexingUp;
+    //     // we want to be in an indexing up state
+    // }
+
+    
+    
+
+    // CalGames code: WORKING CODE! 3 ball elevator, 4 ball robot!
+    // regular elevator indexing
+    // if (!topSensor_ && bottomSensor_){
+    //     robot_->SetElevatorOutput(elevatorFastPower_);
+    // } else {
+    //     robot_->SetElevatorOutput(0.0);
+    // }
+
+    // // run funnel if intaking (TODO: need timeout? bTimeout_...)
+    // // basically, as long as the intaking button is pressed, the funnel will move
+    // if (currHandlingState_ == kIntaking){
+    //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    //     robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    // } else if (!bottomSensor_ && !bTimeout_) {
+    //     robot_->SetIndexFunnelOutput(indexFunnelPower_);
+    //     robot_->SetElevatorFeederOutput(elevatorFeederPower_);
+    // } else {
+    //     robot_->SetIndexFunnelOutput(0.0);
+    //     robot_->SetElevatorFeederOutput(0.0);
+    // }
 
 
     // } else {
@@ -843,14 +1107,11 @@ void SuperstructureController::ControlPanelStage2(double power){
         robot_->SetControlPanelOutput(0.0);
     }
 }
-
 void SuperstructureController::ControlPanelStage3(double power) {
     // blue: cyan 100 (255, 0, 255)
     // green: cyan 100 yellow 100 (0, 255, 0)
     // red: magenta 100 yellow 100 (255, 0 , 0)
     // yellow: yellow 100 (255, 255, 0)
-
-
     if(robot_->GetControlPanelGameData().length() > 0)
     {
         switch(robot_->GetControlPanelGameData()[0])
@@ -897,7 +1158,6 @@ void SuperstructureController::ControlPanelStage3(double power) {
     }
     nextSuperState_ = kDefaultTeleop;
 }
-
 void SuperstructureController::ControlPanelFinalSpin() {
     if(robot_->GetTime()-initialControlPanelTime_ < 2.0) { // fix time and change to if
         robot_->SetControlPanelOutput(0.3); // fix power
@@ -927,6 +1187,16 @@ void SuperstructureController::RefreshShuffleboard(){
     elevatorTopLightSensorEntry_.SetBoolean(robot_->GetElevatorLightSensorStatus());
     funnelLightSensorEntry_.SetBoolean(robot_->GetFunnelLightSensorStatus());
     targetSpeedEntry_.SetBoolean(atTargetSpeed_);
+
+    funnelLeftMotorEntry_.SetDouble(robot_->GetLeftFunnelMotorStatus());
+    funnelRightMotorEntry_.SetDouble(robot_->GetRightFunnelMotorStatus());
+    feederMotorEntry_.SetDouble(robot_->GetFeederMotorStatus());
+
+    jammedTimeout_ = jammedTimeoutEntry_.GetDouble(0.6);
+    motorCurrentLimit_ = currentLimitEntry_.GetDouble(25.0);
+
+
+
 
 #ifdef SHUFFLEBOARDCONTROLS
     flywheelVelocityEntry_.SetDouble(robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM); //rpm
@@ -978,4 +1248,11 @@ SuperstructureController::~SuperstructureController() {
     rollerManualEntry_.Delete();
     closeFlywheelEntry_.Delete();
     targetSpeedEntry_.Delete();
+
+    funnelRightMotorEntry_.Delete();
+    funnelLeftMotorEntry_.Delete();
+    feederMotorEntry_.Delete();
+
+    jammedTimeoutEntry_.Delete();
+    currentLimitEntry_.Delete();
 }

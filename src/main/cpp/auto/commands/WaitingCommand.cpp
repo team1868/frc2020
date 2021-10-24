@@ -7,25 +7,33 @@
 
 #include "auto/commands/WaitingCommand.h"
 
-/**
+/** 
  * Assigns the waitTimeSec and creates the timer
- */
+ * @param robot a RobotModel
+ * @param myWaitTimeSec a double
+*/
 WaitingCommand::WaitingCommand(RobotModel *robot, double myWaitTimeSec) : AutoCommand() {
+	// initialize variables
 	waitTimeSec_ = myWaitTimeSec;
 	robot_ = robot;
 	startTime_ = -1.0;
 	isDone_ = false;
 }
 
-// starts timer
+/**
+ * Starts timer
+*/
 void WaitingCommand::Init() {
 	startTime_ = robot_->GetTime();
 }
 
-/**
+/** 
  * Checks if the timer meets the waitTimeSec. If so, isDone is set to true.
- */
+ * @param currTimeSec a double
+ * @param deltaTimeSec a double
+*/
 void WaitingCommand::Update(double currTimeSec, double deltaTimeSec) {
+	// stay in auto command as long as not timed out
 	if(startTime_ > 0.0){
 		isDone_ = currTimeSec - startTime_ >= waitTimeSec_;
 		if(isDone_) {
@@ -38,17 +46,22 @@ void WaitingCommand::Update(double currTimeSec, double deltaTimeSec) {
 }
 
 /**
- * @return isDone
+ * returns isDone_
+ * @returns isDone_
  */
 bool WaitingCommand::IsDone() {
 	return isDone_;
 }
 
-// resets isDone_ to true
+/**
+ * resets isDone_ to true
+ */ 
 void WaitingCommand::Reset() {
 	isDone_ = true;
 }
 
-// destructor
+/**
+ * destructor
+ */ 
 WaitingCommand::~WaitingCommand() {
 }

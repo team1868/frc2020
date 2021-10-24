@@ -31,12 +31,17 @@ class SuperstructureController {
     kIntaking, kIndexing, kShooting, kResetting, kUndoElevator, kManualFunnelFeederElevator
   };
 
-   enum WristState {
+  enum WristState {
     kRaising, kLowering
   }; 
 
+  enum IndexLogicState {
+    kReIndexing, kReady, kFull, kIndexingUp, kIdle
+  };
+
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
   void AutoInit();
+  void TeleopInit();
   void Update(bool isAuto);
   void UpdatePrep(bool isAuto);
   void RefreshShuffleboard();
@@ -89,6 +94,7 @@ class SuperstructureController {
   SuperstructureState currSuperState_, nextSuperState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
+  IndexLogicState currIndexLogicState_, nextIndexLogicState_;
 
   double currTime_, lastTime_;
   double startResetTime_, resetTimeout_;
@@ -105,9 +111,13 @@ class SuperstructureController {
   double intakeRollersPower_;
 
   double lowerElevatorTimeout_, elevatorTimeout_;
-  double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, indexFunnelPower_;
-  double startIndexTime_, startElevatorTime_;
-  bool bottomSensor_, topSensor_, funnelSensor_, bTimeout_, tTimeout_, resetElevatorTimeout_;
+  double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, indexFunnelPower_, indexFunnelSlowPower_;
+  double startIndexTime_, startElevatorTime_, startReIndexTime_, startIndexingTime_;
+  bool bottomSensor_, topSensor_, funnelSensor_, bTimeout_, tTimeout_, resetElevatorTimeout_, jammedStartTimeout_;
+
+  double jammedTimeout_;
+  bool currJammed_;
+  double motorCurrentLimit_;
 
   double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
 
@@ -134,11 +144,11 @@ class SuperstructureController {
   double startRatchetTime_;
 
   // indexing logic
-  bool isIndexing_;
+  bool isBallIncoming_;
 
   double flywheelRPMconst_;
   
-  frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_;
+  frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_, &currentLayout_, &timeoutsLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   #ifdef SUPERSTRUCTURECONTROLS
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_, flywheelMotor1OutputEntry_, flywheelMotor2OutputEntry_;
@@ -156,4 +166,8 @@ class SuperstructureController {
   nt::NetworkTableEntry controlPanelColorEntry_;
 
   nt::NetworkTableEntry flywheelRPMconstEntry_;
+
+  nt::NetworkTableEntry funnelLeftMotorEntry_, funnelRightMotorEntry_, feederMotorEntry_;
+
+  nt::NetworkTableEntry jammedTimeoutEntry_, currentLimitEntry_;
 };

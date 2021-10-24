@@ -313,6 +313,7 @@ void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
     }
 }
 
+
 bool RobotModel::CollisionDetected() {
 	bool collisionDetected = false;
 
@@ -457,6 +458,21 @@ double RobotModel::GetTotalEnergy() {
 
 double RobotModel::GetNavXYaw() {
 	return navX_->GetYaw();
+}
+
+// get index motor 
+double RobotModel::GetLeftFunnelMotorStatus(){
+    return pdp_->GetCurrent(LEFT_FUNNEL_MOTOR_PDP_CHANNEL);
+}
+
+// get index motor 
+double RobotModel::GetRightFunnelMotorStatus(){
+    return pdp_->GetCurrent(RIGHT_FUNNEL_MOTOR_PDP_CHANNEL);
+}
+
+// get index motor 
+double RobotModel::GetFeederMotorStatus(){
+    return pdp_->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHANNEL);
 }
 
 

@@ -28,21 +28,47 @@ class CurveCommand : public AutoCommand {
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft, bool goForward,
     NavXPIDSource* navXSource, TalonEncoderPIDSource *talonEncoderPIDSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
+
+  /** constuctor
+   * @param robot a RobotModel
+   * @param desiredRadius a double that refers to the desired radius
+   * @param desiredAngle a double that refers to the desired angle for the robot to turn
+   * @param turnLeft is true if the robot is supposed to turn left
+   * @param goForward is true if robot should go forward
+   * @param navXSource a NavXPIDSource
+   * @param talonEncoderPIDSource a TalonEncoderPIDSource
+   * @param anglePIDOuptut an AnglePIDOutput
+   * @param distancePIDOutput a DistancePIDOutput
+   */
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
     NavXPIDSource* navXSource, TalonEncoderPIDSource *talonEncoderPIDSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   
+  /**
+  * creates new PIDController
+  */
   void Init();
   
+  /**
+  * updates diffCurveTime_ and calls Reset() method if dPid_ is on target & numTimesOnTarget > 6
+  * @param currTImeSec a double
+  * @param deltaTimeSec a double
+  */
   void Update(double currTimeSec, double deltaTimeSec);
   
-  //returns isDone_
+  /**
+  * returns isDone_
+  */
   bool IsDone();
 
-  // disables distance PID if it's null & set's isDone_ to true
+  /**
+  * disables distance PID if it's null & set's isDone_ to true
+  */
   void Reset();
 
-  //destructor
+  /**
+  * destructor
+  */
   ~CurveCommand();
 
  private:

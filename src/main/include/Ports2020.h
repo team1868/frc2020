@@ -33,6 +33,16 @@ static const int INDEX_FUNNEL_MOTOR_B_ID                 = 11; //left side
 static const int ELEVATOR_FEEDER_MOTOR_ID                = 4; 
 static const int ELEVATOR_MOTOR_ID                       = 8;
 
+// PDP ports
+static const int ELEVATOR_FEEDER_MOTOR_PDP_CHANNEL      = 10;
+static const int LEFT_FUNNEL_MOTOR_PDP_CHANNEL          = 11;
+static const int RIGHT_FUNNEL_MOTOR_PDP_CHANNEL         = 5;
+
+// elevator feeder motor pdp channel: 10
+// left side motor indexer pdp channel: 11
+// Right side motor indexer pdp channel: 5
+
+
 
 
 // Pneumatics

@@ -187,6 +187,7 @@ void MainProgram::TeleopInit() {
     robot_->DisengageFlywheelHood();
     robot_->DisengageClimberRatchet();
     robot_->StartCompressor();
+    superstructureController_->TeleopInit();
     
     matchTime_ = frc::Timer::GetMatchTime();
     aligningTape_ = false;

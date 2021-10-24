@@ -7,7 +7,12 @@
 
 #include "auto/commands/AlignTapeCommand.h"
 
-// constructor, called when robot knows will align in some future
+/**
+ * Constructor, called when robot knows will align in some future
+ * @param robot a RobotModel
+ * @param navXSource a NavXPIDSource
+ * @param talonOutput a PivotPIDTalonOutput
+ */
 AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource, PivotPIDTalonOutput *talonOutput) : AutoCommand() {
 
     // initialize class variables
@@ -29,7 +34,11 @@ AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource,
     printf("done with constructor in AlignTapeCommand\n");
 }
 
-// constructor, called when robot knows will align in some future
+/**
+ * Constructor, called when robot knows will align in some future
+ * @param robot a RobotModel
+ * @param navXSource a NavXPIDSource
+ */
 AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource) : AutoCommand() {
 
     // initialize class variables
@@ -51,7 +60,9 @@ AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource)
     printf("done with constructor in AlignTapeCommand\n");
 }
 
-// initialize class variables, called when about to start aligning
+/**
+ * Initializes class variables, called when about to start aligning
+ */
 void AlignTapeCommand::Init(){
     printf("init in align tape command\n");
 
@@ -67,7 +78,12 @@ void AlignTapeCommand::Init(){
     robot_->SendZMQ(true);
 }
 
-// periodic update while executing command
+
+/**
+ * periodic update while executing command
+ * @param currTimeSec a double
+ * @param deltaTimeSec a double
+ */
 void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
 
     // tell jetson to lower exposure
@@ -124,12 +140,18 @@ void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
     }
 }
 
-// check if aligned to tape
+/**
+ * check if aligned to tape
+ * @return isDone_
+ */
 bool AlignTapeCommand::IsDone(){
     return isDone_;
 }
 
-// check for memory leaks and background pid
+
+/**
+ * check for memory leaks and background pid
+ */
 void AlignTapeCommand::Reset(){
     printf("done, resetting\n");
 
@@ -145,7 +167,9 @@ void AlignTapeCommand::Reset(){
     isDone_ = true;
 }
 
-// destructor, call reset just in case
+/**
+ * destructor, call reset just in case
+ */
 AlignTapeCommand::~AlignTapeCommand(){
     Reset();
 }
