@@ -21,12 +21,12 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
 	
-	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
-	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).GetEntry();
+	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).GetEntry();
 	desiredAngleEntry_ = driveStraightLayout_.Add("Desired Angle", 0.0).GetEntry();
 	desiredTotalFeetEntry_ = driveStraightLayout_.Add("Desired Total Feet", 0.0).GetEntry();
-	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
-	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).GetEntry();
+	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).GetEntry();
 	aPIDOutputEntry_ = driveStraightLayout_.Add("Angle PID Output", 0.0).GetEntry();
 	dPIDOutputEntry_ = driveStraightLayout_.Add("Distance PID Output", 0.0).GetEntry();
 	
@@ -47,12 +47,12 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	// initialize dependencies
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
 	
-	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
-	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	leftStraightEntry_ = driveStraightLayout_.Add("Left Output", 0.0).GetEntry();
+	rightStraightEntry_ = driveStraightLayout_.Add("Right Output", 0.0).GetEntry();
 	desiredAngleEntry_ = driveStraightLayout_.Add("Desired Angle", 0.0).GetEntry();
 	desiredTotalFeetEntry_ = driveStraightLayout_.Add("Desired Total Feet", 0.0).GetEntry();
-	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
-	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	angleErrorEntry_ = driveStraightLayout_.Add("Angle Error", 0.0).GetEntry();
+	encoderErrorEntry_ = driveStraightLayout_.Add("Encoder Error", 0.0).GetEntry();
 	aPIDOutputEntry_ = driveStraightLayout_.Add("Angle PID Output", 0.0).GetEntry();
 	dPIDOutputEntry_ = driveStraightLayout_.Add("Distance PID Output", 0.0).GetEntry();
 }

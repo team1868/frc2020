@@ -150,6 +150,10 @@ class RobotModel {
     double GetRIOCurrent();
     double GetVoltage();
 
+    double GetFeederMotorStatus();
+    double GetLeftFunnelMotorStatus();
+    double GetRightFunnelMotorStatus();
+
     void SetHighGear();
     void SetLowGear();
     void GearShift();

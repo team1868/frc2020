@@ -12,6 +12,7 @@ ShootingCommand::ShootingCommand(RobotModel * robot, double autoVelocity) : Auto
     robot_ = robot;
     isDone_ = false;
     startShootingTime_ = 0.0;
+
     autoVelocity_ = autoVelocity; // this is flywheel velocity
     setVelocity_ = true;
 }

@@ -15,7 +15,7 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	leftDriveEntry_ = pointLayout_.Add("Left Drive Output", 0.0).GetEntry();
 	rightDriveEntry_ = pointLayout_.Add("Right Drive Output", 0.0).GetEntry();
-	pointErrorEntry_ = pointLayout_.Add("Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	pointErrorEntry_ = pointLayout_.Add("Error", 0.0).GetEntry();
 
     navXSource_ = navXSource;
 

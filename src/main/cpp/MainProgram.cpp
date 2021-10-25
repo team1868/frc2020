@@ -50,13 +50,16 @@ void MainProgram::RobotInit() {
 	//untuned shots
     //4 degrees off last angle
     //lab 10ft shot is 3370
-    realAutoChooser_.AddOption("1: NASA Target Zone", "n b 3370.0 s 3370.0 n t -33.0 d -8.3 0 i t 0.0 d -9.5 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
-	//realAutoChooser_.AddOption("1: Target Zone", "n b 3470.0 s 3470.0 n t -45.0 d -8.5 0 i t 0.0 d -9.7 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
-	realAutoChooser_.AddOption("2: shoot, Center to bar, to line & shoot", "n a y q t -33.0 i d -7.6 1 d 6.6 0 t 0.0 a y q n");
-    realAutoChooser_.AddOption("3.: Center to bar, to line & shoot", "i t 0.0 d -7.6 0 d 6.6 0 t 33.0 a y q n");
-    realAutoChooser_.AddOption("4: Shoot and move forwards", "n a y q n d 5.0 0");
-    realAutoChooser_.AddOption("5: Shoot and move back", "n a y q n d -5.0 1");
-    //realAutoChooser_.AddOption("6: Shoot ", "n b 3370.0 s 3370.0");
+    //NASA //realAutoChooser_.AddOption("1: Target Zone", "n b 3370.0 s 3370.0 n t -33.0 d -8.3 0 i t 0.0 d -9.5 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
+	realAutoChooser_.AddOption("1: Target Zone", "n b 3470.0 s 3470.0 n t -45.0 d -8.5 0 i t 0.0 d -9.7 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
+	realAutoChooser_.AddOption("2: Center to bar", "n a y q t -33.0 i d -7.6 0 d 6.6 0 t 0.0 a y q n");
+    //realAutoChooser_.AddOption("2.: Center to bar PRACTICE MATCH TEST", "i t 0.0 d -7.6 0 d 6.6 0 t 33.0 a y q n");
+    realAutoChooser_.AddOption("X3: Shoot and move forwards", "n a y q n d 5.0 0");
+    realAutoChooser_.AddOption("X4: Shoot and move back", "n a y q n d -5.0 0");
+    realAutoChooser_.AddOption("5: Left of PP move fwd", "n a y q n d t -27.57 d 6.5 0");
+    realAutoChooser_.AddOption("6: Right of PP move fwd", "n a y q n d t 30.52 d 6.2 0");
+    realAutoChooser_.AddOption("7: Initiation Line ONLY", "d 1.0 1");
+    realAutoChooser_.AddOption("8: Center Shoot move fwd", "n a y q t -33.0 d 6.0 0");
     realAutoChooser_.AddOption("PROGRAMMING EXPERIMENTAL", "b 3470.0 s 3470.0 n t -33.0 d -8.3 0 i t 0.0 b 4490.0 d -9.5 1 n a s 4490.0 n"); //Note: shooting but not making shot
 	//realAutoChooser_.AddOption("2: Loading Bay", "n a y q n t -118.1 d -16.53 t -53.05 d -10.0 a y q n");//d 10.0 t -38.66 d 8.93 y t 0.0 q");
 	//realAutoChooser_.AddOption("3: Mid-Trench", );
@@ -137,7 +140,7 @@ void MainProgram::AutonomousInit() {
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
-    robot_->EngageFlywheelHood();
+    robot_->DisengageFlywheelHood();
     robot_->DisengageClimberRatchet();
     robot_->ResetWristAngle();
     //robot_->SetTestSequence(robot_->GetChosenSequence());
@@ -188,6 +191,7 @@ void MainProgram::TeleopInit() {
     robot_->DisengageFlywheelHood();
     robot_->DisengageClimberRatchet();
     robot_->StartCompressor();
+    superstructureController_->TeleopInit();
     
     matchTime_ = frc::Timer::GetMatchTime();
     aligningTape_ = false;

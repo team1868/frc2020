@@ -19,25 +19,44 @@
 class AlignTapeCommand : public AutoCommand{
  public:
 
-  // constructor
+  /**
+  * Constructor, called when robot knows will align in some future
+  * @param robot a RobotModel
+  * @param navXSource a NavXPIDSource
+  * @param talonOutput a PivotPIDTalonOutput
+  */
   AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource_, PivotPIDTalonOutput *talonOutput);
   
-  // constructor
+  /**
+  * Constructor, called when robot knows will align in some future
+  * @param robot a RobotModel
+  * @param navXSource a NavXPIDSource
+  */
   AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource_);
   
-  // destructor
+  /**
+	 * destructor
+	 */
   ~AlignTapeCommand();
 
-  // initializes class variables
+  /**
+	 * initializes class variables
+	 */
   void Init();
 
-  // periodic update while executing command
+  /**
+	 * periodic update while executing command
+	 */
   void Update(double currTimeSec, double deltaTimeSec);
   
-  // check if the robot is aligned
+  /**
+	 * check if the robot is aligned
+	 */
   bool IsDone();
 
-  // called when the command is done, destroys pivot class to prevent memory leaks
+  /**
+	 * called when the command is done, destroys pivot class to prevent memory leaks
+	 */
   void Reset();
 
  private:

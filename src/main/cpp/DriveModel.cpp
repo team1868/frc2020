@@ -313,6 +313,7 @@ void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
     }
 }
 
+
 bool RobotModel::CollisionDetected() {
 	bool collisionDetected = false;
 
@@ -457,6 +458,21 @@ double RobotModel::GetTotalEnergy() {
 
 double RobotModel::GetNavXYaw() {
 	return navX_->GetYaw();
+}
+
+// get index motor 
+double RobotModel::GetLeftFunnelMotorStatus(){
+    return pdp_->GetCurrent(LEFT_FUNNEL_MOTOR_PDP_CHANNEL);
+}
+
+// get index motor 
+double RobotModel::GetRightFunnelMotorStatus(){
+    return pdp_->GetCurrent(RIGHT_FUNNEL_MOTOR_PDP_CHANNEL);
+}
+
+// get index motor 
+double RobotModel::GetFeederMotorStatus(){
+    return pdp_->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHANNEL);
 }
 
 
@@ -897,6 +913,11 @@ void RobotModel::SendZMQ(bool lowExposure) {
 		std::to_string((int)(superstructureController_->CalculateFlywheelVelocityDesired())) +
 		" RPM:" + 
 		std::to_string((int)(GetFlywheelMotor1Velocity()*FALCON_TO_RPM));
+
+	if (GetElevatorFeederLightSensorStatus() && GetElevatorLightSensorStatus() && GetFunnelLightSensorStatus()){
+		message += " FULL ELEVATOR!! ";
+	}
+
     //std::cout << message << std::endl;
     //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
     int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
@@ -919,10 +940,10 @@ void RobotModel::RefreshShuffleboard(){
 
 	/* set closed loop gains in slot0 */
 
-	//flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
-	//flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
-	//flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
-	//flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
+	// flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
+	// flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
+	// flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
+	// flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
 	
 	lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;

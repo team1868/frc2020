@@ -16,7 +16,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	//add left and right outputs + errors to the shuffleboard layout
 	leftDriveEntry_ = pivotLayout_.Add("Left Drive Output", 0.0).GetEntry();
 	rightDriveEntry_ = pivotLayout_.Add("Right Drive Output", 0.0).GetEntry();
-	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).WithWidget(frc::BuiltInWidgets::kGraph).GetEntry();
+	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).GetEntry();
 
     navXSource_ = navXSource;
 
