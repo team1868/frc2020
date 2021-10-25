@@ -150,6 +150,7 @@ class SuperstructureController {
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_, &currentLayout_, &timeoutsLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
+  //#define SUPERSTRUCTURECONTROLS
   #ifdef SUPERSTRUCTURECONTROLS
   nt::NetworkTableEntry flywheelVelocityEntry_, flywheelVelocityErrorEntry_, flywheelMotor1OutputEntry_, flywheelMotor2OutputEntry_;
   nt::NetworkTableEntry flywheelMotor1CurrentEntry_, flywheelMotor2CurrentEntry_;

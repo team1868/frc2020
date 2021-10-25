@@ -935,10 +935,10 @@ void RobotModel::RefreshShuffleboard(){
 
 	/* set closed loop gains in slot0 */
 
-	// flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
-	// flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
-	// flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
-	// flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
+	//flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
+	//flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
+	//flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
+	//flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
 	
 	lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;
