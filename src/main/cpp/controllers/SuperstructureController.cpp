@@ -42,14 +42,26 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     // indexing and intaking
 
-    elevatorFeederPower_ = 0.6; // 0.45; // 0.65; // Calgames: 1.0
+    // testing
+    elevatorFeederPower_ = 0.8; // 0.45; // 0.65; // Calgames: 1.0
+    elevatorSlowFeederPower_ = 0.6;
     elevatorSlowPower_ = 0.5; // Calgames: 0.4
     elevatorFastPower_ = 0.5; //0.75; //fix Calgames: 0.4
     indexFunnelSlowPower_ = 0.55;
-    indexFunnelPower_ = 0.55; // Calgames: 0.4
-    intakeRollersPower_ = 1.0; // Calgames: 1.0
-    intakeSlowRollersPower_ = 0.5;
+    indexFunnelPower_ = 0.50; // Calgames: 0.4
+    intakeRollersPower_ = 0.95; // Calgames: 1.0
+    intakeSlowRollersPower_ = 0.7;
     manualRollerPower_ = 0.5; // Calgames: 0.5
+
+    // new values for CHezy
+    // elevatorFeederPower_ = 0.6; // 0.45; // 0.65; // Calgames: 1.0
+    // elevatorSlowPower_ = 0.5; // Calgames: 0.4
+    // elevatorFastPower_ = 0.5; //0.75; //fix Calgames: 0.4
+    // indexFunnelSlowPower_ = 0.55;
+    // indexFunnelPower_ = 0.55; // Calgames: 0.4
+    // intakeRollersPower_ = 1.0; // Calgames: 1.0
+    // intakeSlowRollersPower_ = 0.7;
+    // manualRollerPower_ = 0.5; // Calgames: 0.5
 
     // new values for CalGames updated indexing TESTED AND WORKS (Get chicken nuggets let's goooo)
     // elevatorFeederPower_ = 0.45;
@@ -628,7 +640,7 @@ void SuperstructureController::Resetting() {
 // manual undo elevator
 void SuperstructureController::UndoElevator(){
     robot_->SetElevatorOutput(-elevatorSlowPower_);
-    robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
+    robot_->SetElevatorFeederOutput(-elevatorSlowFeederPower_);
 
     // non utah fix
     // robot_->SetIndexFunnelOutput(-indexFunnelPower_);
@@ -674,21 +686,21 @@ void SuperstructureController::IndexUpdate(){
 
     // If over 25 V, go backwards
     
-    if ((!currJammed_ || currTime_ - jammedStartTimeout_ <= jammedTimeout_) && 
-        (robot_->GetFeederMotorStatus() >= motorCurrentLimit_||
-        robot_->GetLeftFunnelMotorStatus() >= motorCurrentLimit_ || 
-        robot_->GetRightFunnelMotorStatus() >= motorCurrentLimit_)){
+    // if ((!currJammed_ || currTime_ - jammedStartTimeout_ <= jammedTimeout_) && 
+    //     (robot_->GetFeederMotorStatus() >= motorCurrentLimit_||
+    //     robot_->GetLeftFunnelMotorStatus() >= motorCurrentLimit_ || 
+    //     robot_->GetRightFunnelMotorStatus() >= motorCurrentLimit_)){
         
-        if (!currJammed_){
-            jammedStartTimeout_ = currTime_;
-            currJammed_ = true;
-        }
+    //     if (!currJammed_){
+    //         jammedStartTimeout_ = currTime_;
+    //         currJammed_ = true;
+    //     }
         
-        robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
-        robot_->SetIndexFunnelOutput(-indexFunnelPower_);
-        return;
+    //     robot_->SetElevatorFeederOutput(-elevatorFeederPower_);
+    //     robot_->SetIndexFunnelOutput(-indexFunnelPower_);
+    //     return;
 
-    } 
+    // } 
     // else if ((!currJammed_ || currTime_ - jammedStartTimeout_ <= jammedTimeout_) && 
     //             (robot_->GetLeftFunnelMotorStatus() >= motorCurrentLimit_
     //             || robot_->GetRightFunnelMotorStatus() >= motorCurrentLimit_)){
@@ -700,9 +712,9 @@ void SuperstructureController::IndexUpdate(){
     //     return;
 
     // } 
-    else {
-        currJammed_ = false;
-    }
+    // else {
+    //     currJammed_ = false;
+    // }
 
 
 
@@ -752,7 +764,8 @@ void SuperstructureController::IndexUpdate(){
         // if something is in the funnel and elevator is prepped to index up
         // run index and start indexing proocess
         // printf("FUNNEL SENSOR STARTING TO GO UP\n");
-        robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        // robot_->SetIndexFunnelOutput(indexFunnelPower_);
+        robot_->SetIndexFunnelOutput(0.0);
         // move on to kIndexingUp state
         currIndexLogicState_ = kIndexingUp;
         startIndexingTime_ = currTime_;

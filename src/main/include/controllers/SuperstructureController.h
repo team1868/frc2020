@@ -113,7 +113,7 @@ class SuperstructureController {
   double intakeRollersPower_, intakeSlowRollersPower_;
 
   double lowerElevatorTimeout_, elevatorTimeout_;
-  double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, indexFunnelPower_, indexFunnelSlowPower_;
+  double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, elevatorSlowFeederPower_, indexFunnelPower_, indexFunnelSlowPower_;
   double startIndexTime_, startElevatorTime_, startReIndexTime_, startIndexingTime_;
   bool bottomSensor_, topSensor_, funnelSensor_, bTimeout_, tTimeout_, resetElevatorTimeout_, jammedStartTimeout_;
 
