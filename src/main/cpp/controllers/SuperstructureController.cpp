@@ -40,6 +40,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     atTargetSpeed_ = false;
     numTimeAtSpeed_ = 0;
     highFlywheelTolerance_ = 0.02;
+    flywheelPercentAdjustment_ = 92.2699; // 100.0; // percent!
 
     // indexing and intaking
 
@@ -183,6 +184,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 
     flywheelRPMconstEntry_ = robot_->GetDriverTab().Add("Flywheel rpm C", 0.0).GetEntry();
     highFlywheelToleranceEntry_ = robot_->GetSuperstructureTab().Add("High Flywheel Tolerance (0.02 = 2 percent)", 0.02).GetEntry();
+    flywheelPercentAdjustmentEntry_ = robot_->GetSuperstructureTab().Add("Percent Flywheel Adjustment", 92.2699).GetEntry();
 
     // funnel and feeder 
     funnelRightMotorEntry_ = currentLayout_.Add("Funnel Right Motor", 0.0).GetEntry();
@@ -1064,7 +1066,7 @@ double SuperstructureController::CalculateFlywheelVelocityDesired() {
     //into shot but slightly too high is -225
     //match 43 is -300
     double desiredVelocity = 5.58494*shotDistance + 2966.29 - 225.0 + flywheelRPMconst_; // - 315 for long shots
-
+    desiredVelocity = desiredVelocity*(flywheelPercentAdjustment_/100.0); // 92.2699% of original power
     return desiredVelocity;
 }
 
@@ -1212,6 +1214,7 @@ void SuperstructureController::ControlPanelFinalSpin() {
 void SuperstructureController::RefreshShuffleboard(){
     flywheelRPMconst_ = flywheelRPMconstEntry_.GetDouble(0.0);
     highFlywheelTolerance_ = highFlywheelToleranceEntry_.GetDouble(0.02);
+    flywheelPercentAdjustment_ = flywheelPercentAdjustmentEntry_.GetDouble(92.2699);
 
     manualRollerPower_ = rollerManualEntry_.GetDouble(manualRollerPower_);
     autoWristUpP_ = autoWristUpPEntry_.GetDouble(autoWristUpP_);
@@ -1258,6 +1261,7 @@ SuperstructureController::~SuperstructureController() {
     flywheelRPMconstEntry_.Delete();
     highFlywheelToleranceEntry_.Delete();
     intakeWristAngleEntry_.Delete();
+    flywheelPercentAdjustmentEntry_.Delete();
     
     flywheelPEntry_.Delete();
     flywheelIEntry_.Delete();
