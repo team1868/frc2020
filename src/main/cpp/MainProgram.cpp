@@ -54,12 +54,14 @@ void MainProgram::RobotInit() {
 	realAutoChooser_.AddOption("1: Target Zone", "n b 3470.0 s 3470.0 n t -45.0 d -8.5 0 i t 0.0 d -9.7 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
 	realAutoChooser_.AddOption("2: Center to bar", "n a y q t -33.0 i d -7.6 0 d 6.6 0 t 0.0 a y q n");
     //realAutoChooser_.AddOption("2.: Center to bar PRACTICE MATCH TEST", "i t 0.0 d -7.6 0 d 6.6 0 t 33.0 a y q n");
-    realAutoChooser_.AddOption("X3: Shoot and move forwards", "n a y q n d 5.0 0");
-    realAutoChooser_.AddOption("X4: Shoot and move back", "n a y q n d -5.0 0");
+    realAutoChooser_.AddOption("3: Shoot and move forwards", "n a y q n d 5.0 0");
+    realAutoChooser_.AddOption("4: Shoot and move back", "n a y q n d -5.0 0");
     realAutoChooser_.AddOption("5: Left of PP move fwd", "n a y q n d t -27.57 d 6.5 0");
     realAutoChooser_.AddOption("6: Right of PP move fwd", "n a y q n d t 30.52 d 6.2 0");
     realAutoChooser_.AddOption("7: Initiation Line ONLY", "d 1.0 1");
     realAutoChooser_.AddOption("8: Center Shoot move fwd", "n a y q t -33.0 d 6.0 0");
+    realAutoChooser_.AddOption("9: Delay shot and move backwards", "n w 2.0 a y q n d -5.0 0");
+    realAutoChooser_.AddOption("10: Delay shot and move forwards", "n w 2.0 a y q n d 5.0 0");
     realAutoChooser_.AddOption("PROGRAMMING EXPERIMENTAL", "b 3470.0 s 3470.0 n t -33.0 d -8.3 0 i t 0.0 b 4490.0 d -9.5 1 n a s 4490.0 n"); //Note: shooting but not making shot
 	//realAutoChooser_.AddOption("2: Loading Bay", "n a y q n t -118.1 d -16.53 t -53.05 d -10.0 a y q n");//d 10.0 t -38.66 d 8.93 y t 0.0 q");
 	//realAutoChooser_.AddOption("3: Mid-Trench", );
@@ -83,14 +85,14 @@ void MainProgram::RobotInit() {
     
     //working sequences (filmed)
     //7 t
-    realAutoChooser_.AddOption("Bounce no curve", "d 3.833 0 t -90 d 3.75 0 t -111.0 d -9.6 0 t 180 d -4.8 0 t 90 d -9.487 0 d 9.35 0 t 0 d 7.8 0 t -90 d 9.6 0 d -3.8 0 t 0 d 6.333 0"); //good 23 sec
-    realAutoChooser_.AddOption("Bounce curve", "c 3.85 90 1 1 u -111.0 d -7.3 0 c 2.0 195.0 0 0 u 90.0 d -6.0 0 d 6.0 0 c 3.35 195.0 1 1 u -90.0 d 7.0 0 c 3.75 95.0 0 0");//d -3.5 0 t 0 d 6.333 0"); //good 23 sec
+    // realAutoChooser_.AddOption("Bounce no curve", "d 3.833 0 t -90 d 3.75 0 t -111.0 d -9.6 0 t 180 d -4.8 0 t 90 d -9.487 0 d 9.35 0 t 0 d 7.8 0 t -90 d 9.6 0 d -3.8 0 t 0 d 6.333 0"); //good 23 sec
+    // realAutoChooser_.AddOption("Bounce curve", "c 3.85 90 1 1 u -111.0 d -7.3 0 c 2.0 195.0 0 0 u 90.0 d -6.0 0 d 6.0 0 c 3.35 195.0 1 1 u -90.0 d 7.0 0 c 3.75 95.0 0 0");//d -3.5 0 t 0 d 6.333 0"); //good 23 sec
     //realAutoChooser_.AddOption("6: Slalom box", "n d 3.83 0 t -90 d 5.0 0 t 0 d 15.0 0 t 90 d 5.0 0 t 0 d 5.0 0 t -90 d 5.0 0 t 180.0 d 5.2 0 t 90 d 5.0 0 t 180.0 d 15.0 0 t -90.0 d 5.5 0 t 180.0 d 4.0 0"); //good 31 sec
-    realAutoChooser_.AddOption("Barrel", "n u 0.0 d 8.0 0 c 2.75 350.0 0 1 u -9.0 d 9.0 0 c 2.5 301 1 1 d 8.7 0 c 2.6 230 1 1 d 21.0 0"); //good
-    realAutoChooser_.AddOption("5: working slalom", "n u 0.0 d 3.0 0 t -65.0 d 7.0 0 t 0.0 d 10.5 0 t 65.0 d 7.4 0 t 26.0 c 2.7 265.0 1 1 u 110.0 d 5.0 0 u 180.0 d 11.5 0 u -110.0 d 9.5 0"); //good
-    realAutoChooser_.AddOption("Slalom curve", "c 4.2 80.0 1 1 u 0.0 d 12.3 0 u 65.0 d 5.7 0 c 2.65 358.0 1 1 u 180.0 d 13.2 0 u -115.0 d 8.0 0");
+    // realAutoChooser_.AddOption("Barrel", "n u 0.0 d 8.0 0 c 2.75 350.0 0 1 u -9.0 d 9.0 0 c 2.5 301 1 1 d 8.7 0 c 2.6 230 1 1 d 21.0 0"); //good
+    // realAutoChooser_.AddOption("5: working slalom", "n u 0.0 d 3.0 0 t -65.0 d 7.0 0 t 0.0 d 10.5 0 t 65.0 d 7.4 0 t 26.0 c 2.7 265.0 1 1 u 110.0 d 5.0 0 u 180.0 d 11.5 0 u -110.0 d 9.5 0"); //good
+    // realAutoChooser_.AddOption("Slalom curve", "c 4.2 80.0 1 1 u 0.0 d 12.3 0 u 65.0 d 5.7 0 c 2.65 358.0 1 1 u 180.0 d 13.2 0 u -115.0 d 8.0 0");
     //4 t
-    realAutoChooser_.AddOption("backwards curve test", "c 2.75 180 0 0");
+    // realAutoChooser_.AddOption("backwards curve test", "c 2.75 180 0 0");
     /*
     realAutoChooser_.AddOption("barrel box", "n u 0 d 11.0 0 t 90.0 d 4.5 0 t 180.0 d 4.0 0 t -90.0 d 4.167 0 t 0 d 10.0 0 t -90.0 d 4.167 0 t 180.0 d 5.0 0 t 45.0 d 11.785 0 t 0 d 2.5 0 t -90.0 d 4.167 0 t 180.0 d 20.0 0");
     realAutoChooser_.AddOption("5: Slalom test", "d 3.9 0 t -90.0 d 5.5 0 t 0 d 13.2 0 t 64.0 d 6.5 0 t 26.656 c 2.795 234.274 1 1 d 1.0 0 t 117.0 d 6.3 0 t 180 d 12.5 0 t -120.0 d 9.362 0 t 180");
@@ -140,7 +142,7 @@ void MainProgram::AutonomousInit() {
     robot_->ResetDriveEncoders();
     robot_->ZeroNavXYaw();
     robot_->CreateNavX();
-    robot_->DisengageFlywheelHood();
+    robot_->EngageFlywheelHood();
     robot_->DisengageClimberRatchet();
     robot_->ResetWristAngle();
     //robot_->SetTestSequence(robot_->GetChosenSequence());

@@ -29,6 +29,8 @@ ShootingCommand::ShootingCommand(RobotModel * robot) : AutoCommand() {
 
 // gets start time, gets desired velocity (depends on constructor), sets robot to shooting state
 void ShootingCommand::Init(){
+    // printf("INIT SHOOTING COMMAND\n");
+    // std::cout << std::endl;
     isDone_ = false;
     startShootingTime_ = robot_->GetTime();
 
@@ -36,15 +38,21 @@ void ShootingCommand::Init(){
     if(!setVelocity_){
         autoVelocity_ = robot_->CalculateFlywheelVelocityDesired();
     }
+    // printf("shooting command velocity: %f\n", autoVelocity_);
+    // std::cout << std::endl;
 
     // set robot to shooting state
     robot_->SetShooting(autoVelocity_);
     robot_->ShootingAutoInit();
+    // printf("INIT SHOOTING COMMAND ENDDDD\n");
+    // std::cout << std::endl;
 }
 
 // checks if shooting is done
 void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
     // timeout or check if done (when at desired velocity)
+    // printf("SHOOTING COMMAND UPDATES\n");
+    // std::cout << std::endl;
     if(robot_->GetTime()-startShootingTime_ >= 8.0){
         isDone_ = true;
     } else {

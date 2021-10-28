@@ -148,7 +148,7 @@ class SuperstructureController {
   // indexing logic
   bool isBallIncoming_;
 
-  double flywheelRPMconst_;
+  double flywheelRPMconst_, highFlywheelTolerance_;
   
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_, &currentLayout_, &timeoutsLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
@@ -169,7 +169,7 @@ class SuperstructureController {
 
   nt::NetworkTableEntry controlPanelColorEntry_;
 
-  nt::NetworkTableEntry flywheelRPMconstEntry_;
+  nt::NetworkTableEntry flywheelRPMconstEntry_, highFlywheelToleranceEntry_;
 
   nt::NetworkTableEntry funnelLeftMotorEntry_, funnelRightMotorEntry_, feederMotorEntry_;
 

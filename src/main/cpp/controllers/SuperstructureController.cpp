@@ -39,6 +39,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     farPrepping_ = false;
     atTargetSpeed_ = false;
     numTimeAtSpeed_ = 0;
+    highFlywheelTolerance_ = 0.02;
 
     // indexing and intaking
 
@@ -99,6 +100,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     nextWristState_ = kRaising;
     currHandlingState_ = kIndexing;
     nextHandlingState_ = kIndexing;
+    // std::cout << "IN CONSTRUCTUR kINDEXING is NEXT HANDLING STATE" << std::endl;
     currIndexLogicState_ = kIdle;
     nextIndexLogicState_ = kIdle;
     
@@ -180,6 +182,7 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
     //TODO make timeout
 
     flywheelRPMconstEntry_ = robot_->GetDriverTab().Add("Flywheel rpm C", 0.0).GetEntry();
+    highFlywheelToleranceEntry_ = robot_->GetSuperstructureTab().Add("High Flywheel Tolerance (0.02 = 2 percent)", 0.02).GetEntry();
 
     // funnel and feeder 
     funnelRightMotorEntry_ = currentLayout_.Add("Funnel Right Motor", 0.0).GetEntry();
@@ -197,8 +200,9 @@ SuperstructureController::SuperstructureController(RobotModel *robot, ControlBoa
 //auto init
 void SuperstructureController::AutoInit(){
     shootingIsDone_ = false;
-    currHandlingState_ = kIndexing; // TODO AHHHH might break. Possible error
-    nextHandlingState_ = kIndexing;
+    // currHandlingState_ = kIndexing; // TODO AHHHH might break. Possible error
+    // nextHandlingState_ = kIndexing;
+    // std::cout << "IN AUTOINIT kINDEXING is NEXT HANDLING STATE" << std::endl;
     startReIndexTime_ = currTime_;
     startIndexingTime_ = currTime_;
 }
@@ -218,6 +222,7 @@ void SuperstructureController::Reset() { // might not need this
     nextSuperState_ = kDefaultTeleop;
     currHandlingState_ = kIndexing;
     nextHandlingState_ = kIndexing;
+    // std::cout << "IN RESET kINDEXING is NEXT HANDLING STATE" << std::endl;
     currWristState_ = kRaising;
     nextWristState_ = kRaising;
 
@@ -357,7 +362,8 @@ void SuperstructureController::Update(bool isAuto){
                     Indexing();
                     break;
                 case kShooting:
-                    printf("IN KSHOOTING");
+                    // printf("IN KSHOOTING");
+                    // std::cout << std::endl;
                     shootingIsDone_ = Shooting(isAuto_);
                     break;
                 case kResetting:
@@ -373,6 +379,7 @@ void SuperstructureController::Update(bool isAuto){
                     printf("ERROR: no state in Power Cell Handling \n");
             }
 
+            // std::cout << "NEXT HANDLING STATE: " << nextHandlingState_ << std::endl;
             currHandlingState_ = nextHandlingState_;
             
             break;
@@ -449,8 +456,11 @@ void SuperstructureController::UpdateButtons(){
         nextHandlingState_ = kShooting; 
     } else if (nextHandlingState_ == kShooting){ //shooting to decide not to shoot. kShootingButton is not pressed (case taken care of in previous else if statement)
         nextHandlingState_ = kResetting;
+        // printf("YOUR WORST NIGHTMARE");
+        // std::cout << std::endl;
     } else if (nextHandlingState_ != kResetting){ //not intaking, shooting, or resetting, only option is indexing or prepping (also includes indexing)
         nextHandlingState_ = kIndexing;
+        // std::cout << "IN UPDATE BUTTONS kINDEXING is NEXT HANDLING STATE" << std::endl;
     }
 
     PowerCellHandlingState prevHandlingState = nextHandlingState_; 
@@ -576,8 +586,10 @@ bool SuperstructureController::Shooting(bool isAuto) {
     SetFlywheelPowerDesired(desiredFlywheelVelocity_);
 
     printf("TRYING TO SHOOT, INDEXING UP :FLKJSDFLJK");
+    // std::cout << std::endl;
     //raise elevator if not at speed, OR nothing at top and not timed out at bottom
-    if (IsFlywheelAtSpeed(desiredFlywheelVelocity_) || (!topSensor_ )){ //&& !bTimeout_)){ 
+    if (IsFlywheelAtSpeed(desiredFlywheelVelocity_) || (!topSensor_ && !bTimeout_)){ //&& !bTimeout_)){ 
+        printf("Shooting Elevator Up");
         // nothing at the top OR at desired speed, move elevator up
         robot_->SetElevatorOutput(0.9);
         robot_->SetElevatorFeederOutput(0.55);
@@ -607,9 +619,10 @@ bool SuperstructureController::Shooting(bool isAuto) {
 
     nextWristState_ = kRaising;
 
-    if (tTimeout_){ // && bTimeout_){
+    if (tTimeout_ && bTimeout_){
         robot_->SetControlModeVelocity(0.0);
         nextHandlingState_ = kIndexing;
+        // std::cout << "IN SHOOTING kINDEXING is NEXT HANDLING STATE" << std::endl;
         return true;
     }
     return false;
@@ -629,6 +642,7 @@ void SuperstructureController::Resetting() {
         printf("elevator at 0\n");
         robot_->SetElevatorOutput(0.0);
         nextHandlingState_ = kIndexing;
+        // std::cout << "IN RESETTING kINDEXING is NEXT HANDLING STATE" << std::endl;
     }
 
     robot_->SetIndexFunnelOutput(0.0);
@@ -1000,11 +1014,13 @@ void SuperstructureController::SetShootingState(double autoVelocity){
     startIndexTime_ = currTime_; //WARNING: possible error
     nextWristState_ = kRaising; //resetting whatever intake did
     nextHandlingState_ = kShooting;
+    // std::cout << "NOW IN kSHOOTING" << std::endl;
 }
 
 void SuperstructureController::SetIndexingState(){
     nextWristState_ = kRaising; //resetting whatever intake did
     nextHandlingState_ = kIndexing;
+    // std::cout << "IN SET INDEXING STATE kINDEXING is NEXT HANDLING STATE" << std::endl;
     if (!closePrepping_ && !farPrepping_){
         robot_->SetControlModeVelocity(0.0);
     }
@@ -1047,7 +1063,7 @@ double SuperstructureController::CalculateFlywheelVelocityDesired() {
     //nasa is -320
     //into shot but slightly too high is -225
     //match 43 is -300
-    double desiredVelocity = 5.58494*shotDistance + 2966.29 - 225.0 + flywheelRPMconst_;
+    double desiredVelocity = 5.58494*shotDistance + 2966.29 - 225.0 + flywheelRPMconst_; // - 315 for long shots
 
     return desiredVelocity;
 }
@@ -1069,8 +1085,10 @@ bool SuperstructureController::IsFlywheelAtSpeed(double rpm){
     //2200->25
     double tolerance = rpm*0.02;//35.0/2900.0*rpm; //tolerance at 1%
 
+    double highTolerance = rpm*highFlywheelTolerance_;
+
     if (robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM > rpm-tolerance 
-        // && robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+tolerance //easier to get to flywheel speed, used in Utah code
+        && robot_->GetFlywheelMotor1Velocity()*FALCON_TO_RPM < rpm+highTolerance //easier to get to flywheel speed, used in Utah code
         ){
         numTimeAtSpeed_++;
         if (numTimeAtSpeed_ >= 5){
@@ -1193,6 +1211,7 @@ void SuperstructureController::ControlPanelFinalSpin() {
 
 void SuperstructureController::RefreshShuffleboard(){
     flywheelRPMconst_ = flywheelRPMconstEntry_.GetDouble(0.0);
+    highFlywheelTolerance_ = highFlywheelToleranceEntry_.GetDouble(0.02);
 
     manualRollerPower_ = rollerManualEntry_.GetDouble(manualRollerPower_);
     autoWristUpP_ = autoWristUpPEntry_.GetDouble(autoWristUpP_);
@@ -1237,6 +1256,7 @@ void SuperstructureController::RefreshShuffleboard(){
 
 SuperstructureController::~SuperstructureController() {
     flywheelRPMconstEntry_.Delete();
+    highFlywheelToleranceEntry_.Delete();
     intakeWristAngleEntry_.Delete();
     
     flywheelPEntry_.Delete();

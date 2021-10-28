@@ -204,6 +204,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			printf("starting shooting\n");
 			double autoVelocity;
 			iss >> autoVelocity;
+			printf("AUTO SHOOTING VEL: %f\n", autoVelocity);
 			if(IsFailed(command)) { // fail in stream
 				tempCommand = nullptr;
 			} else {
@@ -278,6 +279,8 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 
 	printf("Loaded a command\n");
 
+	// printf("Command address: %x\n", tempCommand);
+
 	return tempCommand; // NULL if something went wrong
 }
 
@@ -303,9 +306,12 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
 			printf("reset in automode\n");
 
 			AutoCommand *nextCommand = currentCommand_->GetNextCommand();
+			// printf("Command address: %x\n", nextCommand);
             // delete currentCommand_;
 			currentCommand_ = nextCommand;
             if (currentCommand_ != nullptr) {
+				// printf("GOING INTO COMMAND INIT");
+				// std::cout << std::endl;
                 currentCommand_->Init(); // init current command
             } else {
 				printf("currentCommand_ is null\n");
