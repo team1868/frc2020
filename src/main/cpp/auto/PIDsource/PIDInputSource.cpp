@@ -10,11 +10,11 @@
 #include "RobotModel.h"
 
 /**
- * Assigns the robot and resets the accumulated yaw
- * initializes accumulatedYawEntry_ to 0
- * @param RobotModel
+ * Constructor
+ * @param robot a RobotModel
  */
 NavXPIDSource::NavXPIDSource(RobotModel *robot) {
+	// initialize variables
 	robot_ = robot;
 	lastYaw_ = robot_->GetNavXYaw();
 	currYaw_ = robot_->GetNavXYaw();
@@ -23,7 +23,7 @@ NavXPIDSource::NavXPIDSource(RobotModel *robot) {
 }
 
 /**
- * calculates accumulatedYaw 
+ * Calculates accumulatedYaw 
  * @return accumulatedYaw_
  */
 double NavXPIDSource::PIDGet() {
@@ -33,7 +33,7 @@ double NavXPIDSource::PIDGet() {
  
 /**
  * Updates currYAW, calculates deltaYaw and accumulatedYaw
- * @return accumulatedYaw
+ * @return accumulatedYaw_
  */
 double NavXPIDSource::CalculateAccumulatedYaw() {
 	lastYaw_ = currYaw_;
@@ -52,13 +52,13 @@ double NavXPIDSource::CalculateAccumulatedYaw() {
 }
 
 /**
- * Sets AccumulatedYaw and deltaYaw to zero
- * Updates currYaw and lastYaw
+ * Sets AccumulatedYaw and deltaYaw to zero and updates currYaw and lastYaw
  */
 void NavXPIDSource::ResetAccumulatedYaw() {
 	accumulatedYaw_ = 0.0;
 	currYaw_ = robot_->GetNavXYaw();
 	printf("finished resetting yaw\n");
+
 	lastYaw_ = currYaw_;
 	deltaYaw_ = 0.0;
 }
@@ -66,46 +66,41 @@ void NavXPIDSource::ResetAccumulatedYaw() {
 /**
  * Destructor
  */
-NavXPIDSource::~NavXPIDSource() {
-}
+NavXPIDSource::~NavXPIDSource() {}
 
 /**
- * Assigns robot, sets averageTalonDistance to 0
+ * Constructor
  * @param RobotModel
  */
 TalonEncoderPIDSource::TalonEncoderPIDSource(RobotModel* robot) {
+	// initializes variables
 	robot_ = robot;
 	averageTalonDistance_ = 0.0;
 }
 
 /**
- * Gets distance from left and right encoders and sets averageTalonDistance
- * as average of the two
+ * Gets distance from left and right encoders and sets averageTalonDistance as the average of the two
  * @return averageTalonDistance_
  */
-//not used and doesn't work
 double TalonEncoderPIDSource::PIDGet() {
 	double leftDistance = robot_->GetLeftDistance();
 	double rightDistance = robot_->GetRightDistance();
 
 	averageTalonDistance_= (rightDistance + leftDistance) / 2;
 	return averageTalonDistance_;
-
 }
 
 /**
  * Destructor
  */
-TalonEncoderPIDSource::~TalonEncoderPIDSource() {
-}
+TalonEncoderPIDSource::~TalonEncoderPIDSource() {}
 
 /** 
- * Assigns the robot
- * Updates lastTime_ and currTime_
- * Sets lastAvgPosition_, currAvgPosition and avgVelocity to 0
+ * Constructor
  * @param RobotModel
  */
 VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
+	// initializes variables
 	robot_ = robot;
 	lastTime_ = robot_->GetTime();
 	currTime_ = lastTime_;
@@ -115,10 +110,8 @@ VelocityPIDSource::VelocityPIDSource(RobotModel *robot){
 }
 
 /**
- * Updates lastTime_, currTime_, lastAvgPosition_ and currAvgPosition_ 
- * Calculates avgVelocity_
+ * Calculates average velocity
  */	
-//unused 
 void VelocityPIDSource::UpdateVelocity(){
 	lastTime_ = currTime_;
 	currTime_ = robot_->GetTime();
@@ -130,6 +123,7 @@ void VelocityPIDSource::UpdateVelocity(){
 }
 
 /**
+ * Gets average velocity
  * @return avgVelocity_
  */
 double VelocityPIDSource::PIDGet(){
@@ -139,6 +133,4 @@ double VelocityPIDSource::PIDGet(){
 /**
  * Destructor
  */
-VelocityPIDSource::~VelocityPIDSource(){
-
-}
+VelocityPIDSource::~VelocityPIDSource(){}

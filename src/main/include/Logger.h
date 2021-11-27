@@ -60,18 +60,37 @@
 #include <ctime>
 
 
-#define LOG(myRobot, stateName, state) {MATCH_PERIODIC(1, Logger::LogAction(myRobot, __FILE__, __LINE__, stateName, state))}
+#define LOG(robot, stateName, state) {MATCH_PERIODIC(1, Logger::LogAction(robot, __FILE__, __LINE__, stateName, state))}
 #define DUMP(stateName, state) {MATCH_PERIODIC(1, Logger::LogAction(__FILE__, __LINE__, stateName, state))}
 
 class Logger {
 public:
-	// Log state: records the physical state of the robot and human control
-	static void LogState(RobotModel *myRobot, ControlBoard *myHumanControl);
 
-	// Log action: records higher-level processes
-	static void LogAction(RobotModel* myRobot, const std::string& fileName, int line,
+	/**
+	 * Log state: records the physical state of the robot and human control
+	 * @param robot a RobotModel
+	 * @param humanControl a ControlBoard
+	 */ 
+	static void LogState(RobotModel *robot, ControlBoard *myHumanControl);
+
+	/**
+	 * Log action: records higher-level processes
+	 * @param robot a RobotModel
+	 * @param fileName a reference to an std::string
+	 * @param line an integer
+	 */ 
+	static void LogAction(RobotModel* robot, const std::string& fileName, int line,
 				const std::string& stateName, double state);
-	static void LogAction(RobotModel* myRobot, const std::string& fileName, int line,
+	
+	/**
+	 * Log action: records higher-level processes
+	 * @param robot a RobotModel
+	 * @param fileName a reference to an std::string
+	 * @param line an integer
+	 * @param stateName a reference to an std::string
+	 * @param state a reference to an std::string
+	 */ 
+	static void LogAction(RobotModel* robot, const std::string& fileName, int line,
 				const std::string& stateName, const std::string& state);
 
 	// Without timestamp
@@ -82,8 +101,16 @@ public:
 	static void LogAction(const std::string& fileName, int line, const std::string& stateName,
 			const std::string& state);
 
+
+	/**
+	 * Gets time stamp
+	 * @return the time as a string
+	 */ 
 	static std::string GetTimeStamp(const char* fileName);
 
+	/**
+	 * Closes the log
+	 */ 
 	static void CloseLogs();
 
 private:

@@ -13,22 +13,39 @@
 
 class IntakingCommand : public AutoCommand {
  public:
-  // IntakingCommand constructor 
+  /**
+   * Constructor
+   * @param robot a RobotModel
+   */
   IntakingCommand(RobotModel * robot);
 
-  // destructor
+  /**
+   * Destructor
+   */
   virtual ~IntakingCommand();
 
+  /**
+   * Initializes class for run
+   */
   void Init();
 
-  // set robot to start intaking, set isDone_ to true
-  //@param currTimeSec a double
-	//@param deltaTimeSec a double
+
+  /** 
+   * Periodic update
+   * @param currTimeSec current time
+   * @param deltaTimeSec delta time
+   */
   void Update(double currTimeSec, double deltaTimeSec);
   
-  //@return true if done
+  /**
+   * Returns true if command is done
+   * @return isDone_
+   */
   bool IsDone();
 
+  /**
+   * Resets robot to standby 
+   */
   void Reset();
 
  private:

@@ -24,12 +24,32 @@ class ShootingCommand : public AutoCommand{
 	 */
   ShootingCommand(RobotModel * robot);
 
+  /**
+   * Initializes class for run
+   */
   void Init();
+
+  /** 
+   * Periodic update
+   * @param currTimeSec current time
+   * @param deltaTimeSec delta time
+   */
   void Update(double currTimeSec, double deltaTimeSec);
+
+  /**
+   * Returns true if command is done
+   * @return isDone_
+   */
   bool IsDone();
+
+  /**
+    * Resets robot to standby 
+    */
   void Reset();
 
-  // destructor
+  /**
+   * Destructor
+   */ 
   virtual ~ShootingCommand();
   
  private:

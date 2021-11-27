@@ -10,33 +10,33 @@
 /** 
  * Assigns the waitTimeSec and creates the timer
  * @param robot a RobotModel
- * @param myWaitTimeSec a double
-*/
-WaitingCommand::WaitingCommand(RobotModel *robot, double myWaitTimeSec) : AutoCommand() {
+ * @param waitTimeSec a double
+ */
+WaitingCommand::WaitingCommand(RobotModel *robot, double waitTimeSec) : AutoCommand() {
 	// initialize variables
-	waitTimeSec_ = myWaitTimeSec;
+	waitTimeSec_ = waitTimeSec;
 	robot_ = robot;
 	startTime_ = -1.0;
 	isDone_ = false;
 }
 
 /**
- * Starts timer
-*/
+ * Initializes command, starts timer
+ */
 void WaitingCommand::Init() {
 	startTime_ = robot_->GetTime();
 }
 
 /** 
- * Checks if the timer meets the waitTimeSec. If so, isDone is set to true.
+ * Periodic update, checks if the timer meets the waitTimeSec
  * @param currTimeSec a double
  * @param deltaTimeSec a double
-*/
+ */
 void WaitingCommand::Update(double currTimeSec, double deltaTimeSec) {
 	// stay in auto command as long as not timed out
-	if(startTime_ > 0.0){
+	if (startTime_ > 0.0){
 		isDone_ = currTimeSec - startTime_ >= waitTimeSec_;
-		if(isDone_) {
+		if (isDone_) {
 			printf("done waiting %f", currTimeSec);
 		}
 	} else {
@@ -46,7 +46,7 @@ void WaitingCommand::Update(double currTimeSec, double deltaTimeSec) {
 }
 
 /**
- * returns isDone_
+ * Returns true if command is done
  * @returns isDone_
  */
 bool WaitingCommand::IsDone() {
@@ -54,14 +54,13 @@ bool WaitingCommand::IsDone() {
 }
 
 /**
- * resets isDone_ to true
+ * Resets for standby
  */ 
 void WaitingCommand::Reset() {
 	isDone_ = true;
 }
 
 /**
- * destructor
+ * Destructor
  */ 
-WaitingCommand::~WaitingCommand() {
-}
+WaitingCommand::~WaitingCommand() {}

@@ -10,13 +10,26 @@
 
 class TestMode : public AutoMode {
 public:
+    /** 
+     * Constructor
+     * @param robot a RobotModel
+     * @param controlBoard a ControlBoard 
+     */
     TestMode(RobotModel *robot, ControlBoard *controlBoard);
     
-    // gets queue of commands from test sequence string 
+    /** 
+     * Overrides CreateQueue method (virtual) from AutoMode, gets queue of commands from test sequence string 
+     * @param pos from AutoMode AutoPositions
+     */
     void CreateQueue(AutoMode::AutoPositions pos) override;
     
+    /** 
+     * Initializes test mode
+     */
     void Init();
 
-    // destructor
+    /** 
+     * Destructor
+     */
     virtual ~TestMode();
 };

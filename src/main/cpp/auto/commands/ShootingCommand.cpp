@@ -7,8 +7,15 @@
 
 #include "auto/commands/ShootingCommand.h"
 
+/**
+ * Constructor
+ * @param robot a RobotModel
+ * @param autoVelocity a double
+ */ 
 ShootingCommand::ShootingCommand(RobotModel * robot, double autoVelocity) : AutoCommand() {
     printf("shooting command\n");
+
+    // initialize variables
     robot_ = robot;
     isDone_ = false;
     startShootingTime_ = 0.0;
@@ -17,8 +24,14 @@ ShootingCommand::ShootingCommand(RobotModel * robot, double autoVelocity) : Auto
     setVelocity_ = true;
 }
 
+/**
+ * Constructor without auto velocity
+ * @param robot a RobotModel
+ */ 
 ShootingCommand::ShootingCommand(RobotModel * robot) : AutoCommand() {
     printf("shooting command\n");
+
+    // initialize variables
     robot_ = robot;
     isDone_ = false;
     startShootingTime_ = 0.0;
@@ -27,10 +40,11 @@ ShootingCommand::ShootingCommand(RobotModel * robot) : AutoCommand() {
     setVelocity_ = false;
 }
 
-// gets start time, gets desired velocity (depends on constructor), sets robot to shooting state
+/**
+ * Initializes command (gets start time, desired velocity, sets robot to shooting state)
+ */ 
 void ShootingCommand::Init(){
-    // printf("INIT SHOOTING COMMAND\n");
-    // std::cout << std::endl;
+
     isDone_ = false;
     startShootingTime_ = robot_->GetTime();
 
@@ -38,21 +52,20 @@ void ShootingCommand::Init(){
     if(!setVelocity_){
         autoVelocity_ = robot_->CalculateFlywheelVelocityDesired();
     }
-    // printf("shooting command velocity: %f\n", autoVelocity_);
-    // std::cout << std::endl;
 
     // set robot to shooting state
     robot_->SetShooting(autoVelocity_);
     robot_->ShootingAutoInit();
-    // printf("INIT SHOOTING COMMAND ENDDDD\n");
-    // std::cout << std::endl;
+
 }
 
-// checks if shooting is done
+/**
+ * Periodic update
+ * @param currTimeSec a double
+ * @param deltaTimeSec a double
+ */ 
 void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
     // timeout or check if done (when at desired velocity)
-    // printf("SHOOTING COMMAND UPDATES\n");
-    // std::cout << std::endl;
     if(robot_->GetTime()-startShootingTime_ >= 8.0){
         isDone_ = true;
     } else {
@@ -65,16 +78,22 @@ void ShootingCommand::Update(double currTimeSec, double deltaTimeSec){
     }
 }
 
-// checks if command is done
+/**
+ * Returns true if command is done
+ * @return isDone_
+ */
 bool ShootingCommand::IsDone(){
     return isDone_;
 }
 
-// resets shooting by setting the command as finished
+/**
+ * Reset robot for standby
+ */ 
 void ShootingCommand::Reset(){
     isDone_ = true;
 }
 
-ShootingCommand::~ShootingCommand(){
-    
-}
+/**
+ * Destructor
+ */
+ShootingCommand::~ShootingCommand(){}

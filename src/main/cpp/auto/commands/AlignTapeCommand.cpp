@@ -13,7 +13,8 @@
  * @param navXSource a NavXPIDSource
  * @param talonOutput a PivotPIDTalonOutput
  */
-AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource, PivotPIDTalonOutput *talonOutput) : AutoCommand() {
+AlignTapeCommand::AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource, 
+    PivotPIDTalonOutput *talonOutput) : AutoCommand() {
 
     // initialize class variables
     robot_ = robot;
@@ -78,9 +79,8 @@ void AlignTapeCommand::Init(){
     robot_->SendZMQ(true);
 }
 
-
 /**
- * periodic update while executing command
+ * Periodic update while executing command
  * @param currTimeSec a double
  * @param deltaTimeSec a double
  */
@@ -89,48 +89,57 @@ void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
     // tell jetson to lower exposure
     robot_->SendZMQ(true);
 
-    // timeout, if bad or 0 values received
-    if(currTimeSec-startTime_>=5.0){
+    // check if timed out
+    if (currTimeSec - startTime_ >= 5.0){
+        // timeout, if bad or 0 values received
         printf("WARNING: timeout in AlignTapeCommand, did not receive good values from jetson\n");
         isDone_ = true;
     } else {
         // not timed out
 
         // check if already has a target angle
-        if(!aligning_){
+        if (!aligning_){
             // does not already have a target angle
 
             lastJetsonAngle_ = currJetsonAngle_;
             currJetsonAngle_ = robot_->GetDeltaAngle();
 
             // check if two read values are similar, if so then that is the target angle
-            /* Note: read values are from RobotModel, not necessarily two adjacent values from vision,
+            /* 
+            * Note: read values are from RobotModel, not necessarily two adjacent values from vision,
             * depending on update speed difference
             */
-            if(robot_->ZMQHasContents() && fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_ && robot_->GetDistance() > 0.0){
+            if (robot_->ZMQHasContents() && 
+                fabs(lastJetsonAngle_-currJetsonAngle_) <= jetsonAngleTolerance_ && 
+                robot_->GetDistance() > 0.0){
+            
                 printf("successfully found similar angles: last angle was %f and currrent angle is %f, starting\n", lastJetsonAngle_, currJetsonAngle_);
                 printf("turning to angle %f in align tape\n", currJetsonAngle_);
 
                 aligning_ = true;
 
-                //c reate and initialize pivot command to the most recently read angle
-
+                // create and initialize pivot command to the most recently read angle
                 pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+lastJetsonAngle_, true, navXSource_, 1.2, talonOutput_);
                 pivotCommand_->Init();
             }
+
         } else {
             // already has a target angle and a pivot command
 
             // has pivot command, not done, and not timed out
-            if(pivotCommand_ != nullptr && !pivotCommand_->IsDone() && currTimeSec-startTime_<=maxTime_){
+            if (pivotCommand_ != nullptr && 
+                !pivotCommand_->IsDone() && 
+                currTimeSec - startTime_ <= maxTime_){
+                
                 // pivot command is not finished
                 pivotCommand_->Update(currTimeSec, deltaTimeSec);
+                
             } else {
                 // pivot command is finished, either by completely aligning or timing out
                 printf("done with aligning to tape\n");
 
                 // timing out
-                if(currTimeSec-startTime_>maxTime_){
+                if (currTimeSec - startTime_ > maxTime_){
                     printf("WARNING: cause is timeout\n");
                 }
 
@@ -141,19 +150,17 @@ void AlignTapeCommand::Update(double currTimeSec, double deltaTimeSec){
 }
 
 /**
- * check if aligned to tape
+ * Checks if aligned to tape
  * @return isDone_
  */
 bool AlignTapeCommand::IsDone(){
     return isDone_;
 }
 
-
 /**
- * check for memory leaks and background pid
+ * Checks for memory leaks and background pid
  */
 void AlignTapeCommand::Reset(){
-    printf("done, resetting\n");
 
     // remove pivot command
     if(pivotCommand_!=nullptr){
@@ -165,10 +172,12 @@ void AlignTapeCommand::Reset(){
     // turn off light
     robot_->SetLight(false);
     isDone_ = true;
+
+    printf("done, reset\n");
 }
 
 /**
- * destructor, call reset just in case
+ * Destructor, call reset just in case
  */
 AlignTapeCommand::~AlignTapeCommand(){
     Reset();

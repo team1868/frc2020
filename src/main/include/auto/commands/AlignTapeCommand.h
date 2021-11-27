@@ -35,27 +35,30 @@ class AlignTapeCommand : public AutoCommand{
   AlignTapeCommand(RobotModel *robot, NavXPIDSource *navXSource_);
   
   /**
-	 * destructor
+	 * d\Destructor
 	 */
   ~AlignTapeCommand();
 
   /**
-	 * initializes class variables
+	 * Initializes class variables
 	 */
   void Init();
 
   /**
-	 * periodic update while executing command
-	 */
+   * Periodic update while executing command
+   * @param currTimeSec a double
+   * @param deltaTimeSec a double
+   */
   void Update(double currTimeSec, double deltaTimeSec);
   
   /**
-	 * check if the robot is aligned
-	 */
+   * Checks if aligned to tape
+   * @return isDone_
+   */
   bool IsDone();
 
   /**
-	 * called when the command is done, destroys pivot class to prevent memory leaks
+	 * Called when the command is done, destroys pivot class to prevent memory leaks
 	 */
   void Reset();
 

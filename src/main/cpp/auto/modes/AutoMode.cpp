@@ -7,9 +7,15 @@
 
 #include "auto/modes/AutoMode.h"
 
+/**
+ * Constructor
+ * @param robot a RobotModel
+ * @param controlBoard a ControlBoard
+ */
 AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");
 
+	// initialize variables
     firstCommand_ = nullptr;
 	currentCommand_ = nullptr;
 
@@ -17,8 +23,10 @@ AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
 	humanControl_ = controlBoard;
 	navX_ = robot_->GetNavXSource();
 
+	// encoders
 	talonEncoder_ = new TalonEncoderPIDSource(robot_);
 	talonEncoderCurve_ = new TalonEncoderPIDSource(robot_);
+
 	angleOutput_ = new AnglePIDOutput();
 	distanceOutput_ = new DistancePIDOutput();
 	talonOutput_ = new PivotPIDTalonOutput(robot_);
@@ -29,8 +37,12 @@ AutoMode::AutoMode(RobotModel *robot, ControlBoard *controlBoard) {
 	printf("Done constructing AutoMode\n");
 }
 
-// get queue of commands from auto sequence string 
+/**
+ * Gets queue of commands from auto sequence string 
+ * @param autoSequence a std::string
+ */
 void AutoMode::QueueFromString(std::string autoSequence) {
+	// initialize command variables
     firstCommand_ = nullptr;
 	currentCommand_ = nullptr;
 	AutoCommand *lastCommand = nullptr;
@@ -42,6 +54,7 @@ void AutoMode::QueueFromString(std::string autoSequence) {
 	currAngle_ = 0.0;
 	char command;
 
+	// empty auto sequence!
 	if (autoSequence == "") {
 		printf("NO SEQUENCE ! TRY AGAIN KID");
 	}
@@ -54,7 +67,7 @@ void AutoMode::QueueFromString(std::string autoSequence) {
 		tempCommand = GetStringCommand(command);
 
 		// break if no more commands left
-		if(tempCommand == nullptr){
+		if (tempCommand == nullptr){
 			printf("ERROR: tempCommand is null in autoMode queuing");
 			break;
 		}
@@ -70,9 +83,9 @@ void AutoMode::QueueFromString(std::string autoSequence) {
 			lastCommand = lastCommand->GetNextCommand();
 
 			// something failed, exit loop
-			if(lastCommand == nullptr){
+			if (lastCommand == nullptr){
 				breakDesired_ = true;
-				printf("last command was NULL\n"); //this code may or may not be necessary
+				printf("last command was NULL\n");
 			}
 		}
 	}
@@ -81,7 +94,10 @@ void AutoMode::QueueFromString(std::string autoSequence) {
 	iss.clear();
 }
 
-// Given character command from autoSequence, return corresponding AutoCommand
+/**
+ * Given character command from autoSequence, returns corresponding AutoCommand
+ * @return tempCommand, the corresponding AutoCommand
+ */ 
 AutoCommand* AutoMode::GetStringCommand(char command) {
 	AutoCommand* tempCommand = nullptr;
 	AutoCommand* commandA = nullptr;
@@ -204,7 +220,6 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			printf("starting shooting\n");
 			double autoVelocity;
 			iss >> autoVelocity;
-			printf("AUTO SHOOTING VEL: %f\n", autoVelocity);
 			if(IsFailed(command)) { // fail in stream
 				tempCommand = nullptr;
 			} else {
@@ -250,7 +265,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			}
 			break;
 
-		case 'q': //shooting 2, without set velocity
+		case 'q': // shooting 2, without set velocity
 			printf("shooting w/o set velocity");
 			if(IsFailed(command)) { // fail in stream
 				tempCommand = nullptr;
@@ -279,13 +294,13 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 
 	printf("Loaded a command\n");
 
-	// printf("Command address: %x\n", tempCommand);
-
 	return tempCommand; // NULL if something went wrong
 }
 
-// TODO trace
-// error in stream, returns true if something went wrong
+/**
+ * Error in stream, returns true if something went wrong
+ * @return failed, a boolean, true if failed
+ */ 
 bool AutoMode::IsFailed(char command) {
     if (iss.fail()) { // error in stream
         iss.clear(); // clear errors in stream
@@ -298,6 +313,11 @@ bool AutoMode::IsFailed(char command) {
     return false;
 }
 
+/**
+ * Periodic update
+ * @param currTimeSec a double
+ * @param deltaTimeSec a double
+ */ 
 void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
     if (currentCommand_ != nullptr) {
         if (currentCommand_->IsDone()) { // if command is done, reset and move on
@@ -306,12 +326,9 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
 			printf("reset in automode\n");
 
 			AutoCommand *nextCommand = currentCommand_->GetNextCommand();
-			// printf("Command address: %x\n", nextCommand);
             // delete currentCommand_;
 			currentCommand_ = nextCommand;
             if (currentCommand_ != nullptr) {
-				// printf("GOING INTO COMMAND INIT");
-				// std::cout << std::endl;
                 currentCommand_->Init(); // init current command
             } else {
 				printf("currentCommand_ is null\n");
@@ -325,20 +342,27 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
     }
 }
 
-// returns if done, false as long as current command is not null
+/**
+ * Returns if done, false as long as current command is not null
+ * @return true if done
+ */ 
 bool AutoMode::IsDone() {
     return (currentCommand_ == nullptr);
 }
 
-// abort current command
+/**
+ * Aborts current command
+ */ 
 bool AutoMode::Abort() {
-	// always returns false??
 	return currentCommand_->Abort();
 }
 
-// disable current command and goes back to the first command if not null
+/**
+ * Disables current command and goes back to the first command if not null
+ */
 void AutoMode::Disable() {
     printf("Disabling\n");
+
     if (!IsDone()) {
         printf("Resetting current command\n");
         currentCommand_->Reset();
@@ -349,7 +373,7 @@ void AutoMode::Disable() {
         while (currentCommand_ != nullptr) {
             nextCommand = currentCommand_->GetNextCommand();
 			// gets rid of memory/value that currentCommand points to, sets it to point to next command
-            delete currentCommand_; //changed here
+            delete currentCommand_;
             currentCommand_ = nextCommand;
         }
     }
@@ -357,6 +381,9 @@ void AutoMode::Disable() {
     printf("Successfully disabled\n");
 }
 
+/**
+ * Destructor
+ */ 
 AutoMode::~AutoMode(){
 	// delete if they were created
 	if (talonEncoder_ != nullptr) delete talonEncoder_;

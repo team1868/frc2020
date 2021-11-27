@@ -10,10 +10,9 @@
 #include "ControlBoard.h"
 #include "controllers/DriveController.h"
 
-//TODO: make tabs static so other shuffleboard entries can be static and prevent memory leaks
-// RobotModel::driverTab_ = frc::Shuffleboard::GetTab("Driveteam Control");
-// &modeTab_, &functionalityTab_, &pidTab_, &autoOffsetTab_, &superstructureTab_;
-
+/**
+ * Constructor for RobotModel
+ */ 
 RobotModel::RobotModel() :
     driverTab_(frc::Shuffleboard::GetTab("Driveteam Control")),
     modeTab_(frc::Shuffleboard::GetTab("Programmer Control")),
@@ -39,7 +38,6 @@ RobotModel::RobotModel() :
     last_world_linear_accel_x_ = 0.0f;
     last_world_linear_accel_y_ = 0.0f;
 	
-
     leftDriveOutput_ = rightDriveOutput_ = 0.0;
 	counter = 0;
 	currLeftVelocity_ = currRightVelocity_ = 0.0;
@@ -51,13 +49,15 @@ RobotModel::RobotModel() :
     initialLeftEncoderValue_ = initialRightEncoderValue_ = 0.0;
 	isHighGear_ = true;
 
-      // initializing timer
+    // initializing timer
     timer_ = new frc::Timer();
     timer_->Start();
+
     // Initializing NavX
     navXSpeed_ = 200;
     navX_ = new AHRS(frc::SPI::kMXP, navXSpeed_);
     frc::Wait(1.0); // NavX takes a second to calibrate
+
     // initializing pdp
     pdp_ = new frc::PowerDistributionPanel();
 
@@ -91,8 +91,6 @@ RobotModel::RobotModel() :
     leftDriveEncoder_ = &leftMaster_->GetSensorCollection(); 
     rightDriveEncoder_ = &rightMaster_->GetSensorCollection(); 
 
-
-    //TODO check for falcons
     // setting talon control modes and slaves
     leftMaster_->Set(ControlMode::PercentOutput, 0.0);
     rightMaster_->Set(ControlMode::PercentOutput, 0.0);
@@ -107,8 +105,6 @@ RobotModel::RobotModel() :
 	leftMaster_->SetNeutralMode(Coast);
 	leftSlaveA_->SetNeutralMode(Coast);
 	rightSlaveA_->SetNeutralMode(Coast);
-
-
 
 	ctre::phoenix::motorcontrol::SupplyCurrentLimitConfiguration currentLimitConfig;
 	currentLimitConfig.enable = true;
@@ -130,11 +126,7 @@ RobotModel::RobotModel() :
 	flywheelMotor2_ = new WPI_TalonFX(FLYWHEEL_MOTOR_TWO_ID);
 	flywheelHoodSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, FLYWHEEL_HOOD_SOLENOID_PORT);
 
-	//flywheelMotor1_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
-	//flywheelMotor2_->ConfigStatorCurrentLimit(*fortyAmpFXLimit_);
-
-
-	flywheelMotor2_->Follow(*flywheelMotor1_); // should work :) - not tested tho
+	flywheelMotor2_->Follow(*flywheelMotor1_); 
     flywheelMotor1_->SetInverted(false);
     flywheelMotor2_->SetInverted(true);
 
@@ -184,7 +176,6 @@ RobotModel::RobotModel() :
 	limitSwitchRight_ = new frc::DigitalInput(RIGHT_CLIMB_LIMIT_SWITCH_PORT);
 	limitSwitchLeft_ = new frc::DigitalInput(LEFT_CLIMB_LIMIT_SWITCH_PORT);
 	
-
 	colorMatcher_.AddColorMatch(kBlueTarget);
 	colorMatcher_.AddColorMatch(kGreenTarget);
 	colorMatcher_.AddColorMatch(kRedTarget);
@@ -212,18 +203,6 @@ RobotModel::RobotModel() :
 	desiredDistance_ = 0.0;
 	desiredDeltaAngle_ = 0.0;
 
-	// flywheelMotor1_->ConfigFactoryDefault();
-	// /* first choose the sensor */
-	// flywheelMotor1_->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, 0, kTimeoutMs);
-	// flywheelMotor1_->SetSensorPhase(true);
-
-	// /* set the peak and nominal outputs */
-	// flywheelMotor1_->ConfigNominalOutputForward(0, kTimeoutMs);
-	// flywheelMotor1_->ConfigNominalOutputReverse(0, kTimeoutMs);
-	// flywheelMotor1_->ConfigPeakOutputForward(1, kTimeoutMs);
-	// flywheelMotor1_->ConfigPeakOutputReverse(-1, kTimeoutMs);
-
-
     maxOutputEntry_ = GetModeTab().Add("Max Drive Output", 1.0).GetEntry();
     minVoltEntry_ = GetModeTab().Add("Min Voltage", MIN_BROWNOUT_VOLTAGE).GetEntry();
     maxCurrentEntry_ = GetModeTab().Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();
@@ -239,10 +218,6 @@ RobotModel::RobotModel() :
 
 	leftCurrentEntry_ = GetFunctionalityTab().Add("Left Master Current", 0.0).GetEntry();
 	rightCurrentEntry_ = GetFunctionalityTab().Add("Right Master Current", 0.0).GetEntry();
-
-
-
-
 
     lowGearSFrictionEntry_ = GetModeTab().Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
     lowGearTurnSFrictionEntry_ = GetModeTab().Add("LT total SF", LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER).GetEntry();
@@ -280,6 +255,11 @@ RobotModel::RobotModel() :
 	std::cout<< "end of drive model constructor" << std::endl;
 }
 
+/**
+ * Sets drive values given outputs
+ * @param left a double
+ * @param right a double
+ */ 
 void RobotModel::SetDriveValues(double left, double right){
     leftMaster_->Set(-left);
     rightMaster_->Set(right);
@@ -287,9 +267,12 @@ void RobotModel::SetDriveValues(double left, double right){
 	rightDrivePower_ = right;
 }
 
+/**
+ * Sets drive values for a specific set of wheels
+ * @param wheel a RobotModel::Wheels
+ * @param value a double
+ */ 
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
-    // value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); // TODO
-	// value = -value;
     switch (wheel) {
         case (kLeftWheels): // set left
             leftMaster_->Set(-value);
@@ -313,7 +296,10 @@ void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
     }
 }
 
-
+/**
+ * Detects if a collision is detected
+ * @return true if collision detected
+ */ 
 bool RobotModel::CollisionDetected() {
 	bool collisionDetected = false;
 
@@ -326,7 +312,6 @@ bool RobotModel::CollisionDetected() {
 
 	if(GetLeftEncoderStopped() && GetRightEncoderStopped()) {
 		collisionDetected = true;
-		//printf("From ENCODER\n");
 	}
 
 	collisionDetected = false; // For testing drive straight
@@ -334,178 +319,288 @@ bool RobotModel::CollisionDetected() {
 	return collisionDetected;
 }
 
+/**
+ * Get time
+ * @return a double, the time
+ */ 
 double RobotModel::GetTime(){
     return timer_->Get();
 }
 
+/**
+ * Get left encoder value
+ * @return a double, the left encoder value
+ */ 
 double RobotModel::GetLeftEncoderValue(){
-	//left needs to be negated //finds difference from stored value
+	//left needs to be negated
+	// finds difference from stored value
     return -(leftDriveEncoder_->GetIntegratedSensorPosition() - initialLeftEncoderValue_); 
 }
 
+/**
+ * Get right encoder value
+ * @return a double, the right encoder value
+ */ 
 double RobotModel::GetRightEncoderValue(){
     return (rightDriveEncoder_->GetIntegratedSensorPosition() - initialRightEncoderValue_);
 }
 
+/**
+ * Get raw left encoder value
+ * @return a double, the raw left encoder value
+ */ 
 double RobotModel::GetRawLeftEncoderValue() {
 	return leftDriveEncoder_->GetIntegratedSensorPosition();
 }
 
+/**
+ * Get raw right encoder value
+ * @return a double, the raw right encoder value
+ */ 
 double RobotModel::GetRawRightEncoderValue() {
 	return rightDriveEncoder_->GetIntegratedSensorPosition();
 }
 
-//return feetGetLeftDis
+/**
+ * Get left distance traveled
+ * @return a double, distance in feet
+ */ 
 double RobotModel::GetLeftDistance() {
-	if (isHighGear_){
+	if (isHighGear_) {
 		return GetLeftEncoderValue()/HGEAR_ENCODER_TICKS_FOOT;
-	} else{
+	} else {
 		return GetLeftEncoderValue()/LGEAR_ENCODER_TICKS_FOOT;
 	}
 }
 
-//return feet
+/**
+ * Get right distance traveled
+ * @return a double, distance in feet
+ */ 
 double RobotModel::GetRightDistance() {
-	if (isHighGear_){
+	if (isHighGear_) {
 		return GetRightEncoderValue()/HGEAR_ENCODER_TICKS_FOOT;
-	} else{
+	} else {
 		return GetRightEncoderValue()/LGEAR_ENCODER_TICKS_FOOT;
 	}
 }
 
+/**
+ * Get velocity of left wheels
+ * @return a double, the velocity
+ */ 
 double RobotModel::GetLeftVelocity() {
 	if (isHighGear_){
 		return -10.0*(leftDriveEncoder_->GetIntegratedSensorVelocity()/HGEAR_ENCODER_TICKS_FOOT);
 	} else{
 		return -10.0*(leftDriveEncoder_->GetIntegratedSensorVelocity()/LGEAR_ENCODER_TICKS_FOOT);
 	}
-	//return (currLeftDistance_ - lastLeftDistance_)/(currVelocTime_ - lastVelocTime_);
 }
  
+ /**
+ * Get velocity of right wheels
+ * @return a double, the velocity
+ */ 
 double RobotModel::GetRightVelocity() {
    	if (isHighGear_){
 		return 10.0*(rightDriveEncoder_->GetIntegratedSensorVelocity()/HGEAR_ENCODER_TICKS_FOOT);
-	} else{
+	} else {
 		return 10.0*(rightDriveEncoder_->GetIntegratedSensorVelocity()/LGEAR_ENCODER_TICKS_FOOT);
 	}
-   //return (currRightDistance_ - lastRightDistance_)/(currVelocTime_ - lastVelocTime_);
 }
 
+/**
+ * Resets drive encoders
+ */ 
 void RobotModel::ResetDriveEncoders() {
-	//read curr encoder values and store as initial encoder values
+	// read curr encoder values and store as initial encoder values
 	initialLeftEncoderValue_ = GetRawLeftEncoderValue();
 	initialRightEncoderValue_ = GetRawRightEncoderValue();
 }
 
+/**
+ * Returns true if left encoder has stopped
+ * @return true if encoder has stopped
+ */ 
 bool RobotModel::GetLeftEncoderStopped() {
 	if (currLeftVelocity_ < STOP_VELOCITY_THRESHOLD && currLeftVelocity_ > -STOP_VELOCITY_THRESHOLD 
 	&& lastLeftVelocity_ < STOP_VELOCITY_THRESHOLD && lastLeftVelocity_ > -STOP_VELOCITY_THRESHOLD) {
-		//printf("left encoder is stopped\n");
 		return true;
 	}
-	// if (GetLeftVelocity() < STOP_VELOCITY_THRESHOLD && GetLeftVelocity() > -STOP_VELOCITY_THRESHOLD){
-	// 	return true;
-	// }
 	return false;
 }
 
+/**
+ * Returns true if right encoder has stopped
+ * @return true if encoder has stopped
+ */ 
 bool RobotModel::GetRightEncoderStopped() {
 	if (currRightVelocity_ < STOP_VELOCITY_THRESHOLD && currRightVelocity_ > -STOP_VELOCITY_THRESHOLD 
 	&& lastRightVelocity_ < STOP_VELOCITY_THRESHOLD && lastRightVelocity_ > -STOP_VELOCITY_THRESHOLD) {
 		return true;
 	}
-	// if (GetRightVelocity() < STOP_VELOCITY_THRESHOLD && GetRightVelocity() > -STOP_VELOCITY_THRESHOLD){
-	// 	return true;
-	// }
 	return false;
 }
 
+/**
+ * Starts compressor
+ */ 
 void RobotModel::StartCompressor() {
 	compressor_->Start();
 }
 
+/**
+ * Gets current voltage
+ * @return a double, the current voltage
+ */
 double RobotModel::GetCurrentVoltage() {
     return pdp_-> GetVoltage();
 }
 
+/**
+ * Gets total current
+ * @return a double, the total current
+ */
 double RobotModel::GetTotalCurrent(){
     return pdp_->GetTotalCurrent();
 }
 
+/**
+ * Gets current voltage
+ * @return a double, the current voltage
+ */
 double RobotModel::GetVoltage() {
 	return pdp_->GetVoltage();
 }
 
+/**
+ * Gets current compressor current
+ * @return a double, the current compressor current
+ */
 double RobotModel::GetCompressorCurrent() {
 	return compressorCurrent_;
 }
 
+/**
+ * Gets pressure switch value
+ * @return a double
+ */
 double RobotModel::GetPressureSwitchValue() {
 	return 0.0; // fix
 }
 
+/**
+ * Gets RIO current
+ * @return a double
+ */
 double RobotModel::GetRIOCurrent() {
 	return roboRIOCurrent_;
 }
 
+/**
+ * Gets total power
+ * @return a double
+ */
 double RobotModel::GetTotalPower() {
 	return pdp_->GetTotalPower();
 }
 
+/**
+ * Gets total energy
+ * @return a double
+ */
 double RobotModel::GetTotalEnergy() {
 	return pdp_->GetTotalEnergy();
 }
 
+/**
+ * Gets current NavX yaw
+ * @return a double
+ */
 double RobotModel::GetNavXYaw() {
 	return navX_->GetYaw();
 }
 
-// get index motor 
+/**
+ * get left motor current
+ * @return a double
+ */
 double RobotModel::GetLeftFunnelMotorStatus(){
     return pdp_->GetCurrent(LEFT_FUNNEL_MOTOR_PDP_CHANNEL);
 }
 
-// get index motor 
+/**
+ * get right motor current
+ * @return a double
+ */
 double RobotModel::GetRightFunnelMotorStatus(){
     return pdp_->GetCurrent(RIGHT_FUNNEL_MOTOR_PDP_CHANNEL);
 }
 
-// get index motor 
+/**
+ * get feeder motor current
+ * @return a double
+ */
 double RobotModel::GetFeederMotorStatus(){
     return pdp_->GetCurrent(ELEVATOR_FEEDER_MOTOR_PDP_CHANNEL);
 }
 
-
+/**
+ * Set robot to prepping state
+ * @param desiredVelocity a double
+ */
 void RobotModel::SetPrepping(double desiredVelocity){
 	superstructureController_->SetPreppingState(desiredVelocity);
 }
+
+/**
+ * Set robot to shooting state
+ * @param autoVelocity a double
+ */
 void RobotModel::SetShooting(double autoVelocity){
 	superstructureController_->SetShootingState(autoVelocity);
 }
+
+/**
+ * Set robot to intaking state
+ */
 void RobotModel::SetIntaking(){
 	superstructureController_->SetIntakingState();
 }
+
+/**
+ * Set robot to indexing state
+ */
 void RobotModel::SetIndexing(){
-	//std::cout << "HERAJDSFLKDFLKDSJFALKDJF RNRNRNR" << std::endl  << std::flush;
 	superstructureController_->SetIndexingState();
 }
 
+/**
+ * Checks if shooting is done
+ * @return true if done
+ */
 bool RobotModel::GetShootingIsDone(){
 	return superstructureController_->GetShootingIsDone();
 }
 
-// bool RobotModel::GetWaitingIsDone(){
-// 	return superstructureController_->GetWaitingIsDone();
-// }
-
+/**
+ * Checks motor current over power
+ * @param channel an integer
+ * @param power a double
+ * @return a double with the ratio-ed down power by percent
+ */
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
     double motorCurrent = GetCurrent(channel);
-	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over, TODO change for super
-		power = power*MAX_DRIVE_MOTOR_CURRENT / motorCurrent; //ratio down by percent over
+	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ // current to individual motor is over, TODO change for super
+		power = power*MAX_DRIVE_MOTOR_CURRENT / motorCurrent; // ratio down by percent over
 	}
 	return power;
 }
 
+/**
+ * Updates current for given channel
+ * @param channel an integer
+ */
 void RobotModel::UpdateCurrent(int channel) {
     /* leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
@@ -530,8 +625,7 @@ void RobotModel::UpdateCurrent(int channel) {
     roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
 
 
-    // TODO fix and check logic
-	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE)) && !lastOver_){
+	if((GetTotalCurrent() > maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE)) && !lastOver_){
 		printf("\nSTOPPING\n\n");
 		printf("Total Current %f", GetTotalCurrent());
 		printf("Voltage %f", GetVoltage());
@@ -543,33 +637,36 @@ void RobotModel::UpdateCurrent(int channel) {
 		} else if (ratioDrive_-0.05 > MIN_RATIO_DRIVE_CURRENT){
 			ratioDrive_ -= 0.05;
 		}
+
 		lastOver_ = true;
-	} else if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE) && lastOver_)){
+	} else if ((GetTotalCurrent() > maxCurrentEntry_.GetDouble(MAX_CURRENT_OUTPUT) || 
+		GetVoltage() <= minVoltEntry_.GetDouble(MIN_BROWNOUT_VOLTAGE) && lastOver_)){
+
 		// know compressor is off, because lastOver_ is true
-		// TODO WARNING THIS MIN IS NOT A MIN
-		//printf("am stopping too");
-		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ //sketch, sketch, check this
-			ratioAll_ *= ratioAll_;//-= 0.1;
+		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ 
+			ratioAll_ *= ratioAll_;
 		} else if (ratioSuperstructure_ > MIN_RATIO_SUPERSTRUCTURE_CURRENT){
-			ratioSuperstructure_ *= ratioSuperstructure_; //-= 0.1;
+			ratioSuperstructure_ *= ratioSuperstructure_;
 		} else if (ratioDrive_ > MIN_RATIO_DRIVE_CURRENT){
-			ratioDrive_ *= ratioDrive_;//-= 0.1;
+			ratioDrive_ *= ratioDrive_;
 		}
 		lastOver_ = true;
+
 	} else { 
 		if(compressorOff_){
 			StartCompressor();
 			compressorOff_ = false;
 		}
-		if(ratioDrive_+0.001 < 1.0){
+
+		if(ratioDrive_ + 0.001 < 1.0){
 			ratioDrive_ *= 1.01;
 		} else if (ratioDrive_ < 1.0){
 			ratioDrive_ = 1.0;
-		} else if(ratioSuperstructure_+0.001 < 1.0){
+		} else if(ratioSuperstructure_ + 0.001 < 1.0){
 			ratioSuperstructure_ *= 1.01;
 		} else if(ratioSuperstructure_ < 1.0){
 			ratioSuperstructure_ = 1.0;
-		} else if(ratioAll_+0.001 < 1.0){
+		} else if(ratioAll_ + 0.001 < 1.0){
 			ratioAll_ *= 1.01;
 		} else if(ratioAll_ < 1.0){
 			ratioAll_ /= 1.01;
@@ -577,14 +674,17 @@ void RobotModel::UpdateCurrent(int channel) {
 		lastOver_ = false;
 	}
 
-
 	ratioAllEntry_.SetDouble(ratioAll_);
 	ratioDriveEntry_.SetDouble(ratioDrive_);
 	ratioSuperstructureEntry_.SetDouble(ratioSuperstructure_);
 
-	//printf("current updated\n");
 }
 
+/**
+ * Gets current of a specific motor
+ * @param channel an integer
+ * @return current of the motor as a double
+ */
 double RobotModel::GetCurrent(int channel) {
     UpdateCurrent(channel);
 	switch(channel) {
@@ -618,9 +718,6 @@ double RobotModel::GetCurrent(int channel) {
 	case INTAKE_WRIST_MOTOR_PDP_CHAN:
 		return intakeWristCurrent_;
 		break;
-	/*case INDEX_FUNNEL_MOTOR_PDP_CHAN:
-		return IndexFunnelCurrent_;
-		break; TODO FIX THIS BACK*/
 	case ELEVATOR_FEEDER_MOTOR_PDP_CHAN:
 		return elevatorFeederCurrent_;
 		break;
@@ -633,6 +730,9 @@ double RobotModel::GetCurrent(int channel) {
     }
 }
 
+/**
+ * Shifts gear
+ */
 void RobotModel::GearShift() {
 	if (fabs(GetLeftVelocity()) > MAX_LOW_GEAR_VELOCITY && fabs(GetRightVelocity()) > MAX_LOW_GEAR_VELOCITY){
 		SetHighGear();
@@ -641,15 +741,19 @@ void RobotModel::GearShift() {
 	}
 }
 
-
-
+/**
+ * Modifies the current of a particular motor
+ * @param channel an integer
+ * @param value a double
+ * @return a double, the new power
+ */
 double RobotModel::ModifyCurrent(int channel, double value){
 
     double power = value*ratioAll_;
 	double individualPowerRatio = power;
 	double tempPowerRatio;
 
-	switch(channel){ // TODO check these constants what want to use? TODO CHANGE CHANGE DANG IT
+	switch(channel){
 		case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
 		case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
 			power *= ratioDrive_;
@@ -671,113 +775,182 @@ double RobotModel::ModifyCurrent(int channel, double value){
 			}
 			power = individualPowerRatio;
 			break;
-		/*case CARGO_INTAKE_MOTOR_PDP_CHAN:
-			power *= ratioSuperstructure_;
-			power = CheckMotorCurrentOver(CARGO_INTAKE_MOTOR_PDP_CHAN, power);
-			break;
-		case CARGO_FLYWHEEL_MOTOR_PDP_CHAN: //unused, dont want to slow flywheel of wont shoot
-			power *= ratioSuperstructure_;
-			power = CheckMotorCurrentOver(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, power);
-			break;*/
 		default:
 			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
 	}
-	// printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
 	return power;
 }
 
+/**
+ * Sets robot to high gear
+ */
 void RobotModel::SetHighGear(){
 	if (isHighGear_ == false) {
 		gearSolenoid_ -> Set(false);
 		isHighGear_ = true;
 	}
-	//ResetDriveEncoders();
 }
 
+/**
+ * Sets robot to low gear
+ */
 void RobotModel::SetLowGear(){
 	if (isHighGear_ == true) {
 		gearSolenoid_ -> Set(true);
 		isHighGear_ = false;
 	}
-	//ResetDriveEncoders();
 }
 
+/**
+ * Checks if robot is in high gear
+ * @return true if in high gear
+ */
 bool RobotModel::IsHighGear(){
 	return isHighGear_;
 }
 
-//align tapes
+/**
+ * Sets change in angle
+ * @param angle a double
+ */
 void RobotModel::SetDeltaAngle(double angle) {
 	desiredDeltaAngle_ = angle;
 }
+
+/**
+ * Sets distance from target
+ * @param distance a double
+ */
 void RobotModel::SetDistance(double distance) {
 	desiredDistance_ = distance;
 }
 
+/**
+ * Gets change in angle
+ * @return angle, a double
+ */
 double RobotModel::GetDeltaAngle() {
 	return desiredDeltaAngle_;
 }
+
+/**
+ * Gets distance from target
+ * @return distance a double
+ */
 double RobotModel::GetDistance() {
 	return desiredDistance_;
 }
 
-
+/**
+ * Zeroes the navX Yaw
+ */
 void RobotModel::ZeroNavXYaw() {
 	navX_->ZeroYaw();
-	printf("Zeroed Yaw\n");
 }
 
+/**
+ * Gets pitch
+ * @return double, the pitch
+ */
 double RobotModel::GetNavXPitch() {
 	return navX_->GetPitch();
 }
 
+/**
+ * Gets roll
+ * @return double, the roll
+ */
 double RobotModel::GetNavXRoll() {
 	return navX_->GetRoll();
 }
 
+/**
+ * Gets driverTab from shuffleboard
+ * @return driverTab_
+ */
 frc::ShuffleboardTab& RobotModel::GetDriverTab(){
     return driverTab_;
 }
 
+/**
+ * Gets modeTab from shuffleboard
+ * @return modeTab_
+ */
 frc::ShuffleboardTab& RobotModel::GetModeTab(){
     return modeTab_;
 }
 
+/**
+ * Gets functionalityTab from shuffleboard
+ * @return functionalityTab_
+ */
 frc::ShuffleboardTab& RobotModel::GetFunctionalityTab(){
     return functionalityTab_;
 }
 
+/**
+ * Gets pidTab from shuffleboard
+ * @return pidTab_
+ */
 frc::ShuffleboardTab& RobotModel::GetPIDTab(){
     return pidTab_;
 }
 
+/**
+ * Gets autoOffsetTab from shuffleboard
+ * @return autoOffsetTab_
+ */
 frc::ShuffleboardTab& RobotModel::GetAutoOffsetTab(){
     return autoOffsetTab_;
 }
 
+/**
+ * Gets superstructureTab from shuffleboard
+ * @return superstructureTab_
+ */
 frc::ShuffleboardTab& RobotModel::GetSuperstructureTab(){
     return superstructureTab_;
 }
 
+/**
+ * Gets the test sequence
+ * @return the test sequence as a string
+ */
 std::string RobotModel::GetTestSequence() {
 	return testSequence_;
 }
 
+/**
+ * Sets the test sequence
+ * @param testSequence an std::string
+ */
 void RobotModel::SetTestSequence(std::string testSequence) {
 	testSequence_ = testSequence;
 }
 
+/**
+ * Sets the last pivot angle
+ * @param value a double, the last pivot angle
+ */
 void RobotModel::SetLastPivotAngle(double value){
 	lastPivotAngle_ = value;
 }
+
+/**
+ * Gets the last pivot angle
+ * @return the last pivot angle as a double
+ */
 double RobotModel::GetLastPivotAngle(){
 	return lastPivotAngle_;
 }
 
+/**
+ * Initializes ZMQ
+ */
 void RobotModel::ZMQinit(){
 	//zmq
     if (context_ == nullptr) {
-        context_ = new zmq::context_t(2); //same context for send + receive zmq
+        context_ = new zmq::context_t(2); // same context for send + receive zmq
         publisher_ = new zmq::socket_t(*context_, ZMQ_PUB);
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
         ConnectRecvZMQ();
@@ -785,15 +958,16 @@ void RobotModel::ZMQinit(){
     }
 }
 
+/**
+ * Connects to zmq socket to receive from jetson
+ */ 
 void RobotModel::ConnectRecvZMQ() {
-    //connect to zmq socket to receive from jetson
     try {
 		printf("in try connect to jetson\n");
         //change to dynamic jetson address
-		//printf("jetson connected to socket\n");
         int confl = 1;
         subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-        subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
+        subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000);
         subscriber_->connect("tcp://10.18.68.12:5808");
         subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
     } catch(const zmq::error_t &exc) {
@@ -803,35 +977,27 @@ void RobotModel::ConnectRecvZMQ() {
     std::cout << "reached end of connect recv zmq\n" << std::flush;
 }
 
-void RobotModel::UpdateZMQ(){ //returns has contents
+/**
+ * Updates ZMQ
+ */ 
+void RobotModel::UpdateZMQ(){ 
 	std::string temp = ReadZMQ();
-	//std::cout << "read from zmq " << temp << std::endl;
     hasContents_ = !ReadAll(temp);
 }
 
+/**
+ * Returns true if ZMQ has contents
+ * @return true if ZMQ has contents
+ */ 
 bool RobotModel::ZMQHasContents(){
 	return hasContents_;
 }
 
+/**
+ * Returns the ZMQ contents
+ * @return the contents of ZMQ as a string
+ */ 
 std::string RobotModel::ReadZMQ() {
-    /*try {
-		printf("in try connect to jetson in readZMQ\n");
-        subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        //change to dynamic jetson address
-        subscriber_->connect("tcp://10.18.68.12:5808");
-		printf("jetson connected to socket\n");
-        int confl = 1;
-		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000); //TODO THIS MIGHT ERROR
-		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "", 0); //filter for nothing
-    } catch(const zmq::error_t &exc) {
-		printf("ERROR: TRY CATCH FAILED IN ZMQ CONNECT RECEIVE\n");
-		std::cerr << exc.what();
-	}
-    */
-    //printf("starting read from jetson\n");
-	//std::string contents = s_recv(*subscriber
-    //std::string contents = s_recv(*subscriber_);
     std::string contents;
     zmq::message_t m;
     subscriber_->recv(&m, ZMQ_NOBLOCK);
@@ -839,14 +1005,16 @@ std::string RobotModel::ReadZMQ() {
     return contents;
 }
 
+/**
+ * Split up the ZMQ contents into something readable
+ */ 
 bool RobotModel::ReadAll(std::string contents) {
-    //printf("ready to read from jetson\n");
     
-    std::stringstream ss(contents); //split string contents into a vector
+    std::stringstream ss(contents); // split string contents into a vector
 	std::vector<std::string> result;
     bool abort;
 
-	while(ss.good()) {
+	while (ss.good()) {
 		std::string substr;
 		getline( ss, substr, ' ' );
 		if (substr == "") {
@@ -855,49 +1023,33 @@ bool RobotModel::ReadAll(std::string contents) {
 		result.push_back( substr );
 	}
 
-    //jetson string is hasTarget, angle (deg from center), raw distance (ft)
+    // jetson string is hasTarget, angle (deg from center), raw distance (ft)
 	if(result.size() > 2) {
-        //printf("received values\n"); //TODO MAYBE ERROR CHECK ZMQ SEND ON JETSON SIDE
         double angle = stod(result.at(1));
         double distance = stod(result.at(2));
-        //printf("jetson set angle is %f and set distance is %f\n", angle, distance);
 		SetDeltaAngle(angle);
-		SetDistance(distance);//1.6;
+		SetDistance(distance); // 1.6;
         abort = false;
 	} else {
 		abort = true;
 		SetDeltaAngle(0.0);
-		//SetDistance(0.0);
-        //printf("returning because nothing received\n");
 	}
-	//printf("desired delta angle at %f in AlignWithTapeCommand\n", GetDeltaAngle());
-    //printf("desired delta distance at %f in AlignWithTapeCommand\n", GetDistance());
-		
-	/*} catch (const std::exception &exc) {
-		printf("TRY CATCH FAILED IN READFROMJETSON\n");
-		std::cout << exc.what() << std::endl;
-		desiredDeltaAngle_ = 0.0;
-		// desiredDistance_ = 0.0;
-	}*/
 
-    //printf("end of read angle with %d\n", abort);
     return abort;
 
 }
 
+/**
+ * ZMQ socket to send message to jetson
+ */ 
 void RobotModel::ConnectSendZMQ() {
-    //zmq socket to send message to jetson
     try{
-        std::cout << "start connect send zmq\n" << std::flush;
-        //std::cout << "done connect socket zmq\n" << std::flush;
         if(!isSocketBound_){
             publisher_->bind("tcp://*:5807");
             isSocketBound_ = true;
         }
         int confl = 1;
-        std::cout << "setting socket zmq\n" << std::flush;
         publisher_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
-        std::cout << "done setting socket zmq\n" << std::flush;
     } catch (const zmq::error_t &exc) {
 		printf("TRY CATCH FAILED IN ZMQ CONNECT SEND\n");
 		std::cerr << exc.what();
@@ -905,8 +1057,11 @@ void RobotModel::ConnectSendZMQ() {
 
 }
 
+/**
+ * Send messages to driverstation
+ * @param lowExposure a boolean
+ */ 
 void RobotModel::SendZMQ(bool lowExposure) {
-    //string message = "matchtime = " + to_string(matchTime_) + ", aligningTape = " + to_string(aligningTape_);
 	std::string message =
 		std::to_string(lowExposure) +
 		" targetRPM:" +
@@ -915,35 +1070,39 @@ void RobotModel::SendZMQ(bool lowExposure) {
 		std::to_string((int)(GetFlywheelMotor1Velocity()*FALCON_TO_RPM));
 
 	if (GetElevatorFeederLightSensorStatus() && GetElevatorLightSensorStatus() && GetFunnelLightSensorStatus()){
-		message += " FULL ELEVATOR!! ";
+		message += " FULL ELEVATOR!!";
 	}
 
-    //std::cout << message << std::endl;
-    //zmq_send((void *)publisher_, message.c_str(), message.size(), 0);
     int sent = zmq_send((void *)*publisher_, message.c_str(), message.size(), 0);
-    //std::cout << sent << " done sending to zmq" << std::endl;
 }
 
+/**
+ * Calculates desired flywheel velocity
+ * @return flywheel velocity, a double
+ */ 
 double RobotModel::CalculateFlywheelVelocityDesired(){
 	return superstructureController_->CalculateFlywheelVelocityDesired();
 }
 
+/**
+ * Create the NavX
+ */ 
 void RobotModel::CreateNavX(){
 	navXSource_ = new NavXPIDSource(this);
 }
 
+/**
+ * Get the NavX
+ * @return navXSource_
+ */ 
 NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
 }
 
+/**
+ * Refreshes shuffleboard values
+ */ 
 void RobotModel::RefreshShuffleboard(){
-
-	/* set closed loop gains in slot0 */
-
-	// flywheelMotor1_->Config_kF(kPIDLoopIdx, 0.1097, flywheelVelocTimeout_);
-	// flywheelMotor1_->Config_kP(kPIDLoopIdx, 0.22, kTimeoutMs);
-	// flywheelMotor1_->Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
-	// flywheelMotor1_->Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
 	
 	lastLeftEncoderValue_ = currLeftEncoderValue_;
     lastRightEncoderValue_ = currRightEncoderValue_;
@@ -955,8 +1114,7 @@ void RobotModel::RefreshShuffleboard(){
 	lastRightDistance_ = currRightDistance_;
 	currLeftDistance_ = GetLeftDistance();
 	currRightDistance_ = GetRightDistance();
-	//printf("curr left: %f, last left: %f\n", currLeftDistance_, lastLeftDistance_);
-
+	
 	lastLeftVelocity_ = currLeftVelocity_;
 	lastRightVelocity_ = currRightVelocity_;
 	currLeftVelocity_ = GetLeftVelocity();
@@ -973,16 +1131,12 @@ void RobotModel::RefreshShuffleboard(){
 	gColorEntry_.SetDouble(detectedColor_.green);
 	bColorEntry_.SetDouble(detectedColor_.blue);
  
-
-	//UpdateCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftCurrentEntry_.SetDouble(leftDriveACurrent_);
 	rightCurrentEntry_.SetDouble(rightDriveACurrent_);
 	resetWristAngle_ = resetWristAngleEntry_.GetBoolean(false);
 	if (resetWristAngle_) {
-		//printf("reset wrist angle\n");
 		ResetWristAngle();
 	}
-
 
 	initLineError_ = initLineErrorEntry_.GetDouble(0.0);
 	trenchDistError_ = trenchDistErrorEntry_.GetDouble(0.0);
@@ -991,17 +1145,13 @@ void RobotModel::RefreshShuffleboard(){
 	targetZDistError_ = targetZDistErrorEntry_.GetDouble(0.0);
 	loadingDDistError_ = loadingDDistErrorEntry_.GetDouble(0.0);
 	playerSt2MidError_ = playerSt2MidErrorEntry_.GetDouble(0.0);
-
-	// if (leftDriveACurrent_ != 0.0 || rightDriveACurrent_ != 0.0) {
-	// 	std::cout<< "left: " << leftDriveACurrent_ << " right: " << rightDriveACurrent_ <<std::endl;
-	// }
-	//std::cout<< "left encoder: " << currLeftEncoderValue_ << " right encoder: " << currRightEncoderValue_ <<std::endl;
-	//std::cout<< "time: " << GetTime() << std::endl;
 }
 
+/**
+ * Destructor
+ */ 
 RobotModel::~RobotModel(){
 	
-	//why is this removed?
 	/*delete climberRatchetSolenoid_;
 	delete flywheelHoodSolenoid_;
 	delete gearSolenoid_;

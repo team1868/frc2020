@@ -7,9 +7,14 @@
 
 #include "auto/commands/PreppingCommand.h"
 
-//Constructor
+/**
+ * Constructor
+ * @param robot a RobotModel
+ * @param desiredVelocity a double
+ */ 
 PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity) : AutoCommand() {
     printf("prepping command\n");
+    
     //initialize variables
     robot_ = robot;
     isDone_ = false;
@@ -17,7 +22,10 @@ PreppingCommand::PreppingCommand(RobotModel * robot, double desiredVelocity) : A
     desiredVelocity_ = desiredVelocity;
 }
 
-//Constructor
+/**
+ * Constructor without desired velocity
+ * @param robot a RobotModel
+ */ 
 PreppingCommand::PreppingCommand(RobotModel * robot) : AutoCommand() {
     printf("prepping command\n");
     //initialize variables
@@ -27,7 +35,9 @@ PreppingCommand::PreppingCommand(RobotModel * robot) : AutoCommand() {
     desiredVelocity_ = 0.0;
 }
 
-//set desired velocity
+/**
+ * Initializes command, sets desired velocity
+ */ 
 void PreppingCommand::Init(){
     isDone_ = false;
     if(!setVelocity_){
@@ -35,7 +45,11 @@ void PreppingCommand::Init(){
     }
 }
 
-//prep -> done
+/**
+ * Periodic update
+ * @param currTimeSec a double
+ * @param deltaTimeSec a double
+ */ 
 void PreppingCommand::Update(double currTimeSec, double deltaTimeSec){
     
     printf("STILL PREPPING\n");
@@ -43,16 +57,22 @@ void PreppingCommand::Update(double currTimeSec, double deltaTimeSec){
     isDone_ = true;
 }
 
-//set done
+/**
+ * Returns true if done
+ * @return isDone_
+ */
 bool PreppingCommand::IsDone(){
     return isDone_;
 }
 
-//done
+/**
+ * Resets
+ */ 
 void PreppingCommand::Reset(){
     isDone_ = true;
 }
 
-PreppingCommand::~PreppingCommand(){
-    
-}
+/**
+ * Destructor
+ */ 
+PreppingCommand::~PreppingCommand(){}

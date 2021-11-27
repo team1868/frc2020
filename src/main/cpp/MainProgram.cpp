@@ -13,6 +13,9 @@
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
+/**
+ * Initializes the robot
+ */ 
 void MainProgram::RobotInit() {
 
     robot_ = new RobotModel();
@@ -46,10 +49,7 @@ void MainProgram::RobotInit() {
     realAutoChooser_.AddOption("PROGRAMMING PIVOT TEST", "n t 33.0");
     realAutoChooser_.AddOption("PROGRAMMING SHOOTING TEST", "n b 3470.0 s 3470.0 n");
     realAutoChooser_.AddOption("NEW AUTO TEST", "n b 3470.0 s 3470.0 t 0.0 i d -11.7 0 d 11.7 0 a y q n");
-	//realAutoChooser_.AddOption("1: Target Zone", "b 3545.0 s 3545.0 n t -33.0 d -8.5 0 i t 0.0 b 4812.0 d -9.5 1 n a a q n"); //Note: shooting but not making shot
-	//untuned shots
-    //4 degrees off last angle
-    //lab 10ft shot is 3370
+    
     //NASA //realAutoChooser_.AddOption("1: Target Zone", "n b 3370.0 s 3370.0 n t -33.0 d -8.3 0 i t 0.0 d -9.5 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
 	realAutoChooser_.AddOption("1: Target Zone", "n b 3470.0 s 3470.0 n t -45.0 d -8.5 0 i t 0.0 d -9.7 1 n d 11.0 0 t -20.0 a"); //Note: NO SHOT!
 	realAutoChooser_.AddOption("2: Center to bar", "n a y q t -33.0 i d -7.6 0 d 6.6 0 t 0.0 a y q n");
@@ -67,16 +67,17 @@ void MainProgram::RobotInit() {
 	//realAutoChooser_.AddOption("3: Mid-Trench", );
 	//realAutoChooser_.AddOption("4: Mid-Player Station", );
 	//realAutoChooser_.AddOption("5: other", tempAutoString_);
-    //t 26.656 before curve
     
-    //working 26s sequence non sketchy
+    // IR@H Auto Sequences:
+    
+    // working 26s sequence non sketchy
     //realAutoChooser_.AddOption("5: Slalom", "n t -40.0 d 10.5 0 t 0 d 8.0 0 t 63.435 d 7.5 0 t 26.656 c 2.75 234.274 1 1 t 125 d 6.5 0 t 180 d 11.0 0 t -142.75 d 9.362 0 t 180");
     
-    //working 21s sequence
+    // working 21s sequence
     //realAutoChooser_.AddOption("5: Slalom", "n t -40.0 d 10.5 0 t 0 d 8.7 0 t 63.435 d 7.5 0 t 26.656 c 2.75 275.0 1 1 d 4.0 0 u 180 d 11.0 0 u -142.75 d 9.0 0 t 180");
     
     //realAutoChooser_.AddOption("6: Slalom box", "n d 2.4791667 0 t 90 d -5.0 0 t 0 d 12.5 0 t -90 d -5.0 0 t 180 d -5.0 0 t 90 d -5.0 0 t 0 d -5.0 0 t -90 d -5.0 0 t 0 d -12.5 0 t 90 d -5.0 0 t 0 d -2.4791667 0");
-    //11.5 battery realAutoChooser_.AddOption("Barrel", "n u -4.0 d 8.5 0 c 2.75 350.0 0 1 u -9.0 d 9.2 0 c 2.7 301 1 1 d 8.9 0 c 2.7 230 1 1 d 20.0 0");
+    // realAutoChooser_.AddOption("Barrel", "n u -4.0 d 8.5 0 c 2.75 350.0 0 1 u -9.0 d 9.2 0 c 2.7 301 1 1 d 8.9 0 c 2.7 230 1 1 d 20.0 0");
 
     //realAutoChooser_.AddOption("Bounce", "n c 5.0 90 1 1 t -108.43 d -7.9 1 t 90 c 2.5 180 0 0 d -7.5 1 d 7.5 1 c 3.75 180 1 1 d 7.5 1 d -5.0 1 t 0 d 5.0 1");
     //realAutoChooser_.AddOption("Pivot Test", "n t 10.0");
@@ -84,7 +85,6 @@ void MainProgram::RobotInit() {
     //realAutoChooser_.AddOption("Barrel", "n t 8.98 d 11.7421 0 t 60 c 2.75 240 0 1 t 0 d 10.098 1 c 3.5 315 1 1 t 43.84 d 8.487 1 t 18.435 c 3.16 180 1 1 t 180 d 22.5 1");
     
     //working sequences (filmed)
-    //7 t
     // realAutoChooser_.AddOption("Bounce no curve", "d 3.833 0 t -90 d 3.75 0 t -111.0 d -9.6 0 t 180 d -4.8 0 t 90 d -9.487 0 d 9.35 0 t 0 d 7.8 0 t -90 d 9.6 0 d -3.8 0 t 0 d 6.333 0"); //good 23 sec
     // realAutoChooser_.AddOption("Bounce curve", "c 3.85 90 1 1 u -111.0 d -7.3 0 c 2.0 195.0 0 0 u 90.0 d -6.0 0 d 6.0 0 c 3.35 195.0 1 1 u -90.0 d 7.0 0 c 3.75 95.0 0 0");//d -3.5 0 t 0 d 6.333 0"); //good 23 sec
     //realAutoChooser_.AddOption("6: Slalom box", "n d 3.83 0 t -90 d 5.0 0 t 0 d 15.0 0 t 90 d 5.0 0 t 0 d 5.0 0 t -90 d 5.0 0 t 180.0 d 5.2 0 t 90 d 5.0 0 t 180.0 d 15.0 0 t -90.0 d 5.5 0 t 180.0 d 4.0 0"); //good 31 sec

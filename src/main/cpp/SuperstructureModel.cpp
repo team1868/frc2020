@@ -7,23 +7,27 @@
 
 #include "RobotModel.h"
 
+// initializes superstructure for autonomous
 void RobotModel::ShootingAutoInit(){
     superstructureController_->AutoInit();
 }
 
+// sets the superstructure controller
 void RobotModel::SetSuperstructureController(SuperstructureController *superstructureController){
     superstructureController_ = superstructureController;
 }
 
+// sets the auto state
 void RobotModel::SetAutoState(uint32_t state) {
     state_ = state;
 }
 
+// gets the auto state
 uint32_t RobotModel::GetAutoState() {
     return state_;
 }
 
-// run flywheel
+// runs flywheel
 void RobotModel::SetFlywheelOutput(double power){
     flywheelMotor1_->Set(power);
 }
@@ -38,23 +42,26 @@ double RobotModel::GetFlywheel2EncoderValue() {
     return -flywheelEncoder2_->GetIntegratedSensorPosition(); 
 }
 
-// ?
+// sets flywheel motor to desired velocity?
 void RobotModel::SetControlModeVelocity(double desiredVelocity) {
     flywheelMotor1_->Set(ControlMode::Velocity, desiredVelocity);
 }
 
 // get flywheel motor 1 velocity
 int RobotModel::GetFlywheelMotor1Velocity() {
-    return flywheelMotor1_->GetSelectedSensorVelocity(0); // 0 means primary closed loop
+    return flywheelMotor1_->GetSelectedSensorVelocity(0); 
+    // 0 means primary closed loop
     // raw sensor units per 100 ms
 }
 
+// configure flywheel PID
 void RobotModel::ConfigFlywheelPID(double pFac, double iFac, double dFac){
     flywheelMotor1_->Config_kP(FLYWHEEL_PID_LOOP_ID, pFac);
     flywheelMotor1_->Config_kI(FLYWHEEL_PID_LOOP_ID, iFac);
     flywheelMotor1_->Config_kD(FLYWHEEL_PID_LOOP_ID, dFac);
 }
 
+// configure flywheel fFac
 void RobotModel::ConfigFlywheelF(double fFac){
     flywheelMotor1_->Config_kF(FLYWHEEL_PID_LOOP_ID, fFac);
 }
@@ -94,10 +101,12 @@ void RobotModel::DisengageFlywheelHood() {
     flywheelHoodSolenoid_->Set(false);
 }
 
+// engage climber ratchet
 void RobotModel::EngageClimberRatchet() {
     climberRatchetSolenoid_->Set(true);
 }
 
+// disengage climber ratchet
 void RobotModel::DisengageClimberRatchet() {
     climberRatchetSolenoid_->Set(false);
 }
@@ -180,16 +189,17 @@ std::string RobotModel::MatchColor() {
     return colorString_;
 }
 
+// get control panel data
 std::string RobotModel::GetControlPanelGameData() {
     return controlPanelGameData_;
 }
-
 
 //should return degrees
 double RobotModel::GetIntakeWristAngle(){
     return TICKS_TO_WRIST_DEGREES*intakeWristMotor_->GetSelectedSensorPosition();
 }
 
+// reseet wrist angle
 void RobotModel::ResetWristAngle(){
     intakeWristMotor_->SetSelectedSensorPosition(0);
 }
@@ -203,12 +213,17 @@ bool RobotModel::GetElevatorLightSensorStatus() {
 }
 
 #else
+// get bottom sensor status 
 bool RobotModel::GetElevatorFeederLightSensorStatus() {
     return  !elevatorFeederLightSensor_->Get();
 }
+
+// get top sensor status
 bool RobotModel::GetElevatorLightSensorStatus() {
     return !elevatorLightSensor_->Get();
 }
+
+// get funnel sensor status
 bool RobotModel::GetFunnelLightSensorStatus(){
     return funnelLightSensor_->Get();
 }

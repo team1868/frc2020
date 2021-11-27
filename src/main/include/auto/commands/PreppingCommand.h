@@ -12,12 +12,45 @@
 
 class PreppingCommand : public AutoCommand {
  public:
+  /**
+   * Constructor
+   * @param robot a RobotModel
+   * @param desiredVelocity a double
+   */ 
   PreppingCommand(RobotModel * robot, double desiredVelocity);
+  
+  /**
+   * Constructor without desired velocity
+   * @param robot a RobotModel
+   */ 
   PreppingCommand(RobotModel * robot);
+
+  /**
+   * Initializes class for run
+   */
   void Init();
+
+  /** 
+   * Periodic update
+   * @param currTimeSec current time
+   * @param deltaTimeSec delta time
+   */
   void Update(double currTimeSec, double deltaTimeSec);
+
+  /**
+    * Resets robot to standby 
+    */
   void Reset();
+
+  /**
+   * Returns true if command is done
+   * @return isDone_
+   */
   bool IsDone();
+
+  /**
+   * Destructor
+   */ 
   virtual ~PreppingCommand();
   
  private:

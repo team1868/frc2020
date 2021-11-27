@@ -15,22 +15,79 @@ static const double STATIC_FRICTION_DRIVE = 0.07; //NEED TO CALIBRATE
 
 class DriveController {
   public:
+    /**
+     * Constructor
+     * @param robot a RobotModel
+     * @param humanControl a ControlBoard
+     */
     DriveController(RobotModel *robot, ControlBoard *humanControl);
 
+    /**
+     * Periodic update, updates shuffleboard entries, drive (arcade versus tank), and gear shifts
+     */
     void Update();
+
     void Reset();
+
+    /** 
+     * Updates drive controller related shuffleboard entries
+     */ 
     void RefreshShuffleboard();
+
+    /** 
+     * Tank drive
+     * @param left a double for left output
+     * @param right a double for right output
+     */
     void TankDrive(double left, double right);
+
+    /** 
+     * Arcade drive
+     * @param thrust a double
+     * @param rotate a double
+     */
     void ArcadeDrive(double thrust, double rotate);
 
-    // adjusts sensitivity for turn
+    /** 
+     * Adjusts joystick sensitivity using a cubic for smoother driving
+     * @param value a double
+     * @param adjustmentConstant a double
+     * @return adjusted value as a double
+     */
   	double GetCubicAdjustment(double value, double adjustmentConstant);
+
+    /** 
+     * Returns how much the thrust value should be adjusted: if it's lower than the deadband, the robot should not move
+     * @param value a double
+     * @return adjusted value as a double
+     */
     double GetDeadbandAdjustment(double value);
+
+    /** 
+     * Gives extra power to motors to account for friction when robot begins to move
+     * @param leftDrive a double
+     * @param rightDrive a double
+     * @param testMode a boolean
+     */
     void FrictionAdjustment(double &leftDrive, double &rightDrive, bool testMode);
+    
+    /** 
+     * Adjusts rotation for turns in arcade drive
+     * @param value a double
+     * @return adjusted value as a double
+     */
     double GetRotateVelocityAdjustment(double value);
+
+    /** 
+     * Adjusts left and right drive values since robot power must be in the range -1.0 to 1.0
+     * @param leftValue a double
+     * @param rightValue a double
+     */
     void MaxSpeedAdjustment(double &leftvalue, double &rightvalue);
 
-    // destructor
+    /**
+     * Destructor
+     */ 
     ~DriveController();
     
   private:

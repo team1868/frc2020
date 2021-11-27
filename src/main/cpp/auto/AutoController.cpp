@@ -7,23 +7,32 @@
 
 #include "auto/AutoController.h"
 
-// Blank constructor
+/**
+ * Blank constructor
+ */
 AutoController::AutoController() {
 	autoMode = nullptr;
 }
 
-// Constructor that sets auto mode
+/** 
+ * Constructor, allows AutoMode to be set
+ * @param autoMode an AutoMode
+ */
 AutoController::AutoController(AutoMode *myAutoMode){
 	autoMode = myAutoMode;
 }
 
-// Setting auto mode
+/** 
+ * Sets auto mode
+ * @param autoMode is an AutoMode
+ */
 void AutoController::SetAutonomousMode(AutoMode *myAutoMode) {
 	autoMode = myAutoMode;
 }
 
-//put autoMode in queue
-//Ask: Why create queue? What's the Init() for? (recursion?)
+/**
+ * Create a queue for automode and initializes it
+ */
 void AutoController::Init(AutoMode::AutoPositions pos) {
 	printf("in autocontroller init\n");
 	if (autoMode == NULL) {
@@ -40,17 +49,26 @@ void AutoController::Init(AutoMode::AutoPositions pos) {
 	}
 }
 
-//update time
+/**
+ * Periodic update
+ * @param currTimeSec a double that is the current time in seconds
+ * @param deltaTimeSec a double that is the change in time
+ */
 void AutoController::Update(double currTimeSec, double deltaTimeSec) {
 	autoMode->Update(currTimeSec, deltaTimeSec);
 }
 
-//is autoMode done
+/** 
+ * Returns if autoMode is done
+ * @return true when AutoMode is done
+ */
 bool AutoController::IsDone() {
 	return autoMode->IsDone();
 }
 
-//abort auto
+/** 
+ * Aborts auto
+ */
 bool AutoController::Abort() {
 	return autoMode->Abort();
 }

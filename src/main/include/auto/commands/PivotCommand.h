@@ -20,40 +20,53 @@
 class PivotCommand : public AutoCommand {
 
 public:
-	/**
-	 * PivotCommand a constructor
-	 * @param robot a RobotModel
-	 * @param desiredAngle a double that is the angle of the turn
-	 * @param isAbsolutePosition a bool that represents whether the angle is absolute position of deta angle
-	 * @param navXSource a NavXPIDSource
-	 */
+	/** 
+     * Constructor without tolerance
+     * @param robot a RobotModel
+ 	 * @param desiredAngle a double that is the angle of the turn
+ 	 * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of delta angle
+ 	 * @param navXSource a NavXPIDSource
+ 	 * @param talonOutput a PivotPIDTalonOutput
+ 	 */
 	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, PivotPIDTalonOutput* talonOutput);
+	
+	/** 
+ 	 * Constructor with tolerance
+ 	 * @param robot a RobotModel
+	 * @param desiredAngle a double that is the angle of the turn
+ 	 * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of deta angle
+ 	 * @param navXSource a NavXPIDSource
+ 	 * @param tolerance a double
+ 	 * @param talonOutput a PivotPIDTalonOutput
+ 	 */
 	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance, PivotPIDTalonOutput* talonOutput);
 
 	/**
-	 * PivotCommand a destructor
+	 * Destructor
 	 */
 	virtual ~PivotCommand();
 
 	/**
-	 * gets Yaw from navX, sets Setpoint, continuous to false, output range, and absolute tolerance
-	 */
+ 	 * Initializes class for run
+ 	 */
 	void Init();
 
 	/**
-	 * resets PID, sets isDone_ to true
-	 */
+     * Resets robot to standby 
+     */
 	void Reset();
 
-	/**
-	 * if PivotPID is on target more than 8 times then timeout
-	 * pivotPID resets, disable, isDone sets to true
-	 */
+    /** 
+     * Periodic update
+     * @param currTimeSec current time
+     * @param deltaTimeSec delta time
+     */
 	void Update(double currTimeSec, double deltaTimeSec);
 
-	/**
-	 * @return isDone_
-	 */
+    /**
+     * Returns true if command is done
+     * @return isDone_
+     */
 	bool IsDone();
 
 	/**

@@ -15,25 +15,29 @@ class RobotModel;
 class NavXPIDSource : public frc::PIDSource {
 public:
 	/**
-	 * Assigns the robot and resets the accumulated yaw
-	 * @param RobotModel
+	 * Constructor
+	 * @param robot a RobotModel
 	 */
 	NavXPIDSource(RobotModel *robot);
+
 	/**
 	 * Calculates accumulatedYaw
 	 * @return accumulatedYaw
 	 */
 	double PIDGet();
+
 	/**
 	 * Updates currYAW, calculates deltaYaw and accumulatedYaw
 	 * @return accumulatedYaw
 	 */
 	double CalculateAccumulatedYaw();
+
 	/**
 	 * Sets AccumulatedYaw and deltaYaw to zero
 	 * Updates currYaw and lastYaw
 	 */
 	void ResetAccumulatedYaw();
+
 	/**
 	 * Destructor
 	 */
@@ -42,9 +46,6 @@ public:
 private:
 	double currYaw_, lastYaw_, deltaYaw_, accumulatedYaw_;
 	RobotModel *robot_;
-	/**
-	 * displays accumulatedYaw on Shuffleboard
-	 */
 
 };
 
@@ -53,54 +54,53 @@ private:
 class TalonEncoderPIDSource : public frc::PIDSource {
 public:
 	/**
-	 * Assigns robot and sets averageTalonDistance to 0
+	 * Constructor
 	 * @param RobotModel
 	 */
 	TalonEncoderPIDSource(RobotModel *robot);
+
 	/**
-	 * Gets distance from left and right encoders and sets averageTalonDistance
-	 * as average of the two
-	 * displays leftDistance, rightDistance and averageTalonDistance_ on Shuffleboard
+	 * Gets distance from left and right encoders and sets averageTalonDistance as the average of the two
 	 * @return averageTalonDistance_
 	 */
-	//not used and doesn't work
 	double PIDGet();
+
 	/**
 	 * Destructor
 	 */
 	virtual ~TalonEncoderPIDSource();
+
 private:
 	RobotModel *robot_;
-	/**
-	 * Average distance of left and right encoders
-	 */
 	double averageTalonDistance_;
 
 };
 
 class VelocityPIDSource : public frc::PIDSource {
 public:
+
 	/** 
-	 * Assigns the robot
-	 * updates lastTime_ and currTime_
-	 * sets lastAvgPosition_, currAvgPosition and avgVelocity to 0
+	 * Constructor
 	 * @param RobotModel
 	 */
 	VelocityPIDSource(RobotModel *robot);
+
 	/**
-	 * updates lastTime_, currTime_, lastAvgPosition_ and currAvgPosition_ 
-	 * calculates avgVelocity_
-	 */
-	//unused 
+	 * Calculates average velocity
+	 */	
 	void UpdateVelocity();
+
 	/**
+	 * Gets average velocity
 	 * @return avgVelocity_
 	 */
 	double PIDGet();
+
 	/**
 	 * Destructor
 	 */
 	virtual ~VelocityPIDSource();
+	
 private:
 	RobotModel *robot_;
 	double lastTime_, currTime_;

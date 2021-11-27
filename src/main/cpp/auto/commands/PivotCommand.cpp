@@ -8,12 +8,20 @@
 #include "auto/commands/PivotCommand.h"
 #include <frc/WPILib.h>
 
-// constructor
-PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, PivotPIDTalonOutput* talonOutput) :
-	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout"))
+/** 
+ * Constructor without tolerance
+ * @param robot a RobotModel
+ * @param desiredAngle a double that is the angle of the turn
+ * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of delta angle
+ * @param navXSource a NavXPIDSource
+ * @param talonOutput a PivotPIDTalonOutput
+ */
+PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle,
+	NavXPIDSource* navXSource, PivotPIDTalonOutput* talonOutput) :
+	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout")) 
 	{
 
-	//add left and right outputs + errors to the shuffleboard layout
+	// add left/right outputs and errors to the shuffleboard layout
 	leftDriveEntry_ = pivotLayout_.Add("Left Drive Output", 0.0).GetEntry();
 	rightDriveEntry_ = pivotLayout_.Add("Right Drive Output", 0.0).GetEntry();
 	pivotErrorEntry_ = pivotLayout_.Add("Error", 0.0).GetEntry();
@@ -22,7 +30,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	initYaw_ = navXSource_->PIDGet();
 
-	//adjust desiredAngle value based on whether the angle is absolute
+	// adjust desiredAngle value based on whether the angle is absolute
 	if (isAbsoluteAngle){
 		desiredAngle_ = desiredAngle;
 	} else {
@@ -54,16 +62,24 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	iFac_ = robot_->GetPivotI();
 	dFac_ = robot_->GetPivotD();
 
-
 	//set up PID + print
 	printf("p: %f i: %f d: %f and going to %f\n", pFac_, iFac_, dFac_, desiredAngle_);
 	pivotPID_ = new frc::PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 }
 
-// constructor
-PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance, PivotPIDTalonOutput* talonOutput) :
-	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout"))
+/** 
+ * Constructor with tolerance
+ * @param robot a RobotModel
+ * @param desiredAngle a double that is the angle of the turn
+ * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of deta angle
+ * @param navXSource a NavXPIDSource
+ * @param tolerance a double
+ * @param talonOutput a PivotPIDTalonOutput
+ */
+PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, 
+	NavXPIDSource* navXSource, int tolerance, PivotPIDTalonOutput* talonOutput) :
+	pivotLayout_(robot->GetFunctionalityTab().GetLayout("Pivot", "List Layout")) 
 	{
 
 	leftDriveEntry_ = pivotLayout_.Add("Pivot Left Drive", 0.0).GetEntry();
@@ -74,7 +90,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	initYaw_ = navXSource_->PIDGet();
 
-	//adjust desiredAngle value based on whether the angle is absolute
+	// adjust desiredAngle value based on whether the angle is absolute
 	if (isAbsoluteAngle){
 		desiredAngle_ = desiredAngle;
 	} else {
@@ -111,14 +127,18 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 }
 
-//get PID values from shuffleboard
+/** 
+ * Gets PID values from Shuffleboard, sets to 0 if not present
+ */
 void PivotCommand::GetPIDValues() {
 	pFac_ = robot_-> GetPivotP();
 	iFac_ = robot_-> GetPivotI();
 	dFac_ = robot_-> GetPivotD();
 }
 
-//initialize navx angle + target varables, set PID values (in case they changed)
+/**
+ * Initializes command
+ */
 void PivotCommand::Init() {
 	robot_->SetLastPivotAngle(desiredAngle_);
 
@@ -147,7 +167,9 @@ void PivotCommand::Init() {
  			initYaw_, desiredAngle_, pivotCommandStartTime_);
 }
 
-// theoretical change class back to orginal state
+/**
+ * Resets for standby
+ */
 void PivotCommand::Reset() {
 	// turn off motors
 	robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
@@ -169,36 +191,45 @@ void PivotCommand::Reset() {
 	printf("DONE FROM RESET \n");
 }
 
-// update time variables
-void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible source of error TODO reset encoders
+/** 
+ * Periodic update
+ * @param currTimeSec a double
+ * @param deltaTimeSec a double
+ */
+void PivotCommand::Update(double currTimeSec, double deltaTimeSec) {
 
 	// calculate time difference
 	double timeDiff = robot_->GetTime() - pivotCommandStartTime_;
-	bool timeOut = (timeDiff > pivotTimeoutSec_); //test this value
+	bool timeOut = (timeDiff > pivotTimeoutSec_);
 
-	//printf("error is %f in pivot command\n",pivotPID_->GetError());
-	// on target
+	// check if on target
 	if (pivotPID_->OnTarget()) {
 		numTimesOnTarget_++;
 	} else {
 		numTimesOnTarget_ = 0;
 	}
-	//printf("On target %d times\n",numTimesOnTarget_);
+
+	// check how many times on target and if timed out
 	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
+		
 		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
 				"%f Angle NavX Error %f\n",
 				timeDiff, navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
 				pivotPID_->GetError());
+		
 		Reset();
 		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
+		
 		printf("%f PIVOT IS DONE \n", robot_->GetTime());
+		
 		if (timeOut) {
 			printf("%f FROM PIVOT TIME OUT GO GET CHICKEN TENDERS @ %f\n", robot_->GetTime(), timeDiff);
 		}
-	} else { // not done
-		
+	
+	} else { 
+		// not done
 		double output = talonOutput_->GetOutput();
 
 		robot_->SetDriveValues(RobotModel::kLeftWheels, output);
@@ -209,16 +240,20 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		leftDriveEntry_.SetDouble(-output);
 		pivotErrorEntry_.SetDouble(pivotPID_->GetError());
 
-		//printf("output is %f\n", output);
 	}
 }
 
-// done
+/** 
+ * Returns if command is done
+ * @return isDone_
+ */
 bool PivotCommand::IsDone() {
 	return isDone_;
 }
 
-// deinitialize
+/** 
+ * Destructor
+ */
 PivotCommand::~PivotCommand() {
 	Reset();
 	leftDriveEntry_.Delete();

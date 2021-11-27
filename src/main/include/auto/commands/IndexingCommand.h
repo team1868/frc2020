@@ -11,14 +11,42 @@
 #include "controllers/SuperstructureController.h"
 
 class IndexingCommand : public AutoCommand {
- public:
-  IndexingCommand(RobotModel * robot);
-  void Init();
-  void Update(double currTimeSec, double deltaTimeSec);
-  bool IsDone();
-  void Reset();
-  virtual ~IndexingCommand();
- private:
-  bool isDone_;
-  RobotModel * robot_;
+  public:
+    /** 
+     * Constructor
+     * @param robot a RobotModel
+     */
+    IndexingCommand(RobotModel *robot);
+
+    /**
+     * Initializes class for run
+     */
+    void Init();
+
+    /** 
+     * Periodic update
+     * @param currTimeSec current time
+     * @param deltaTimeSec delta time
+     */
+    void Update(double currTimeSec, double deltaTimeSec);
+    
+    /** 
+     * IsDone checks if indexing is done
+     */
+    bool IsDone();
+
+    /**
+     *  Resets robot to standby
+     */ 
+    void Reset();
+
+    /**
+     * Destructor
+     */
+    virtual ~IndexingCommand();
+
+  private:
+    // class variables 
+    bool isDone_;
+    RobotModel * robot_;
 };

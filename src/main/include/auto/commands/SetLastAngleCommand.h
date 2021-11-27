@@ -8,10 +8,31 @@
 class SetLastAngleCommand : public AutoCommand{
  public:
   SetLastAngleCommand(RobotModel *robot, double lastAngle);
+  
+  /**
+   * Initializes class for run
+   */
   void Init();
+
+  /** 
+   * Periodic update
+   * @param currTimeSec current time
+   * @param deltaTimeSec delta time
+   */
   void Update(double currTimeSec, double deltaTimeSec);
+
+  /**
+    * Resets robot to standby 
+    */
   void Reset();
+
+  /**
+   * Returns true if command is done
+   * @return isDone_
+   */
   bool IsDone();
+
+  
   virtual ~SetLastAngleCommand();
   
  private:

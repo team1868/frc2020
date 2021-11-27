@@ -7,29 +7,51 @@
 
 #include "auto/commands/IndexingCommand.h"
 
+/**
+ * Constructor
+ * @param robot a RobotModel
+ */
 IndexingCommand::IndexingCommand(RobotModel * robot) : AutoCommand() {
-    printf("indexing command\n");
     robot_ = robot;
     isDone_ = false;
-
+    printf("indexing command\n");
 }
 
+/**
+ * Initializes class for run 
+ */
 void IndexingCommand::Init(){
     isDone_ = false;
 }
 
+/** 
+ * Periodic update
+ * @param currTimeSec current time
+ * @param deltaTimeSec delta time
+ */
 void IndexingCommand::Update(double currTimeSec, double deltaTimeSec){
     isDone_ = true;
     robot_->SetIndexing();
 }
 
-// returns true if indexing is done
+/**
+ * Returns true if indexing is done
+ * @return isDone_
+ */
 bool IndexingCommand::IsDone(){
     return isDone_;
 }
 
+/**
+ * Resets robot to standby 
+ */
 void IndexingCommand::Reset(){
     isDone_ = true;
 }
 
-IndexingCommand::~IndexingCommand(){}
+/**
+ * Destructor 
+ */
+IndexingCommand::~IndexingCommand(){
+    Reset();
+}

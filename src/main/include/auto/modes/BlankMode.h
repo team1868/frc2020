@@ -5,14 +5,32 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#pragma once
+#pragma once 
 
 #include "auto/modes/AutoMode.h"
 
 class BlankMode : public AutoMode {
   public:
+    /** 
+     * Constructor
+     * @param robot a RobotModel
+     * @param controlBoard a ControlBoard 
+     */
     BlankMode(RobotModel *robot, ControlBoard *controlBoard);
+
+    /** 
+     * Overrides CreateQueue method (virtual) from AutoMode, gets queue of commands from test sequence string 
+     * @param pos an AutoPositions
+     */
     void CreateQueue(AutoMode::AutoPositions pos) override;
+
+    /** 
+     * Initializes mode
+     */
     void Init();
+
+    /** 
+     * Destructor
+     */
     virtual ~BlankMode();
 };

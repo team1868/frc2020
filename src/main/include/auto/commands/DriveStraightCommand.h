@@ -16,26 +16,31 @@
 
 class DriveStraightCommand : public AutoCommand {
   public:
-    /**
-     * Constructor that generates the DriveStraight Command
-     * @param navXSource angle input for the PID Loop
-     * @param talonEncoderSource distance input for distance PID Loop
-     * @param anglePIDOutput output for the angle PID Loop
-     * @param robot robot model
-     * @param distance in feet
+    /** 
+     * Constuctor with slow option
+     * @param navXSource a NavXPIDSource
+     * @param talonEncoderSource a TalonEncoderPIDSource
+     * @param distancePIDOutput an AnglePIDOutput
+     * @param distancePIDOutput a DistancePIDOutput
+     * @param robot a RobotModel
+     * @param desiredDistance a double that refers to the desired distance to travel
+     * @param slow is true if robot should move slowly
      */
     DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
         AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
         double desiredDistance, bool slow);
-      /**
-       * Constructor that generates the DriveStraight Command
-       * @param navXSource angle input for the PID Loop
-       * @param talonEncoderSource distance input for distance PID Loop
-       * @param anglePIDOutput output for the angle PID Loop
-       * @param robot robot model
-       * @param distance in feet
-       * @param angle the robot should be
-       */
+    
+    /** 
+     * Constructor with absolute angle option
+     * @param navXSource a NavXPIDSource
+     * @param talonEncoderSource a TalonEncoderPIDSource
+     * @param anglePIDOutput an AnglePIDOutput
+     * @param distancePIDOutput a DistancePIDOutput
+     * @param robot a RobotModel
+     * @param desiredDistance a double that refers to the desired distance to travel
+     * @param slow is true if robot should move slowly
+     * @param absoluteAngle a double that refers to the current absolute angle (keep the same angle while driving straight)
+     */
     DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
           AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
           double desiredDistance, bool slow, double absoluteAngle);
@@ -43,40 +48,47 @@ class DriveStraightCommand : public AutoCommand {
     /**
      * Destructor
      */
-
     virtual ~DriveStraightCommand();
 
     /**
-     * Checks if the PID is on target or if it times out, then sets isDone_ is true and stops the motors. Otherwise, sets the right and
-     * left motors to the PID outputs.
+     * Initializes class for run
      */
-
     void Init();
 
-    /**
-     * Runs the DriveStraight PIDs. Times out after 3 seconds for now.
+    /** 
+     * Periodic update
+     * @param currTimeSec current time
+     * @param deltaTimeSec delta time
      */
     void Update(double currTime, double deltaTime);
 
     /**
-     * @return isDone_
-     */
-
+     * Returns true if done (repeatedly on target)
+     * @returns isDone_
+     */ 
     bool IsDone();
 
     /**
-     * Disables the PIDControllers and make the command done.
-     */
-
+     *  Resets robot to standby
+     */ 
     void Reset();
 
     /**
-     * Gets PID values from the ini file
+     * Gets PID values from shuffleboard
      */
     void GetPIDValues();
 
-
 private:
+
+  /**
+    * Initializes dependencies
+    * @param navXSource a NavXPIDSource
+    * @param talonEncoderSource a TalonEncoderPIDSource
+    * @param anglePIDoutput an AnglePIDOutput
+    * @param distancePIDOutput a DistancePIDOutput
+    * @param robot a RobotModel
+    * @param desiredDistance a double that refers to the desired distance to travel
+    */
 	void Initializations(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 			AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 			double desiredDistance);
@@ -91,7 +103,7 @@ private:
 
 	bool isAbsoluteAngle_;
 
-  //PID dependencies
+  // PID dependencies
 	double rPFac_, rIFac_, rDFac_;
 	double rMaxOutput_, rTolerance_;
 	double dPFac_, dIFac_, dDFac_;
@@ -102,10 +114,10 @@ private:
 	double desiredDistance_;
 	double desiredTotalAvgDistance_;
 
-  //motor output
+  // motor output
 	double leftMotorOutput_, rightMotorOutput_;
 
-  //to check if done
+  // to check if done
 	double initialDriveTime_, diffDriveTime_, driveTimeoutSec_;
 	bool isDone_;
 	int numTimesOnTarget_;
@@ -113,11 +125,11 @@ private:
 	double lastDistance_;
 	int numTimesStopped_;
 
-  //slow
+  // slow
   bool slow_;
   double slowSpeed_;
   
-  //shuffleboard
+  // shuffleboard
   frc::ShuffleboardLayout &driveStraightLayout_;
 	nt::NetworkTableEntry leftStraightEntry_, rightStraightEntry_, angleErrorEntry_, angleErrorGraphEntry_, desiredAngleEntry_,
 	  encoderErrorEntry_, encoderErrorGraphEntry_, desiredTotalFeetEntry_, dPIDOutputEntry_, aPIDOutputEntry_;

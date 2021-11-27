@@ -7,25 +7,39 @@
 
 #include "auto/modes/TestMode.h"
 
+/** 
+ * Constructor
+ * @param robot a RobotModel
+ * @param controlBoard a ControlBoard 
+ */
 TestMode::TestMode(RobotModel *robot, ControlBoard *controlBoard) : AutoMode(robot, controlBoard) {
-    printf("in test mode constructor \n");
+    printf("in test mode constructor \n"); 
 }
 
-// overrides CreateQueue method (virtual) from AutoMode, gets queue of commands from test sequence string 
+/** 
+ * Overrides CreateQueue method (virtual) from AutoMode, gets queue of commands from test sequence string 
+ * @param pos from AutoMode AutoPositions
+ */
 void TestMode::CreateQueue(AutoMode::AutoPositions pos) {
     std::string testSequence = robot_->GetTestSequence();
     // get queue of commands from test sequence string 
     QueueFromString(testSequence);
 }
 
+/** 
+ * Initializes test mode
+ */
 void TestMode::Init() {
 	printf("Initializing Test mode\n");
-    printf("is current command a null??? %d\n", currentCommand_==nullptr);
+
     // initialize current command
 	currentCommand_->Init();
 	printf("Finished initializing\n");
 }
 
+/** 
+ * Destructor
+ */
 TestMode::~TestMode() {
     
 }

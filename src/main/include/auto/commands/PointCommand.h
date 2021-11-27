@@ -19,52 +19,64 @@ class PointCommand : public AutoCommand {
 
 public:
 	/**
-	 * PointCommand a constructor
-	 * @param robot a RobotModel
-	 * @param desiredAngle a double that is the angle of the turn
-	 * @param isAbsolutePosition a bool that represents whether the angle is absolute position of deta angle
-	 * @param navXSource a NavXPIDSource
-	 * @param turnLeft a bool that represents what direction the robot should turn in
-	 * @param talonOutput a PivotPidTalonOutput
-	 */
+ 	 * Constructor
+ 	 * @param robot a RobotModel
+ 	 * @param desiredAngle a double that is the angle of the turn
+ 	 * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of deta angle
+ 	 * @param navXSource a NavXPIDSource
+ 	 * @param turnLeft a bool that represents what direction the robot should turn in. Is true if turning left
+ 	 * @param talonOutput a PivotPIDTalonOutput
+ 	 */
 	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, bool turnLeft,  PivotPIDTalonOutput* talonOutput);
 
-	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance, bool turnLeft,  PivotPIDTalonOutput* talonOutput);
+	/**
+ 	 * Constructor with tolerance
+ 	 * @param robot a RobotModel
+ 	 * @param desiredAngle a double that is the angle of the turn
+ 	 * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of deta angle
+ 	 * @param navXSource a NavXPIDSource
+ 	 * @param tolerance a double
+ 	 * @param turnLeft a bool that represents what direction the robot should turn in
+ 	 * @param talonOutput a PivotPIDTalonOutput
+	 */
+	PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, double tolerance, bool turnLeft,  PivotPIDTalonOutput* talonOutput);
 	
 	/**
-	 * gets PID values from ini file, sets to 0 if not present
+	 * Gets PID values from init file, sets to 0 if not present
 	 */
 	void GetPIDValues();
 
 	/**
-	 * gets Yaw from navX, sets Setpoint, continuous to false, output range, and absolute tolerance
-	 */
+  	 * Initializes class for run
+ 	 */
 	void Init();
 
 	/**
-	 * resets PID, sets isDone_ to true
-	 */
+     * Resets robot to standby 
+     */
 	void Reset();
 
-	/**
-	 * if PivotPID is on target more than three times then timeout
-	 * pivotPID resets, disable, isDone sets to true
-	 */
+    /** 
+     * Periodic update
+     * @param currTimeSec current time
+     * @param deltaTimeSec delta time
+     */
 	void Update(double currTimeSec, double deltaTimeSec);
 
-	/**
-	 * @return isDone_
-	 */
+    /**
+     * Returns true if command is done
+     * @return isDone_
+     */
 	bool IsDone();
 
 	/**
-	 * PointCommand a destructor
+	 * Destructor
 	 */
 	virtual ~PointCommand();
 
 
 private:
-	//pid
+	// pid
 	double pFac_, iFac_, dFac_;
 	double desiredAngle_;
 	double initYaw_;
@@ -78,14 +90,14 @@ private:
 
 	int numTimesOnTarget_;
 
-	//pointers
+	// pointers
 	RobotModel *robot_;
 	frc::PIDController *pointPID_;
 	NavXPIDSource * navXSource_;
 	PivotPIDTalonOutput *talonOutput_;
 
 	double maxOutput_;
-	double tolerance_;
+	double tolerance_; 
 
 	// minimum output to correct for, less would be considered done
 	double minDrivePointOutput_;

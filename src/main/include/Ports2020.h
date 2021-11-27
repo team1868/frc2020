@@ -19,7 +19,6 @@ static const int RIGHT_DRIVE_SLAVE_A_ID                  = 1;
 static const int LEFT_DRIVE_MASTER_ID                    = 2;
 static const int LEFT_DRIVE_SLAVE_A_ID                   = 3;
 
-// fix/set all superstructure ids
 // Superstructure Motors
 static const int FLYWHEEL_MOTOR_ONE_ID                   = 20; 
 static const int FLYWHEEL_MOTOR_TWO_ID                   = 21;    
@@ -38,19 +37,12 @@ static const int ELEVATOR_FEEDER_MOTOR_PDP_CHANNEL      = 10;
 static const int LEFT_FUNNEL_MOTOR_PDP_CHANNEL          = 11;
 static const int RIGHT_FUNNEL_MOTOR_PDP_CHANNEL         = 5;
 
-// elevator feeder motor pdp channel: 10
-// left side motor indexer pdp channel: 11
-// Right side motor indexer pdp channel: 5
-
-
-
-
 // Pneumatics
 static const int PNEUMATICS_CONTROL_MODULE_ID            = 0;
 
-static const int GEAR_SHIFT_SOLENOID_PORT                = 1; // fix       = 2; // fix
-static const int LIGHT_SOLENOID_PORT                     = 4; // fix, should control LED light on tape detect camera
-static const int FLYWHEEL_HOOD_SOLENOID_PORT             = 0; // this is correct
+static const int GEAR_SHIFT_SOLENOID_PORT                = 1; 
+static const int LIGHT_SOLENOID_PORT                     = 4; 
+static const int FLYWHEEL_HOOD_SOLENOID_PORT             = 0; 
 static const int CLIMB_RATCHET_SOLENOID_PORT             = 2;
 
 // PDP Channels 
@@ -58,15 +50,15 @@ static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN             = 0;
 static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN             = 1;
 static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN            = 15;
 static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN            = 14;
-static const int FLYWHEEL_MOTOR_ONE_PDP_CHAN             = 3; // superstructure pdp channels are all wrong
+static const int FLYWHEEL_MOTOR_ONE_PDP_CHAN             = 3; 
 static const int FLYWHEEL_MOTOR_TWO_PDP_CHAN             = 4;
 static const int CLIMB_MOTOR_ONE_PDP_CHAN                = 5;
 static const int CLIMB_MOTOR_TWO_PDP_CHAN                = 6;
 static const int CONTROL_PANEL_MOTOR_PDP_CHAN            = 7;
 static const int INTAKE_ROLLERS_MOTOR_PDP_CHAN           = 8;
 static const int INTAKE_WRIST_MOTOR_PDP_CHAN             = 9;
-static const int INDEX_FUNNEL_MOTOR_A_PDP_CHAN           = 5; //unused currently
-static const int INDEX_FUNNEL_MOTOR_B_PDP_CHAN           = 13; //FAKE PORT, unused currently
+static const int INDEX_FUNNEL_MOTOR_A_PDP_CHAN           = 5; // unused currently
+static const int INDEX_FUNNEL_MOTOR_B_PDP_CHAN           = 13; // unused currently
 static const int ELEVATOR_FEEDER_MOTOR_PDP_CHAN          = 11;
 static const int ELEVATOR_MOTOR_PDP_CHAN                 = 12;
 
@@ -76,16 +68,12 @@ static const int RIGHT_JOY_USB_PORT                      = 1;
 static const int OPERATOR_JOY_USB_PORT                   = 2;
 static const int OPERATOR_JOY_B_USB_PORT                 = 3;
 
-// Buttons
-//static const int HIGH_GEAR_BUTTON_PORT               = 1; don't need these w/gearshift
-//static const int LOW_GEAR_BUTTON_PORT                = 2;
-
 static const int ALIGN_TAPE_BUTTON_PORT                  = 1;
-static const int SHOOTING_BUTTON_PORT                    = 2;//1; // fix all superstructure button ports
+static const int SHOOTING_BUTTON_PORT                    = 2;
 static const int TRENCH_ALIGN_TAPE_BUTTON_PORT           = 5;
 static const int SHOOT_CLOSE_PREP_BUTTON_PORT            = 3; //random
 static const int SHOOT_FAR_PREP_BUTTON_PORT              = 2; //random
-static const int UNDO_ELEVATOR_BUTTON_PORT               = 8; // fix port
+static const int UNDO_ELEVATOR_BUTTON_PORT               = 8; 
 static const int FUNNEL_FEEDER_ELEVATOR_UP_BUTTON_PORT   = 6;
 
 static const int INTAKE_SERIES_BUTTON_PORT               = 1;      
@@ -102,12 +90,9 @@ static const int CLIMB_LEFT_ELEVATOR_DOWN_BUTTON_PORT    = 5;
 
 static const int DEFAULT_SHOOT_BUTTON_PORT               = 4;
 
-
-static const int CONTROL_PANEL_BUTTON_PORT               = 51;//2;
+static const int CONTROL_PANEL_BUTTON_PORT               = 51;
 
 static const int GEARSHIFT_BUTTON_PORT                   = 3; //random
-
-
 
 
 
@@ -119,8 +104,8 @@ static const int GYRO_PORT                               = 1; // ANALOG IO
 static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 0;
 static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 1;
 #else 
-static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 3;//0;
-static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 2;//1;
+static const int TOP_ELEVATOR_LIGHT_SENSOR_PORT          = 3;
+static const int BOTTOM_ELEVATOR_LIGHT_SENSOR_PORT       = 2;
 static const int FUNNEL_LIGHT_SENSOR_PORT                = 4;
 #endif
 static const int LEFT_CLIMB_LIMIT_SWITCH_PORT            = 4;

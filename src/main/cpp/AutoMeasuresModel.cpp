@@ -9,10 +9,12 @@
 #include <stdio.h>
 #include <math.h>
 
-//checks whether alliance is blue or red 
+/**
+ * Checks whether alliance is blue or red 
+ */ 
 void RobotModel::CheckAllianceColor(){
-    if(frc::DriverStation::GetInstance().GetAlliance() == frc::DriverStation::kRed){
-        /** assumes inputted offset values are of blue alliance's side but if playing for red alliance then
+    if (frc::DriverStation::GetInstance().GetAlliance() == frc::DriverStation::kRed){
+        /* Assumes inputted offset values are of blue alliance's side but if playing for red alliance then
         need to account for errors by subtracting that amount from red's side */
         initLineError_ *= -1; 
         trenchDistError_ *= -1;
@@ -26,7 +28,7 @@ void RobotModel::CheckAllianceColor(){
         printf("alliance color is blue");
     }
     
-    //setting distances according to frc manual
+    // setting distances according to frc manual
     trenchLength_ = 120.0; 
     trenchWidth_ = 55.5;
     distInitLineToPS_ = 85.0;
@@ -38,7 +40,7 @@ void RobotModel::CheckAllianceColor(){
     distSidewaysPSToMidTrench_ = 133.875;
     distCenterLBtoCenterTZ_ = 97.75;
 
-    //accounting for differences b/w distances shown on frc manual compared to competition arena
+    // accounting for differences b/w distances shown on frc manual compared to competition arena
     distInitLineToPS_ += initLineError_; // if it's closer to the opposing player station then subtract that amt from dist
     if(distInitLineToPS_ < 0.0){
         printf("error: distance value for init line to player station is negative");
@@ -94,25 +96,35 @@ void RobotModel::CheckAllianceColor(){
     double temp = (distInitLinetoTrench_ * distInitLinetoTrench_ + distSidewaysPSToMidTrench_ * distSidewaysPSToMidTrench_);
     if (temp < 0.0){
         printf("error:trying to square root negative value");
-        // distInitLineAlignedWithPSToMidTrench_ = 
     } else {
         distInitLineAlignedWithPSToMidTrench_ = sqrt(distInitLinetoTrench_ * distInitLinetoTrench_ + distSidewaysPSToMidTrench_ * distSidewaysPSToMidTrench_);
     }
     strTrenchLength_ = std::to_string(trenchLength_);
 }
 
-//returns chosen sequence
+/**
+ * Returns chosen sequence
+ * @return selected sequence as an std::string
+ */ 
 std::string RobotModel::GetChosenSequence() {
     return autoSendableChooser_.GetSelected();
 }
 
+/**
+ * Returns default sequence
+ * @return default sequence, an std::string
+ */ 
 std::string RobotModel::GetDefaultSequence(){
     return "t 0.0 d 0.0";
 }
 
-//sets angles & distances for sequence 1 based off competition arena's measurements
-//sequence 1 = start in front of TZ go to trench & come back
+/**
+ * Sets angles & distances for sequence 1 based off competition arena's measurements
+ * @return adjusted sequence 1
+ */ 
 std::string RobotModel::GetChosenSequence1() {
+    // sequence 1 = start in front of TZ go to trench & come back
+
     CheckAllianceColor();
 
     angleA1_ = -((atan(distSidewaysTZToMidTrench_/distInitLinetoTrench_ ) - 5.66231) * (180/PI));
@@ -126,9 +138,13 @@ std::string RobotModel::GetChosenSequence1() {
     return testSequence1_;
 }
 
-//sets angles & distances for sequence 2 based off competition arena's measurements
-//sequence 2 = start in front of LB go to trench & got to init line in front of TZ
+/**
+ * Sets angles & distances for sequence 2 based off competition arena's measurements: 
+ * @return adjusted sequence 2
+ */ 
 std::string RobotModel::GetChosenSequence2() {
+    // sequence 2 = start in front of LB go to trench & got to init line in front of TZ
+
     CheckAllianceColor();
 
     angleA2_ = atan(distCenterLBtoCenterTZ_/distInitLinetoLB_) * (180/PI);
@@ -146,9 +162,13 @@ std::string RobotModel::GetChosenSequence2() {
     return testSequence2_;
 }
 
-//sets angles & distances for sequence 3 based off competition arena's measurements
-//sequence 3 = start in front of trench, go to trench & come back
+/**
+ * Sets angles & distances for sequence 3 based off competition arena's measurements: 
+ * @return adjusted sequence 3
+ */ 
 std::string RobotModel::GetChosenSequence3() {
+    // sequence 3 = start in front of trench, go to trench & come back
+
     CheckAllianceColor();
 
     angleA3_ = atan(distSidewaysTZToMidTrench_/distInitLinetoTZ_) * (180/PI);
@@ -159,9 +179,11 @@ std::string RobotModel::GetChosenSequence3() {
     return testSequence3_;
 }
 
-//sets angles & distances for sequence 4 based off competition arena's measurements
-//sequence 1 = start in front of TZ go to trench & come back
-    std::string RobotModel::GetChosenSequence4() {
+/**
+ * Sets angles & distances for sequence 4 based off competition arena's measurements: 
+ * @return adjusted sequence 4
+ */ 
+std::string RobotModel::GetChosenSequence4() {
     CheckAllianceColor();
 
     angleA4_ = atan(distMidPSToMidTZ_/distInitLinetoTZ_) * (180/PI);

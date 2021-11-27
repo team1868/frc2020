@@ -5,59 +5,85 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "ButtonReader.h"
+#include "ButtonReader.h" 
 #include <frc/WPILib.h>
 
-// class ButtonReader
-// constructs a joystick and sets the port of the button on the joystick, and reads the state of the button
-
-ButtonReader::ButtonReader(frc::Joystick* myJoystick, int myButtonNum){
-	joystick = myJoystick;
-	buttonNum = myButtonNum;
+/**
+ * Constructor
+ * @param joystick
+ * @param buttonNum
+ */
+ButtonReader::ButtonReader(frc::Joystick* joystick, int buttonNum){
+	joystick = joystick;
+	buttonNum = buttonNum;
 
 	// initially set currState as value of the button, initially set lastState as currState
 	currState = joystick->GetRawButton(buttonNum);
 	lastState = currState;
 }
 
-// gets value of the button (pressed or not)
+/** 
+ * Gets value of the button (pressed or not)
+ */
 void ButtonReader::ReadValue() {
 	lastState = currState;
 	currState = joystick->GetRawButton(buttonNum);
 }
 
-// sees if button has been pressed, only true at the moment when button is initially pressed
+/**
+ * Checks if button was just pressed, only true at the moment when button is initially pressed
+ * @return true or false if button was just pressed
+ */
 bool ButtonReader::WasJustPressed() {
 	return (lastState == false && currState == true);
 }
 
-// sees if button has been released, only true at the moment when button is released
+/** 
+ * Checks if button has been released, only true at the moment when button is released
+ * @return true or false if button was just released
+ */
 bool ButtonReader::WasJustReleased() {
 	return (lastState == true && currState == false);
 }
 
-// sees if button has changed from being pressed to released or vice versa 
+/** 
+ * Checks if button has changed from being pressed to released or vice versa 
+ * @return true or false if state just changed
+ */
 bool ButtonReader::StateJustChanged() {
 	return (lastState != currState);
 }
 
-// sees if the button is pressed (down is true)
+/** 
+ * Checks if the button is pressed (down is true)
+ * @return true if pressed
+ */
 bool ButtonReader::IsDown() {
 	return currState;
 }
 
-ButtonReader::~ButtonReader() {
-}
+/**
+ * Destructor
+ */ 
+ButtonReader::~ButtonReader() {}
 
-// class ToggleButtonReader
-// is subclass of ButtonReader, its state toggles every time that it was just released, and reads the state of toggles.
 
+/** 
+ * Constructor 
+ * - ToggleButtonReader is subclass of ButtonReader, its state toggles every time that it was just released, 
+ * and reads the state of toggles.
+ * @param joy
+ * @param buttonNum
+ */
 ToggleButtonReader::ToggleButtonReader(frc::Joystick *joy, int buttonNum) :
 	ButtonReader(joy, buttonNum) {
 	currToggleState = false;
 }
 
-// toggles the button's state and then reads the button's state 
+/** 
+ * Toggles the button's state and then reads the button's state 
+ * @return true if currently on
+ */
 bool ToggleButtonReader::GetState() {
 	// currToggleState is toggled every time the button was just released
 	if (WasJustReleased()) {
@@ -67,19 +93,27 @@ bool ToggleButtonReader::GetState() {
 	return (currToggleState);
 }
 
-ToggleButtonReader::~ToggleButtonReader() {
-}
+/**
+ * Destructor
+ */
+ToggleButtonReader::~ToggleButtonReader() {}
 
-// class SwitchReader
-// reads the state of switches (up, down, or neutral)
-
-SwitchReader::SwitchReader(frc::Joystick *myJoy, int upButton, int downButton) {
-	joy = myJoy;
+/**
+ * Constructor for SwitchReader, reads the state of switches (up, down, or neutral)
+ * @param joy
+ * @param upButton
+ * @param downButton
+ */
+SwitchReader::SwitchReader(frc::Joystick *joy, int upButton, int downButton) {
+	joy = joy;
 	upB = upButton;
 	downB = downButton;
 }
 
-// gets the switches state and returns its state (up, down, or neutral)
+/** 
+ * Gets the switches state and returns its state (up, down, or neutral)
+ * @return current SwitchState (kUp or kDown or KNeutral)
+ */
 SwitchState SwitchReader::GetSwitchState() {
 	if (joy->GetRawButton(upB))
 		return kUp;
@@ -88,5 +122,7 @@ SwitchState SwitchReader::GetSwitchState() {
 	return kNeutral;
 }
 
-SwitchReader::~SwitchReader() {
-}
+/**
+ * Destructor
+ */
+SwitchReader::~SwitchReader() {}

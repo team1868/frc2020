@@ -23,14 +23,14 @@ public:
 
 	virtual ~AutoController() {}
 
-	/**
-	 * SetAutomousMode is a mutator that sets AutoMode
+	/** 
+	 * Sets auto mode
 	 * @param autoMode is an AutoMode
 	 */
 	void SetAutonomousMode(AutoMode *autoMode);
 
 	/**
-	 * create a queue for automode and initializes it
+	 * Create a queue for automode and initializes it
 	 */
 	void Init(AutoMode::AutoPositions pos);
 
@@ -41,11 +41,15 @@ public:
 	 */
 	void Update(double currTimeSec, double deltaTimeSec);
 
-	/**
-	 * @return true when AutoMode isDone
+	/** 
+	 * Returns if autoMode is done
+	 * @return true when AutoMode is done
 	 */
 	bool IsDone();
 
+	/** 
+	 * Aborts auto
+   	 */
 	bool Abort();
 
 private:

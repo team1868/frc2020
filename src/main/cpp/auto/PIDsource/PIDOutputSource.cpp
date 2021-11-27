@@ -9,7 +9,7 @@
 #include "../../../include/auto/PIDSource/PIDOutputSource.h"
 
 /**
- * Initializes pidOutput_ to 0
+ * Constructor, initializes pidOutput_ to 0
  */
 AnglePIDOutput::AnglePIDOutput() {
 	pidOutput_ = 0.0;
@@ -17,12 +17,14 @@ AnglePIDOutput::AnglePIDOutput() {
 
 /**
  * Sets pidOutput_ to the output from PID loop
+ * @param output a double
  */
 void AnglePIDOutput::PIDWrite(double output) {
 	pidOutput_ = output;
 }
 
 /**
+ * Gets PID output
  * @return pidOutput_
  */
 double AnglePIDOutput::GetPIDOutput() {
@@ -32,12 +34,10 @@ double AnglePIDOutput::GetPIDOutput() {
 /**
  * Destructor
  */
-AnglePIDOutput::~AnglePIDOutput() {
-
-}
+AnglePIDOutput::~AnglePIDOutput() {}
 
 /**
- * Initializes pidOutput_ to 0
+ * Constructor, initializes pidOutput_ to 0
  */
 DistancePIDOutput::DistancePIDOutput() {
 	pidOutput_ = 0.0;
@@ -45,12 +45,14 @@ DistancePIDOutput::DistancePIDOutput() {
 
 /**
  * Gets output from PID loop and assigns it to pidOutput_
+ * @param output a double
  */
 void DistancePIDOutput::PIDWrite(double output) {
 	pidOutput_ = output;
 }
 
 /**
+ * Gets PID output
  * @return pidOutput_
  */
 double DistancePIDOutput::GetPIDOutput() {
@@ -65,7 +67,7 @@ DistancePIDOutput::~DistancePIDOutput() {
 }
 
 /**
- * sets pidOutput_ to 0.0
+ * Constructor, sets pidOutput_ to 0.0
  */
 VelocityPIDOutput::VelocityPIDOutput() {
 	pidOutput_ = 0.0;
@@ -73,12 +75,14 @@ VelocityPIDOutput::VelocityPIDOutput() {
 
 /**
  * PIDWrite a function that initializes output_ and sets the drive values
+ * @param output a double
  */
 void VelocityPIDOutput::PIDWrite(double output) {
 	pidOutput_ = output;
 }
 
 /**
+ * Gets PID output
  * @return pidOutput_
  */
 double VelocityPIDOutput::GetPIDOutput() {
@@ -86,14 +90,14 @@ double VelocityPIDOutput::GetPIDOutput() {
 }
 
 /**
- * VelocityPIDOutput is a destructor
+ * Destructor
  */
 VelocityPIDOutput::~VelocityPIDOutput() {
 
 }
 
 /**
- * PivotPIDTalonOutput is a constructor that initializes robot_ and output_
+ * Constructor, initializes robot_ and output_
  * @param robot a RobotModel
  */
 PivotPIDTalonOutput::PivotPIDTalonOutput(RobotModel *robot){
@@ -109,6 +113,7 @@ void PivotPIDTalonOutput::PIDWrite(double myOutput){
 }
 
 /**
+ * Gets output
  * @return output
  */
 double PivotPIDTalonOutput::GetOutput() {
@@ -118,5 +123,4 @@ double PivotPIDTalonOutput::GetOutput() {
 /**
  * Destructor
  */
-PivotPIDTalonOutput::~PivotPIDTalonOutput(){
-}
+PivotPIDTalonOutput::~PivotPIDTalonOutput(){}

@@ -14,7 +14,8 @@
 class CurveCommand : public AutoCommand {
  public:
 
-   /** constuctor
+   /** 
+    * Constuctor
    * @param robot a RobotModel
    * @param desiredRadius a double that refers to the desired radius
    * @param desiredAngle a double that refers to the desired angle for the robot to turn
@@ -22,22 +23,21 @@ class CurveCommand : public AutoCommand {
    * @param goForward is true if robot should go forward
    * @param navXSource a NavXPIDSource
    * @param talonEncoderPIDSource a TalonEncoderPIDSource
-   * @param anglePIDOuptut an AnglePIDOutput
+   * @param anglePIDOutput an AnglePIDOutput
    * @param distancePIDOutput a DistancePIDOutput
    */
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft, bool goForward,
     NavXPIDSource* navXSource, TalonEncoderPIDSource *talonEncoderPIDSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
 
-  /** constuctor
+  /** 
+   * Constuctor
    * @param robot a RobotModel
    * @param desiredRadius a double that refers to the desired radius
    * @param desiredAngle a double that refers to the desired angle for the robot to turn
-   * @param turnLeft is true if the robot is supposed to turn left
-   * @param goForward is true if robot should go forward
    * @param navXSource a NavXPIDSource
    * @param talonEncoderPIDSource a TalonEncoderPIDSource
-   * @param anglePIDOuptut an AnglePIDOutput
+   * @param anglePIDOutput an AnglePIDOutput
    * @param distancePIDOutput a DistancePIDOutput
    */
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
@@ -45,38 +45,44 @@ class CurveCommand : public AutoCommand {
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   
   /**
-  * creates new PIDController
-  */
+   * Initializes command
+   */
   void Init();
   
   /**
-  * updates diffCurveTime_ and calls Reset() method if dPid_ is on target & numTimesOnTarget > 6
+  * Updates diffCurveTime_ and calls Reset() method if dPid_ is on target & numTimesOnTarget > 6
   * @param currTImeSec a double
   * @param deltaTimeSec a double
   */
   void Update(double currTimeSec, double deltaTimeSec);
   
   /**
-  * returns isDone_
-  */
+   * Returns isDone_
+   * @returns isDone_
+   */
   bool IsDone();
 
   /**
-  * disables distance PID if it's null & set's isDone_ to true
-  */
+   *  Resets robot to standby
+   */ 
   void Reset();
 
   /**
-  * destructor
+  * Destructor
   */
   ~CurveCommand();
 
  private:
 
-  //calculates desired angle based off distance
+  /**
+   * Calculates desired angle based off distance
+   * @returns desired angle
+   */
   double CalcCurDesiredAngle(double curPivDistance);
 
-  //sets dPFac_, dIFac_ and dDFac_
+  /**
+   * Sets dPFac_, dIFac_ and dDFac_
+   */
   void GetPIDValues();
 
   NavXPIDSource *navXPIDSource_;

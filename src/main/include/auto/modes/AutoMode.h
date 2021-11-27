@@ -25,30 +25,67 @@
 
 class AutoMode {
   public:
-    enum AutoPositions {kBlank}; //Change for 2022
+    enum AutoPositions {kBlank}; // Change for 2022
 
+    /**
+     * Constructor
+     * @param robot a RobotModel
+     * @param controlBoard a ControlBoard
+     */
     AutoMode(RobotModel *robot, ControlBoard *controlBoard);
-    // might need to comment out the robot and controlBoard up here because superstructure controller takes in robot and controlboard as parameters when created
-    
-    // destructor
+
+    /**
+     * Destructor 
+    */
     virtual ~AutoMode();
 
+    /**
+     * CreateQueue
+     * @param pos position 
+    */
     virtual void CreateQueue(AutoMode::AutoPositions pos) {};
 
+    /**
+     * Gets queue of commands from auto sequence string 
+     * @param autoSequence a std::string
+     */
     void QueueFromString(std::string autoSequence);
 
+    /**
+     * Given character command from autoSequence, returns corresponding AutoCommand
+     * @return tempCommand, the corresponding AutoCommand
+     */ 
     AutoCommand* GetStringCommand(char command);
 
+    /**
+     * Error in stream, returns true if something went wrong
+     * @return failed, a boolean, true if failed
+     */ 
     bool IsFailed(char command);
 
     virtual void Init() = 0;
 
+    /**
+     * Periodic update
+     * @param currTimeSec a double
+     * @param deltaTimeSec a double
+     */ 
     void Update(double currTimeSec, double deltaTimeSec);
 
+    /**
+     * Returns if done, false as long as current command is not null
+     * @return true if done
+     */ 
     bool IsDone();
 
+    /**
+     * Aborts current command
+     */ 
     bool Abort();
 
+    /**
+     * Disables current command and goes back to the first command if not null
+     */
 	  void Disable();
 
   protected:
@@ -60,7 +97,6 @@ class AutoMode {
 	  NavXPIDSource* navX_;
 	  TalonEncoderPIDSource* talonEncoder_;
     TalonEncoderPIDSource* talonEncoderCurve_;
-    //TalonEncoderCurvePIDSource* talonEncoderCurve_; // needs to be used
     PivotPIDTalonOutput* talonOutput_;
 
 	  AnglePIDOutput *angleOutput_;

@@ -41,39 +41,47 @@ class SuperstructureController {
     kReIndexing, kReady, kFull, kIndexingUp, kIdle
   };
 
+  /**
+   * Constructor for SuperstructureController
+   * @param robot a RobotModel
+   * @param humanControl a ControlBoard
+   */
   SuperstructureController(RobotModel *robot, ControlBoard *humanControl);
+
+  // auto init
   void AutoInit();
+
+  // teleop init
   void TeleopInit();
+
   void Update(bool isAuto);
+  void SetIsAuto(bool isAuto);
+  void Reset();
+
   void UpdatePrep(bool isAuto);
   void RefreshShuffleboard();
+  void UpdateButtons();
+
   void FlywheelPIDControllerUpdate();
   double CalculateFlywheelVelocityDesired();
   void SetFlywheelPowerDesired(double flywheelVelocityRPM);
-  void WristUpdate(bool isAuto);
-  void UpdateButtons();
+  bool IsFlywheelAtSpeed(double rpm);
   double RatioFlywheel();
+
   bool GetShootingIsDone();
   bool GetIsPrepping();
-  
   void SetShootingState(double autoVelocity);
   void SetIntakingState();
   void SetPreppingState(double desiredVelocity);
   void SetIndexingState();
-  
-  void SetIsAuto(bool isAuto);
 
-  bool IsFlywheelAtSpeed(double rpm);
-
-
+  void WristUpdate(bool isAuto);
+  void Climbing();
 
   void ControlPanelStage2(double power);
   void ControlPanelStage3(double power);
   void ControlPanelFinalSpin();
   std::string GetControlPanelColor();
-  void Reset();
-  void Climbing();
-
 
   ~SuperstructureController();
 
@@ -93,63 +101,64 @@ class SuperstructureController {
   RobotModel *robot_;
   ControlBoard *humanControl_;
   
+  // state machine
   SuperstructureState currSuperState_, nextSuperState_;
   PowerCellHandlingState currHandlingState_, nextHandlingState_;
   WristState currWristState_, nextWristState_;
   IndexLogicState currIndexLogicState_, nextIndexLogicState_;
 
+  // timeout variables
   double currTime_, lastTime_;
   double startResetTime_, resetTimeout_;
   double startResetElevatorTime_;
+  double lowerElevatorTimeout_, elevatorTimeout_;
+  double startIndexTime_, startElevatorTime_, startReIndexTime_, startIndexingTime_;
+  bool bottomSensor_, topSensor_, funnelSensor_, bTimeout_, tTimeout_, resetElevatorTimeout_, jammedStartTimeout_;
+  double jammedTimeout_;
+  double shootPrepStartTime_;
+  double startRatchetTime_;
 
+  // flywheel/shooting
   double flywheelResetTime_;
   double flywheelPFac_, flywheelIFac_, flywheelDFac_, flywheelFFac_;
   double desiredFlywheelPower_, closeFlywheelPower_;
-  double autoWristDownP_, autoWristUpP_;
   double desiredFlywheelVelocity_, closeFlywheelVelocity_;
-
-  double desiredIntakeWristAngle_;
-  double currWristAngle_, lastWristAngle_;
-  double intakeRollersPower_, intakeSlowRollersPower_;
-
-  double lowerElevatorTimeout_, elevatorTimeout_;
-  double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, elevatorSlowFeederPower_, indexFunnelPower_, indexFunnelSlowPower_;
-  double startIndexTime_, startElevatorTime_, startReIndexTime_, startIndexingTime_;
-  bool bottomSensor_, topSensor_, funnelSensor_, bTimeout_, tTimeout_, resetElevatorTimeout_, jammedStartTimeout_;
-
-  double jammedTimeout_;
-  bool currJammed_;
-  double motorCurrentLimit_;
-
-  double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
-
   double closeTicksPerSecDesired_;
   double farTicksPerSecDesired_;
-
-  double shootPrepStartTime_;
   int numTimeAtSpeed_;
   bool closePrepping_, farPrepping_;
   bool atTargetSpeed_;
+  bool shootingIsDone_;
+  double distanceToTarget_;
+  double flywheelRPMconst_, highFlywheelTolerance_, flywheelPercentAdjustment_;
 
+  // wrist angles
+  double desiredIntakeWristAngle_;
+  double currWristAngle_, lastWristAngle_;
+  double autoWristDownP_, autoWristUpP_;
+  bool isManualRaisingWrist_;
+
+  // powers
+  double intakeRollersPower_, intakeSlowRollersPower_;
+  double elevatorSlowPower_, elevatorFastPower_, elevatorFeederPower_, elevatorSlowFeederPower_, indexFunnelPower_, indexFunnelSlowPower_;
+  double climbElevatorUpPower_, climbElevatorDownPower_, climbPowerDesired_;
+  double manualRollerPower_;
+  
+  // control panel
   int controlPanelCounter_;
   double initialControlPanelTime_;
   std::string initialControlPanelColor_, previousControlPanelColor_, colorDesired_;
   double controlPanelPower_;
   bool controlPanelStage2_, controlPanelStage3_;
 
-  double manualRollerPower_;
-  bool shootingIsDone_;
-
-  double distanceToTarget_;
   bool isAuto_;
-  bool isManualRaisingWrist_;
-  double startRatchetTime_;
+  bool currJammed_;
+  double motorCurrentLimit_;
 
   // indexing logic
   bool isBallIncoming_;
 
-  double flywheelRPMconst_, highFlywheelTolerance_, flywheelPercentAdjustment_;
-  
+
   frc::ShuffleboardLayout &flywheelPIDLayout_, &sensorsLayout_, &manualOverrideLayout_, &powerLayout_, &currentLayout_, &timeoutsLayout_;
   nt::NetworkTableEntry flywheelPEntry_, flywheelIEntry_, flywheelDEntry_, flywheelFEntry_;
   
@@ -161,17 +170,12 @@ class SuperstructureController {
 
   nt::NetworkTableEntry slowElevatorEntry_, fastElevatorEntry_, funnelEntry_, rollerManualEntry_, closeFlywheelEntry_, targetSpeedEntry_;
   nt::NetworkTableEntry elevatorBottomLightSensorEntry_, elevatorTopLightSensorEntry_, funnelLightSensorEntry_;
-
   nt::NetworkTableEntry intakeWristAngleEntry_;
   nt::NetworkTableEntry autoWristEntry_, autoWristDownPEntry_, autoWristUpPEntry_;
-
   nt::NetworkTableEntry climbElevatorUpEntry_, climbElevatorDownEntry_;
-
   nt::NetworkTableEntry controlPanelColorEntry_;
-
   nt::NetworkTableEntry flywheelRPMconstEntry_, highFlywheelToleranceEntry_, flywheelPercentAdjustmentEntry_;
-
   nt::NetworkTableEntry funnelLeftMotorEntry_, funnelRightMotorEntry_, feederMotorEntry_;
-
   nt::NetworkTableEntry jammedTimeoutEntry_, currentLimitEntry_;
+
 };

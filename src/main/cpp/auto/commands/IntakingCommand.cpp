@@ -7,32 +7,47 @@
 
 #include "auto/commands/IntakingCommand.h"
 
+/**
+ * Constructor
+ * @param robot a RobotModel
+ */
 IntakingCommand::IntakingCommand(RobotModel * robot) : AutoCommand() {
     robot_ = robot;
     isDone_ = false;
     printf("intaking command\n");
 }
 
-// intaking command has been called so command is not done yet
+/**
+ *  Initializes 
+ */ 
 void IntakingCommand::Init(){
-    isDone_ = false;
+    isDone_ = false; // intaking command has just been called so command is not done yet
 }
 
-// sets the robot's state to intaking, command is done
+/**
+ * Sets the robot's state to intaking, command is done
+ */ 
 void IntakingCommand::Update(double currTimeSec, double deltaTimeSec){
     robot_->SetIntaking(); // is true when wrist is up
     isDone_ = true;
 }
 
-// checks if command is done
+/** 
+ * Checks if command is done. Returns true if done
+ * @return isDone_
+ */ 
 bool IntakingCommand::IsDone(){
     return isDone_;
 }
 
-// sets command as done
+/**
+ * Sets command as done. 
+ */ 
 void IntakingCommand::Reset(){
     isDone_ = true;
 }
 
-IntakingCommand::~IntakingCommand(){
-}
+/**
+ * Destructor
+ */ 
+IntakingCommand::~IntakingCommand(){}

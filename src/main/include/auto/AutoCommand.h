@@ -18,36 +18,60 @@
 class AutoCommand {
 public:
 	/**
-	 * Constructor that generates a PathCommand
+	 * Constructor that generates a PathCommand - 
 	 * If extended, allows other commands to implement these methods
 	 */
 	AutoCommand() {
 		nextCommand_ = NULL;
 	}
 
-	// destructor
+	/** 
+     * Destructor
+     */
 	virtual ~AutoCommand() {}
 
+	/** 
+     * Initializes the command
+     */
 	virtual void Init() = 0;
 
-	// update intake state to done
-  	//@param currTimeSec a double
-	//@param deltaTimeSec a double
+	/** 
+     * Periodic update
+     * @param currTimeSec current time
+     * @param deltaTimeSec delta time
+     */
 	virtual void Update(double currTimeSec, double deltaTimeSec) = 0;
 
-	// @return true if done
+    /**
+     * Returns true if command is done
+     * @return isDone_
+     */
 	virtual bool IsDone() = 0;
 
+	/**
+     * Resets robot to standby 
+     */
 	virtual void Reset() = 0;
 
+	/**
+     * Aborts command
+     */
 	virtual bool Abort() { return false; }
 
+	/**
+     * Gets the next command
+	 * @return AutoCommand, the next command
+     */
 	AutoCommand* GetNextCommand() {
 		return nextCommand_;
 	}
 
-	void SetNextCommand(AutoCommand* myNextCommand) {
-		nextCommand_ = myNextCommand;
+	/**
+     * Sets the next command
+	 * @param nextCommand an AutoCommand
+     */
+	void SetNextCommand(AutoCommand* nextCommand) {
+		nextCommand_ = nextCommand;
 	}
 
 private:

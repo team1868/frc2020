@@ -30,31 +30,26 @@
 #define PI 3.141592
 
 static const double WHEEL_DIAMETER = 0.5; //ft
-//static const double HIGH_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; 
-//static const double LOW_GEAR_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50; 
 static const double HIGH_GEAR_RATIO = 44*44*44/(14*30*20.0);
 static const double LOW_GEAR_RATIO = 50*44*44/(14*30*14.0);
-static const double ENCODER_TICKS = 2048.0; //ticks per motor rotation
-//static const double ENCODER_TICKS_FOOT = 16424.3; //might need to recheck, DONT USE
-static const double HGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*HIGH_GEAR_RATIO/(WHEEL_DIAMETER*PI); //ticks per ft
+static const double ENCODER_TICKS = 2048.0; // ticks per motor rotation
+static const double HGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*HIGH_GEAR_RATIO/(WHEEL_DIAMETER*PI); // ticks per ft
 static const double LGEAR_ENCODER_TICKS_FOOT = ENCODER_TICKS*LOW_GEAR_RATIO/(WHEEL_DIAMETER*PI); // ticks per ft
-//static const double MAX_HIGH_GEAR_VELOCITY = 13.3; //low gear ft/s
-static const double STOP_VELOCITY_THRESHOLD = 0.01; //unit: TICKS PER SEC, threshold = 0.01 FT/SEC
+static const double STOP_VELOCITY_THRESHOLD = 0.01; // unit: TICKS PER SEC, threshold = 0.01 FT/SEC
 
-static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO FIX
-static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
-//ratios work in 5 or 10% increments (accumulative) maybe? idk - medha
-static const double MIN_RATIO_ALL_CURRENT = 0.2;//0.7; //TODO add to shuffleboard
-static const double MIN_RATIO_SUPERSTRUCTURE_CURRENT = 0.5; //TODO add to shuffleboard
+static const double MAX_CURRENT_OUTPUT = 180.0; // Amps
+static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; // Amps
+static const double MIN_RATIO_ALL_CURRENT = 0.2;
+static const double MIN_RATIO_SUPERSTRUCTURE_CURRENT = 0.5; 
 static const double MIN_RATIO_DRIVE_CURRENT = 0.7;
 static const double MIN_BROWNOUT_VOLTAGE = 7.5;
-static const double MAX_DRIVE_CURRENT_PERCENT = 1.0; //per motor, most teams are 40-50 Amps //TODO unused??
+static const double MAX_DRIVE_CURRENT_PERCENT = 1.0; // per motor, most teams are 40-50 Amps 
 
 static double LOW_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double HIGH_GEAR_STATIC_FRICTION_POWER = 0.0;
 static double LOW_GEAR_QUICKTURN_STATIC_FRICTION_POWER =  0.0;
 static double HIGH_GEAR_QUICKTURN_STATIC_FRICTION_POWER = 0.0;
-static const double ROBOT_WIDTH = 28.5/12; //ft
+static const double ROBOT_WIDTH = 28.5/12; //f t
 
 // superstructure
 static const int SPARK_ENCODER_TICKS = 42;
@@ -69,8 +64,7 @@ static const int FLYWHEEL_PID_TIMEOUT = 30; // milliseconds
 static const double MIN_TURNING_X = 0.5;
 static const double MIN_TURNING_XY_DIFFERENCE = 1.0;
 static const double MAX_LOW_GEAR_VELOCITY = 7.5;
-static const double TICKS_TO_WRIST_DEGREES = 360.0/4096*18/34; //0.04653
-
+static const double TICKS_TO_WRIST_DEGREES = 360.0/4096*18/34; // 0.04653
 
 //color sensor
 static constexpr frc::Color kBlueTarget = frc::Color(0.152, 0.437, 0.413);
@@ -159,16 +153,16 @@ class RobotModel {
     void GearShift();
     bool IsHighGear();
 
-    //field error
+    // field error
     double SetInitLineError();
-    double SetTrenchDistError(); //distance from initiation to trench edge
+    double SetTrenchDistError(); // distance from initiation to trench edge
     double SetTrenchWidthError(); 
-    double SetTrenchLengthError(); //Control Panel is too close/far
+    double SetTrenchLengthError(); // Control Panel is too close/far
     double SetTargetZDistError();
     double SetTargetZHeightError();
     double SetLoadingDDistError();
-    double SetPlayerSt2MidError(); //Player Station 2, midpoint distnance error
-    double SetInitLineSlant(); //initiation line is slanted
+    double SetPlayerSt2MidError(); // Player Station 2, midpoint distnance error
+    double SetInitLineSlant(); // initiation line is slanted
 
     void CheckAllianceColor();
     std::string GetDefaultSequence();
@@ -178,12 +172,11 @@ class RobotModel {
     std::string GetChosenSequence3();
     std::string GetChosenSequence4();
     
-    //for align tape - in drive model
+    // for align tape - in drive model
     void SetDeltaAngle(double angle);
     void SetDistance(double distance);
     double GetDeltaAngle();
     double GetDistance();
-
 
     // PID Stuff (yay)
     void CreatePIDEntries(); 
@@ -344,7 +337,7 @@ class RobotModel {
     uint32_t state_;
     int numTimeAtSpeed_;
     double flywheelOneCurrent_, flywheelTwoCurrent_, climbOneCurrent_, climbTwoCurrent_;
-    //note: index funnel currents are not being used currently
+    // note: index funnel currents are not being used currently
     double intakeRollersCurrent_, intakeWristCurrent_, indexFunnelACurrent_, indexFunnelBCurrent_, elevatorFeederCurrent_, elevatorCurrent_;
     double compressorCurrent_, roboRIOCurrent_;
     bool compressorOff_, lastOver_;
@@ -352,8 +345,8 @@ class RobotModel {
 
     double flywheelVelocTimeout_;
 
-    double desiredDeltaAngle_;//for align tape
-	  double desiredDistance_;//for align tape
+    double desiredDeltaAngle_; // for align tape
+	  double desiredDistance_; // for align tape
     double targetVelocity_;
 
     double lastVelocTime_, currVelocTime_;
@@ -394,7 +387,7 @@ class RobotModel {
     double trenchLength_; // not entire trench length just side of trench near opposing alliance stations to control panel
 
     double distCenterLBtoCenterTZ_;
-    double distSidewaysMidPSToMidTrench_; //distInitLineAlignedWithMidPSToInitLineAlignedWithMidTrench_
+    double distSidewaysMidPSToMidTrench_;
     double distSidewaysTZToMidTrench_;
     double distMidPSToMidTZ_;
 
@@ -422,9 +415,9 @@ class RobotModel {
 
     
     //zmq
-    zmq::context_t *context_;//, *context2_; //context for creating sockets
-    zmq::socket_t *subscriber_; //socket to receive message from jetson
-    zmq::socket_t *publisher_; //socket to send message to jetson
+    zmq::context_t *context_; // context for creating sockets
+    zmq::socket_t *subscriber_; // socket to receive message from jetson
+    zmq::socket_t *publisher_; // socket to send message to jetson
     int confl;
     bool isSocketBound_;
     bool hasContents_;

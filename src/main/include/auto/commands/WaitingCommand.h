@@ -16,12 +16,12 @@ public:
 	/** 
 	 * Constructor, assigns the waitTimeSec and creates the timer
    	 * @param robot a RobotModel
-   	 * @param myWaitTimeSec a double
+   	 * @param waitTimeSec a double
   	 */
-	WaitingCommand(RobotModel *robot, double myWaitTimeSec);
+	WaitingCommand(RobotModel *robot, double waitTimeSec);
 
 	/**
-	 * Starts the timer
+	 * Initializes class for run, starts the timer
 	 */
 	void Init();
 
@@ -32,25 +32,26 @@ public:
    	 */
 	void Update(double currTimeSec, double deltaTimeSec);
 
-	/** 
-	 * returns isDone_
- 	 * @returns isDone_
- 	 */
+    /**
+     * Returns true if command is done
+     * @return isDone_
+     */
 	bool IsDone();
 
 	/**
- 	 * resets isDone_ to true
- 	 */ 
+     * Resets robot to standby 
+     */
 	void Reset();
 
 	/**
-	 * destructor
+	 * Destructor
 	 */
 	virtual ~WaitingCommand();
+
 private:
 	RobotModel * robot_;
 
-	//time variables
+	// time variables
 	double waitTimeSec_;
 	double startTime_;
 

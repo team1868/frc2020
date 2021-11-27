@@ -8,9 +8,18 @@
 #include "auto/commands/PointCommand.h"
 #include <frc/WPILib.h>
 
-// constructor
-PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, bool turnLeft, PivotPIDTalonOutput* talonOutput) :
-	pointLayout_(robot->GetFunctionalityTab().GetLayout("Point", "List Layout"))
+/**
+ * Constructor
+ * @param robot a RobotModel
+ * @param desiredAngle a double that is the angle of the turn
+ * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of deta angle
+ * @param navXSource a NavXPIDSource
+ * @param turnLeft a bool that represents what direction the robot should turn in. Is true if turning left
+ * @param talonOutput a PivotPIDTalonOutput
+ */
+PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, 
+	NavXPIDSource* navXSource, bool turnLeft, PivotPIDTalonOutput* talonOutput) :
+	pointLayout_(robot->GetFunctionalityTab().GetLayout("Point", "List Layout")) 
 	{
 
 	leftDriveEntry_ = pointLayout_.Add("Left Drive Output", 0.0).GetEntry();
@@ -62,8 +71,18 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 }
 
-// constructor
-PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance, bool turnLeft, PivotPIDTalonOutput* talonOutput) :
+/**
+ * Constructor with tolerance
+ * @param robot a RobotModel
+ * @param desiredAngle a double that is the angle of the turn
+ * @param isAbsoluteAngle a bool that represents whether the angle is absolute position of deta angle
+ * @param navXSource a NavXPIDSource
+ * @param tolerance a double
+ * @param turnLeft a bool that represents what direction the robot should turn in
+ * @param talonOutput a PivotPIDTalonOutput
+ */
+PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, 
+	NavXPIDSource* navXSource, double tolerance, bool turnLeft, PivotPIDTalonOutput* talonOutput) :
 	pointLayout_(robot->GetFunctionalityTab().GetLayout("Point", "List Layout"))
 	{
 
@@ -76,7 +95,8 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	initYaw_ = navXSource_->PIDGet();
 
 	turnLeft_ = turnLeft;
-	// adjust angle is absolute
+
+	// adjust - angle is absolute
 	if (isAbsoluteAngle){
 		desiredAngle_ = desiredAngle;
 	} else {
@@ -112,16 +132,20 @@ PointCommand::PointCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 }
 
-//gets PID values from ini file, sets to 0 if not present
+/**
+ * Gets PID values from init file, sets to 0 if not present
+ */
 void PointCommand::GetPIDValues() {
 	pFac_ = robot_-> GetPointP();
 	iFac_ = robot_-> GetPointI();
 	dFac_ = robot_-> GetPointD();
 }
 
-// gets Yaw from navX, sets Setpoint, continuous to false, output range, and absolute tolerance
+/**
+ * Initializes command
+ */
 void PointCommand::Init() {
-	//Profiler profiler(robot_, "Point Init");
+
 	// Setting PID values (in case they changed)
 	GetPIDValues();
 	pointPID_->SetPID(pFac_, iFac_, dFac_);
@@ -133,8 +157,8 @@ void PointCommand::Init() {
 	pointPID_->SetSetpoint(desiredAngle_);
 	pointPID_->SetContinuous(true);
 	pointPID_->SetInputRange(-180, 180);
-	pointPID_->SetOutputRange(-maxOutput_, maxOutput_);     //adjust for 2018
-	pointPID_->SetAbsoluteTolerance(tolerance_);	 //adjust for 2018
+	pointPID_->SetOutputRange(-maxOutput_, maxOutput_); 
+	pointPID_->SetAbsoluteTolerance(tolerance_);
 	pointPID_->Enable();
 
 	// target variables
@@ -149,7 +173,9 @@ void PointCommand::Init() {
 			initYaw_, desiredAngle_, pointCommandStartTime_);
 }
 
-// theoretical change class back to orginal state
+/**
+ * Resets for standby
+ */
 void PointCommand::Reset() {
 	// turn off motors
 	robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
@@ -171,13 +197,18 @@ void PointCommand::Reset() {
 	printf("DONE FROM RESET \n");
 }
 
-// update time variables
-void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible source of error TODO reset encoders
-	//printf("Updating pointcommand \n");
+/**
+ * Periodic update
+ * @param currTimeSec a double
+ * @param deltaTimeSec a double
+ */
+void PointCommand::Update(double currTimeSec, double deltaTimeSec) {
 
 	// calculate time difference
 	double timeDiff = robot_->GetTime() - pointCommandStartTime_;
-	bool timeOut = (timeDiff > pointTimeoutSec_);								//test this value
+
+	// check for timeout
+	bool timeOut = (timeDiff > pointTimeoutSec_);
 
 	// on target
 	if (pointPID_->OnTarget()) {
@@ -186,22 +217,28 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		numTimesOnTarget_ = 0;
 	}
 
+	// number of times on target exceeds 8 or timed out
 	if ((pointPID_->OnTarget() && numTimesOnTarget_ > 8) || timeOut){
 		printf("diffTime: %f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n" 
 				"%f Angle NavX Error %f\n",
 				timeDiff, navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
 					pointPID_->GetError());
+		
 		Reset();
 		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
+		
 		printf("%f POINT IS DONE \n", robot_->GetTime());
 		if (timeOut) {
 			printf("%f TIME OUT @ %f\n", robot_->GetTime(), timeDiff);
 		}
-	} else { // not done
+
+	} else { 
+		// command is not done
 		
 		double output = talonOutput_->GetOutput();
 		output *= 0.5;
+
 		// adjust motor values according to PID
 		printf("ERROR IS %f\n", pointPID_->GetError());
         if (turnLeft_) {
@@ -209,8 +246,7 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
             robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
 		    robot_->SetDriveValues(RobotModel::kRightWheels, -output);
 
-        }
-         else {
+        } else {
             // turning right, set right wheel to stationary
             robot_->SetDriveValues(RobotModel::kLeftWheels, output);
 	    	robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
@@ -228,18 +264,22 @@ void PointCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
             leftDriveEntry_.SetDouble(output);
         }
 		
-		
 		pointErrorEntry_.SetDouble(pointPID_->GetError());
 
 	}
 }
 
-// done
+/**
+ * Returns if command is done
+ * @return isDone_
+ */
 bool PointCommand::IsDone() {
 	return isDone_;
 }
 
-// deinitialize
+/**
+ * Destructor
+ */
 PointCommand::~PointCommand() {
 	Reset();
 	leftDriveEntry_.Delete();

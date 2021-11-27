@@ -14,16 +14,18 @@
 class AnglePIDOutput : public frc::PIDOutput {
 public:
 	/**
-	 * Initializes pidOutput_ to 0
+	 * Constructor, initializes pidOutput_ to 0
 	 */
 	AnglePIDOutput();
 
 	/**
 	 * Sets pidOutput_ to the output from PID loop
+	 * @param output a double
 	 */
 	void PIDWrite(double output);
 
 	/**
+	 * Gets PID output
 	 * @return pidOutput_
 	 */
 	double GetPIDOutput();
@@ -32,26 +34,27 @@ public:
 	 * Destructor
 	 */
 	virtual ~AnglePIDOutput();
+
 private:
-	/**
-	 * Output from PID loop
-	 */
+	// Output from PID loop
 	double pidOutput_;
 };
 
 class DistancePIDOutput : public frc::PIDOutput {
 public:
 	/**
-	 * Initializes pidOutput_ to 0
+	 * Constructor, initializes pidOutput_ to 0
 	 */
 	DistancePIDOutput();
 
 	/**
 	 * Gets output from PID loop and assigns it to pidOutput_
+	 * @param output a double
 	 */
 	void PIDWrite(double output);
 
 	/**
+	 * Gets PID output
 	 * @return pidOutput_
 	 */
 	double GetPIDOutput();
@@ -60,32 +63,33 @@ public:
 	 * Destructor
 	 */
 	virtual ~DistancePIDOutput();
+
 private:
-	/**
-	 * Output from PID loop
-	 */
+	// Output from PID loop
 	double pidOutput_;
 };
 
 class VelocityPIDOutput : public frc::PIDOutput {
 public:
 	/**
-	 * sets pidOutput_ to 0.0
+	 * Constructor, sets pidOutput_ to 0.0
 	 */
 	VelocityPIDOutput();
 
 	/**
 	 * PIDWrite a function that initializes output_ and sets the drive values
+	 * @param output a double
 	 */
 	void PIDWrite(double output);
 
 	/**
+	 * Gets PID output
 	 * @return pidOutput_
 	 */
 	double GetPIDOutput();
 
 	/**
-	 * VelocityPIDOutput is a destructor
+	 * Destructor
 	 */
 	virtual ~VelocityPIDOutput();
 private:
@@ -99,7 +103,7 @@ private:
 class PivotPIDTalonOutput : public frc::PIDOutput {
 public:
 	/**
-	 * PivotPIDTalonOutput is a constructor that initializes robot_ and output_
+	 * Constructor, initializes robot_ and output_
 	 * @param robot a RobotModel
 	 */
 	PivotPIDTalonOutput(RobotModel *robot);
@@ -110,12 +114,13 @@ public:
 	void PIDWrite(double output);
 
 	/**
+	 * Gets output
 	 * @return output
 	 */
 	double GetOutput();
 
 	/**
-	 * PivotPIDTalonOutput is a destructor
+	 * Destructor
 	 */
 	virtual ~PivotPIDTalonOutput();
 private:

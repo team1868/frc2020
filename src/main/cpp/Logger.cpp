@@ -12,7 +12,12 @@ std::ofstream Logger::logData;
 std::ofstream Logger::logAction;
 #define USE_NAVX = true;
 
-void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
+/**
+ * Log state: records the physical state of the robot and human control
+ * @param robot a RobotModel
+ * @param humanControl a ControlBoard
+ */ 
+void Logger::LogState(RobotModel* robot, ControlBoard *humanControl) {
 	if (!logData.is_open()) {
 		 logData.open(GetTimeStamp((std::string("/home/lvuser/%F_%H_%M_datalog.txt")).c_str()), std::ofstream::out | std::ofstream::app);
 		    logData << "Time, Left Encoder, Right Encoder, Left Wheel Speed,"
@@ -29,43 +34,23 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 				// fix labels
 	}
 
-	logData << myRobot->GetTime() << ", " <<
-	    myRobot->GetLeftEncoderValue() << ", " <<
-	    myRobot->GetRightEncoderValue() << ", " <<
-	    //   myRobot->GetWheelSpeed(RobotModel::kLeftWheels) << ", " <<
-	    //   myRobot->GetWheelSpeed(RobotModel::kRightWheels) << ", " <<
-	    myRobot->GetNavXYaw() << ", " <<
-	    myRobot->GetNavXRoll() << ", " <<
-	    myRobot->GetNavXPitch() << ", " <<
-	    
-		myRobot->GetVoltage() << ", " <<
-	    //myRobot->GetTotalCurrent() << ", " <<
-	    // myRobot->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
-	    // myRobot->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
-	    // myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN) << ", " <<
-	    // myRobot->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN) << ", " <<
-		
-		// myRobot->GetCurrent(FLYWHEEL_MOTOR_ONE_PDP_CHAN) << ", " <<
-		// myRobot->GetCurrent(FLYWHEEL_MOTOR_TWO_PDP_CHAN) << ", " <<
-		// myRobot->GetCurrent(CLIMB_MOTOR_ONE_PDP_CHAN) << ", " <<
-		// myRobot->GetCurrent(CLIMB_MOTOR_TWO_PDP_CHAN) << ", " <<
-		// myRobot->GetCurrent(INTAKE_ROLLERS_MOTOR_PDP_CHAN) << ", " <<
-		// myRobot->GetCurrent(INTAKE_WRIST_MOTOR_PDP_CHAN) << ", " <<
-		// myRobot->GetCurrent(INDEX_FUNNEL_MOTOR_PDP_CHAN) << ", " <<
-		// myRobot->GetCurrent(ELEVATOR_MOTOR_PDP_CHAN) << ", " <<
+	logData << robot->GetTime() << ", " <<
+	    robot->GetLeftEncoderValue() << ", " <<
+	    robot->GetRightEncoderValue() << ", " <<
+	    robot->GetNavXYaw() << ", " <<
+	    robot->GetNavXRoll() << ", " <<
+	    robot->GetNavXPitch() << ", " <<
+		robot->GetVoltage() << ", " <<
 
-		//myRobot->GetCurrent(HIGH_GEAR) get back to this in a sec
-		
-
-	    myRobot->GetCompressorCurrent() << ", " <<
-	    myRobot->GetRIOCurrent() << ", " <<
-	    myRobot->GetTotalPower() << ", " <<
-	    myRobot->GetTotalEnergy() << ", " <<
-	    myRobot->GetPressureSwitchValue() << ", " <<
-		myHumanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kX) << ", " <<
-		myHumanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY) << ", " <<
-	    myHumanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) << ", " <<
-	    myHumanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY);
+	    robot->GetCompressorCurrent() << ", " <<
+	    robot->GetRIOCurrent() << ", " <<
+	    robot->GetTotalPower() << ", " <<
+	    robot->GetTotalEnergy() << ", " <<
+	    robot->GetPressureSwitchValue() << ", " <<
+		humanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kX) << ", " <<
+		humanControl->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY) << ", " <<
+	    humanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX) << ", " <<
+	    humanControl->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY);
 	  logData.flush();
 }
 /* format:
@@ -79,24 +64,37 @@ void Logger::LogState(RobotModel* myRobot, ControlBoard *myHumanControl) {
 
 /* overloaded methods with time stamp */
 
-void Logger::LogAction(RobotModel* myRobot, const std::string& fileName, int line,
+/**
+ * Log action: records higher-level processes
+ * @param robot a RobotModel
+ * @param fileName a reference to an std::string
+ * @param line an integer
+ */ 
+void Logger::LogAction(RobotModel* robot, const std::string& fileName, int line,
 				const std::string& stateName, double state) {
 	logAction.flush();
 	if (!logAction.is_open()) {
 			logAction.open(GetTimeStamp((std::string("/home/lvuser/%F_%H_%M_actionlog.txt")).c_str()), std::ofstream::out | std::ofstream::app);
 	}
-	logAction << myRobot->GetTime() << ", " << fileName << ", " << line << ", " << stateName
+	logAction << robot->GetTime() << ", " << fileName << ", " << line << ", " << stateName
 			<< ", " << state << "\r\n";
 	logAction.flush();
 }
 
-
-void Logger::LogAction(RobotModel* myRobot, const std::string& fileName, int line,
+/**
+ * Log action: records higher-level processes
+ * @param robot a RobotModel
+ * @param fileName a reference to an std::string
+ * @param line an integer
+ * @param stateName a reference to an std::string
+ * @param state a reference to an std::string
+ */ 
+void Logger::LogAction(RobotModel* robot, const std::string& fileName, int line,
 				const std::string& stateName, const std::string& state) {
 	if (!logAction.is_open()) {
 			logAction.open(GetTimeStamp((std::string("/home/lvuser/%F_%H_%M_actionlog.txt")).c_str()), std::ofstream::out | std::ofstream::app);
 	}
-	logAction << myRobot->GetTime() << ", " << fileName << ", " << line << ", " << stateName
+	logAction << robot->GetTime() << ", " << fileName << ", " << line << ", " << stateName
 			<< ", " << state << "\r\n";
 	logAction.flush();
 }
@@ -133,12 +131,18 @@ void Logger::LogAction(const std::string& fileName, int line, const std::string&
 }
 
 
+/**
+ * Closes the log
+ */ 
 void Logger::CloseLogs() {
 	logData.close();
 	logAction.close();
 }
 
-
+/**
+ * Gets time stamp
+ * @return the time as a string
+ */ 
 std::string Logger::GetTimeStamp(const char* fileName) {
 /*	struct timespec tp;
 	clock_gettime(CLOCK_REALTIME,&tp);

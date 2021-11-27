@@ -14,27 +14,45 @@
 
 class ButtonReader {
 public:
-	// ButtonReader constructor to set joystick, button, get currState, set lastState to currState
-	//@param joy a Joystick
-	//@param buttonNum an int
-	ButtonReader(frc::Joystick *joy, int buttonNum);
+	/**
+	 * Constructor
+	 * @param joystick
+	 * @param buttonNum
+	 */
+	ButtonReader(frc::Joystick *joystick, int buttonNum);
 
-	// destructor
+	/**
+	 * Destructor
+	 */
 	virtual ~ButtonReader();
 
-	// pdates lastState and current state, reads the value of the button
+	/** 
+	 * Gets value of the button (pressed or not)
+	 */
 	void ReadValue();
 
-	// @return current state of button (whether its currently pressed)
+	/** 
+	 * Checks if the button is pressed (down is true)
+	 * @return true if pressed
+	 */
 	bool IsDown();
 
-	// @return true if button changed from released to pressed
+	/**
+	 * Checks if button was just pressed, only true at the moment when button is initially pressed
+	 * @return true or false if button was just pressed
+	 */
 	bool WasJustPressed();
 
-	// @return true if button changed from pressed to released
+	/** 
+	 * Checks if button has been released, only true at the moment when button is released
+	 * @return true or false if button was just released
+	 */
 	bool WasJustReleased();
 
-	// @return true if state was changed from pressed to released (or vice versa)
+	/** 
+	 * Checks if button has changed from being pressed to released or vice versa 
+	 * @return true or false if state just changed
+	 */
 	bool StateJustChanged();
 
 private:
@@ -49,17 +67,24 @@ private:
 // ToggleButtonReader reads the states of toggles
 class ToggleButtonReader : public ButtonReader {
 public:
-	/* 
-	 * ToggleButtonReader constructor to initialize currToggleState
-	 * @param joy a Joystick
-	 * @param buttonNum an int
+	/** 
+	 * Constructor 
+	 * - ToggleButtonReader is subclass of ButtonReader, its state toggles every time that it was just released, 
+	 * and reads the state of toggles.
+	 * @param joy
+	 * @param buttonNum
 	 */
 	ToggleButtonReader(frc::Joystick *joy, int buttonNum);
 
-	// destructor
+	/**
+	 * Destructor
+	 */
 	virtual ~ToggleButtonReader();
 
-	// @return true if toggle state is true or if it turned true after button got pressed. 
+	/** 
+	 * Toggles the button's state and then reads the button's state 
+	 * @return true if currently on
+	 */
 	virtual bool GetState();
 
 private:
@@ -75,18 +100,23 @@ enum SwitchState {
 // SwitchReaader reads the state of switches
 class SwitchReader {
 public:
-	/*
-	 * SwitchReader constructor initializes which joystick the switch is part of
-	 * @param myJoy a Joystick
-	 * @param upButton an int
-	 * @param downButton an int
+	/**
+	 * Constructor for SwitchReader, reads the state of switches (up, down, or neutral)
+	 * @param joy
+	 * @param upButton
+	 * @param downButton
 	 */
-	SwitchReader(frc::Joystick *myJoy, int upButton, int downButton);
+	SwitchReader(frc::Joystick *jooy, int upButton, int downButton);
 
-	// destructor
+	/**
+	 * Destructor
+	 */
 	virtual ~SwitchReader();
 
-	// @return the state of the switch (up or down or neutral)
+	/** 
+	 * Gets the switches state and returns its state (up, down, or neutral)
+	 * @return current SwitchState (kUp or kDown or KNeutral)
+	 */
 	SwitchState GetSwitchState();
 
 private:

@@ -7,9 +7,15 @@
 
 #include "controllers/DriveController.h"
 
+/**
+ * Constructor
+ * @param robot a RobotModel
+ * @param humanControl a ControlBoard
+ */
 DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) :
     driveLayout_(robot->GetDriverTab().GetLayout("Drive Modes", "List Layout").WithPosition(0, 1))
     {
+
     // initialize class variables
     robot_ = robot;
     humanControl_ = humanControl;
@@ -35,7 +41,9 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
     printf("end of drive controller constructor\n");
 }
 
-// updates shuffleboard entries, drive (arcade versus tank), and gear shifts
+/**
+ * Periodic update, updates shuffleboard entries, drive (arcade versus tank), and gear shifts
+ */
 void DriveController::Update(){
     // update shuffleboard entries
     RefreshShuffleboard();
@@ -47,21 +55,21 @@ void DriveController::Update(){
     double rightJoyY = humanControl_->GetJoystickValue(ControlBoard::Joysticks::kRightJoy, ControlBoard::Axes::kY);
 
     // set to tank drive or arcade drive
-    if(arcadeMode_){
-        ArcadeDrive(leftJoyY, rightJoyX); //test turn, might need to negatize rightJoyX
+    if (arcadeMode_){
+        ArcadeDrive(leftJoyY, rightJoyX);
     } else {
         TankDrive(leftJoyY, rightJoyY);
     }
 
     // shift gear based on shuffleboard switch
-    if(autoShiftEntry_.GetBoolean(true)){
-        if(humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
+    if (autoShiftEntry_.GetBoolean(true)){
+        if (humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
             robot_->GearShift();
         } else {
             robot_->SetLowGear();
         }
     } else {
-        if(humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
+        if (humanControl_->GetDesired(ControlBoard::Buttons::kGearShiftButton)) {
             robot_->SetHighGear();
         } else {
             robot_->SetLowGear();
@@ -71,7 +79,9 @@ void DriveController::Update(){
 
 }
 
-// updates drive controller related shuffleboard entries
+/** 
+ * Updates drive controller related shuffleboard entries
+ */ 
 void DriveController::RefreshShuffleboard(){
     thrustSensitivity_ = thrustSensitivityEntry_.GetDouble(0.0);
     rotateSensitivity_ = rotateSensitivityEntry_.GetDouble(0.0);
@@ -79,11 +89,13 @@ void DriveController::RefreshShuffleboard(){
     highGearEntry_.SetBoolean(robot_->IsHighGear());
 }
 
-void DriveController::Reset(){
-    
-}
+void DriveController::Reset(){}
 
-// tank drive
+/** 
+ * Tank drive
+ * @param left a double for left output
+ * @param right a double for right output
+ */
 void DriveController::TankDrive(double left, double right){
     // adjusting sensitivity
     left = GetDeadbandAdjustment(left);
@@ -97,7 +109,11 @@ void DriveController::TankDrive(double left, double right){
     robot_->SetDriveValues(left, right);
 }
 
-// arcade drive
+/** 
+ * Arcade drive
+ * @param thrust a double
+ * @param rotate a double
+ */
 void DriveController::ArcadeDrive(double thrust, double rotate){
     // adjusting sensitivity for turn
     thrust = GetDeadbandAdjustment(thrust);
@@ -124,12 +140,21 @@ void DriveController::ArcadeDrive(double thrust, double rotate){
     robot_->SetDriveValues(leftOutput, rightOutput);
 }
 
-// adjusts joystick sensitivity using a cubic for smoother driving
+/** 
+ * Adjusts joystick sensitivity using a cubic for smoother driving
+ * @param value a double
+ * @param adjustmentConstant a double
+ * @return adjusted value as a double
+ */
 double DriveController::GetCubicAdjustment(double value, double adjustmentConstant){
     return adjustmentConstant * std::pow(value, 3.0) + (1.0 - adjustmentConstant) * value;
 }
 
-// adjusts rotation for turns in arcade drive
+/** 
+ * Adjusts rotation for turns in arcade drive
+ * @param value a double
+ * @return adjusted value as a double
+ */
 double DriveController::GetRotateVelocityAdjustment(double value){
     rightJoystickXLastValue_ = rightJoystickXCurrValue_;
     rightJoystickXCurrValue_ = value;
@@ -137,7 +162,11 @@ double DriveController::GetRotateVelocityAdjustment(double value){
     return abs(rightJoystickXCurrValue_-rightJoystickXLastValue_)/time;
 }
 
-// returns how much the thrust value should be adjusted, if it's lower than the deadband, the robot should not move
+/** 
+ * Returns how much the thrust value should be adjusted: if it's lower than the deadband, the robot should not move
+ * @param value a double
+ * @return adjusted value as a double
+ */
 double DriveController::GetDeadbandAdjustment(double value){
     if(fabs(value)<DEADBAND_MAX){
         return 0.0;
@@ -150,25 +179,34 @@ double DriveController::GetDeadbandAdjustment(double value){
     }
 }
 
-// adjusts left and right drive values since robot power must be in the range -1.0 to 1.0
+/** 
+ * Adjusts left and right drive values since robot power must be in the range -1.0 to 1.0
+ * @param leftValue a double
+ * @param rightValue a double
+ */
 void DriveController::MaxSpeedAdjustment(double &leftvalue, double &rightvalue){
-    if(leftvalue>1.0){
+    if (leftvalue > 1.0){
         rightvalue /= leftvalue;
         leftvalue = 1.0;
-    } else if(leftvalue<-1.0){
+    } else if (leftvalue < -1.0){
         rightvalue /= -leftvalue;
         leftvalue = -1.0;
     }
-    if(rightvalue>1.0){
+    if (rightvalue > 1.0){
         leftvalue /= rightvalue;
         rightvalue = 1.0;
-    } else if(rightvalue<-1.0){
+    } else if (rightvalue < -1.0){
         leftvalue /= -rightvalue;
         rightvalue = -1.0;
     }
 }
 
-// gives extra power to motors to account for friction when robot begins to move
+/** 
+ * Gives extra power to motors to account for friction when robot begins to move
+ * @param leftDrive a double
+ * @param rightDrive a double
+ * @param testMode a boolean
+ */
 void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, bool testMode){
     
     if (leftDrive != 0.0 && robot_->GetLeftEncoderStopped()) {
@@ -176,14 +214,12 @@ void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, 
             if (!testMode) {
                 leftDrive = STATIC_FRICTION_DRIVE;
             }    
-        }
-        else {
-            if (!testMode){
+        } else {
+            if (!testMode) {
                 leftDrive = -STATIC_FRICTION_DRIVE;
             }
         }
-    }
-    else if (leftDrive != 0.0 && !robot_->GetLeftEncoderStopped()) {
+    } else if (leftDrive != 0.0 && !robot_->GetLeftEncoderStopped()) {
         if (minForwardThrust_ == 0.0 && leftDrive < 0.0) {
             minForwardThrust_ = leftDrive;
         }
@@ -194,12 +230,11 @@ void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, 
     
     if (rightDrive != 0.0 && robot_->GetRightEncoderStopped()) {
         if (rightDrive > 0.0) {
-            if (!testMode){
+            if (!testMode) {
                 rightDrive = STATIC_FRICTION_DRIVE;
             }
-        }
-        else {
-            if (!testMode){
+        } else {
+            if (!testMode) {
                 rightDrive = -STATIC_FRICTION_DRIVE;
             }
         }
@@ -207,6 +242,9 @@ void DriveController::FrictionAdjustment(double &leftDrive, double &rightDrive, 
 
 }
 
+/**
+ * Destructor
+ */ 
 DriveController::~DriveController(){
     arcadeEntry_.Delete();
     thrustSensitivityEntry_.Delete();

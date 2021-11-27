@@ -8,7 +8,6 @@
 #include "RobotModel.h"
 
 void RobotModel::CreatePIDEntries(){
-    //last tuned: 2/20 without climber2
     //drivestraight
     aPEntry_ = anglePIDLayout_.Add("P", 0.01275).GetEntry(); // 0.0055 for practice bot
     aIEntry_ = anglePIDLayout_.Add("I", 0.0).GetEntry();
@@ -16,14 +15,7 @@ void RobotModel::CreatePIDEntries(){
     dPEntry_ = distancePIDLayout_.Add("P", 0.1).GetEntry(); // 0.19 for practice bot
     dIEntry_ = distancePIDLayout_.Add("I", 0.0).GetEntry();
     dDEntry_ = distancePIDLayout_.Add("D", 0.0).GetEntry(); // 0.08 for practice bot
-
-    // pEntry_ = pivotPIDLayout_.Add("P", 0.031).GetEntry();
-    // iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    // dEntry_ = pivotPIDLayout_.Add("D", 0.017).GetEntry();
-    // pEntry_ = pivotPIDLayout_.Add("P", 0.016).GetEntry(); // 0.03225 for nova, 0.0247 for practice bot 0.016 for comp bot
-    // iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
-    // dEntry_ = pivotPIDLayout_.Add("D", 0.0115).GetEntry(); // 0.0173 for nova, 0.0162 for practice bot 0.0115 for comp bot
-
+    
     //pivot pid entries
     pEntry_ = pivotPIDLayout_.Add("P", 0.012).GetEntry(); // 0.03225 for nova, 0.0247 for practice bot 0.016 for comp bot, 0.007 for 90 degree turns basketball courts
     iEntry_ = pivotPIDLayout_.Add("I", 0.0).GetEntry();
