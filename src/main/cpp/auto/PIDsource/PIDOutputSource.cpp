@@ -108,8 +108,8 @@ PivotPIDTalonOutput::PivotPIDTalonOutput(RobotModel *robot){
 /**
  * PIDWrite a function that initializes output_ and sets the drive values
  */
-void PivotPIDTalonOutput::PIDWrite(double myOutput){
-	output_ = myOutput;
+void PivotPIDTalonOutput::PIDWrite(double output){
+	output_ = output;
 }
 
 /**

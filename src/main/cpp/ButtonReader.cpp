@@ -10,12 +10,12 @@
 
 /**
  * Constructor
- * @param joystick
- * @param buttonNum
+ * @param myJoystick
+ * @param myButtonNum
  */
-ButtonReader::ButtonReader(frc::Joystick* joystick, int buttonNum){
-	joystick = joystick;
-	buttonNum = buttonNum;
+ButtonReader::ButtonReader(frc::Joystick* myJoystick, int myButtonNum){
+	joystick = myJoystick;
+	buttonNum = myButtonNum;
 
 	// initially set currState as value of the button, initially set lastState as currState
 	currState = joystick->GetRawButton(buttonNum);
@@ -72,11 +72,11 @@ ButtonReader::~ButtonReader() {}
  * Constructor 
  * - ToggleButtonReader is subclass of ButtonReader, its state toggles every time that it was just released, 
  * and reads the state of toggles.
- * @param joy
- * @param buttonNum
+ * @param myJoy
+ * @param myButtonNum
  */
-ToggleButtonReader::ToggleButtonReader(frc::Joystick *joy, int buttonNum) :
-	ButtonReader(joy, buttonNum) {
+ToggleButtonReader::ToggleButtonReader(frc::Joystick *myJoy, int myButtonNum) :
+	ButtonReader(myJoy, myButtonNum) {
 	currToggleState = false;
 }
 
@@ -100,12 +100,12 @@ ToggleButtonReader::~ToggleButtonReader() {}
 
 /**
  * Constructor for SwitchReader, reads the state of switches (up, down, or neutral)
- * @param joy
+ * @param myJoy
  * @param upButton
  * @param downButton
  */
-SwitchReader::SwitchReader(frc::Joystick *joy, int upButton, int downButton) {
-	joy = joy;
+SwitchReader::SwitchReader(frc::Joystick *myJoy, int upButton, int downButton) {
+	joy = myJoy;
 	upB = upButton;
 	downB = downButton;
 }

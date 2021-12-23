@@ -16,10 +16,10 @@ class ButtonReader {
 public:
 	/**
 	 * Constructor
-	 * @param joystick
-	 * @param buttonNum
+	 * @param myJoystick
+	 * @param myButtonNum
 	 */
-	ButtonReader(frc::Joystick *joystick, int buttonNum);
+	ButtonReader(frc::Joystick *myJoystick, int myButtonNum);
 
 	/**
 	 * Destructor
@@ -71,10 +71,10 @@ public:
 	 * Constructor 
 	 * - ToggleButtonReader is subclass of ButtonReader, its state toggles every time that it was just released, 
 	 * and reads the state of toggles.
-	 * @param joy
-	 * @param buttonNum
+	 * @param myJoy
+	 * @param myButtonNum
 	 */
-	ToggleButtonReader(frc::Joystick *joy, int buttonNum);
+	ToggleButtonReader(frc::Joystick *myJoy, int myButtonNum);
 
 	/**
 	 * Destructor
@@ -102,11 +102,11 @@ class SwitchReader {
 public:
 	/**
 	 * Constructor for SwitchReader, reads the state of switches (up, down, or neutral)
-	 * @param joy
+	 * @param myJoy
 	 * @param upButton
 	 * @param downButton
 	 */
-	SwitchReader(frc::Joystick *jooy, int upButton, int downButton);
+	SwitchReader(frc::Joystick *myJoy, int upButton, int downButton);
 
 	/**
 	 * Destructor

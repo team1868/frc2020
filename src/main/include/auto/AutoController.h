@@ -17,17 +17,17 @@ public:
 
 	/**
 	 * Constructor AutoController that allows AutoMode to be set
-	 * @param autoMode an AutoMode
+	 * @param myAutoMode an AutoMode
 	 */
-	AutoController(AutoMode *autoMode);
+	AutoController(AutoMode *myAutoMode);
 
 	virtual ~AutoController() {}
 
 	/** 
 	 * Sets auto mode
-	 * @param autoMode is an AutoMode
+	 * @param myAutoMode is an AutoMode
 	 */
-	void SetAutonomousMode(AutoMode *autoMode);
+	void SetAutonomousMode(AutoMode *myAutoMode);
 
 	/**
 	 * Create a queue for automode and initializes it

@@ -16,7 +16,7 @@ AutoController::AutoController() {
 
 /** 
  * Constructor, allows AutoMode to be set
- * @param autoMode an AutoMode
+ * @param myAutoMode an AutoMode
  */
 AutoController::AutoController(AutoMode *myAutoMode){
 	autoMode = myAutoMode;
@@ -24,7 +24,7 @@ AutoController::AutoController(AutoMode *myAutoMode){
 
 /** 
  * Sets auto mode
- * @param autoMode is an AutoMode
+ * @param myAutoMode is an AutoMode
  */
 void AutoController::SetAutonomousMode(AutoMode *myAutoMode) {
 	autoMode = myAutoMode;
